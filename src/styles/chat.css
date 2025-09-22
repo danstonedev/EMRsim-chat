@@ -1135,20 +1135,21 @@
 .conv-overlay.vu-9  { --vu: 1.05; }
 .conv-overlay.vu-10 { --vu: 1.15; }
 
-/* Bar height driven by amplitude and weight; ensure min/max within container height */
-.conv-overlay .conv-bars .bar { height: calc(6px + clamp(0, var(--vu, 0.15) * var(--bw), 1.2) * 18px); }
+/* Listening mode - simple bar animations */
 .conv-overlay.listening .conv-bars .bar {
-  animation: convListen 0.9s ease-in-out infinite;
+  animation: convListen 0.8s ease-in-out infinite;
+}
+
+/* Speaking mode - simple bar animations */  
+.conv-overlay.speaking .conv-bars .bar {
+  background: linear-gradient(180deg, var(--brand-secondary) 0%, #ff844c 100%);
+  animation: convSpeak 0.6s ease-in-out infinite;
 }
 .conv-overlay.transcribing .conv-bars .bar {
-  animation: convTranscribe 1.2s ease-in-out infinite;
+  display: none; /* Hide bars during transcribing as requested */
 }
 .conv-overlay.chatting .conv-bars .bar {
-  animation: convThink 1.4s ease-in-out infinite;
-}
-.conv-overlay.speaking .conv-bars .bar {
-  animation: convSpeak 0.6s ease-in-out infinite;
-  background: linear-gradient(180deg, var(--brand-secondary) 0%, #ff844c 100%);
+  display: none; /* Hide bars during thinking as requested */
 }
 
 /* Stagger each bar by index using nth-child */
@@ -1188,3 +1189,30 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-2px); }
 }
+
+/* Different animation delays for each bar to create variety */
+.conv-overlay.listening .conv-bars .bar:nth-child(1) { animation-delay: 0s; animation-duration: 0.7s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(2) { animation-delay: 0.1s; animation-duration: 0.8s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(3) { animation-delay: 0.05s; animation-duration: 0.9s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(4) { animation-delay: 0.15s; animation-duration: 0.75s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(5) { animation-delay: 0.2s; animation-duration: 0.85s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(6) { animation-delay: 0.08s; animation-duration: 0.95s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(7) { animation-delay: 0.12s; animation-duration: 0.8s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(8) { animation-delay: 0.25s; animation-duration: 0.7s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(9) { animation-delay: 0.18s; animation-duration: 0.9s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(10) { animation-delay: 0.3s; animation-duration: 0.75s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(11) { animation-delay: 0.22s; animation-duration: 0.85s; }
+.conv-overlay.listening .conv-bars .bar:nth-child(12) { animation-delay: 0.28s; animation-duration: 0.8s; }
+
+.conv-overlay.speaking .conv-bars .bar:nth-child(1) { animation-delay: 0s; animation-duration: 0.6s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(2) { animation-delay: 0.08s; animation-duration: 0.65s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(3) { animation-delay: 0.04s; animation-duration: 0.7s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(4) { animation-delay: 0.12s; animation-duration: 0.55s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(5) { animation-delay: 0.16s; animation-duration: 0.62s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(6) { animation-delay: 0.06s; animation-duration: 0.68s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(7) { animation-delay: 0.1s; animation-duration: 0.58s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(8) { animation-delay: 0.18s; animation-duration: 0.64s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(9) { animation-delay: 0.14s; animation-duration: 0.72s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(10) { animation-delay: 0.2s; animation-duration: 0.56s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(11) { animation-delay: 0.22s; animation-duration: 0.66s; }
+.conv-overlay.speaking .conv-bars .bar:nth-child(12) { animation-delay: 0.24s; animation-duration: 0.6s; }

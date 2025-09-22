@@ -130,6 +130,15 @@ export default function ChatInterface() {
   const [convPhase, setConvPhase] = useState<'idle' | 'listening' | 'transcribing' | 'chatting' | 'speaking'>('idle')
   const [vuLevel, setVuLevel] = useState<number>(0) // 0..1 live mic level for visualizer
   const [vuBucket, setVuBucket] = useState<number>(0) // 0..10 discrete bucket for CSS classes
+  // Audio output analysis for speaking indicator
+  const [audioVuLevel, setAudioVuLevel] = useState<number>(0) // 0..1 live audio output level
+  const [audioVuBucket, setAudioVuBucket] = useState<number>(0) // 0..10 discrete bucket for CSS classes
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const audioAnalyserRef = useRef<AnalyserNode | null>(null)
+  const audioSourceRef = useRef<MediaElementAudioSourceNode | null>(null)
+  const audioAnimationRef = useRef<number | null>(null)
+  // Conversation overlay ref for direct CSS property manipulation
+  const convOverlayRef = useRef<HTMLDivElement | null>(null)
   // Mic devices and selection
   const [inputDevices, setInputDevices] = useState<MediaDeviceInfo[]>([])
   const [selectedInputId, setSelectedInputId] = useState<string>('')
@@ -342,9 +351,19 @@ export default function ChatInterface() {
       }
       if (!audioRef.current) audioRef.current = new Audio()
       if (!audioEventsBoundRef.current && audioRef.current) {
-        audioRef.current.addEventListener('play', () => setIsSpeaking(true))
-        audioRef.current.addEventListener('pause', () => setIsSpeaking(false))
-        audioRef.current.addEventListener('ended', () => setIsSpeaking(false))
+        audioRef.current.addEventListener('play', () => {
+          setIsSpeaking(true)
+          setupAudioAnalysis()
+          startAudioAnalysis()
+        })
+        audioRef.current.addEventListener('pause', () => {
+          setIsSpeaking(false)
+          stopAudioAnalysis()
+        })
+        audioRef.current.addEventListener('ended', () => {
+          setIsSpeaking(false)
+          stopAudioAnalysis()
+        })
         audioEventsBoundRef.current = true
       }
       try {
@@ -445,9 +464,19 @@ export default function ChatInterface() {
       }
       if (!audioRef.current) audioRef.current = new Audio()
       if (!audioEventsBoundRef.current && audioRef.current) {
-        audioRef.current.addEventListener('play', () => setIsSpeaking(true))
-        audioRef.current.addEventListener('pause', () => setIsSpeaking(false))
-        audioRef.current.addEventListener('ended', () => setIsSpeaking(false))
+        audioRef.current.addEventListener('play', () => {
+          setIsSpeaking(true)
+          setupAudioAnalysis()
+          startAudioAnalysis()
+        })
+        audioRef.current.addEventListener('pause', () => {
+          setIsSpeaking(false)
+          stopAudioAnalysis()
+        })
+        audioRef.current.addEventListener('ended', () => {
+          setIsSpeaking(false)
+          stopAudioAnalysis()
+        })
         audioEventsBoundRef.current = true
       }
       const audio = audioRef.current
@@ -497,6 +526,71 @@ export default function ChatInterface() {
     }
     // Otherwise play (fetch if needed)
     await playMessage(text, messageId)
+  }
+
+  // --- Audio Analysis for Speaking VU Meter ---
+  const setupAudioAnalysis = () => {
+    if (!audioRef.current || audioContextRef.current) return
+
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const analyser = audioContext.createAnalyser()
+      const source = audioContext.createMediaElementSource(audioRef.current)
+      
+      analyser.fftSize = 256
+      analyser.smoothingTimeConstant = 0.85
+      source.connect(analyser)
+      analyser.connect(audioContext.destination)
+
+      audioContextRef.current = audioContext
+      audioAnalyserRef.current = analyser
+      audioSourceRef.current = source
+
+      startAudioAnalysis()
+    } catch (error) {
+      console.warn('Could not setup audio analysis:', error)
+    }
+  }
+
+  const startAudioAnalysis = () => {
+    if (!audioAnalyserRef.current || audioAnimationRef.current) return
+
+    const analyser = audioAnalyserRef.current
+    const bufferLength = analyser.frequencyBinCount
+    const dataArray = new Uint8Array(bufferLength)
+
+    const analyze = () => {
+      analyser.getByteFrequencyData(dataArray)
+      
+      // Calculate overall RMS for VU level
+      let sum = 0
+      for (let i = 0; i < bufferLength; i++) {
+        sum += dataArray[i] * dataArray[i]
+      }
+      const rms = Math.sqrt(sum / bufferLength)
+      const normalizedLevel = Math.min(rms / 128, 1) // Normalize to 0-1
+
+      setAudioVuLevel(normalizedLevel)
+
+      // Update bucket for discrete CSS classes (0-10)
+      const b = Math.max(0, Math.min(10, Math.round(normalizedLevel * 10)))
+      setAudioVuBucket(prev => (prev !== b ? b : prev))
+
+      if (isSpeaking) {
+        audioAnimationRef.current = requestAnimationFrame(analyze)
+      }
+    }
+
+    audioAnimationRef.current = requestAnimationFrame(analyze)
+  }
+
+  const stopAudioAnalysis = () => {
+    if (audioAnimationRef.current) {
+      cancelAnimationFrame(audioAnimationRef.current)
+      audioAnimationRef.current = null
+    }
+    setAudioVuLevel(0)
+    setAudioVuBucket(0)
   }
 
   // --- Conversational Mode Helpers ---
@@ -577,6 +671,7 @@ export default function ChatInterface() {
 
       // Calibrate baseline noise for a short window
   timeData = new Uint8Array(analyser.fftSize) as any
+      
       computeRMS = () => {
         analyser!.getByteTimeDomainData(timeData as unknown as Uint8Array<ArrayBuffer>)
         let sum = 0
@@ -1396,12 +1491,6 @@ export default function ChatInterface() {
           aria-label="Send message"
         >
           <div className="input-container">
-            {micStatus === 'listening' && !conversationalOn && (
-              <div className={`mic-status listening`} aria-live="polite">
-                <span className={`mic-dot pulse`} aria-hidden="true"></span>
-                <span className="mic-text">Listening…</span>
-              </div>
-            )}
             <textarea
               ref={inputRef}
               id="chat-input"
@@ -1475,7 +1564,7 @@ export default function ChatInterface() {
       {/* Floating Conversation Overlay */}
       {conversationalOn && (
         <div
-          className={`conv-overlay ${convPhase} vu-${vuBucket}`}
+          className={`conv-overlay ${convPhase} vu-${convPhase === 'speaking' ? audioVuBucket : vuBucket}`}
           role="status"
           aria-live="polite"
           aria-label={`Conversation mode: ${convPhase}`}
