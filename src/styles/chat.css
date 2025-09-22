@@ -136,6 +136,27 @@
   font-size: 1rem;
 }
 
+/* Larger arrow for the settings toggle */
+.icon-btn.controls-toggle {
+  font-size: 1.4rem; /* bigger glyph */
+  line-height: 1;
+}
+
+/* Larger SVG chevron for settings toggle */
+.icon-btn.controls-toggle .chev {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  transition: transform 160ms ease;
+}
+.icon-btn.controls-toggle .chev.collapsed {
+  transform: rotate(-90deg);
+}
+.icon-btn.controls-toggle .chev.open {
+  transform: rotate(0deg);
+}
+
 .icon-btn:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
@@ -446,34 +467,7 @@
 }
 
 /* Avatars */
-.avatar {
-  width: var(--space-8);
-  height: var(--space-8);
-  border-radius: var(--radius-full);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
-}
-
-.avatar-content {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
-.message.user .avatar {
-  background: var(--brand-primary);
-  border-color: var(--brand-primary);
-}
-
-.message.user .avatar-content {
-  color: #ffffff;
-}
+/* Avatars removed */
 
 /* Bubbles */
 .bubble-container {
@@ -486,7 +480,8 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: var(--space-4);
+  /* More compact vertical padding, keep horizontal breathing room */
+  padding: var(--space-3) var(--space-4);
   box-shadow: var(--shadow-sm);
   position: relative;
 }
@@ -566,8 +561,43 @@
 }
 
 .bubble .tts-controls .tts-btn svg {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Assistant message: play/pause outside the bubble on the left */
+.message.assistant .message-container {
+  display: flex;
+}
+.message.assistant .bubble-container {
+  display: flex;
+  flex-direction: row; /* override default column for assistant */
+  align-items: center;
+  gap: var(--space-2);
+}
+.message.assistant .tts-outside-left {
+  flex: 0 0 auto;
+}
+.message.assistant .tts-outside-left .tts-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+}
+
+/* Active playback state (green highlights) */
+.message.assistant .tts-outside-left .tts-btn.active {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px color-mix(in hsl, var(--brand-primary) 30%, transparent);
+  color: var(--brand-primary);
+}
+.message.assistant .bubble.playing {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px color-mix(in hsl, var(--brand-primary) 30%, transparent), var(--shadow-md);
 }
 
 /* Inline TTS error chip */
@@ -725,6 +755,25 @@
   max-height: 120px;
 }
 
+/* Composer TTS button (left of textarea) */
+.composer-tts-btn {
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.composer-tts-btn:hover:not(:disabled) { background: var(--hover-bg); }
+.composer-tts-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.composer-tts-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .message-input::placeholder {
   color: var(--text-muted);
 }
@@ -787,6 +836,12 @@
   color: var(--brand-primary);
   background: var(--bg-secondary);
 }
+
+/* Hide inline mic status in composer during conversation mode (overlay indicates state) */
+.conv-overlay ~ .composer .mic-status { display: none !important; }
+
+/* Subtle pulse around active mic button */
+/* (Pulsing mic ring removed per feedback) */
 
 /* VoiceSelect styles */
 .voice-select { position: relative; display: inline-block; }
@@ -944,4 +999,153 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Floating Conversation Overlay */
+.conv-overlay {
+  position: fixed;
+  left: 50%;
+  bottom: 88px; /* above composer */
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-xl);
+  padding: 10px 14px;
+  min-width: 220px;
+}
+.conv-overlay .conv-close {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.conv-overlay .conv-close:hover { background: var(--hover-bg); }
+.conv-overlay .conv-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.conv-overlay .conv-label .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 2px rgba(0, 154, 68, 0.2);
+}
+.conv-overlay.transcribing .conv-label .dot { background: #FFB100; box-shadow: 0 0 0 2px rgba(255, 177, 0, 0.2); }
+.conv-overlay.chatting .conv-label .dot { background: #5B8DEF; box-shadow: 0 0 0 2px rgba(91,141,239,0.2); }
+.conv-overlay.speaking .conv-label .dot { background: var(--brand-secondary); box-shadow: 0 0 0 2px rgba(255,103,31,0.2); }
+
+.conv-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 26px;
+}
+.conv-bars .bar {
+  width: 3px;
+  height: 12px; /* will be overridden by VU height calc below */
+  background: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%);
+  border-radius: 2px;
+  opacity: 0.85;
+  animation: convIdle 1.4s ease-in-out infinite;
+  transition: height 80ms linear, opacity 120ms ease;
+}
+/* Use VU buckets to set a base height per bar; animations add subtle movement only */
+.conv-overlay[class*="vu-"] .conv-bars .bar { animation-duration: 1s; }
+
+/* Weight per bar (center higher). Multiply by CSS variable --vu-scale (set by bucket). */
+.conv-bars { --w1: .4; --w2: .55; --w3: .7; --w4: .85; --w5: 1; --w6: 1.1; --w7: 1; --w8: .85; --w9: .7; --w10: .55; --w11: .45; --w12: .35; }
+.conv-bars .bar:nth-child(1) { --bw: var(--w1); }
+.conv-bars .bar:nth-child(2) { --bw: var(--w2); }
+.conv-bars .bar:nth-child(3) { --bw: var(--w3); }
+.conv-bars .bar:nth-child(4) { --bw: var(--w4); }
+.conv-bars .bar:nth-child(5) { --bw: var(--w5); }
+.conv-bars .bar:nth-child(6) { --bw: var(--w6); }
+.conv-bars .bar:nth-child(7) { --bw: var(--w7); }
+.conv-bars .bar:nth-child(8) { --bw: var(--w8); }
+.conv-bars .bar:nth-child(9) { --bw: var(--w9); }
+.conv-bars .bar:nth-child(10) { --bw: var(--w10); }
+.conv-bars .bar:nth-child(11) { --bw: var(--w11); }
+.conv-bars .bar:nth-child(12) { --bw: var(--w12); }
+
+/* Base amplitude variable by bucket (0..1) */
+.conv-overlay.vu-0  { --vu: 0.10; }
+.conv-overlay.vu-1  { --vu: 0.18; }
+.conv-overlay.vu-2  { --vu: 0.26; }
+.conv-overlay.vu-3  { --vu: 0.36; }
+.conv-overlay.vu-4  { --vu: 0.48; }
+.conv-overlay.vu-5  { --vu: 0.60; }
+.conv-overlay.vu-6  { --vu: 0.72; }
+.conv-overlay.vu-7  { --vu: 0.84; }
+.conv-overlay.vu-8  { --vu: 0.95; }
+.conv-overlay.vu-9  { --vu: 1.05; }
+.conv-overlay.vu-10 { --vu: 1.15; }
+
+/* Bar height driven by amplitude and weight; ensure min/max within container height */
+.conv-overlay .conv-bars .bar { height: calc(6px + clamp(0, var(--vu, 0.15) * var(--bw), 1.2) * 18px); }
+.conv-overlay.listening .conv-bars .bar {
+  animation: convListen 0.9s ease-in-out infinite;
+}
+.conv-overlay.transcribing .conv-bars .bar {
+  animation: convTranscribe 1.2s ease-in-out infinite;
+}
+.conv-overlay.chatting .conv-bars .bar {
+  animation: convThink 1.4s ease-in-out infinite;
+}
+.conv-overlay.speaking .conv-bars .bar {
+  animation: convSpeak 0.6s ease-in-out infinite;
+  background: linear-gradient(180deg, var(--brand-secondary) 0%, #ff844c 100%);
+}
+
+/* Stagger each bar by index using nth-child */
+.conv-bars .bar:nth-child(1) { animation-delay: 0s; }
+.conv-bars .bar:nth-child(2) { animation-delay: 0.05s; }
+.conv-bars .bar:nth-child(3) { animation-delay: 0.1s; }
+.conv-bars .bar:nth-child(4) { animation-delay: 0.15s; }
+.conv-bars .bar:nth-child(5) { animation-delay: 0.2s; }
+.conv-bars .bar:nth-child(6) { animation-delay: 0.25s; }
+.conv-bars .bar:nth-child(7) { animation-delay: 0.3s; }
+.conv-bars .bar:nth-child(8) { animation-delay: 0.35s; }
+.conv-bars .bar:nth-child(9) { animation-delay: 0.4s; }
+.conv-bars .bar:nth-child(10) { animation-delay: 0.45s; }
+.conv-bars .bar:nth-child(11) { animation-delay: 0.5s; }
+.conv-bars .bar:nth-child(12) { animation-delay: 0.55s; }
+
+@keyframes convIdle {
+  0%, 100% { opacity: 0.7; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-1px); }
+}
+@keyframes convListen {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes convTranscribe {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-1px); }
+  50% { transform: translateY(-3px); }
+  75% { transform: translateY(-1px); }
+  100% { transform: translateY(0); }
+}
+@keyframes convThink {
+  0%, 100% { opacity: 0.8; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-1px); }
+}
+@keyframes convSpeak {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
 }

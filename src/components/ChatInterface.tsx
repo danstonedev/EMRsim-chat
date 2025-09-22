@@ -4,8 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
 import PauseRoundedIcon from '@mui/icons-material/PauseRounded'
-import StopRoundedIcon from '@mui/icons-material/StopRounded'
-import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded'
 import CircularProgress from '@mui/material/CircularProgress'
 import LogoWhite from '../../img/EMRsim-chat_white.png'
 import VoiceSelect from './VoiceSelect'
@@ -63,6 +61,48 @@ export default function ChatInterface() {
   const [currentTtsKey, setCurrentTtsKey] = useState<string>('')
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false)
   const audioEventsBoundRef = useRef<boolean>(false)
+  // Audio fading helpers
+  const defaultVolumeRef = useRef<number>(1)
+  const fadeCancelRef = useRef<(() => void) | null>(null)
+
+  const fadeTo = (targetVolume: number, duration = 180): Promise<void> => {
+    return new Promise((resolve) => {
+      const audio = audioRef.current
+      if (!audio) return resolve()
+      // Cancel any ongoing fade
+      if (fadeCancelRef.current) {
+        try { fadeCancelRef.current() } catch {}
+        fadeCancelRef.current = null
+      }
+      const start = performance.now()
+      const startVol = audio.volume
+      const clamp = (v: number) => Math.max(0, Math.min(1, v))
+      if (duration <= 0) {
+        audio.volume = clamp(targetVolume)
+        return resolve()
+      }
+      let rafId = 0
+      const step = (now: number) => {
+        const t = Math.min(1, (now - start) / duration)
+        const v = startVol + (targetVolume - startVol) * t
+        audio.volume = clamp(v)
+        if (t < 1) {
+          rafId = requestAnimationFrame(step)
+        } else {
+          fadeCancelRef.current = null
+          resolve()
+        }
+      }
+      fadeCancelRef.current = () => {
+        cancelAnimationFrame(rafId)
+        fadeCancelRef.current = null
+        resolve()
+      }
+      rafId = requestAnimationFrame(step)
+    })
+  }
+  const fadeOut = (duration = 160) => fadeTo(0, duration)
+  const fadeIn = (duration = 180) => fadeTo(defaultVolumeRef.current, duration)
 
   // PT Case Scenario selection
   const SCENARIOS = [
@@ -84,6 +124,10 @@ export default function ChatInterface() {
   const convAbortRef = useRef<AbortController | null>(null)
   const convPhaseRef = useRef<'idle' | 'listening' | 'transcribing' | 'chatting' | 'speaking'>('idle')
   const convRunningRef = useRef<boolean>(false)
+  // UI reflections of conversation state
+  const [convPhase, setConvPhase] = useState<'idle' | 'listening' | 'transcribing' | 'chatting' | 'speaking'>('idle')
+  const [vuLevel, setVuLevel] = useState<number>(0) // 0..1 live mic level for visualizer
+  const [vuBucket, setVuBucket] = useState<number>(0) // 0..10 discrete bucket for CSS classes
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return
@@ -188,10 +232,14 @@ export default function ChatInterface() {
       } catch {}
       lastAudioUrlRef.current = url
       const audio = audioRef.current
-      try { audio.pause(); audio.currentTime = 0 } catch {}
+      // Cross-fade if previously playing
+      if (!audio.paused) { try { await fadeOut(140); audio.pause() } catch {} }
+      try { audio.currentTime = 0 } catch {}
       audio.src = url
+      try { audio.volume = 0 } catch {}
       setCurrentTtsKey(`cloud|${safeVoice}|${text}`)
       await audio.play()
+      try { await fadeIn(200) } catch {}
       return
     } catch {}
   }
@@ -210,15 +258,19 @@ export default function ChatInterface() {
     try { await audio.play() } catch { await speakText(text) }
   }
 
-  const pauseSpeaking = () => {
-    const audio = audioRef.current
-    if (audio) { try { audio.pause() } catch {} }
-  }
-
-  const stopSpeaking = () => {
+  const pauseSpeaking = async () => {
     const audio = audioRef.current
     if (audio) {
-      try { audio.pause(); audio.currentTime = 0 } catch {}
+      try { await fadeOut(120); audio.pause() } catch { try { audio.pause() } catch {} }
+    }
+  }
+
+  const stopSpeaking = async () => {
+    const audio = audioRef.current
+    if (audio) {
+      try { await fadeOut(140); audio.pause(); audio.currentTime = 0; audio.volume = defaultVolumeRef.current } catch {
+        try { audio.pause(); audio.currentTime = 0 } catch {}
+      }
     }
   }
 
@@ -270,10 +322,13 @@ export default function ChatInterface() {
         audioEventsBoundRef.current = true
       }
       const audio = audioRef.current
-      try { audio.pause(); audio.currentTime = 0 } catch {}
+      if (!audio.paused) { try { await fadeOut(140); audio.pause() } catch {} }
+      try { audio.currentTime = 0 } catch {}
       audio.src = url as string
+      try { audio.volume = 0 } catch {}
       setCurrentTtsKey(`cloud|${safeVoice}|${text}`)
       await audio.play()
+      try { await fadeIn(200) } catch {}
       if (messageId) setTtsErrorByMessage(prev => ({ ...prev, [messageId]: undefined }))
     } catch (e) {
       // Prevent unhandled promise rejection and surface detail to console
@@ -287,8 +342,27 @@ export default function ChatInterface() {
     if (!audioRef.current) audioRef.current = new Audio()
     const audio = audioRef.current
     if (audio.src) {
-      try { audio.pause(); audio.currentTime = 0; await audio.play(); return } catch {}
+      try { await fadeOut(140); audio.pause(); audio.currentTime = 0; audio.volume = 0; await audio.play(); await fadeIn(200); return } catch {}
     }
+    await playMessage(text, messageId)
+  }
+
+  // Toggle play/pause for a specific message; resume if already loaded and paused
+  const togglePlayPauseForText = async (text: string, messageId?: number) => {
+    if (!audioRef.current) audioRef.current = new Audio()
+    const audio = audioRef.current
+    const safeVoice = SUPPORTED_CLOUD_VOICES.includes(cloudVoice as any) ? cloudVoice : 'alloy'
+    const thisKey = `cloud|${safeVoice}|${text}`
+
+    // If this message is currently playing, pause
+    if (!audio.paused && currentTtsKey === thisKey) {
+      try { await fadeOut(120); audio.pause(); return } catch { try { audio.pause(); return } catch {} }
+    }
+    // If this message is loaded but paused, resume
+    if (audio.paused && currentTtsKey === thisKey && audio.src) {
+      try { audio.volume = 0; await audio.play(); await fadeIn(200); return } catch {}
+    }
+    // Otherwise play (fetch if needed)
     await playMessage(text, messageId)
   }
 
@@ -332,7 +406,7 @@ export default function ChatInterface() {
   const MIN_VOICED_RATIO = 0.2        // proportion of voiced frames during utterance
 
     try {
-      setMicStatus('listening')
+  setMicStatus('listening')
       stream = await navigator.mediaDevices.getUserMedia(constraints)
 
       // Setup recorder
@@ -387,6 +461,17 @@ export default function ChatInterface() {
       const START_THRESHOLD = Math.max(mean + 3 * std, BASE_START_MIN)
       const STOP_THRESHOLD = Math.max(mean + 1.5 * std, BASE_STOP_MIN)
 
+      // Simple linear mapping of RMS to 0..1 for UI visualizer
+      const mapVu = (rms: number) => {
+        // Normalize between noise floor and speech threshold
+        const denom = Math.max(START_THRESHOLD - mean, 0.0001)
+        const norm = (rms - mean) / denom
+        const clamped = Math.max(0, Math.min(1, norm))
+        setVuLevel(prev => (Math.abs(clamped - prev) > 0.02 ? clamped : prev))
+        const b = Math.max(0, Math.min(10, Math.round(clamped * 10)))
+        setVuBucket(prev => (prev !== b ? b : prev))
+      }
+
       // Monitor in short intervals (faster than requestAnimationFrame for consistent timing)
       let consecAbove = 0
       let voicedFrames = 0
@@ -399,6 +484,8 @@ export default function ChatInterface() {
           return
         }
         const rms = computeRMS()
+        // Update visual meter regardless of phase during listening window
+        try { mapVu(rms) } catch {}
         const now = performance.now()
         if (!speaking) {
           if (rms >= START_THRESHOLD) {
@@ -416,6 +503,7 @@ export default function ChatInterface() {
             cleanup()
             setIsRecording(false)
             setMicStatus('idle')
+            try { setVuLevel(0); setVuBucket(0) } catch {}
             return
           }
         } else {
@@ -456,6 +544,7 @@ export default function ChatInterface() {
           } catch {
             resolve(null)
           }
+          try { setVuLevel(0); setVuBucket(0) } catch {}
           cleanup()
         }
       })
@@ -557,6 +646,7 @@ export default function ChatInterface() {
     try {
       while (conversationalOn && !signal.aborted) {
         convPhaseRef.current = 'listening'
+        setConvPhase('listening')
         const blob = await listenOnceWithVAD(signal)
         if (signal.aborted) break
         if (!blob) {
@@ -564,7 +654,9 @@ export default function ChatInterface() {
           continue
         }
 
-        convPhaseRef.current = 'transcribing'
+  convPhaseRef.current = 'transcribing'
+  setConvPhase('transcribing')
+  try { setVuLevel(0); setVuBucket(0) } catch {}
         const userText = await transcribeBlob(blob)
         if (signal.aborted) break
         if (!userText) {
@@ -585,7 +677,9 @@ export default function ChatInterface() {
           return [...prev, next]
         })
 
-        convPhaseRef.current = 'chatting'
+  convPhaseRef.current = 'chatting'
+  setConvPhase('chatting')
+  try { setVuLevel(0); setVuBucket(0) } catch {}
         const reply = await chatReply(userText)
         if (signal.aborted) break
         if (!reply) {
@@ -600,7 +694,9 @@ export default function ChatInterface() {
         })
         lastReplyRef.current = reply
 
-        convPhaseRef.current = 'speaking'
+  convPhaseRef.current = 'speaking'
+  setConvPhase('speaking')
+  try { setVuLevel(0); setVuBucket(0) } catch {}
         // Speak and wait until finished before resuming listening
         await speakText(reply)
         await waitForAudioEnd()
@@ -608,10 +704,14 @@ export default function ChatInterface() {
         await new Promise(r => setTimeout(r, 200))
 
         convPhaseRef.current = 'idle'
+        setConvPhase('idle')
+        try { setVuLevel(0); setVuBucket(0) } catch {}
       }
     } finally {
       convRunningRef.current = false
       convPhaseRef.current = 'idle'
+      setConvPhase('idle')
+      try { setVuLevel(0); setVuBucket(0) } catch {}
     }
   }
 
@@ -638,7 +738,7 @@ export default function ChatInterface() {
               finalText += res[0].transcript
             }
           }
-          if (finalText.trim()) {
+          if (!conversationalOn && finalText.trim()) {
             setInputValue(prev => prev ? prev + ' ' + finalText.trim() : finalText.trim())
           }
         }
@@ -676,7 +776,7 @@ export default function ChatInterface() {
           const res = await fetch('/api/transcribe', { method: 'POST', body: form })
           const data = await res.json() as { text?: string; error?: string }
           const txt = data.text || data.error || ''
-          if (txt) setInputValue(prev => prev ? prev + ' ' + txt : txt)
+          if (txt && !conversationalOn) setInputValue(prev => prev ? prev + ' ' + txt : txt)
         } catch {}
         finally {
           stream.getTracks().forEach(t => t.stop())
@@ -855,13 +955,23 @@ export default function ChatInterface() {
             <Image src={LogoWhite} alt="EMR Chat" height={42} priority />
           </div>
           <div className="header-actions">
+            {/* eslint-disable-next-line jsx-a11y/aria-proptypes */}
             <button
               type="button"
-              className="icon-btn"
+              className="icon-btn controls-toggle"
               aria-controls="system-controls"
               onClick={() => setControlsOpen(v => !v)}
               title={controlsOpen ? 'Hide settings' : 'Show settings'}
-            >{controlsOpen ? '▾' : '▸'}</button>
+            >
+              <svg
+                className={`chev ${controlsOpen ? 'open' : 'collapsed'}`}
+                width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
             <div className="theme-toggle">
               <button
                 type="button"
@@ -955,83 +1065,57 @@ export default function ChatInterface() {
         {messages.map((message) => (
           <div key={message.id} className={`message ${message.sender}`}>
             <div className="message-container">
-              {message.sender !== 'user' && (
-                <div className="avatar">
-                  <div className="avatar-content">
-                    {message.sender === 'assistant' ? 'AI' : 'ℹ️'}
-                  </div>
-                </div>
-              )}
               <div className="bubble-container">
-                <div className="bubble">
-                  <div className="bubble-content">{message.text}</div>
-                  {/* Timestamp removed per design */}
-                  {message.sender === 'assistant' && (
-                    <div className="bubble-actions mt-1 flex items-center gap-2">
-                      <div className="tts-controls inline-flex gap-1 items-center">
+                {message.sender === 'assistant' && (
+                  <div className="tts-outside-left">
+                    {(() => {
+                      const keyCloud = `cloud|${cloudVoice}|${message.text}`
+                      const isThisPlaying = isSpeaking && currentTtsKey === keyCloud
+                      return (
                         <button
                           type="button"
-                          className="icon-btn tts-btn"
-                          aria-label="Start or resume speaking"
-                          onClick={() => playMessage(message.text, message.id)}
-                          title="Start/Resume"
+                          className={`icon-btn tts-btn ${isThisPlaying ? 'active' : ''}`}
+                          aria-label={isThisPlaying ? 'Pause speaking' : 'Play speaking'}
+                          onClick={() => togglePlayPauseForText(message.text, message.id)}
+                          title={isThisPlaying ? 'Pause' : 'Play'}
                         >
-                          <PlayArrowRoundedIcon fontSize="small" />
+                          {isThisPlaying ? (
+                            <PauseRoundedIcon fontSize="small" />
+                          ) : (
+                            <PlayArrowRoundedIcon fontSize="small" />
+                          )}
                         </button>
-                        <button
-                          type="button"
-                          className="icon-btn tts-btn"
-                          aria-label="Pause speaking"
-                          onClick={pauseSpeaking}
-                          title="Pause"
-                        >
-                          <PauseRoundedIcon fontSize="small" />
-                        </button>
-                        <button
-                          type="button"
-                          className="icon-btn tts-btn"
-                          aria-label="Stop speaking"
-                          onClick={stopSpeaking}
-                          title="Stop"
-                        >
-                          <StopRoundedIcon fontSize="small" />
-                        </button>
-                        <button
-                          type="button"
-                          className="icon-btn tts-btn"
-                          aria-label="Restart speaking"
-                          onClick={() => restartSpeakingForText(message.text, message.id)}
-                          title="Restart"
-                        >
-                          <ReplayRoundedIcon fontSize="small" />
-                        </button>
-                      </div>
-                      {loadingByMessage[message.id] && (
-                        <span className="inline-flex items-center gap-1" aria-live="polite">
-                          <CircularProgress size={14} thickness={6} />
-                          <span className="sr-only">Preparing audio…</span>
-                        </span>
-                      )}
-                      {ttsErrorByMessage[message.id] && (
-                        <span className="tts-error" title={ttsErrorByMessage[message.id]}> 
-                          <span className="dot" aria-hidden="true"></span>
-                          <span>Error</span>
-                        </span>
-                      )}
-                      {(() => {
-                        const keyCloud = `cloud|${cloudVoice}|${message.text}`
-                        const isThisPlaying = isSpeaking && currentTtsKey === keyCloud
-                        return isThisPlaying ? <span className="muted text-xs">Playing</span> : null
-                      })()}
+                      )
+                    })()}
+                  </div>
+                )}
+                {(() => {
+                  const keyCloud = `cloud|${cloudVoice}|${message.text}`
+                  const isThisPlaying = isSpeaking && currentTtsKey === keyCloud
+                  return (
+                    <div className={`bubble ${isThisPlaying ? 'playing' : ''}`}>
+                      <div className="bubble-content">{message.text}</div>
                     </div>
-                  )}
-                </div>
+                  )
+                })()}
+                {message.sender === 'assistant' && (
+                  <div className="bubble-actions mt-1 flex items-center gap-2">
+                    {loadingByMessage[message.id] && (
+                      <span className="inline-flex items-center gap-1" aria-live="polite">
+                        <CircularProgress size={14} thickness={6} />
+                        <span className="sr-only">Preparing audio…</span>
+                      </span>
+                    )}
+                    {ttsErrorByMessage[message.id] && (
+                      <span className="tts-error" title={ttsErrorByMessage[message.id]}> 
+                        <span className="dot" aria-hidden="true"></span>
+                        <span>Error</span>
+                      </span>
+                    )}
+                    {/* Removed 'Playing' text; active state indicated via green highlights */}
+                  </div>
+                )}
               </div>
-              {message.sender === 'user' && (
-                <div className="avatar">
-                  <div className="avatar-content">You</div>
-                </div>
-              )}
             </div>
           </div>
         ))}
@@ -1040,9 +1124,6 @@ export default function ChatInterface() {
         {isTyping && (
           <div className="message assistant">
             <div className="message-container">
-              <div className="avatar">
-                <div className="avatar-content">AI</div>
-              </div>
               <div className="bubble-container">
                 <div className="bubble typing-bubble">
                   <div className="typing-indicator">
@@ -1067,10 +1148,10 @@ export default function ChatInterface() {
           aria-label="Send message"
         >
           <div className="input-container">
-            {micStatus !== 'idle' && (
-              <div className={`mic-status ${micStatus}`} aria-live="polite">
-                <span className={`mic-dot ${micStatus === 'listening' ? 'pulse' : ''}`} aria-hidden="true"></span>
-                <span className="mic-text">{micStatus === 'listening' ? 'Listening…' : 'Paused'}</span>
+            {micStatus === 'listening' && !conversationalOn && (
+              <div className={`mic-status listening`} aria-live="polite">
+                <span className={`mic-dot pulse`} aria-hidden="true"></span>
+                <span className="mic-text">Listening…</span>
               </div>
             )}
             <textarea
@@ -1081,7 +1162,7 @@ export default function ChatInterface() {
               value={inputValue}
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
-              placeholder={conversationalOn ? (micStatus === 'listening' ? '' : 'Conversation ready') : 'Type your message...'}
+              placeholder={conversationalOn ? '' : 'Type your message...'}
               aria-describedby="chat-help"
               maxLength={2000}
             />
@@ -1116,6 +1197,44 @@ export default function ChatInterface() {
           </div>
         </form>
       </footer>
+
+      {/* Floating Conversation Overlay */}
+      {conversationalOn && (
+        <div
+          className={`conv-overlay ${convPhase} vu-${vuBucket}`}
+          role="status"
+          aria-live="polite"
+          aria-label={`Conversation mode: ${convPhase}`}
+        >
+          <button
+            type="button"
+            className="conv-close"
+            aria-label="Stop conversation"
+            title="Stop conversation"
+            onClick={() => setConversationalOn(false)}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+          <div className="conv-label">
+            <span className="dot" aria-hidden="true"></span>
+            <span>
+              {convPhase === 'listening' && 'Listening…'}
+              {convPhase === 'transcribing' && 'Transcribing…'}
+              {convPhase === 'chatting' && 'Thinking…'}
+              {convPhase === 'speaking' && 'Speaking…'}
+              {convPhase === 'idle' && 'Ready'}
+            </span>
+          </div>
+          <div className="conv-bars" aria-hidden="true">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <span key={i} className="bar" />
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   )
 }
