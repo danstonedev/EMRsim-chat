@@ -10,7 +10,7 @@
     "dev:fix": "node scripts/dev-troubleshoot.js --fix-auto",
     "dev:troubleshoot": "node scripts/dev-troubleshoot.js",
     "dev:monitor": "node scripts/dev-monitor.js",
-    "dev:setup-hooks": "git config core.hooksPath .githooks && chmod +x .githooks/pre-commit && chmod +x .githooks/post-merge",
+    "dev:setup-hooks": "git config core.hooksPath .githooks",
     "build": "next build",
     "build:analyze": "ANALYZE=true next build",
     "start": "next start -p 3001",
