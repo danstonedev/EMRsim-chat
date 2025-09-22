@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UND Assistant</title>
+  <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+  <!-- Main chat container -->
+  <section class="chat-shell" aria-labelledby="chat-title">
+    
+    <!-- Header -->
+    <header class="chat-header">
+      <h1 id="chat-title">UND Assistant</h1>
+      <p>Your intelligent University of North Dakota companion</p>
+    </header>
+    
+    <!-- Message thread -->
+    <main class="chat-thread" 
+          role="log" 
+          aria-live="polite" 
+          aria-relevant="additions"
+          aria-label="Chat conversation">
+      
+      <!-- System welcome message -->
+      <div class="msg system" role="status">
+        <div class="msg-content">
+          Welcome to UND Assistant! I'm here to help with information about the University of North Dakota.
+        </div>
+      </div>
+      
+      <!-- Sample user message -->
+      <div class="msg user">
+        <div class="msg-content">
+          Hi there! Can you tell me about UND's engineering programs?
+        </div>
+        <time class="msg-time" datetime="2025-09-19T14:30:00">2:30 PM</time>
+      </div>
+      
+      <!-- Sample assistant message -->
+      <div class="msg assistant">
+        <div class="msg-content">
+          Hello! I'd be happy to help you learn about UND's engineering programs. The University of North Dakota offers excellent engineering programs through the College of Engineering & Mines, including:
+          
+          • Aerospace Engineering
+          • Chemical Engineering  
+          • Civil Engineering
+          • Computer Engineering
+          • Electrical Engineering
+          • Mechanical Engineering
+          • Petroleum Engineering
+          
+          Would you like more details about any specific program?
+        </div>
+        <time class="msg-time" datetime="2025-09-19T14:31:15">2:31 PM</time>
+      </div>
+      
+      <!-- Typing indicator (hidden by default) -->
+      <div class="typing" style="display: none;" aria-label="Assistant is typing">
+        <span class="typing-dots">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </span>
+        <span class="visually-hidden">Assistant is typing a response</span>
+      </div>
+    </main>
+    
+    <!-- Suggestion chips -->
+    <div class="chat-chips" role="group" aria-label="Suggested questions">
+      <button class="chat-chip" type="button">Tell me about admissions</button>
+      <button class="chat-chip" type="button">Campus life at UND</button>
+      <button class="chat-chip" type="button">Research opportunities</button>
+      <button class="chat-chip" type="button">Student services</button>
+    </div>
+    
+    <!-- Composer/Input area -->
+    <footer class="chat-composer">
+      <form class="composer-form" aria-label="Send message">
+        <label class="visually-hidden" for="chat-input">Message UND Assistant</label>
+        <textarea 
+          id="chat-input"
+          class="composer-input"
+          rows="1"
+          placeholder="Type a message…"
+          aria-describedby="chat-help"
+          maxlength="2000"></textarea>
+        
+        <button 
+          type="button" 
+          class="composer-btn composer-btn-secondary"
+          aria-label="Attach file"
+          title="Attach file">
+          📎
+        </button>
+        
+        <button 
+          type="submit" 
+          class="composer-btn composer-btn-primary"
+          aria-label="Send message"
+          title="Send message (Enter)">
+          Send
+        </button>
+      </form>
+      
+      <div id="chat-help" class="visually-hidden">
+        Press Enter to send, Shift+Enter for new line
+      </div>
+    </footer>
+    
+  </section>
+
+  <!-- Dark mode toggle (optional) -->
+  <button 
+    id="theme-toggle" 
+    style="position: fixed; top: 20px; right: 20px; z-index: 100; padding: 8px; border: none; border-radius: 6px; background: var(--surface-raised); cursor: pointer;"
+    aria-label="Toggle dark mode"
+    title="Toggle theme">
+    🌙
+  </button>
+
+  <script src="chat.js"></script>
+</body>
+</html>

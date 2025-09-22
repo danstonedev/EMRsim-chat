@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f5f7fa;
+  --foreground: #171717;
+}
+
+:root[data-theme="dark"] {
+  --background: #0a0f16;
+  --foreground: #ededed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --background: #0a0f16;
+    --foreground: #ededed;
+  }
+}
+
+html,
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+html, :host {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@layer utilities {
+  @supports (text-wrap: balance) {
+    .text-balance { text-wrap: balance; }
+  }
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
