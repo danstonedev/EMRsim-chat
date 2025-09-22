@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
+import { getApiUrl } from '../../lib/config/api'
 
 type Settings = {
   scenarioId: string
@@ -31,7 +32,7 @@ export default function FacultyPage() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/faculty/settings', { cache: 'no-store' })
+      const res = await fetch(getApiUrl('/api/faculty/settings'), { cache: 'no-store' })
       const data = await res.json()
       if (!res.ok) throw new Error(data?.error || 'Failed to load settings')
       setSettings(data)
@@ -48,7 +49,7 @@ export default function FacultyPage() {
     setError(null)
     setSaved(false)
     try {
-      const res = await fetch('/api/faculty/settings', {
+      const res = await fetch(getApiUrl('/api/faculty/settings'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

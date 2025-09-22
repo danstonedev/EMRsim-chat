@@ -7,6 +7,7 @@ import PauseRoundedIcon from '@mui/icons-material/PauseRounded'
 import CircularProgress from '@mui/material/CircularProgress'
 import LogoWhite from '../../img/EMRsim-chat_white.png'
 import VoiceSelect from './VoiceSelect'
+import { getApiUrl } from '../lib/config/api'
 
 interface Message {
   id: number
@@ -220,7 +221,7 @@ export default function ChatInterface() {
       try { genAbortRef.current?.abort() } catch {}
       genAbortRef.current = new AbortController()
 
-      const res = await fetch('/api/chat', {
+      const res = await fetch(getApiUrl('/api/chat'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-pt-scenario': scenarioId },
         body: JSON.stringify({
@@ -327,7 +328,7 @@ export default function ChatInterface() {
       const key = `${safeVoice}|${text}`
       let url = audioCacheRef.current.get(key)
       if (!url) {
-        const res = await fetch('/api/tts', {
+        const res = await fetch(getApiUrl('/api/tts'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text, voice: safeVoice, format: 'mp3' })
@@ -439,7 +440,7 @@ export default function ChatInterface() {
     if (messageId) setTtsErrorByMessage(prev => ({ ...prev, [messageId]: undefined }))
     try {
       if (!url) {
-        const res = await fetch('/api/tts', {
+        const res = await fetch(getApiUrl('/api/tts'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text, voice: safeVoice, format: 'mp3' })
@@ -833,7 +834,7 @@ export default function ChatInterface() {
     try {
       const form = new FormData()
       form.append('audio', blob, 'utterance.webm')
-      const res = await fetch('/api/transcribe', { method: 'POST', body: form })
+      const res = await fetch(getApiUrl('/api/transcribe'), { method: 'POST', body: form })
       if (!res.ok) {
         // Toast: service error
         try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
@@ -858,7 +859,7 @@ export default function ChatInterface() {
     const bounded = ua.slice(Math.max(0, ua.length - maxMsgs))
     const history = bounded.map(m => ({ role: m.sender, content: m.text })) as Array<{ role: 'user' | 'assistant'; content: string }>
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch(getApiUrl('/api/chat'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-pt-scenario': scenarioId },
         body: JSON.stringify({ message: userText, history, scenario: scenarioId })
@@ -1054,7 +1055,7 @@ export default function ChatInterface() {
           const blob = new Blob(mediaChunksRef.current, { type: 'audio/webm' })
           const form = new FormData()
           form.append('audio', blob, 'clip.webm')
-          const res = await fetch('/api/transcribe', { method: 'POST', body: form })
+          const res = await fetch(getApiUrl('/api/transcribe'), { method: 'POST', body: form })
           if (!res.ok) {
             try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
             setToastText('Transcription service error. Please try again.')

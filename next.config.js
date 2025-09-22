@@ -2,19 +2,21 @@
 const nextConfig = {
 	reactStrictMode: true,
 	
+	// GitHub Pages deployment configuration
+	...(process.env.NODE_ENV === 'production' && {
+		output: 'export',
+		trailingSlash: true,
+		basePath: '/EMRsim-chat',
+		assetPrefix: '/EMRsim-chat/',
+		images: {
+			unoptimized: true, // GitHub Pages doesn't support Next.js Image Optimization
+		},
+	}),
+	
 	// Development optimizations
 	experimental: {
 		// Enable SWC minify for faster builds
 		swcMinify: true,
-		// Enable turbo mode for faster development
-		turbo: {
-			rules: {
-				'*.svg': {
-					loaders: ['@svgr/webpack'],
-					as: '*.js',
-				},
-			},
-		},
 	},
 	
 	// Development server configuration
