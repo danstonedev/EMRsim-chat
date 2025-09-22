@@ -22,6 +22,7 @@ The app uses these API endpoints that won't work on GitHub Pages:
 ### Option 1: Deploy APIs to Vercel (Recommended)
 
 1. **Create a new Vercel project for APIs only**:
+
    ```bash
    # Create a new directory for your API service
    mkdir emrsim-api
@@ -31,10 +32,12 @@ The app uses these API endpoints that won't work on GitHub Pages:
    ```
 
 2. **Copy your API routes**:
+
    - Copy `src/app/api/*` to your new Vercel project
    - Copy `src/lib/prompts/*` and `src/lib/config/faculty.ts`
 
 3. **Deploy to Vercel**:
+
    ```bash
    vercel --prod
    ```
@@ -57,6 +60,7 @@ vercel --prod
 ### Option 3: Use External Services
 
 Replace the API routes with direct calls to external services:
+
 - OpenAI API directly from the client
 - Third-party transcription services
 - External TTS services
@@ -74,11 +78,13 @@ NEXT_PUBLIC_BASE_PATH=/EMRsim-chat
 ## Testing GitHub Pages Deployment
 
 1. **Build locally**:
+
    ```bash
    npm run build
    ```
 
 2. **Test the export**:
+
    ```bash
    npx serve out
    ```

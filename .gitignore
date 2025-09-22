@@ -1,43 +1,36 @@
- # Node / Next.js
- node_modules/
- .next/
- .next-cache/
- *.log
- npm-debug.log*
- yarn-debug.log*
- yarn-error.log*
- .pnpm-debug.log*
- 
- # Env files
- .env
- .env.*
- !.env.example
- .env.local
- 
- # OS / Editor
- .DS_Store
- Thumbs.db
- .vscode/
- *.swp
- 
- # Build outputs
- out/
- dist/
- build/
- 
- # Misc
- coverage/
- *.tsbuildinfo
- **/.vercel
-# Dependencies
+# Node / Next.js
 node_modules/
-
-# Next.js build output
 .next/
+.next-cache/
 out/
+dist/
+build/
 
-# Env files
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment variables
 .env*
+!.env*.example
+
+# TypeScript
+*.tsbuildinfo
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+
+# Testing
+coverage/
+
+# Misc
+**/.vercel
 !.env.example
 
 # OS / editor
