@@ -84,7 +84,7 @@
 .chat-header {
   background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%);
   color: #ffffff;
-  padding: var(--space-6);
+  padding: var(--space-5); /* slightly tighter header */
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
@@ -272,6 +272,30 @@
   align-items: flex-start;
 }
 
+/* Single column variant */
+.controls-inner.column {
+  flex-direction: column;
+}
+
+/* Two column grid variant */
+.controls-inner.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+/* Prevent grid children from imposing intrinsic min-width that could cause wrapping */
+.controls-inner.two-col .control-group {
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .controls-inner.two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
 .control-group {
   flex: 1;
 }
@@ -298,6 +322,26 @@
   line-height: 1.5;
   resize: vertical;
   transition: border-color 0.2s ease;
+}
+
+/* Compact select to match VoiceSelect height (~36px) */
+.control-select {
+  width: 100%;
+  height: 36px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 36px; /* align text vertically */
+}
+
+.control-select:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: var(--focus-ring);
 }
 
 .control-textarea:focus {
@@ -498,12 +542,12 @@
 .bubble .tts-controls {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2) !important; /* override any tailwind gap classes */
+  gap: var(--space-1) !important; /* tighter spacing */
 }
 
 .bubble .tts-controls .tts-btn {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: var(--radius-full);
   border: 1px solid var(--border);
   background: transparent;
@@ -522,8 +566,30 @@
 }
 
 .bubble .tts-controls .tts-btn svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
+}
+
+/* Inline TTS error chip */
+.tts-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 103, 31, 0.35); /* Flame orange tint */
+  color: var(--brand-secondary);
+  background: rgba(255, 103, 31, 0.08);
+  font-size: 0.75rem;
+}
+.tts-error .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-secondary);
+}
+.tts-error[title] {
+  cursor: help;
 }
 
 /* Typing Indicator */
@@ -694,6 +760,81 @@
   transform: none;
 }
 
+/* Right-side mic button (ChatGPT-like) */
+.mic-button {
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.mic-button:hover {
+  background: var(--hover-bg);
+}
+.mic-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.mic-button.active {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  background: var(--bg-secondary);
+}
+
+/* VoiceSelect styles */
+.voice-select { position: relative; display: inline-block; }
+.voice-select-trigger {
+  min-width: 160px;
+  height: 36px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.voice-select-trigger:hover { background: var(--hover-bg); }
+.voice-select-trigger:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.voice-select-trigger.open { border-color: var(--brand-primary); }
+.voice-select-value { text-transform: none; font-variant: normal; }
+.voice-select-caret { opacity: 0.7; }
+
+.voice-select-menu {
+  position: absolute;
+  z-index: 20;
+  margin-top: 6px;
+  min-width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  max-height: 280px;
+  overflow: auto;
+}
+.voice-select-item {
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  color: var(--text-primary);
+}
+.voice-select-item:hover,
+.voice-select-item.active { background: var(--hover-bg); }
+.voice-select-item.selected {
+  background: var(--active-bg);
+  border-left: 3px solid var(--brand-primary);
+}
+
 /* Mic status indicator */
 .mic-status {
   display: inline-flex;
@@ -732,6 +873,22 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Utility for hiding elements (replaces inline display:none) */
+.hidden { display: none !important; }
+
+/* Fixed position theme toggle button */
+#theme-toggle.theme-toggle-fixed {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  cursor: pointer;
 }
 
 /* Mobile Responsive */

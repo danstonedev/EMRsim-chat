@@ -1,6 +1,8 @@
+/* stylelint-disable */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* stylelint-enable */
 
 :root {
   --background: #f5f7fa;
@@ -26,10 +28,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-html, :host {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
+/* Removed text-size-adjust properties to satisfy cross-browser lint rules */
 
 @layer utilities {
   @supports (text-wrap: balance) {

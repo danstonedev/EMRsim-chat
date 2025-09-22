@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { getDefaultPatientPrompt } from '@/lib/prompts/patient'
+import { getPTPrompt } from '@/lib/prompts/ptCases'
+import { getFacultySettings } from '@/lib/config/faculty'
 
 export const runtime = 'nodejs'
 
@@ -19,7 +22,7 @@ export async function POST(req: Request) {
     }
 
     let message: string | null = null
-    let systemPrompt: string | null = null
+  let systemPrompt: string | null = null
     let history: HistoryMessage[] = []
 
     if (ct.includes('application/json') || (raw.trim().startsWith('{') && raw.trim().endsWith('}'))) {
@@ -46,7 +49,7 @@ export async function POST(req: Request) {
       }
       if (body && typeof body === 'object') {
         if (typeof body.message === 'string') message = body.message
-        if (typeof body.systemPrompt === 'string') systemPrompt = body.systemPrompt
+  if (typeof body.systemPrompt === 'string') systemPrompt = body.systemPrompt
         if (Array.isArray(body.history)) {
           history = body.history.filter(
             (m: any) => m && typeof m.content === 'string' && (m.role === 'user' || m.role === 'assistant' || m.role === 'system')
@@ -80,14 +83,33 @@ export async function POST(req: Request) {
     const client = new OpenAI({ apiKey })
 
     const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = []
-    if (systemPrompt) messages.push({ role: 'system', content: systemPrompt })
+  // Prefer faculty settings; fall back to env flags when not present
+  const faculty = getFacultySettings()
+  const allowClientPrompt = faculty.enableClientSystemPrompt
+  const enableClientScenario = faculty.enableClientScenario
+    let scenarioId: string | undefined = faculty.scenarioId
+    if (enableClientScenario) {
+      // allow scenario via header or JSON body field "scenario"
+      const hdr = req.headers.get('x-pt-scenario') || undefined
+      if (hdr) scenarioId = hdr
+      if (!scenarioId) {
+        try {
+          const parsed = raw ? JSON.parse(raw) : null
+          if (parsed && typeof parsed.scenario === 'string') scenarioId = parsed.scenario
+        } catch {}
+      }
+    }
+    const effectiveSystem = (allowClientPrompt && systemPrompt) ? systemPrompt : getPTPrompt(scenarioId)
+  messages.push({ role: 'system', content: effectiveSystem })
     if (history.length) messages.push(...history)
     if (message) messages.push({ role: 'user', content: message })
 
     const completion = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages,
-      temperature: 0.3,
+      temperature: 0.5,
+      presence_penalty: 0.0,
+      frequency_penalty: 0.0,
     })
 
     const reply = completion.choices?.[0]?.message?.content ?? ''

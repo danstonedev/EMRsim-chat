@@ -21,6 +21,17 @@ export default function RootLayout({
   // Prevent theme flash by setting data-theme ASAP based on localStorage or system preference
   const noFlashThemeScript = `(() => {
     try {
+      // Simple storage cache-busting: bump this when you want to invalidate saved client state
+      const STORAGE_VERSION = '2';
+      const PREV = localStorage.getItem('und_storage_version');
+      if (PREV !== STORAGE_VERSION) {
+        try { localStorage.removeItem('und_system_prompt'); } catch {}
+        try { localStorage.removeItem('chat-theme'); } catch {}
+        try { localStorage.removeItem('chat-controls-open'); } catch {}
+        try { localStorage.removeItem('chat-tts-cloud-voice'); } catch {}
+        try { localStorage.setItem('und_storage_version', STORAGE_VERSION); } catch {}
+      }
+
       let t = localStorage.getItem('chat-theme');
       if (!t) {
         t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

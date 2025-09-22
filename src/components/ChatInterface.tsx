@@ -8,6 +8,7 @@ import StopRoundedIcon from '@mui/icons-material/StopRounded'
 import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded'
 import CircularProgress from '@mui/material/CircularProgress'
 import LogoWhite from '../../img/EMRsim-chat_white.png'
+import VoiceSelect from './VoiceSelect'
 
 interface Message {
   id: number
@@ -22,12 +23,10 @@ export default function ChatInterface() {
     'alloy','echo','fable','onyx','nova','shimmer','coral','verse','ballad','ash','sage','marin','cedar'
   ] as const
   const [messages, setMessages] = useState<Message[]>([])
+  const messagesRef = useRef<Message[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  // Initialize with safe defaults; load from localStorage after mount
-  const [systemPrompt, setSystemPrompt] = useState<string>(
-    'You are UND Assistant, a helpful, concise, and friendly assistant for the University of North Dakota. Be accurate and cite UND context when possible.'
-  )
+  // System prompt is now controlled on the server (patient persona); no client-side prompt.
   // Theme state - initialize from DOM (set pre-paint in layout) to avoid flash/mismatch
   const [theme, setTheme] = useState<string>(() => {
     if (typeof document !== 'undefined') {
@@ -60,9 +59,31 @@ export default function ChatInterface() {
   const lastAudioUrlRef = useRef<string>('')
   const audioCacheRef = useRef<Map<string, string>>(new Map())
   const [loadingByMessage, setLoadingByMessage] = useState<Record<number, boolean>>({})
+  const [ttsErrorByMessage, setTtsErrorByMessage] = useState<Record<number, string | undefined>>({})
   const [currentTtsKey, setCurrentTtsKey] = useState<string>('')
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false)
   const audioEventsBoundRef = useRef<boolean>(false)
+
+  // PT Case Scenario selection
+  const SCENARIOS = [
+    { id: 'lowBackPain', label: 'Low Back Pain' },
+    { id: 'aclRehab', label: 'ACL Rehab (6 weeks)' },
+    { id: 'rotatorCuff', label: 'Rotator Cuff Pain' },
+    { id: 'strokeGait', label: 'Post‑Stroke Gait' },
+    { id: 'ankleSprain', label: 'Ankle Sprain' },
+  ] as const
+  const [scenarioId, setScenarioId] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try { const v = window.localStorage.getItem('chat-pt-scenario'); if (v) return v } catch {}
+    }
+    return 'lowBackPain'
+  })
+
+  // Conversational mode (hands-free) state
+  const [conversationalOn, setConversationalOn] = useState<boolean>(false)
+  const convAbortRef = useRef<AbortController | null>(null)
+  const convPhaseRef = useRef<'idle' | 'listening' | 'transcribing' | 'chatting' | 'speaking'>('idle')
+  const convRunningRef = useRef<boolean>(false)
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return
@@ -91,11 +112,11 @@ export default function ChatInterface() {
 
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-pt-scenario': scenarioId },
         body: JSON.stringify({
           message: userMessage.text,
-          systemPrompt,
-          history
+          history,
+          scenario: scenarioId
         })
       })
 
@@ -219,6 +240,7 @@ export default function ChatInterface() {
     let url = audioCacheRef.current.get(key)
     const needsFetch = !url
     if (needsFetch && messageId) setLoadingByMessage(prev => ({ ...prev, [messageId]: true }))
+    if (messageId) setTtsErrorByMessage(prev => ({ ...prev, [messageId]: undefined }))
     try {
       if (!url) {
         const res = await fetch('/api/tts', {
@@ -233,6 +255,7 @@ export default function ChatInterface() {
             if (j?.error) msg += `: ${j.error}`
           } catch {}
           console.error(msg)
+          if (messageId) setTtsErrorByMessage(prev => ({ ...prev, [messageId]: msg }))
           throw new Error('TTS request failed')
         }
         const blob = await res.blob()
@@ -251,6 +274,7 @@ export default function ChatInterface() {
       audio.src = url as string
       setCurrentTtsKey(`cloud|${safeVoice}|${text}`)
       await audio.play()
+      if (messageId) setTtsErrorByMessage(prev => ({ ...prev, [messageId]: undefined }))
     } catch (e) {
       // Prevent unhandled promise rejection and surface detail to console
       console.error('playMessage error:', e)
@@ -266,6 +290,329 @@ export default function ChatInterface() {
       try { audio.pause(); audio.currentTime = 0; await audio.play(); return } catch {}
     }
     await playMessage(text, messageId)
+  }
+
+  // --- Conversational Mode Helpers ---
+  // Simple energy-based VAD using Web Audio API
+  const listenOnceWithVAD = async (abortSignal: AbortSignal): Promise<Blob | null> => {
+    // Constraints: enable echo cancellation/noise suppression to reduce feedback
+    const constraints: MediaStreamConstraints = {
+      audio: {
+        echoCancellation: true as any,
+        noiseSuppression: true as any,
+        autoGainControl: true as any
+      },
+      video: false
+    }
+    let stream: MediaStream | null = null
+    let audioCtx: AudioContext | null = null
+    let analyser: AnalyserNode | null = null
+    let src: MediaStreamAudioSourceNode | null = null
+    let rafId: number | null = null
+    let intervalId: number | null = null
+
+    const cleanup = () => {
+      if (rafId !== null) cancelAnimationFrame(rafId)
+      if (intervalId !== null) clearInterval(intervalId)
+      try { mediaRecorderRef.current?.state === 'recording' && mediaRecorderRef.current?.stop() } catch {}
+      try { stream?.getTracks().forEach(t => t.stop()) } catch {}
+      try { audioCtx?.close() } catch {}
+      analyser = null; src = null; audioCtx = null; stream = null
+    }
+
+  // Baseline and VAD thresholds (dynamic calibration)
+  const BASE_START_MIN = 0.02  // minimal start threshold floor
+  const BASE_STOP_MIN = 0.012  // minimal stop threshold floor
+    const SILENCE_MS = 800        // duration of silence to end utterance
+    const MAX_UTTERANCE_MS = 15000
+    const MAX_WAIT_FOR_SPEECH_MS = 5000
+  const MIN_START_CONSEC_FRAMES = 3   // ~150ms (with 50ms frame)
+  const MIN_VOICED_FRAMES = 6         // ~300ms voiced content required
+  const MIN_UTTER_MS = 400            // total utterance length required
+  const MIN_VOICED_RATIO = 0.2        // proportion of voiced frames during utterance
+
+    try {
+      setMicStatus('listening')
+      stream = await navigator.mediaDevices.getUserMedia(constraints)
+
+      // Setup recorder
+      const mr = new MediaRecorder(stream, { mimeType: 'audio/webm' })
+      mediaRecorderRef.current = mr
+      mediaChunksRef.current = []
+      mr.ondataavailable = (e) => { if (e.data && e.data.size > 0) mediaChunksRef.current.push(e.data) }
+
+      // Setup analysis
+      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
+      src = audioCtx.createMediaStreamSource(stream)
+      analyser = audioCtx.createAnalyser()
+      analyser.fftSize = 2048
+      src.connect(analyser)
+
+  let speaking = false
+      let lastLoudTs = 0
+      let startTs = performance.now()
+      let speechStartTs: number | null = null
+  let speechEndTs: number | null = null
+
+      // allocate buffer once; computeRMS defined below during calibration
+  let timeData: Uint8Array & { buffer: ArrayBuffer }
+      let computeRMS: () => number
+
+      // Start recording immediately to capture leading audio
+      mr.start()
+      setIsRecording(true)
+
+      // Calibrate baseline noise for a short window
+  timeData = new Uint8Array(analyser.fftSize) as any
+      computeRMS = () => {
+        analyser!.getByteTimeDomainData(timeData as unknown as Uint8Array<ArrayBuffer>)
+        let sum = 0
+        for (let i = 0; i < timeData.length; i++) {
+          const v = (timeData[i] - 128) / 128
+          sum += v * v
+        }
+        return Math.sqrt(sum / timeData.length)
+      }
+
+      const calibSamples: number[] = []
+      const calibStart = performance.now()
+      while (performance.now() - calibStart < 400) {
+        calibSamples.push(computeRMS())
+        await new Promise(r => setTimeout(r, 25))
+        if (abortSignal.aborted) { cleanup(); return null }
+      }
+      const mean = calibSamples.reduce((a, b) => a + b, 0) / Math.max(1, calibSamples.length)
+      const variance = calibSamples.reduce((a, b) => a + (b - mean) * (b - mean), 0) / Math.max(1, calibSamples.length)
+      const std = Math.sqrt(Math.max(variance, 0))
+      const START_THRESHOLD = Math.max(mean + 3 * std, BASE_START_MIN)
+      const STOP_THRESHOLD = Math.max(mean + 1.5 * std, BASE_STOP_MIN)
+
+      // Monitor in short intervals (faster than requestAnimationFrame for consistent timing)
+      let consecAbove = 0
+      let voicedFrames = 0
+      let totalFrames = 0
+      let validUtterance = false
+
+      intervalId = window.setInterval(() => {
+        if (abortSignal.aborted) {
+          cleanup()
+          return
+        }
+        const rms = computeRMS()
+        const now = performance.now()
+        if (!speaking) {
+          if (rms >= START_THRESHOLD) {
+            consecAbove += 1
+            if (consecAbove >= MIN_START_CONSEC_FRAMES) {
+              speaking = true
+              speechStartTs = now
+              lastLoudTs = now
+            }
+          } else {
+            consecAbove = 0
+          }
+          if (!speaking && (now - startTs > MAX_WAIT_FOR_SPEECH_MS)) {
+            // No speech detected in time window; cancel this listen round
+            cleanup()
+            setIsRecording(false)
+            setMicStatus('idle')
+            return
+          }
+        } else {
+          totalFrames += 1
+          if (rms >= STOP_THRESHOLD) { lastLoudTs = now; voicedFrames += 1 }
+          const silentFor = now - lastLoudTs
+          const utterFor = now - (speechStartTs || startTs)
+          if (silentFor >= SILENCE_MS || utterFor >= MAX_UTTERANCE_MS) {
+            speechEndTs = now
+            // Decide whether this utterance is valid before stopping
+            const durationMs = (speechStartTs ? (speechEndTs - speechStartTs) : 0)
+            const voicedRatio = totalFrames > 0 ? (voicedFrames / totalFrames) : 0
+            validUtterance = (
+              durationMs >= MIN_UTTER_MS &&
+              voicedFrames >= MIN_VOICED_FRAMES &&
+              voicedRatio >= MIN_VOICED_RATIO
+            )
+            try { mr.stop() } catch {}
+          }
+        }
+      }, 50)
+
+      // Await recorder stop and produce blob
+      const blob: Blob | null = await new Promise((resolve) => {
+        if (!mr) return resolve(null)
+        mr.onstop = () => {
+          setIsRecording(false)
+          setMicStatus('stopped')
+          if (micStatusTimerRef.current) window.clearTimeout(micStatusTimerRef.current)
+          micStatusTimerRef.current = window.setTimeout(() => setMicStatus('idle'), 1200)
+          try {
+            const b = new Blob(mediaChunksRef.current, { type: 'audio/webm' })
+            if (!validUtterance) {
+              resolve(null)
+            } else {
+              resolve(b.size > 0 ? b : null)
+            }
+          } catch {
+            resolve(null)
+          }
+          cleanup()
+        }
+      })
+
+      return blob
+    } catch (e) {
+      console.error('listenOnceWithVAD error:', e)
+      try { setIsRecording(false) } catch {}
+      try { setMicStatus('idle') } catch {}
+      return null
+    } finally {
+      // Extra cleanup safety
+      try { stream?.getTracks().forEach(t => t.stop()) } catch {}
+    }
+  }
+
+  const isLikelyNonSpeech = (text: string): boolean => {
+    const s = text.toLowerCase().trim()
+    if (!s) return true
+    // Common stock mishears; extend as needed
+    const blacklist = [
+      'thanks for watching',
+      'thank you for watching',
+      'thanks for watching everyone',
+    ]
+    if (blacklist.some(b => s.includes(b))) return true
+    // Too short or trivial
+    const words = s.split(/\s+/).filter(Boolean)
+    if (words.length <= 1 && s.length < 6) return true
+    // Mostly non-letter characters
+    const letters = s.replace(/[^a-z]/g, '')
+    if (letters.length < 3) return true
+    return false
+  }
+
+  const isLikelyEcho = (candidate: string, lastReply: string): boolean => {
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim()
+    const a = norm(candidate)
+    const b = norm(lastReply)
+    if (!a || !b) return false
+    if (a === b) return true
+    if (a.length > 10 && (b.includes(a) || a.includes(b))) return true
+    return false
+  }
+
+  const transcribeBlob = async (blob: Blob): Promise<string> => {
+    try {
+      const form = new FormData()
+      form.append('audio', blob, 'utterance.webm')
+      const res = await fetch('/api/transcribe', { method: 'POST', body: form })
+      if (!res.ok) return ''
+      const data = await res.json() as { text?: string }
+      return (data.text || '').trim()
+    } catch {
+      return ''
+    }
+  }
+
+  const chatReply = async (userText: string): Promise<string> => {
+    const history = messagesRef.current
+      .map(m => ({ role: m.sender, content: m.text }))
+      .filter(m => m.role !== 'system') as Array<{ role: 'user' | 'assistant'; content: string }>
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-pt-scenario': scenarioId },
+        body: JSON.stringify({ message: userText, history, scenario: scenarioId })
+      })
+      if (!res.ok) return ''
+      const data = await res.json() as { reply?: string }
+      return (data.reply || '').trim()
+    } catch {
+      return ''
+    }
+  }
+
+  const waitForAudioEnd = async (): Promise<void> => {
+    if (!audioRef.current) return
+    const audio = audioRef.current
+    if (audio.paused) return
+    await new Promise<void>(resolve => {
+      const onEnd = () => { cleanup() }
+      const cleanup = () => {
+        audio.removeEventListener('ended', onEnd)
+        audio.removeEventListener('pause', onEnd)
+        resolve()
+      }
+      audio.addEventListener('ended', onEnd, { once: true })
+      audio.addEventListener('pause', onEnd, { once: true })
+    })
+  }
+
+  const runConversationalLoop = async () => {
+    if (convRunningRef.current) return
+    convRunningRef.current = true
+    convAbortRef.current = new AbortController()
+    const signal = convAbortRef.current.signal
+
+    try {
+      while (conversationalOn && !signal.aborted) {
+        convPhaseRef.current = 'listening'
+        const blob = await listenOnceWithVAD(signal)
+        if (signal.aborted) break
+        if (!blob) {
+          // No speech detected; continue listening
+          continue
+        }
+
+        convPhaseRef.current = 'transcribing'
+        const userText = await transcribeBlob(blob)
+        if (signal.aborted) break
+        if (!userText) {
+          continue
+        }
+        // Guard against echo (capturing the assistant's own TTS)
+        if (isLikelyEcho(userText, lastReplyRef.current)) {
+          continue
+        }
+        // Guard against non-speech or stock mishears
+        if (isLikelyNonSpeech(userText)) {
+          continue
+        }
+
+        // Add user message
+        setMessages(prev => {
+          const next: Message = { id: prev.length + 1, text: userText, sender: 'user', timestamp: new Date() }
+          return [...prev, next]
+        })
+
+        convPhaseRef.current = 'chatting'
+        const reply = await chatReply(userText)
+        if (signal.aborted) break
+        if (!reply) {
+          // Add error/system message to keep context
+          setMessages(prev => [...prev, { id: (prev[prev.length-1]?.id || 0) + 1, text: 'Sorry, I could not respond.', sender: 'system', timestamp: new Date() }])
+          continue
+        }
+
+        setMessages(prev => {
+          const next: Message = { id: prev.length + 1, text: reply, sender: 'assistant', timestamp: new Date() }
+          return [...prev, next]
+        })
+        lastReplyRef.current = reply
+
+        convPhaseRef.current = 'speaking'
+        // Speak and wait until finished before resuming listening
+        await speakText(reply)
+        await waitForAudioEnd()
+        // Cooldown to let residual audio settle before listening resumes
+        await new Promise(r => setTimeout(r, 200))
+
+        convPhaseRef.current = 'idle'
+      }
+    } finally {
+      convRunningRef.current = false
+      convPhaseRef.current = 'idle'
+    }
   }
 
   // Start Web Speech API recognition if available; fallback to MediaRecorder => /api/transcribe
@@ -374,6 +721,7 @@ export default function ChatInterface() {
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
+    messagesRef.current = messages
     if (threadRef.current) {
       const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
       threadRef.current.scrollTo({ top: threadRef.current.scrollHeight, behavior: behavior as ScrollBehavior })
@@ -387,9 +735,7 @@ export default function ChatInterface() {
     if (typeof window !== 'undefined') {
       console.log('🌍 Window is available, loading preferences');
       
-      const savedPrompt = window.localStorage.getItem('und_system_prompt')
-      console.log('💾 Saved prompt from localStorage:', savedPrompt);
-      if (savedPrompt) setSystemPrompt(savedPrompt)
+  // System prompt no longer loaded from localStorage; backend controls prompt persona.
 
       const savedTheme = window.localStorage.getItem('chat-theme') || 'light'
       console.log('🎨 Saved theme from localStorage:', savedTheme);
@@ -441,12 +787,7 @@ export default function ChatInterface() {
     return () => { if (micStatusTimerRef.current) window.clearTimeout(micStatusTimerRef.current) }
   }, [])
 
-  // Persist system prompt after hydration to avoid overwriting saved value on first mount
-  useEffect(() => {
-    if (typeof window !== 'undefined' && hydratedRef.current) {
-      window.localStorage.setItem('und_system_prompt', systemPrompt)
-    }
-  }, [systemPrompt])
+  // No client system prompt persistence
 
   // Persist and apply theme on change (only after hydration and for user actions)
   useEffect(() => {
@@ -489,6 +830,22 @@ export default function ChatInterface() {
     } catch {}
   }, [cloudVoice])
 
+  // Start/stop conversational loop on toggle
+  useEffect(() => {
+    if (!isHydrated) return
+    if (conversationalOn) {
+      // Optionally ensure replies are spoken while in conv mode
+      if (!autoSpeak) setAutoSpeak(true)
+      runConversationalLoop()
+    } else {
+      // Abort any in-flight listening or loop
+      try { convAbortRef.current?.abort() } catch {}
+    }
+    // Cleanup on unmount
+    return () => { try { convAbortRef.current?.abort() } catch {} }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationalOn, isHydrated])
+
   return (
     <section className="chat-shell" aria-labelledby="chat-title">
       {/* Header */}
@@ -503,7 +860,7 @@ export default function ChatInterface() {
               className="icon-btn"
               aria-controls="system-controls"
               onClick={() => setControlsOpen(v => !v)}
-              title={controlsOpen ? 'Hide system prompt' : 'Show system prompt'}
+              title={controlsOpen ? 'Hide settings' : 'Show settings'}
             >{controlsOpen ? '▾' : '▸'}</button>
             <div className="theme-toggle">
               <button
@@ -545,51 +902,44 @@ export default function ChatInterface() {
         className={`chat-controls ${controlsOpen ? 'open' : 'collapsed'}`}
         aria-labelledby="controls-title"
       >
-        <div className="controls-inner">
+  <div className="controls-inner two-col">
+          {/* PT Scenario selection (first) */}
           <div className="control-group">
-            <label id="controls-title" className="control-label" htmlFor="system-prompt">System prompt</label>
-            <textarea
-              id="system-prompt"
-              className="control-textarea"
-              value={systemPrompt}
-              onChange={(e) => setSystemPrompt(e.target.value)}
-              placeholder="Describe how the assistant should behave (tone, scope, guardrails)"
-            />
+            <label className="control-label" htmlFor="pt-scenario">Patient case</label>
+            <select
+              id="pt-scenario"
+              className="control-select"
+              aria-label="Patient scenario"
+              value={scenarioId}
+              onChange={(e) => {
+                const v = e.target.value
+                setScenarioId(v)
+                try { window.localStorage.setItem('chat-pt-scenario', v) } catch {}
+              }}
+            >
+              {SCENARIOS.map(s => (
+                <option key={s.id} value={s.id}>{s.label}</option>
+              ))}
+            </select>
           </div>
-          {/* Voice settings (Cloud only) */}
+          {/* Voice (Cloud only) */}
           <div className="control-group">
-            <label className="control-label">Voice settings</label>
+            <label id="controls-title" className="control-label">Voice</label>
             {isHydrated && (
               <div className="mt-2">
-                <label className="muted block mb-1" htmlFor="cloud-voice">Cloud voice</label>
-                <select
-                  className="control-select"
-                  id="cloud-voice"
+                <VoiceSelect
+                  voices={SUPPORTED_CLOUD_VOICES}
                   value={cloudVoice}
-                  onChange={(e) => {
-                    const v = e.target.value
+                  onChange={(v) => {
                     setCloudVoice(v)
-                    window.localStorage.setItem('chat-tts-cloud-voice', v)
+                    try { window.localStorage.setItem('chat-tts-cloud-voice', v) } catch {}
                   }}
-                >
-                  {SUPPORTED_CLOUD_VOICES.map(v => (
-                    <option key={v} value={v}>{v}</option>
-                  ))}
-                </select>
+                  ariaLabel="Voice"
+                />
               </div>
             )}
           </div>
-          <div className="control-actions">
-            <button
-              type="button"
-              className="composer-btn composer-btn-secondary"
-              onClick={() => setSystemPrompt('You are UND Assistant, a helpful, concise, and friendly assistant for the University of North Dakota. Be accurate and cite UND context when possible.')}
-            >Reset</button>
-            <label className="toggle inline-flex items-center gap-2">
-              <input type="checkbox" checked={autoSpeak} onChange={(e) => setAutoSpeak(e.target.checked)} />
-              <span>Read replies aloud</span>
-            </label>
-          </div>
+          {/* control-actions removed per design simplification */}
         </div>
       </section>
 
@@ -662,6 +1012,12 @@ export default function ChatInterface() {
                           <span className="sr-only">Preparing audio…</span>
                         </span>
                       )}
+                      {ttsErrorByMessage[message.id] && (
+                        <span className="tts-error" title={ttsErrorByMessage[message.id]}> 
+                          <span className="dot" aria-hidden="true"></span>
+                          <span>Error</span>
+                        </span>
+                      )}
                       {(() => {
                         const keyCloud = `cloud|${cloudVoice}|${message.text}`
                         const isThisPlaying = isSpeaking && currentTtsKey === keyCloud
@@ -711,19 +1067,10 @@ export default function ChatInterface() {
           aria-label="Send message"
         >
           <div className="input-container">
-            <button
-              type="button"
-              className={`icon-btn mic-btn ${isRecording ? 'recording' : ''}`}
-              aria-label={isRecording ? 'Stop voice input' : 'Start voice input'}
-              onClick={() => isRecording ? stopVoiceInput() : startVoiceInput()}
-              title={isRecording ? 'Stop recording' : 'Speak your question'}
-            >
-              {isRecording ? '■' : '🎙️'}
-            </button>
             {micStatus !== 'idle' && (
               <div className={`mic-status ${micStatus}`} aria-live="polite">
                 <span className={`mic-dot ${micStatus === 'listening' ? 'pulse' : ''}`} aria-hidden="true"></span>
-                <span className="mic-text">{micStatus === 'listening' ? 'Listening…' : 'Stopped'}</span>
+                <span className="mic-text">{micStatus === 'listening' ? 'Listening…' : 'Paused'}</span>
               </div>
             )}
             <textarea
@@ -734,10 +1081,26 @@ export default function ChatInterface() {
               value={inputValue}
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
+              placeholder={conversationalOn ? (micStatus === 'listening' ? '' : 'Conversation ready') : 'Type your message...'}
               aria-describedby="chat-help"
               maxLength={2000}
             />
+            {/* Mic button on the right, ChatGPT-like */}
+            <button
+              type="button"
+              className={`mic-button ${conversationalOn ? 'active' : ''}`}
+              aria-label={'Conversation'}
+              title={'Conversation'}
+              onClick={() => setConversationalOn(v => !v)}
+            >
+              {/* microphone glyph */}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10a7 7 0 0 1-14 0"/>
+                <line x1="12" y1="17" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </button>
             {/* Per-message TTS controls are shown inside each assistant bubble */}
             <button
               type="submit"
