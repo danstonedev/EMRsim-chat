@@ -127,13 +127,25 @@
   border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  color: #ffffff; /* Keep white for header buttons in green background */
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 1rem;
+}
+
+/* Theme-aware icon buttons (for buttons not in colored backgrounds) */
+.icon-btn.theme-aware {
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.icon-btn.theme-aware:hover {
+  background: var(--hover-bg);
+  border-color: var(--brand-primary);
 }
 
 /* Larger arrow for the settings toggle */
@@ -606,6 +618,14 @@
   border-radius: var(--radius-full);
   border: 1px solid var(--border);
   background: var(--bg-primary);
+  color: var(--text-primary); /* Use theme-aware text color instead of white */
+  transition: all 0.2s ease;
+}
+
+.message.assistant .tts-outside-left .tts-btn:hover {
+  background: var(--hover-bg);
+  border-color: var(--brand-primary);
+  transform: translateY(-1px);
 }
 
 /* Active playback state (green highlights) */
