@@ -1,0 +1,54 @@
+#!/bin/sh
+#
+# Post-merge hook to ensure development environment stays healthy
+# after pulling changes from remote repository
+#
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo "${BLUE}🔄 Post-merge: Checking development environment...${NC}"
+
+# Check if package.json changed
+if git diff HEAD@{1} HEAD --name-only | grep -q "package.json"; then
+    echo "${YELLOW}📦 package.json changed - checking dependencies...${NC}"
+    
+    # Check if dependencies changed
+    if git diff HEAD@{1} HEAD package.json | grep -q '"dependencies"\|"devDependencies"'; then
+        echo "${YELLOW}⚠️  Dependencies changed. You may need to run: npm install${NC}"
+        
+        # Auto-install if no local changes
+        if [ -z "$(git status --porcelain)" ]; then
+            echo "${GREEN}🔧 Auto-installing dependencies...${NC}"
+            npm install
+        else
+            echo "${YELLOW}💡 Local changes detected. Please run 'npm install' manually.${NC}"
+        fi
+    fi
+fi
+
+# Check if Next.js config changed
+if git diff HEAD@{1} HEAD --name-only | grep -q "next.config.js"; then
+    echo "${YELLOW}⚙️  Next.js configuration changed${NC}"
+    echo "${YELLOW}💡 You may need to restart your dev server${NC}"
+fi
+
+# Run health check
+echo "${GREEN}🏥 Running development health check...${NC}"
+if npm run dev:check > /dev/null 2>&1; then
+    echo "${GREEN}✅ Development environment is healthy${NC}"
+else
+    echo "${YELLOW}⚠️  Development health check found issues${NC}"
+    echo "${BLUE}🔧 Running automatic fixes...${NC}"
+    npm run dev:fix
+fi
+
+echo "${GREEN}🎉 Post-merge checks completed!${NC}"
+echo "${BLUE}💡 If you encounter any issues, run:${NC}"
+echo "   npm run dev:troubleshoot"

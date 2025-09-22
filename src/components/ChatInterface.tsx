@@ -64,6 +64,8 @@ export default function ChatInterface() {
   // Audio fading helpers
   const defaultVolumeRef = useRef<number>(1)
   const fadeCancelRef = useRef<(() => void) | null>(null)
+  // Abort controller for in-flight assistant generation (streaming)
+  const genAbortRef = useRef<AbortController | null>(null)
 
   const fadeTo = (targetVolume: number, duration = 180): Promise<void> => {
     return new Promise((resolve) => {
@@ -128,6 +130,52 @@ export default function ChatInterface() {
   const [convPhase, setConvPhase] = useState<'idle' | 'listening' | 'transcribing' | 'chatting' | 'speaking'>('idle')
   const [vuLevel, setVuLevel] = useState<number>(0) // 0..1 live mic level for visualizer
   const [vuBucket, setVuBucket] = useState<number>(0) // 0..10 discrete bucket for CSS classes
+  // Mic devices and selection
+  const [inputDevices, setInputDevices] = useState<MediaDeviceInfo[]>([])
+  const [selectedInputId, setSelectedInputId] = useState<string>('')
+  const [convError, setConvError] = useState<string>('')
+  // Toast banner for non-blocking API errors
+  const [toastText, setToastText] = useState<string>('')
+  const toastTimerRef = useRef<number | null>(null)
+
+  const refreshInputDevices = async () => {
+    try {
+      if (!navigator.mediaDevices?.enumerateDevices) return
+      const devs = await navigator.mediaDevices.enumerateDevices()
+      const inputs = devs.filter(d => d.kind === 'audioinput')
+      setInputDevices(inputs)
+      // Prefer previously selected mic if available
+      let desired = selectedInputId
+      if (!desired) {
+        try { desired = window.localStorage.getItem('chat-mic-device-id') || '' } catch {}
+      }
+      if (desired && inputs.some(d => d.deviceId === desired)) {
+        if (desired !== selectedInputId) setSelectedInputId(desired)
+      } else if (inputs.length > 0 && !selectedInputId) {
+        setSelectedInputId(inputs[0].deviceId || '')
+      }
+    } catch (e) {
+      // ignore; will be retried after permission
+    }
+  }
+
+  const ensureMicAccess = async (): Promise<boolean> => {
+    try {
+      // Request minimal audio to unlock device labels and permissions
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      try { stream.getTracks().forEach(t => t.stop()) } catch {}
+      await refreshInputDevices()
+      setConvError('')
+      return true
+    } catch (e: any) {
+      let msg = 'Microphone access was blocked.'
+      if (e?.name === 'NotAllowedError') msg = 'Microphone permission denied. Please allow mic access in your browser.'
+      else if (e?.name === 'NotFoundError') msg = 'No microphone detected. Please connect a microphone.'
+      else if (e?.name === 'NotReadableError') msg = 'Microphone is in use by another application.'
+      setConvError(msg)
+      return false
+    }
+  }
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return
@@ -148,11 +196,20 @@ export default function ChatInterface() {
       inputRef.current.style.height = 'auto'
     }
 
+    const buildBoundedHistory = (all: Message[], maxPairs: number): Array<{ role: 'user' | 'assistant'; content: string }> => {
+      const ua = all.filter(m => m.sender !== 'system')
+      // Keep last N user/assistant messages (roughly pairs)
+      const maxMsgs = Math.max(2, maxPairs * 2)
+      const slice = ua.slice(Math.max(0, ua.length - maxMsgs))
+      return slice.map(m => ({ role: m.sender, content: m.text })) as Array<{ role: 'user' | 'assistant'; content: string }>
+    }
+
     try {
-      const history = messages.map(m => ({
-        role: m.sender,
-        content: m.text
-      })).filter(m => m.role !== 'system') as Array<{ role: 'user' | 'assistant'; content: string }>
+      const history = buildBoundedHistory(messages, 8)
+
+      // Abort any previous generation and start a new controller
+      try { genAbortRef.current?.abort() } catch {}
+      genAbortRef.current = new AbortController()
 
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -161,36 +218,95 @@ export default function ChatInterface() {
           message: userMessage.text,
           history,
           scenario: scenarioId
-        })
+        }),
+        signal: genAbortRef.current.signal
       })
 
-      if (!res.ok) {
+      if (!res.ok || !res.body) {
         throw new Error(`API error: ${res.status}`)
       }
 
-      const data = await res.json() as { reply?: string; error?: string }
-      const text = data.reply ?? data.error ?? 'Sorry, I could not generate a response.'
+  // We'll create the assistant message only when the first chunk arrives to avoid an empty placeholder bubble
+  let botId: number | null = null
 
-      const botMessage: Message = {
-        id: messages.length + 2,
-        text,
-        sender: 'assistant',
-        timestamp: new Date()
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder('utf-8')
+      let done = false
+      let acc = ''
+      let fullText = ''
+  let firstChunkSeen = false
+
+      // rAF-batched commit to reduce reflow thrash
+      let pending = ''
+      let rafScheduled = false
+      const scheduleCommit = () => {
+        if (rafScheduled) return
+        rafScheduled = true
+        requestAnimationFrame(() => {
+          rafScheduled = false
+          const chunk = pending
+          pending = ''
+          if (!chunk) return
+          fullText += chunk
+          // Create the assistant message on first commit, otherwise append to it
+          if (botId == null) {
+            setMessages(prev => {
+              const id = (prev[prev.length - 1]?.id || 0) + 1
+              botId = id
+              const next: Message = { id, text: chunk, sender: 'assistant', timestamp: new Date() }
+              return [...prev, next]
+            })
+          } else {
+            const id = botId
+            setMessages(prev => prev.map(m => (m.id === id ? { ...m, text: (m.text || '') + chunk } : m)))
+          }
+        })
+      }
+      const enqueueChunk = (t: string) => {
+        if (!t) return
+        pending += t
+        scheduleCommit()
       }
 
-      setMessages(prev => [...prev, botMessage])
-      lastReplyRef.current = text
-  if (autoSpeak) playMessage(text, botMessage.id)
-    } catch (error) {
-      const errorMessage: Message = {
-        id: messages.length + 2,
-        text: "Sorry, I encountered an error. Please try again.",
-        sender: 'system',
-        timestamp: new Date()
+      while (!done) {
+        const r = await reader.read()
+        done = r.done || false
+        if (r.value) {
+          acc += decoder.decode(r.value, { stream: true })
+          // Parse SSE lines
+          const lines = acc.split(/\r?\n/)
+          // Keep last partial line in acc
+          acc = lines.pop() || ''
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6)
+              if (data === '[DONE]') continue
+              // On first chunk, hide the typing indicator and Stop button for a cleaner UI
+              if (!firstChunkSeen) {
+                firstChunkSeen = true
+                try { setIsTyping(false) } catch {}
+              }
+              // We stream raw token text; not JSON. Append via rAF batching.
+              enqueueChunk(data)
+            }
+          }
+        }
       }
-      setMessages(prev => [...prev, errorMessage])
+
+  lastReplyRef.current = fullText
+  if (autoSpeak && fullText) playMessage(fullText, botId ?? undefined)
+    } catch (error: any) {
+      if (error?.name === 'AbortError') {
+        // Swallow aborts (user-initiated stop)
+        return
+      }
+      // Show a small toast instead of polluting transcript
+      try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+      setToastText('Chat service error. Please try again.')
+      toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
     } finally {
       setIsTyping(false)
+      genAbortRef.current = null
     }
   }
 
@@ -214,6 +330,10 @@ export default function ChatInterface() {
             if (j?.error) msg += `: ${j.error}`
           } catch {}
           console.error(msg)
+          // Toast: service error
+          try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+          setToastText('Speech service error. Please try again.')
+          toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
           throw new Error('TTS request failed')
         }
         const blob = await res.blob()
@@ -241,7 +361,12 @@ export default function ChatInterface() {
       await audio.play()
       try { await fadeIn(200) } catch {}
       return
-    } catch {}
+    } catch {
+      // Toast: network or playback error
+      try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+      setToastText('Network error talking to speech service.')
+      toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
+    }
   }
 
   // Playback controls
@@ -308,6 +433,10 @@ export default function ChatInterface() {
           } catch {}
           console.error(msg)
           if (messageId) setTtsErrorByMessage(prev => ({ ...prev, [messageId]: msg }))
+          // Toast: service error
+          try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+          setToastText('Speech service error. Please try again.')
+          toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
           throw new Error('TTS request failed')
         }
         const blob = await res.blob()
@@ -333,6 +462,10 @@ export default function ChatInterface() {
     } catch (e) {
       // Prevent unhandled promise rejection and surface detail to console
       console.error('playMessage error:', e)
+      // Toast: generic playback/network error
+      try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+      setToastText('Could not play speech audio.')
+      toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
     } finally {
       if (messageId) setLoadingByMessage(prev => ({ ...prev, [messageId]: false }))
     }
@@ -372,6 +505,7 @@ export default function ChatInterface() {
     // Constraints: enable echo cancellation/noise suppression to reduce feedback
     const constraints: MediaStreamConstraints = {
       audio: {
+        deviceId: selectedInputId ? { exact: selectedInputId } as any : undefined,
         echoCancellation: true as any,
         noiseSuppression: true as any,
         autoGainControl: true as any
@@ -410,7 +544,12 @@ export default function ChatInterface() {
       stream = await navigator.mediaDevices.getUserMedia(constraints)
 
       // Setup recorder
-      const mr = new MediaRecorder(stream, { mimeType: 'audio/webm' })
+      if (typeof MediaRecorder === 'undefined') {
+        throw new Error('MediaRecorder is not supported in this browser')
+      }
+      let mime = 'audio/webm'
+      try { if ((MediaRecorder as any).isTypeSupported && !(MediaRecorder as any).isTypeSupported(mime)) mime = '' } catch {}
+      const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined)
       mediaRecorderRef.current = mr
       mediaChunksRef.current = []
       mr.ondataavailable = (e) => { if (e.data && e.data.size > 0) mediaChunksRef.current.push(e.data) }
@@ -550,10 +689,15 @@ export default function ChatInterface() {
       })
 
       return blob
-    } catch (e) {
+    } catch (e: any) {
       console.error('listenOnceWithVAD error:', e)
       try { setIsRecording(false) } catch {}
       try { setMicStatus('idle') } catch {}
+      // Surface error so user can fix mic
+      if (e?.name === 'NotAllowedError') setConvError('Microphone permission denied. Please allow access in Site settings.')
+      else if (e?.name === 'NotFoundError') setConvError('No microphone found. Please connect a mic and retry.')
+      else if (e?.message?.includes('MediaRecorder')) setConvError('MediaRecorder not supported in this browser. Try Chrome or Edge.')
+      else setConvError('Unable to access microphone.')
       return null
     } finally {
       // Extra cleanup safety
@@ -595,28 +739,66 @@ export default function ChatInterface() {
       const form = new FormData()
       form.append('audio', blob, 'utterance.webm')
       const res = await fetch('/api/transcribe', { method: 'POST', body: form })
-      if (!res.ok) return ''
+      if (!res.ok) {
+        // Toast: service error
+        try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+        setToastText('Transcription service error. Please try again.')
+        toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
+        return ''
+      }
       const data = await res.json() as { text?: string }
       return (data.text || '').trim()
     } catch {
+      // Toast: network error
+      try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+      setToastText('Network error talking to transcription service.')
+      toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
       return ''
     }
   }
 
   const chatReply = async (userText: string): Promise<string> => {
-    const history = messagesRef.current
-      .map(m => ({ role: m.sender, content: m.text }))
-      .filter(m => m.role !== 'system') as Array<{ role: 'user' | 'assistant'; content: string }>
+    const ua = messagesRef.current.filter(m => m.sender !== 'system')
+    const maxMsgs = 16 // 8 pairs
+    const bounded = ua.slice(Math.max(0, ua.length - maxMsgs))
+    const history = bounded.map(m => ({ role: m.sender, content: m.text })) as Array<{ role: 'user' | 'assistant'; content: string }>
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-pt-scenario': scenarioId },
         body: JSON.stringify({ message: userText, history, scenario: scenarioId })
       })
-      if (!res.ok) return ''
-      const data = await res.json() as { reply?: string }
-      return (data.reply || '').trim()
+      if (!res.ok || !res.body) {
+        try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+        setToastText('Chat service error. Please try again.')
+        toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
+        return ''
+      }
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder('utf-8')
+      let fullText = ''
+      let acc = ''
+      for (;;) {
+        const { value, done } = await reader.read()
+        if (done) break
+        if (value) {
+          acc += decoder.decode(value, { stream: true })
+          const lines = acc.split(/\r?\n/)
+          acc = lines.pop() || ''
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6)
+              if (data === '[DONE]') continue
+              fullText += data
+            }
+          }
+        }
+      }
+      return fullText.trim()
     } catch {
+      try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+      setToastText('Network error talking to chat service.')
+      toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
       return ''
     }
   }
@@ -759,7 +941,11 @@ export default function ChatInterface() {
 
     // Fallback: record short clip and send to /api/transcribe
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          deviceId: selectedInputId ? ({ exact: selectedInputId } as any) : undefined
+        } as any
+      })
       const mr = new MediaRecorder(stream, { mimeType: 'audio/webm' })
       mediaRecorderRef.current = mr
       mediaChunksRef.current = []
@@ -774,10 +960,20 @@ export default function ChatInterface() {
           const form = new FormData()
           form.append('audio', blob, 'clip.webm')
           const res = await fetch('/api/transcribe', { method: 'POST', body: form })
-          const data = await res.json() as { text?: string; error?: string }
-          const txt = data.text || data.error || ''
-          if (txt && !conversationalOn) setInputValue(prev => prev ? prev + ' ' + txt : txt)
-        } catch {}
+          if (!res.ok) {
+            try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+            setToastText('Transcription service error. Please try again.')
+            toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
+          } else {
+            const data = await res.json() as { text?: string; error?: string }
+            const txt = data.text || data.error || ''
+            if (txt && !conversationalOn) setInputValue(prev => prev ? prev + ' ' + txt : txt)
+          }
+        } catch {
+          try { if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current) } catch {}
+          setToastText('Network error talking to transcription service.')
+          toastTimerRef.current = window.setTimeout(() => setToastText(''), 4000)
+        }
         finally {
           stream.getTracks().forEach(t => t.stop())
         }
@@ -829,6 +1025,7 @@ export default function ChatInterface() {
   }, [messages, isTyping])
 
   // Load saved preferences on mount and mark hydrated
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     console.log('🚀 useEffect (mount) called');
     
@@ -871,6 +1068,11 @@ export default function ChatInterface() {
       try {
         document.documentElement.setAttribute('data-ui-ready', 'true')
       } catch {}
+      // Restore previously selected microphone
+      try {
+        const savedMic = window.localStorage.getItem('chat-mic-device-id') || ''
+        if (savedMic) setSelectedInputId(savedMic)
+      } catch {}
       
       // Use setTimeout to ensure hydratedRef is set AFTER the theme useEffect completes
       setTimeout(() => {
@@ -890,6 +1092,7 @@ export default function ChatInterface() {
   // No client system prompt persistence
 
   // Persist and apply theme on change (only after hydration and for user actions)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     console.log('🎨 Theme useEffect triggered with theme:', theme, 'isHydrated:', isHydrated, 'hydratedRef:', hydratedRef.current);
     
@@ -936,7 +1139,11 @@ export default function ChatInterface() {
     if (conversationalOn) {
       // Optionally ensure replies are spoken while in conv mode
       if (!autoSpeak) setAutoSpeak(true)
-      runConversationalLoop()
+      ;(async () => {
+        const ok = await ensureMicAccess()
+        if (!ok) return
+        await runConversationalLoop()
+      })()
     } else {
       // Abort any in-flight listening or loop
       try { convAbortRef.current?.abort() } catch {}
@@ -1013,6 +1220,45 @@ export default function ChatInterface() {
         aria-labelledby="controls-title"
       >
   <div className="controls-inner two-col">
+          {/* Mic selection and status */}
+          <div className="control-group">
+            <label className="control-label" htmlFor="mic-device">Microphone</label>
+            <div className="flex items-center gap-2">
+              <select
+                id="mic-device"
+                className="control-select"
+                aria-label="Microphone input device"
+                value={selectedInputId}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setSelectedInputId(v)
+                  try { window.localStorage.setItem('chat-mic-device-id', v) } catch {}
+                }}
+                onFocus={refreshInputDevices}
+              >
+                {inputDevices.length === 0 && <option value="">Default</option>}
+                {inputDevices.map(d => (
+                  <option key={d.deviceId || d.label} value={d.deviceId}>{d.label || 'Microphone'}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="icon-btn"
+                aria-label="Refresh microphones"
+                title="Refresh microphones"
+                onClick={refreshInputDevices}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="23 4 23 10 17 10"/>
+                  <polyline points="1 20 1 14 7 14"/>
+                  <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l5.36 4.36A9 9 0 0020.49 15"/>
+                </svg>
+              </button>
+            </div>
+            {convError && (
+              <p className="text-xs mt-1 text-red-500" role="alert">{convError}</p>
+            )}
+          </div>
           {/* PT Scenario selection (first) */}
           <div className="control-group">
             <label className="control-label" htmlFor="pt-scenario">Patient case</label>
@@ -1102,7 +1348,7 @@ export default function ChatInterface() {
                   <div className="bubble-actions mt-1 flex items-center gap-2">
                     {loadingByMessage[message.id] && (
                       <span className="inline-flex items-center gap-1" aria-live="polite">
-                        <CircularProgress size={14} thickness={6} />
+                        <CircularProgress size={14} thickness={6} sx={{ color: 'var(--brand-accent)' }} />
                         <span className="sr-only">Preparing audio…</span>
                       </span>
                     )}
@@ -1125,12 +1371,14 @@ export default function ChatInterface() {
           <div className="message assistant">
             <div className="message-container">
               <div className="bubble-container">
+                {/* One-line spinner in place where play would be */}
+                <div className="tts-outside-left">
+                  <span className="inline-flex items-center" aria-label="Loading" title="Loading">
+                    <CircularProgress size={14} thickness={6} sx={{ color: 'var(--brand-accent)' }} />
+                  </span>
+                </div>
                 <div className="bubble typing-bubble">
-                  <div className="typing-indicator">
-                    <span className="dot"></span>
-                    <span className="dot"></span>
-                    <span className="dot"></span>
-                  </div>
+                  <div className="typing-indicator sr-only">Assistant is thinking…</div>
                 </div>
               </div>
             </div>
@@ -1197,6 +1445,32 @@ export default function ChatInterface() {
           </div>
         </form>
       </footer>
+
+      {/* Toast banner */}
+      {toastText && (
+        <div role="alert" aria-live="polite" className="toast-banner">
+          <div className="inner">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12" y2="16"></line>
+            </svg>
+            <span>{toastText}</span>
+            <button
+              type="button"
+              className="icon-btn"
+              aria-label="Dismiss notification"
+              onClick={() => setToastText('')}
+              title="Dismiss"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Floating Conversation Overlay */}
       {conversationalOn && (

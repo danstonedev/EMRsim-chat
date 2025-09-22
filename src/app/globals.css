@@ -7,11 +7,15 @@
 :root {
   --background: #f5f7fa;
   --foreground: #171717;
+  /* Brand accent: UND Green */
+  --brand-accent: #009A44;
 }
 
 :root[data-theme="dark"] {
   --background: #0a0f16;
   --foreground: #ededed;
+  /* Keep brand accent consistent in dark mode */
+  --brand-accent: #009A44;
 }
 
 @media (prefers-color-scheme: dark) {

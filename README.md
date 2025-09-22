@@ -136,6 +136,31 @@ Then follow the deployment instructions for your preferred platform.
 - Dev overlay hints: Some hints (e.g., on `.dev-tools-indicator-item`) come from Next.js dev UI and can be safely ignored.
 - MIME types: If you serve media or fonts later, prefer `audio/mpeg` for MP3 and `font/otf` for OTF fonts.
 
+## Streaming chat
+
+The route `src/app/api/chat/route.ts` streams assistant tokens via Server-Sent Events (SSE). The client `src/components/ChatInterface.tsx` reads `response.body` and appends partial text. You can observe multiple chunks in the browser Network tab under the EventStream preview.
+
+Run locally on Windows PowerShell:
+
+```powershell
+$Env:OPENAI_API_KEY="<your key>"
+npm run dev
+```
+
+## Scenario allowlist and prompt hardening
+
+- Server-side allowlist: `src/lib/prompts/allowlist.ts` exports `ALLOWED_SCENARIOS`.
+- Safety wrapper prompt: `src/lib/prompts/safety.ts` is always prepended.
+- Final composition: `[SAFETY, Persona(case), ...history (system downgraded), user]`.
+- Client attempts to pass `systemPrompt` are ignored. A client may pass `x-pt-scenario` header or `scenario` in JSON, but it is only honored when it matches the allowlist and when faculty configuration enables client scenarios.
+
+To add a new case:
+
+1) Define it in `src/lib/prompts/ptCases.ts`.
+2) Add its ID to `ALLOWED_SCENARIOS` in `src/lib/prompts/allowlist.ts`.
+3) Optionally set it as default via `DEFAULT_PT_SCENARIO` env or in the faculty settings page (`/faculty`).
+
+
 ## Contributing
 
 1. Fork the repository

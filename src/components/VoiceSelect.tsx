@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable jsx-a11y/aria-proptypes */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -93,15 +94,30 @@ export default function VoiceSelect({ voices, value, onChange, ariaLabel = 'Voic
           aria-label={ariaLabel}
         >
           {voices.map((v, idx) => {
-            const selected = v === value
+            const isSelected = v === value
             const active = idx === activeIndex
+            if (isSelected) {
+              return (
+                <div
+                  key={v}
+                  role="option"
+                  aria-selected="true"
+                  tabIndex={0}
+                  className={`voice-select-item selected ${active ? 'active' : ''}`}
+                  onMouseEnter={() => setActiveIndex(idx)}
+                  onClick={() => { onChange(v); setOpen(false); triggerRef.current?.focus() }}
+                  onKeyDown={(e) => onItemKeyDown(e, idx)}
+                >
+                  {v}
+                </div>
+              )
+            }
             return (
               <div
                 key={v}
                 role="option"
-                /* aria-selected intentionally omitted to satisfy strict linting; selection conveyed via styling and role */
                 tabIndex={0}
-                className={`voice-select-item ${selected ? 'selected' : ''} ${active ? 'active' : ''}`}
+                className={`voice-select-item ${active ? 'active' : ''}`}
                 onMouseEnter={() => setActiveIndex(idx)}
                 onClick={() => { onChange(v); setOpen(false); triggerRef.current?.focus() }}
                 onKeyDown={(e) => onItemKeyDown(e, idx)}

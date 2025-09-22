@@ -399,6 +399,25 @@
   box-shadow: var(--focus-ring);
 }
 
+/* Toast banner */
+.toast-banner {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 50;
+  background: var(--bubble-error-bg, #2b2b2b);
+  color: var(--bubble-error-fg, #ffdddd);
+  border: 1px solid var(--bubble-error-border, #ff5555);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.toast-banner .inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .muted {
   font-size: 0.75rem;
   color: var(--text-muted);

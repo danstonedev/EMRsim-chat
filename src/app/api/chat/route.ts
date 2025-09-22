@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
-import { getDefaultPatientPrompt } from '@/lib/prompts/patient'
 import { getPTPrompt } from '@/lib/prompts/ptCases'
 import { getFacultySettings } from '@/lib/config/faculty'
+import { SAFETY_WRAPPER_PROMPT } from '@/lib/prompts/safety'
+import { resolvePersonaPromptByScenarioId, isAllowedScenario } from '@/lib/prompts/allowlist'
 
 export const runtime = 'nodejs'
 
@@ -22,7 +23,8 @@ export async function POST(req: Request) {
     }
 
     let message: string | null = null
-  let systemPrompt: string | null = null
+    // Client-provided system prompt is intentionally ignored for safety
+    let _clientSystemPrompt: string | null = null
     let history: HistoryMessage[] = []
 
     if (ct.includes('application/json') || (raw.trim().startsWith('{') && raw.trim().endsWith('}'))) {
@@ -49,7 +51,7 @@ export async function POST(req: Request) {
       }
       if (body && typeof body === 'object') {
         if (typeof body.message === 'string') message = body.message
-  if (typeof body.systemPrompt === 'string') systemPrompt = body.systemPrompt
+        if (typeof body.systemPrompt === 'string') _clientSystemPrompt = body.systemPrompt
         if (Array.isArray(body.history)) {
           history = body.history.filter(
             (m: any) => m && typeof m.content === 'string' && (m.role === 'user' || m.role === 'assistant' || m.role === 'system')
@@ -60,8 +62,7 @@ export async function POST(req: Request) {
       const params = new URLSearchParams(raw)
       const msg = params.get('message')
       if (msg) message = msg
-      const sp = params.get('systemPrompt')
-      if (sp) systemPrompt = sp
+  // Ignore client system prompt in URL-encoded form as well
     } else if (raw) {
       // Treat plain text as the message
       message = raw
@@ -80,40 +81,78 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing OPENAI_API_KEY on server. Add it to .env.local' }, { status: 500 })
     }
 
-    const client = new OpenAI({ apiKey })
+  const client = new OpenAI({ apiKey })
 
-    const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = []
-  // Prefer faculty settings; fall back to env flags when not present
-  const faculty = getFacultySettings()
-  const allowClientPrompt = faculty.enableClientSystemPrompt
-  const enableClientScenario = faculty.enableClientScenario
-    let scenarioId: string | undefined = faculty.scenarioId
-    if (enableClientScenario) {
-      // allow scenario via header or JSON body field "scenario"
-      const hdr = req.headers.get('x-pt-scenario') || undefined
-      if (hdr) scenarioId = hdr
-      if (!scenarioId) {
-        try {
-          const parsed = raw ? JSON.parse(raw) : null
-          if (parsed && typeof parsed.scenario === 'string') scenarioId = parsed.scenario
-        } catch {}
-      }
+    const faculty = getFacultySettings()
+    // Resolve scenario with server-side allowlist. If client passes a header or body, only accept if allowlist contains it AND faculty enables client scenarios.
+    let requestedScenario: string | undefined = faculty.scenarioId
+    const hdrScenario = req.headers.get('x-pt-scenario') || undefined
+    if (faculty.enableClientScenario && isAllowedScenario(hdrScenario || '')) {
+      requestedScenario = hdrScenario || requestedScenario
+    } else if (faculty.enableClientScenario) {
+      // Try body.scenario if present and allowed
+      try {
+        const parsed = raw ? JSON.parse(raw) : null
+        if (parsed && typeof parsed.scenario === 'string' && isAllowedScenario(parsed.scenario)) {
+          requestedScenario = parsed.scenario
+        }
+      } catch {}
     }
-    const effectiveSystem = (allowClientPrompt && systemPrompt) ? systemPrompt : getPTPrompt(scenarioId)
-  messages.push({ role: 'system', content: effectiveSystem })
-    if (history.length) messages.push(...history)
+
+    const personaPrompt = resolvePersonaPromptByScenarioId(requestedScenario)
+    const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = []
+    // Non-overrideable safety wrapper first, then persona
+    messages.push({ role: 'system', content: SAFETY_WRAPPER_PROMPT })
+    messages.push({ role: 'system', content: personaPrompt })
+    if (history.length) messages.push(...history.map(m => ({ role: m.role === 'system' ? 'user' : m.role, content: m.content })))
     if (message) messages.push({ role: 'user', content: message })
 
-    const completion = await client.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages,
-      temperature: 0.5,
-      presence_penalty: 0.0,
-      frequency_penalty: 0.0,
+    // Stream via SSE
+    const stream = new ReadableStream<Uint8Array>({
+      start: async (controller) => {
+        const encoder = new TextEncoder()
+        const send = (data: string) => controller.enqueue(encoder.encode(`data: ${data}\n\n`))
+        const sendComment = (comment: string) => controller.enqueue(encoder.encode(`: ${comment}\n\n`))
+        try {
+          // Minimal keep-alive
+          sendComment('stream-start')
+          const resp = await client.chat.completions.create({
+            model: 'gpt-4o-mini',
+            stream: true,
+            temperature: 0.5,
+            presence_penalty: 0.0,
+            frequency_penalty: 0.0,
+            messages,
+          })
+          for await (const part of resp) {
+            const delta = part.choices?.[0]?.delta?.content
+            if (typeof delta === 'string' && delta.length) {
+              send(delta)
+            }
+          }
+          controller.enqueue(encoder.encode(`event: done\n` + `data: [DONE]\n\n`))
+          controller.close()
+        } catch (e: any) {
+          try {
+            send(JSON.stringify({ error: e?.message || 'stream_error' }))
+          } finally {
+            controller.close()
+          }
+        }
+      },
+      cancel() {
+        // no-op
+      }
     })
 
-    const reply = completion.choices?.[0]?.message?.content ?? ''
-    return NextResponse.json({ reply })
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+        Connection: 'keep-alive',
+        'X-Accel-Buffering': 'no',
+      },
+    })
   } catch (err) {
     console.error('API /api/chat error:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })

@@ -4,9 +4,24 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
+    "dev:turbo": "next dev --turbo -p 3001",
+    "dev:inspect": "NODE_OPTIONS='--inspect' next dev -p 3001",
+    "dev:check": "node scripts/dev-health-check.js",
+    "dev:fix": "node scripts/dev-troubleshoot.js --fix-auto",
+    "dev:troubleshoot": "node scripts/dev-troubleshoot.js",
+    "dev:monitor": "node scripts/dev-monitor.js",
+    "dev:setup-hooks": "git config core.hooksPath .githooks && chmod +x .githooks/pre-commit && chmod +x .githooks/post-merge",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "start": "next start -p 3001",
-    "lint": "next lint"
+    "start:prod": "NODE_ENV=production next start -p 3001",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:dev-server": "vitest run tests/dev-server.test.ts",
+    "clean": "rm -rf .next out",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -27,6 +42,7 @@
     "eslint-config-next": "15.5.3",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.0.5"
   }
 }
