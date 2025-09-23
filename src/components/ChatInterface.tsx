@@ -2,12 +2,16 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
+import { PlayIcon, PauseIcon } from "./Icons";
 import CircularProgress from "@mui/material/CircularProgress";
 import LogoWhite from "../../img/EMRsim-chat_white.png";
 import VoiceSelect from "./VoiceSelect";
 import { getApiUrl } from "../lib/config/api";
+import { useOpenAIWarmup } from "../lib/hooks/useOpenAIWarmup";
+import { useFastVoiceProcessing } from "../lib/hooks/useFastVoiceProcessing";
+import { usePerformanceMonitor } from "../lib/performance/PerformanceMonitor";
+import { OptimizationTracker } from "../lib/performance/OptimizationTracker";
+import { PTCaseId } from "../lib/prompts/ptCases";
 
 interface Message {
   id: number;
@@ -149,6 +153,70 @@ export default function ChatInterface() {
     return "lowBackPain";
   });
 
+  // OpenAI warmup to eliminate cold start delays
+  const { isWarmedUp, warmupStatus } = useOpenAIWarmup({
+    scenario: scenarioId as PTCaseId,
+  });
+
+  // Fast voice processing pipeline for ultra-speed optimization
+  const {
+    processVoiceToResponse,
+    isProcessing: isFastProcessing,
+    transcriptionText,
+    responseText,
+    performance: voicePerformance,
+    cancelProcessing,
+  } = useFastVoiceProcessing();
+
+  // Performance monitoring for Core Web Vitals and voice metrics
+  const { trackVoicePerformance, generateReport } = usePerformanceMonitor();
+
+  // Optimization outcome tracking
+  const {
+    trackInteraction,
+    trackError,
+    generateOptimizationReport,
+    metrics: optimizationMetrics,
+  } = OptimizationTracker();
+
+  // Make optimization tracking available globally for console debugging
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.getOptimizationReport = generateOptimizationReport;
+      window.trackVoiceProcessing = (metrics: any) => {
+        const isFirstInteraction = optimizationMetrics.totalInteractions === 0;
+        const totalTime = metrics.totalMs || metrics.totalProcessingTime || 0;
+        if (totalTime > 0) {
+          trackInteraction(
+            isFirstInteraction ? "first" : "subsequent",
+            totalTime
+          );
+        }
+      };
+
+      // Add keyboard shortcut for performance report (Ctrl+Shift+P)
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.ctrlKey && event.shiftKey && event.key === "P") {
+          event.preventDefault();
+          const report = generateOptimizationReport();
+          console.log(report);
+          alert(report); // Also show in alert for visibility
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+        delete window.getOptimizationReport;
+        delete window.trackVoiceProcessing;
+      };
+    }
+  }, [
+    generateOptimizationReport,
+    trackInteraction,
+    optimizationMetrics.totalInteractions,
+  ]);
+
   // Conversational mode (hands-free) state
   const [conversationalOn, setConversationalOn] = useState<boolean>(false);
   const convAbortRef = useRef<AbortController | null>(null);
@@ -271,11 +339,12 @@ export default function ChatInterface() {
       } catch {}
       genAbortRef.current = new AbortController();
 
-      const res = await fetch(getApiUrl("/api/chat"), {
+      const res = await fetch(getApiUrl("/api/chat-optimized"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-pt-scenario": scenarioId,
+          "x-warmed-up": isWarmedUp ? "true" : "false", // Signal warmup status
         },
         body: JSON.stringify({
           message: userMessage.text,
@@ -1067,9 +1136,10 @@ export default function ChatInterface() {
 
   const transcribeBlob = async (blob: Blob): Promise<string> => {
     try {
+      // Use fast transcription pipeline with optimized audio processing
       const form = new FormData();
       form.append("audio", blob, "utterance.webm");
-      const res = await fetch(getApiUrl("/api/transcribe"), {
+      const res = await fetch(getApiUrl("/api/transcribe-fast"), {
         method: "POST",
         body: form,
       });
@@ -1104,11 +1174,12 @@ export default function ChatInterface() {
       content: m.text,
     })) as Array<{ role: "user" | "assistant"; content: string }>;
     try {
-      const res = await fetch(getApiUrl("/api/chat"), {
+      const res = await fetch(getApiUrl("/api/chat-optimized"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-pt-scenario": scenarioId,
+          "x-warmed-up": isWarmedUp ? "true" : "false", // Signal warmup status
         },
         body: JSON.stringify({
           message: userText,
@@ -1183,76 +1254,159 @@ export default function ChatInterface() {
       while (conversationalOn && !signal.aborted) {
         convPhaseRef.current = "listening";
         setConvPhase("listening");
-        const blob = await listenOnceWithVAD(signal);
+        // Safety timeout: if listening lasts too long without speech, reset to idle
+        const listenStart = performance.now();
+        let blob: Blob | null = null;
+        try {
+          blob = await listenOnceWithVAD(signal);
+        } catch (err) {
+          // Mic/recording error – exit conversational mode gracefully
+          setConversationalOn(false);
+          convPhaseRef.current = "idle";
+          setConvPhase("idle");
+          try {
+            setVuLevel(0);
+            setVuBucket(0);
+          } catch {}
+          break;
+        }
         if (signal.aborted) break;
+        if (!blob && performance.now() - listenStart > 6000) {
+          // Prevent UI from appearing stuck in 'listening' indefinitely
+          convPhaseRef.current = "idle";
+          setConvPhase("idle");
+        }
         if (!blob) {
           // No speech detected; continue listening
           continue;
         }
 
-        convPhaseRef.current = "transcribing";
-        setConvPhase("transcribing");
+        // ULTRA-FAST PIPELINE: Use parallel processing for transcription + AI response
+        // Note: don't switch to 'transcribing' yet; wait until we have an accepted transcript
         try {
           setVuLevel(0);
           setVuBucket(0);
         } catch {}
-        const userText = await transcribeBlob(blob);
-        if (signal.aborted) break;
-        if (!userText) {
-          continue;
-        }
-        // Guard against echo (capturing the assistant's own TTS)
-        if (isLikelyEcho(userText, lastReplyRef.current)) {
-          continue;
-        }
-        // Guard against non-speech or stock mishears
-        if (isLikelyNonSpeech(userText)) {
-          continue;
-        }
 
-        // Add user message
-        setMessages((prev) => {
-          const next: Message = {
-            id: prev.length + 1,
-            text: userText,
-            sender: "user",
-            timestamp: new Date(),
-          };
-          return [...prev, next];
-        });
+        // Build history for AI context
+        const ua = messagesRef.current.filter((m) => m.sender !== "system");
+        const maxMsgs = 16; // 8 pairs
+        const bounded = ua.slice(Math.max(0, ua.length - maxMsgs));
+        const history = bounded.map((m) => ({
+          role: m.sender,
+          content: m.text,
+        })) as Array<{ role: "user" | "assistant"; content: string }>;
 
-        convPhaseRef.current = "chatting";
-        setConvPhase("chatting");
+        // Use ultra-fast voice pipeline with progressive responses
+        let userText = "";
+        let aiResponse = "";
+
         try {
-          setVuLevel(0);
-          setVuBucket(0);
-        } catch {}
-        const reply = await chatReply(userText);
-        if (signal.aborted) break;
-        if (!reply) {
-          // Add error/system message to keep context
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: (prev[prev.length - 1]?.id || 0) + 1,
-              text: "Sorry, I could not respond.",
-              sender: "system",
-              timestamp: new Date(),
+          await processVoiceToResponse(blob, scenarioId, history, {
+            // Defer phase change until we accept the text
+            onTranscriptionComplete: (text) => {
+              userText = text.trim();
+              if (userText) {
+                // Guard against echo (capturing the assistant's own TTS)
+                if (isLikelyEcho(userText, lastReplyRef.current)) {
+                  userText = ""; // Mark as invalid
+                  return;
+                }
+                // Guard against non-speech or stock mishears
+                if (isLikelyNonSpeech(userText)) {
+                  userText = ""; // Mark as invalid
+                  return;
+                }
+                // Accept transcript: now move to transcribing
+                convPhaseRef.current = "transcribing";
+                setConvPhase("transcribing");
+                // Add user message immediately after transcription
+                setMessages((prev) => {
+                  const next: Message = {
+                    id: prev.length + 1,
+                    text: userText,
+                    sender: "user",
+                    timestamp: new Date(),
+                  };
+                  return [...prev, next];
+                });
+              }
             },
-          ]);
-          continue;
+            onResponseStart: () => {
+              convPhaseRef.current = "chatting";
+              setConvPhase("chatting");
+            },
+            onResponseComplete: (response) => {
+              aiResponse = response.trim();
+              if (aiResponse) {
+                // Add AI response
+                setMessages((prev) => {
+                  const next: Message = {
+                    id: prev.length + 1,
+                    text: aiResponse,
+                    sender: "assistant",
+                    timestamp: new Date(),
+                  };
+                  return [...prev, next];
+                });
+                lastReplyRef.current = aiResponse;
+
+                // Track voice processing performance
+                if (voicePerformance) {
+                  const isFirstInteraction =
+                    optimizationMetrics.totalInteractions === 0;
+                  const totalTime = voicePerformance.totalMs || 0;
+
+                  trackVoicePerformance({
+                    transcriptionTime: voicePerformance.transcriptionMs,
+                    aiResponseTime: voicePerformance.aiResponseMs,
+                    totalProcessingTime: totalTime,
+                  });
+
+                  // Track optimization outcomes
+                  trackInteraction(
+                    isFirstInteraction ? "first" : "subsequent",
+                    totalTime
+                  );
+
+                  // Log performance achievements
+                  if (isFirstInteraction && totalTime <= 1000) {
+                    console.log(
+                      "🎯 OPTIMIZATION SUCCESS: First response under 1 second!"
+                    );
+                  }
+                  if (totalTime <= 2000) {
+                    console.log(
+                      "⚡ OPTIMIZATION SUCCESS: Voice processing under 2 seconds!"
+                    );
+                  }
+                }
+              }
+            },
+            onError: (error) => {
+              console.error("Voice pipeline error:", error);
+              trackError("voice-pipeline-error");
+              // Add error/system message to keep context
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: (prev[prev.length - 1]?.id || 0) + 1,
+                  text: "Sorry, I could not respond.",
+                  sender: "system",
+                  timestamp: new Date(),
+                },
+              ]);
+            },
+          });
+        } catch (error) {
+          console.error("Voice processing failed:", error);
+          continue; // Skip this iteration and continue listening
         }
 
-        setMessages((prev) => {
-          const next: Message = {
-            id: prev.length + 1,
-            text: reply,
-            sender: "assistant",
-            timestamp: new Date(),
-          };
-          return [...prev, next];
-        });
-        lastReplyRef.current = reply;
+        if (signal.aborted) break;
+        if (!userText || !aiResponse) {
+          continue; // Skip to next listening cycle
+        }
 
         convPhaseRef.current = "speaking";
         setConvPhase("speaking");
@@ -1261,7 +1415,7 @@ export default function ChatInterface() {
           setVuBucket(0);
         } catch {}
         // Speak and wait until finished before resuming listening
-        await speakText(reply);
+        await speakText(aiResponse);
         await waitForAudioEnd();
         // Cooldown to let residual audio settle before listening resumes
         await new Promise((r) => setTimeout(r, 200));
@@ -1859,9 +2013,9 @@ export default function ChatInterface() {
                           title={isThisPlaying ? "Pause" : "Play"}
                         >
                           {isThisPlaying ? (
-                            <PauseRoundedIcon fontSize="small" />
+                            <PauseIcon size={18} />
                           ) : (
-                            <PlayArrowRoundedIcon fontSize="small" />
+                            <PlayIcon size={18} />
                           )}
                         </button>
                       );
@@ -2107,6 +2261,8 @@ export default function ChatInterface() {
           </div>
         </div>
       )}
+
+      {/* Removed Perf Tracking overlay */}
     </section>
   );
 }

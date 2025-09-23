@@ -1,0 +1,278 @@
+/* Performance Monitor Styles */
+.performance-monitor {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid #e1e5e9;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 300px;
+  max-width: 400px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.performance-monitor.minimized {
+  min-width: auto;
+  max-width: none;
+}
+
+.performance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e1e5e9;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.performance-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.performance-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.performance-controls button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.performance-controls button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.performance-metrics {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.metric-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric-group h4 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4a5568;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.metric:last-child {
+  border-bottom: none;
+}
+
+.metric-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-weight: 600;
+  color: #2d3748;
+  font-family: "SF Mono", Monaco, monospace;
+}
+
+.improvement-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.improvement-value {
+  font-weight: 600;
+  font-family: "SF Mono", Monaco, monospace;
+}
+
+.improvement-value.positive {
+  color: #38a169;
+}
+
+.improvement-value.negative {
+  color: #e53e3e;
+}
+
+.performance-actions {
+  padding: 12px 16px;
+  border-top: 1px solid #e1e5e9;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.performance-actions button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.test-btn {
+  background: #4299e1;
+  color: white;
+}
+
+.test-btn:hover {
+  background: #3182ce;
+}
+
+.report-btn {
+  background: #38a169;
+  color: white;
+}
+
+.report-btn:hover {
+  background: #2f855a;
+}
+
+.refresh-btn {
+  background: #ed8936;
+  color: white;
+}
+
+.refresh-btn:hover {
+  background: #dd6b20;
+}
+
+.recommendations {
+  padding: 12px 16px;
+  background: #fef5e7;
+  border-top: 1px solid #e1e5e9;
+  border-radius: 0 0 12px 12px;
+}
+
+.recommendations h4 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #c05621;
+  font-weight: 600;
+}
+
+.recommendations ul {
+  margin: 0;
+  padding-left: 16px;
+  color: #744210;
+}
+
+.recommendations li {
+  margin: 4px 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.performance-toggle-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.performance-toggle-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .performance-monitor {
+    background: rgba(26, 32, 44, 0.95);
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .performance-header {
+    border-bottom-color: #4a5568;
+  }
+
+  .metric {
+    border-bottom-color: #4a5568;
+  }
+
+  .metric-label {
+    color: #a0aec0;
+  }
+
+  .metric-value {
+    color: #e2e8f0;
+  }
+
+  .performance-actions {
+    border-top-color: #4a5568;
+  }
+
+  .recommendations {
+    background: rgba(68, 51, 122, 0.1);
+    border-top-color: #4a5568;
+  }
+
+  .recommendations h4 {
+    color: #f6ad55;
+  }
+
+  .recommendations ul {
+    color: #e2e8f0;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .performance-monitor {
+    right: 10px;
+    top: 10px;
+    min-width: 280px;
+    max-width: calc(100vw - 20px);
+  }
+
+  .performance-toggle-btn {
+    right: 10px;
+    top: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+}
