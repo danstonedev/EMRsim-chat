@@ -1,0 +1,26 @@
+{
+  "hemodynamic_thresholds": {
+    "hr_min": 40,
+    "hr_max": 130,
+    "sbp_min": 90,
+    "sbp_max": 180,
+    "dbp_max": 100,
+    "spo2_min": 90,
+    "rr_max": 30,
+    "rpe_max": 7
+  },
+  "therapy_hold_criteria": [
+    "sbp_gt_180_or_dbp_gt_100",
+    "spo2_lt_90_on_baseline_O2",
+    "new_neuro_change",
+    "active_chest_pain",
+    "acute_dvt_without_anticoagulation"
+  ],
+  "lab_thresholds": {
+    "hgb_g_dl_min": 8.0,
+    "platelets_k_uL_min": 20,
+    "glucose_mg_dl_min": 70,
+    "glucose_mg_dl_max": 300,
+    "inr_max": 3.0
+  }
+}

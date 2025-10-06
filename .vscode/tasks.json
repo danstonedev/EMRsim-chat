@@ -1,0 +1,151 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Install and run backend",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd backend; if (!(Test-Path node_modules)) { npm i }; if (!(Test-Path .env)) { Copy-Item .env.example .env }; npm run dev"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Restart backend to pick up logging changes",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"backend/scripts/start-or-skip.ps1"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Install and run frontend",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; if (!(Test-Path node_modules)) { npm i }; if (!(Test-Path .env.local)) { Copy-Item .env.local.example .env.local }; npm run dev"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "Build frontend",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; if (Test-Path node_modules) { $true } else { npm i }; npm test --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Backend: test and validate",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd backend; npm test --silent; npm run --silent sps:validate"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Build frontend",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; if (Test-Path node_modules) { $true } else { npm i }; npm test --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Build frontend",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Build frontend",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Build frontend",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Build frontend",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		}
+	]
+}

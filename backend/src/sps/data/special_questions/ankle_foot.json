@@ -1,0 +1,23 @@
+[
+  {
+    "id": "SQ_AF_1",
+    "region": "ankle_foot",
+    "student_prompt_patterns": ["numb", "tingl", "pins", "needle"],
+    "patient_cue_intent": "Clarify distal neuro symptoms for potential nerve entrapment",
+    "reveal_triggers": [],
+    "delivery_guidelines": ["Answer briefly unless probed"],
+    "example_phrases": ["No numbness or tingling into the foot."],
+    "instructor_imaging_note": "Neuro screen negative unless provoked by load.",
+    "refs": []
+  },
+  {
+    "id": "SQ_AF_2",
+    "region": "ankle_foot",
+    "student_prompt_patterns": ["instability", "giving way", "roll"],
+    "patient_cue_intent": "Clarify mechanical vs perceived instability",
+    "reveal_triggers": [],
+    "example_phrases": ["It rarely rolls now, just feels a little unsure on uneven ground."],
+    "instructor_imaging_note": "No red flags for fracture; Ottawa negative.",
+    "refs": []
+  }
+]

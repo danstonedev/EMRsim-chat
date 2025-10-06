@@ -1,0 +1,22 @@
+[
+  {
+    "id": "SQ_K_1",
+    "region": "knee",
+    "student_prompt_patterns": ["locking", "catch", "stuck"],
+    "patient_cue_intent": "Differentiate true mechanical locking from pseudo-locking",
+    "reveal_triggers": [],
+    "example_phrases": ["No true locking—just occasional catching that releases."],
+    "instructor_imaging_note": "No urgent imaging unless mechanical block worsens.",
+    "refs": []
+  },
+  {
+    "id": "SQ_K_2",
+    "region": "knee",
+    "student_prompt_patterns": ["giving way", "unstable", "buckl"],
+    "patient_cue_intent": "Clarify instability pattern for ligamentous involvement",
+    "reveal_triggers": [],
+    "example_phrases": ["It feels like it might give way pivoting quickly."],
+    "instructor_imaging_note": "ACL partial sprain consistent with history.",
+    "refs": []
+  }
+]

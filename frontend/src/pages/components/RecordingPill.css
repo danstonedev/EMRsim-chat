@@ -1,0 +1,150 @@
+.recording-pill {
+  --rp-height: 48px;
+  --rp-pad-x: 12px;
+  --rp-radius: 999px;
+  --rp-shell-bg: #1f1f1f;
+  --rp-shell-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --rp-idle-bg: #2a2a2a;
+  --rp-active-bg: #333333;
+  --rp-recording-bg: #e34a4a;
+  --rp-paused-bg: #f0a54b;
+  --rp-text-idle: #b0b0b0;
+  --rp-text-recording: #ffd1d1;
+  --rp-wave-idle: #8a8a8a;
+  --rp-wave-active: #b3b3b3;
+  --rp-wave-recording: #ffc2c2;
+  --rp-focus-ring: #7ab7ff;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  padding: 6px;
+  height: var(--rp-height);
+  border: none;
+  border-radius: var(--rp-radius);
+  background: var(--rp-shell-bg);
+  box-shadow: var(--rp-shell-shadow);
+  cursor: pointer;
+  transition: opacity 160ms ease, transform 160ms ease;
+  color: inherit;
+}
+
+.recording-pill--passive {
+  cursor: default;
+}
+
+.recording-pill--passive .recording-pill__surface {
+  cursor: default;
+}
+
+.recording-pill--disabled,
+.recording-pill:disabled {
+  cursor: default;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.recording-pill:focus-visible {
+  outline: 2px solid var(--rp-focus-ring);
+  outline-offset: 3px;
+}
+
+.recording-pill__surface {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px var(--rp-pad-x);
+  border-radius: calc(var(--rp-radius) - 6px);
+  background: var(--rp-idle-bg);
+  color: var(--rp-text-idle);
+  transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.recording-pill[data-state='recording'] .recording-pill__surface {
+  background: var(--rp-active-bg);
+  color: var(--rp-text-idle);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.recording-pill[data-speaking='true'] .recording-pill__surface {
+  background: var(--rp-recording-bg);
+  color: var(--rp-text-recording);
+}
+
+.recording-pill[data-state='paused'] .recording-pill__surface {
+  background: var(--rp-paused-bg);
+}
+
+.recording-pill__timer {
+  font-weight: 600;
+  font-family: var(--font-stack-mono, 'Roboto Mono', 'SFMono-Regular', Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+}
+
+.recording-pill__waveform {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+.recording-pill__bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: calc(var(--rp-height) - 20px);
+}
+
+.recording-pill__control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.recording-pill__control > * {
+  pointer-events: auto;
+}
+
+.recording-pill__bar {
+  display: inline-block;
+  width: 3px;
+  border-radius: 3px;
+  height: var(--bar-height, 20%);
+  transform-origin: bottom center;
+  transition: height 120ms ease, opacity 120ms ease;
+  background: var(--rp-wave-idle);
+  opacity: 0.7;
+}
+
+.recording-pill[data-state='recording'] .recording-pill__bar {
+  background: var(--rp-wave-active);
+  opacity: 0.85;
+}
+
+.recording-pill[data-speaking='true'] .recording-pill__bar {
+  background: var(--rp-wave-recording);
+  opacity: 1;
+}
+
+.recording-pill__error-icon {
+  width: 22px;
+  height: 22px;
+  color: #ffb4b4;
+  opacity: 0.85;
+}
+
+.recording-pill__pause-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+}

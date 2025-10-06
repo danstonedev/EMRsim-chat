@@ -1,0 +1,94 @@
+{
+  "rubric_id": "pt_outpatient_core_v1",
+  "criteria": [
+    {
+      "key": "red_flags",
+      "anchors": {
+        "emerging": "Misses key safety probes",
+        "proficient": "Complete screen; safe plan",
+        "exemplary": "Tailored screen; explicit safety netting"
+      },
+      "points": {
+        "emerging": 1,
+        "proficient": 3,
+        "exemplary": 5
+      }
+    },
+    {
+      "key": "differentials",
+      "anchors": {
+        "emerging": "Few differentials",
+        "proficient": "Plausible, prioritized",
+        "exemplary": "Dynamic updating; targeted tests"
+      },
+      "points": {
+        "emerging": 1,
+        "proficient": 3,
+        "exemplary": 5
+      }
+    },
+    {
+      "key": "measurement",
+      "anchors": {
+        "emerging": "Non-specific measures",
+        "proficient": "Validated protocols",
+        "exemplary": "Interprets norms; ties to goals"
+      },
+      "points": {
+        "emerging": 1,
+        "proficient": 3,
+        "exemplary": 5
+      }
+    },
+    {
+      "key": "intervention",
+      "anchors": {
+        "emerging": "Generic plan",
+        "proficient": "CPG-aligned with dose",
+        "exemplary": "Dose-response reasoning & SDOH"
+      },
+      "points": {
+        "emerging": 1,
+        "proficient": 3,
+        "exemplary": 5
+      }
+    },
+    {
+      "key": "education",
+      "anchors": {
+        "emerging": "Vague advice",
+        "proficient": "Clear + teach-back",
+        "exemplary": "Motivational interviewing & health literacy"
+      },
+      "points": {
+        "emerging": 1,
+        "proficient": 3,
+        "exemplary": 5
+      }
+    },
+    {
+      "key": "documentation",
+      "anchors": {
+        "emerging": "Non-measurable goals",
+        "proficient": "Measurable SOAP",
+        "exemplary": "Evidence-linked plan; outcomes↔goals"
+      },
+      "points": {
+        "emerging": 1,
+        "proficient": 3,
+        "exemplary": 5
+      }
+    }
+  ],
+  "feedback_bank": {
+    "missed_red_flags": [
+      "Ask about night pain unrelieved by rest and steroid/alcohol history."
+    ],
+    "weak_goal_link": [
+      "Translate TUG/10MWT results into patient-centered goals."
+    ],
+    "premature_closure": [
+      "List differentials and state the evidence used to rule-in/out."
+    ]
+  }
+}

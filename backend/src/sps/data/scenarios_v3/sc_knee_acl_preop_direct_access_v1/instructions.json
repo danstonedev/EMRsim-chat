@@ -1,0 +1,18 @@
+{
+  "sp_instructions": {
+    "affect": "guarded",
+    "pain_behavior": "guarding",
+    "cueing_rules": [
+      "do_not_volunteer_diagnosis",
+      "use_patient_words"
+    ]
+  },
+  "llm_prompt_hooks": {
+    "coaching_cues": [
+      "Screen for red flags; establish mechanism with pop/swelling timeline.",
+      "Decide what to defer (hop tests) due to irritability.",
+      "Educate on prehab and referral."
+    ]
+  },
+  "authoring_notes": "Direct access; ensure referral for imaging/ortho while initiating prehab."
+}

@@ -1,0 +1,102 @@
+{
+  "frequency_duration": {
+    "visits_per_week": 1,
+    "weeks": 6
+  },
+  "referrals_imaging_requests": [],
+  "goals": {
+    "stg_2_4_weeks": [
+      "ODI improve by ≥10 points",
+      "sit 45 min ≤3/10",
+      "perform press-ups x10 with pain centralization"
+    ],
+    "ltg_6_12_weeks": [
+      "sit 60 min ≤2/10",
+      "bike 45 min without flare",
+      "return_to_full_work_capacity"
+    ]
+  },
+  "interventions_planned": [
+    {
+      "intervention_id": "motor_control",
+      "dose": {
+        "time_min": 15
+      },
+      "progression_criteria": [
+        "no peripheralization"
+      ],
+      "regression_criteria": [
+        "flare_up"
+      ],
+      "home_program_elements": [
+        "prone_press_ups_10x_every_2hrs",
+        "walking_breaks_each_hour"
+      ],
+      "expected_response": {
+        "immediate_session": [
+          "centralization"
+        ],
+        "2_6_weeks": [
+          "ODI_down_≥10"
+        ]
+      },
+      "evidence_bindings": []
+    },
+    {
+      "intervention_id": "ex_strengthening",
+      "dose": {
+        "sets": 2,
+        "reps": 10,
+        "frequency_per_week": 3
+      },
+      "progression_criteria": [
+        "RPE 4–6 tolerated"
+      ],
+      "regression_criteria": [
+        "pain_spike_>2_points_>24h"
+      ],
+      "home_program_elements": [
+        "hip_hinge_isometrics",
+        "bird_dog",
+        "bridge_progression"
+      ],
+      "expected_response": {
+        "2_6_weeks": [
+          "improved_endurance"
+        ]
+      },
+      "evidence_bindings": []
+    },
+    {
+      "intervention_id": "education_pacing",
+      "dose": {
+        "time_min": 10
+      },
+      "progression_criteria": [
+        "implements_microbreaks"
+      ],
+      "regression_criteria": [],
+      "home_program_elements": [
+        "flare_management_plan"
+      ],
+      "expected_response": {
+        "immediate_session": [
+          "better_load_management"
+        ]
+      },
+      "evidence_bindings": []
+    }
+  ],
+  "patient_education": {
+    "topics": [
+      "directional_preference",
+      "activity_pacing",
+      "sleep_and_positions"
+    ],
+    "teach_back_confirmed": true,
+    "printed_digital_resources": []
+  },
+  "safety_netting": [
+    "seek urgent care if new numbness in saddle area or bladder/bowel changes"
+  ]
+}

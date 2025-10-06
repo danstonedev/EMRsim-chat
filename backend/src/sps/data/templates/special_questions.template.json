@@ -1,0 +1,12 @@
+[
+  {
+    "id": "SQ_AF_1",
+    "region": "ankle_foot",
+    "student_prompt_patterns": ["numb", "tingl", "pins", "needle"],
+    "patient_cue_intent": "Clarify neuro symptoms vs. mechanical pain",
+    "delivery_guidelines": ["Answer briefly unless probed", "Avoid offering diagnoses"],
+    "example_phrases": ["No numbness or tingling into the foot."],
+    "instructor_imaging_note": "Neuro screen negative unless provoked by load.",
+    "refs": ["Ref or URL if applicable"]
+  }
+]

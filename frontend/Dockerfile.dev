@@ -1,0 +1,20 @@
+# Frontend Development Dockerfile - Vite with HMR
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy config files
+COPY tsconfig*.json ./
+COPY vite.config.ts ./
+COPY vitest.config.ts ./
+COPY index.html ./
+
+# Expose Vite port
+EXPOSE 5173
+
+# Development command with HMR
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

@@ -1,0 +1,82 @@
+version: "3.8"
+
+services:
+  # Backend service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: emrsim-backend
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      # Mount these from .env file or set them here
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_REALTIME_MODEL=${OPENAI_REALTIME_MODEL:-gpt-realtime-2025-08-28}
+      - OPENAI_TEXT_MODEL=${OPENAI_TEXT_MODEL:-gpt-4o}
+      - OPENAI_TTS_VOICE=${OPENAI_TTS_VOICE:-cedar}
+      - OPENAI_TRANSCRIPTION_MODEL=${OPENAI_TRANSCRIPTION_MODEL:-gpt-4o-mini-transcribe}
+      - VOICE_ENABLED=${VOICE_ENABLED:-false}
+      - SPS_ENABLED=${SPS_ENABLED:-true}
+      - VOICE_DEBUG=${VOICE_DEBUG:-false}
+      - BANNERS_ENABLED=${BANNERS_ENABLED:-true}
+      - DATABASE_URL=file:/app/data/prod.db
+      - FRONTEND_URL=http://localhost
+    volumes:
+      # Persist database
+      - backend-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3002/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})",
+        ]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+    networks:
+      - emrsim-network
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: emrsim-frontend
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://localhost:3002
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost/health",
+        ]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+    networks:
+      - emrsim-network
+
+volumes:
+  backend-data:
+    driver: local
+
+networks:
+  emrsim-network:
+    driver: bridge

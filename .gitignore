@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.turbo/
+.cache/
+*.tsbuildinfo
+
+# Test & reports
+coverage/
+test-results/
+playwright-report/
+jest-html-reporters-*/
+*.lcov
+e2e-results.json
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env files (real values never committed)
+.env
+.env.local
+.env.*.local
+
+# Package managers
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Temporary
+tmp/
+temp/
+*.tmp

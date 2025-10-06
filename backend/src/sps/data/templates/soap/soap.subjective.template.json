@@ -1,0 +1,79 @@
+{
+  "chief_complaint": "",
+  "history_present_illness": {
+    "mechanism": "",
+    "first_onset": "",
+    "course_since_onset": "improving|worsening|fluctuating|stable",
+    "prior_episodes": "",
+    "prior_treatment_response": [],
+    "red_flag_denials_affirmations": {
+      "fever_chills": false,
+      "night_pain_unrelieved": false,
+      "unexplained_weight_loss": false,
+      "recent_infection": false,
+      "cancer_history": false,
+      "neurologic_bowel_bladder_changes": false
+    }
+  },
+  "pain": {
+    "location": [],
+    "quality": [],
+    "irritability": "low|moderate|high",
+    "nrs_rest": 0,
+    "nrs_activity": 0,
+    "nrs_best": 0,
+    "nrs_worst": 0,
+    "aggravators": [],
+    "easers": [],
+    "24h_pattern": "",
+    "sleep_disturbance": "none|difficulty_falling|difficulty_staying|both"
+  },
+  "past_medical_history": [],
+  "surgical_history": [],
+  "medications": [],
+  "allergies": [],
+  "imaging": {
+    "available": false,
+    "modality": "xray|mri|ct|ultrasound|other",
+    "date": "",
+    "body_region": "",
+    "summary_patient_facing": "",
+    "clinical_interpretation": ""
+  },
+  "social_history": {
+    "tobacco": "never|former|current",
+    "alcohol": "none|social|regular",
+    "sleep_hours": 0,
+    "diet_notes": "",
+    "work_demands": "",
+    "sport_hobbies": []
+  },
+  "sdoh": {
+    "home_environment": "",
+    "transportation": "reliable|limited",
+    "financial_barriers": "none|some|significant",
+    "caregiving_roles": []
+  },
+  "goals": [],
+  "systems_review": {
+    "cardiovascular_pulmonary": {
+      "dyspnea": false,
+      "chest_pain": false,
+      "orthopnea": false,
+      "edema": false
+    },
+    "neuromuscular": {
+      "dizziness": false,
+      "falls_history": false,
+      "headache_neck": false,
+      "paresthesia": false
+    },
+    "integumentary": {
+      "wounds": false,
+      "rash": false,
+      "color_changes": false
+    },
+    "other": []
+  },
+  "special_questions_region_specific": []
+}

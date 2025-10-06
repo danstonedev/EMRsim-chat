@@ -1,0 +1,126 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_lumbar_clbp_ext_pref_flare_v1",
+  "version": 1,
+  "status": "published",
+  "meta": {
+    "title": "Chronic Low Back Pain—Recent Flare (Extension Preference)",
+    "region": "lumbar_spine",
+    "difficulty": "moderate",
+    "setting": "outpatient_pt",
+    "tags": [
+      "CLBP",
+      "extension_preference",
+      "directional_preference"
+    ],
+    "profession": "physical_therapy",
+    "created_at": "2025-10-01T16:57:26Z",
+    "updated_at": "2025-10-01T16:57:26Z"
+  },
+  "linkage": {
+    "persona_id": "prsn_clbp_extpref_v1",
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": [
+      "./primary_spine.module.json"
+    ],
+    "rubric_file": "",
+    "governance_file": ""
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "lo1",
+        "text": "Differentiate nonspecific mechanical LBP with extension preference; apply repeated movement testing.",
+        "bloom_level": "analyze",
+        "capte_refs": [
+          "evidence_based_practice",
+          "plan_of_care"
+        ],
+        "npte_map": {
+          "system": "musculoskeletal",
+          "domain": "examination"
+        },
+        "assessment_focus": [
+          "differential_diagnosis"
+        ],
+        "evidence_req": "CPG|systematic_review"
+      },
+      {
+        "id": "lo2",
+        "text": "Prescribe graded activity and extension-biased HEP with flare management.",
+        "bloom_level": "apply",
+        "capte_refs": [
+          "plan_of_care",
+          "communication_education"
+        ],
+        "npte_map": {
+          "system": "musculoskeletal",
+          "domain": "interventions"
+        },
+        "assessment_focus": [
+          "education",
+          "dose_progression"
+        ],
+        "evidence_req": "guideline_or_sr"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": [
+      "What findings supported an extension preference?"
+    ]
+  },
+  "presenting_problem": {
+    "primary_dx": "Chronic nonspecific low back pain with recent flare—extension preference",
+    "onset": "gradual",
+    "duration_weeks": 312,
+    "dominant_symptoms": [
+      "central low back ache",
+      "stiffness after sitting"
+    ],
+    "pain_nrs_rest": 2,
+    "pain_nrs_activity": 6,
+    "aggravators": [
+      "prolonged sitting",
+      "bending forward"
+    ],
+    "easers": [
+      "walking",
+      "standing",
+      "prone press-ups"
+    ],
+    "pattern_24h": "stiff morning that eases with movement; worse after long sitting",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "chronic low back pain",
+    "body_functions_structures": [
+      "motor_control_deficit",
+      "reduced lumbar extension",
+      "hip flexor tightness"
+    ],
+    "activities": [
+      "limited sitting tolerance",
+      "difficulty lifting from floor"
+    ],
+    "participation": [
+      "reduced biking endurance"
+    ],
+    "environmental_factors": [
+      "desk job"
+    ],
+    "personal_factors": [
+      "motivated",
+      "low fear avoidance"
+    ]
+  },
+  "provenance": {
+    "sources": [],
+    "reviewers": [],
+    "last_reviewed": "2025-10-01T16:57:26Z"
+  }
+}

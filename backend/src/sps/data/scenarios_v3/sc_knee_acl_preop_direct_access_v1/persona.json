@@ -1,0 +1,23 @@
+{
+  "persona_id": "prsn_acl_preop_v1",
+  "name": "Mateo Rivera",
+  "age": 24,
+  "sex": "male",
+  "preferred_pronouns": "he/him",
+  "occupation": "college student",
+  "activity_level": "vigorous",
+  "cultural_linguistic_notes": [
+    "bilingual English/Spanish"
+  ],
+  "goals_patient_voice": [
+    "I want my knee to stop giving out.",
+    "I need to be ready for surgery and get back next season."
+  ],
+  "communication_style": "concise",
+  "health_literacy": "high",
+  "support_system": [
+    "teammates",
+    "coach",
+    "family"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "patient_id": "prsn_clbp_extpref_v1",
+  "display_name": "Arjun Mehta",
+  "demographics": {
+    "name": "Arjun Mehta",
+    "preferred_name": "Arjun",
+    "pronouns": "he/him",
+    "age": 45,
+    "sex": "male",
+    "occupation": "software engineer",
+    "sport_activity": "light",
+    "education_health_literacy": "high",
+    "dob": "1980-01-15"
+  },
+  "social_context": {
+    "support_system": [
+      "spouse"
+    ]
+  },
+  "function_context": {
+    "goals": [
+      "Sit 60 minutes without pain >3/10",
+      "Return to recreational biking"
+    ]
+  },
+  "beliefs_affect": {
+    "mood": "stoic"
+  },
+  "dialogue_style": {
+    "verbosity": "brief",
+    "tone": "stoic"
+  },
+  "closure_style": {
+    "preferred_questions": [
+      "Sit 60 minutes without pain >3/10",
+      "Return to recreational biking"
+    ]
+  },
+  "dob_challenges": [
+    {
+      "style": "straightforward",
+      "example_response": "Arjun Mehta, 1980-01-15."
+    },
+    {
+      "style": "clarification",
+      "example_response": "Arjun Mehta. Date of birth 1980-01-15."
+    }
+  ]
+}

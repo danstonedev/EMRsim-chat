@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  # Backend development service (hot reload with tsx watch)
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: emrsim-backend-dev
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_REALTIME_MODEL=${OPENAI_REALTIME_MODEL:-gpt-realtime-2025-08-28}
+      - OPENAI_TEXT_MODEL=${OPENAI_TEXT_MODEL:-gpt-4o}
+      - OPENAI_TTS_VOICE=${OPENAI_TTS_VOICE:-cedar}
+      - VOICE_ENABLED=${VOICE_ENABLED:-true}
+      - SPS_ENABLED=${SPS_ENABLED:-true}
+      - VOICE_DEBUG=${VOICE_DEBUG:-false}
+      - DATABASE_URL=file:/app/data/dev.db
+      - FRONTEND_URL=http://localhost:5173
+    volumes:
+      # Mount source code for hot reload
+      - ./backend/src:/app/src
+      - ./backend/.env:/app/.env
+      - backend-dev-data:/app/data
+      - backend-node-modules:/app/node_modules
+    restart: unless-stopped
+    networks:
+      - emrsim-dev-network
+
+  # Frontend development service (Vite with HMR)
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: emrsim-frontend-dev
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3002
+      - VITE_VOICE_DEBUG=${VITE_VOICE_DEBUG:-false}
+    volumes:
+      # Mount source code for hot reload
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/.env.local:/app/.env.local
+      - frontend-node-modules:/app/node_modules
+    depends_on:
+      - backend-dev
+    restart: unless-stopped
+    networks:
+      - emrsim-dev-network
+
+volumes:
+  backend-dev-data:
+  backend-node-modules:
+  frontend-node-modules:
+
+networks:
+  emrsim-dev-network:
+    driver: bridge

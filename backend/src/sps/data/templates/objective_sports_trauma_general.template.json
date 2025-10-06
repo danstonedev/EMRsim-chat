@@ -1,0 +1,14 @@
+[
+  { "test_id": "obj_sports_trauma_general_obs_posture", "label": "Observation: Posture/Alignment", "region": "sports_trauma_general", "instructions_brief": "General posture and alignment.", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_obs_gait", "label": "Observation: Gait", "region": "sports_trauma_general", "instructions_brief": "Observe gait/running mechanics.", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_palp_tender_points", "label": "Palpation: Tender points", "region": "sports_trauma_general", "instructions_brief": "Palpate suspected areas based on complaint.", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_arom_key_joints", "label": "AROM: Key joints", "region": "sports_trauma_general", "instructions_brief": "AROM at symptomatic region(s).", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_prom_key_joints", "label": "PROM: Key joints", "region": "sports_trauma_general", "instructions_brief": "PROM at symptomatic region(s).", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_mmt_involved", "label": "Strength: Involved region (MMT)", "region": "sports_trauma_general", "instructions_brief": "MMT for involved muscle groups.", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_derm_screen", "label": "Neuro: Dermatome screen", "region": "sports_trauma_general", "instructions_brief": "Screen dermatomes relevant to complaint.", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_myo_screen", "label": "Neuro: Myotome screen", "region": "sports_trauma_general", "instructions_brief": "Screen myotomes relevant to complaint.", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_ref_screen", "label": "Neuro: Reflex screen", "region": "sports_trauma_general", "instructions_brief": "Screen reflexes relevant to complaint.", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_func_single_leg_squat", "label": "Functional: Single-leg squat", "region": "sports_trauma_general", "instructions_brief": "Observe valgus, control, pain.", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_func_step_down", "label": "Functional: Step-down", "region": "sports_trauma_general", "instructions_brief": "Observe control, pain.", "patient_output_script": {} },
+  { "test_id": "obj_sports_trauma_general_func_return_to_run", "label": "Functional: Return-to-run progression", "region": "sports_trauma_general", "instructions_brief": "Walk-jog intervals; tolerance, pain.", "patient_output_script": {} }
+]

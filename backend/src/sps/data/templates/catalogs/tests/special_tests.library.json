@@ -1,0 +1,63 @@
+[
+  {
+    "test_template_id": "tmpl_faber",
+    "label": "FABER (Patrick)",
+    "region": "hip",
+    "instructions_brief": "Supine; FABER; monitor symptoms and knee-table gap.",
+    "output_spec": {
+      "numeric": {
+        "knee_to_table_gap_cm": {
+          "units": "cm"
+        }
+      },
+      "qualitative": [],
+      "binary_flags": {
+        "positive": {
+          "type": "boolean"
+        }
+      }
+    },
+    "guardrails": {
+      "data_only": true,
+      "refuse_if_contraindicated": true
+    },
+    "diagnostic_role": "intra_articular_pain_screen",
+    "protocol_source_id": "src_protocol_faber"
+  },
+  {
+    "test_template_id": "tmpl_fadir",
+    "label": "FADIR (Flexion-Adduction-IR)",
+    "region": "hip",
+    "instructions_brief": "90° hip flex, adduct, IR to provoke symptoms.",
+    "output_spec": {
+      "qualitative": [],
+      "binary_flags": {
+        "positive": {
+          "type": "boolean"
+        }
+      }
+    },
+    "diagnostic_role": "faI_labral_irritation_screen",
+    "protocol_source_id": "src_protocol_fadir"
+  },
+  {
+    "test_template_id": "tmpl_slr",
+    "label": "Straight Leg Raise",
+    "region": "lumbar_spine",
+    "instructions_brief": "Raise straight leg in supine to symptom reproduction.",
+    "output_spec": {
+      "numeric": {
+        "angle_deg": {
+          "units": "deg"
+        }
+      },
+      "binary_flags": {
+        "neurodynamics_involved": {
+          "type": "boolean"
+        }
+      }
+    },
+    "diagnostic_role": "radicular_tension",
+    "protocol_source_id": "src_protocol_slr"
+  }
+]

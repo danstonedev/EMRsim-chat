@@ -1,0 +1,17 @@
+[
+  {
+    "id": "R1",
+    "flag": "red",
+    "cue_intent": "Brief description of what we’re screening for",
+    "semantic_tags": ["tag1", "tag2"],
+    "delivery_guidelines": ["Keep it concise", "Ask one question at a time"],
+    "example_phrases": [
+      "Example question phrasing here."
+    ],
+    "reveal_triggers": ["trigger phrase", "alternate wording"],
+    "learning_objectives": [
+      "Specific learning goal 1",
+      "Specific learning goal 2"
+    ]
+  }
+]

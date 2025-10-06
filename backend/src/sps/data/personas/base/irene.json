@@ -1,0 +1,7 @@
+{
+  "patient_id":"sp_persona_irene_v1",
+  "demographics":{"name":"Irene Thompson","preferred_name":"Irene","pronouns":"she/her","age":68,"sex":"female","occupation":"retired mail carrier","sport_activity":"daily walks","education_health_literacy":"moderate","primary_language":"English","dob":"1957-02-11"},
+  "function_context":{"adl_limitations":["car transfers","donning socks"],"sleep_quality":"fair"},
+  "beliefs_affect":{"fears":["'bone on bone' means avoid walking"],"mood":"optimistic"},
+  "dialogue_style":{"verbosity":"balanced","tone":"friendly","quirks":["light humor about aging"]}
+}

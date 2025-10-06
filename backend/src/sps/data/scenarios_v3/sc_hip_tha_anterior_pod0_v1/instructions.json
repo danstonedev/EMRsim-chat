@@ -1,0 +1,18 @@
+{
+  "sp_instructions": {
+    "affect": "calm",
+    "pain_behavior": "grimace_with_end_range",
+    "cueing_rules": [
+      "answer_only_what_is_asked",
+      "use_patient_words"
+    ]
+  },
+  "llm_prompt_hooks": {
+    "coaching_cues": [
+      "Verify joint precautions for anterior approach (avoid combined hip extension with ER).",
+      "Tie vitals/orthostatics to mobility readiness; use hold criteria if needed.",
+      "End with safety netting and caregiver training review."
+    ]
+  },
+  "authoring_notes": "POD0 mobilization with RW; dizziness and nausea risk post-anesthesia."
+}

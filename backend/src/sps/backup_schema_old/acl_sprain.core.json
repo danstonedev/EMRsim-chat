@@ -1,0 +1,175 @@
+{
+	"scenario_id": "sc_acl_sprain_v1",
+	"title": "Acute ACL Sprain (partial) with functional instability concern",
+	"region": "knee",
+	"setting": "sports_rehab_clinic",
+	"difficulty": "advanced",
+	"tags": ["knee", "ACL", "acute"],
+	"presenting_problem": {
+		"primary_dx": "Partial ACL sprain (pivot injury 3 weeks ago)",
+		"onset": "acute",
+		"onset_detail": "acute pivot with audible pop",
+		"duration_weeks": 3,
+		"dominant_symptoms": [
+			"knee giving-way episodes",
+			"swelling after activity",
+			"anterior-medial knee ache"
+		],
+		"pain_nrs_rest": 1,
+		"pain_nrs_activity": 6,
+		"aggravators": [
+			"cutting or pivoting",
+			"descending stairs quickly",
+			"running direction changes",
+			"single-leg landing"
+		],
+		"easers": [
+			"brace use",
+			"compression and elevation",
+			"controlled linear drills"
+		],
+		"pattern_24h": "mild morning stiffness; swelling increases after higher demand; baseline ache evenings if overdid",
+		"red_flags_ruled_out": true
+	},
+	"icf": {
+		"health_condition": "Partial ACL injury with reactive effusion and neuromuscular control deficits",
+		"body_functions_structures": [
+			"mild joint effusion",
+			"positive Lachman (soft end-feel)",
+			"apprehension with pivot shift attempt",
+			"quad inhibition (early activation lag)"
+		],
+		"activities": [
+			"cutting maneuvers",
+			"single-leg landings",
+			"descending stairs rapidly",
+			"running stop-start drills"
+		],
+		"participation": [
+			"reduced team practice involvement",
+			"avoids scrimmage situations"
+		],
+		"environmental_factors": [
+			"access to brace",
+			"team training schedule pressure",
+			"rehab facility resources"
+		],
+		"personal_factors": [
+			"motivated athlete",
+			"concerned about long-term stability",
+			"moderate injury knowledge"
+		]
+	},
+	"scenario_context": {
+		"goals": [
+			"return to controlled cutting drills without instability",
+			"minimize secondary swelling episodes",
+			"rebuild quad strength and confidence"
+		],
+		"role_impacts": ["cannot participate in full practice drills"],
+		"environment": "team training + structured rehab",
+		"instructor_notes": "Expect protection phase education, progressive neuromuscular control, criteria-based advancement discussions."
+	},
+	"symptom_fluctuation": {
+		"with_time": "effusion scales with activity load",
+		"with_activity": "instability risk in pivot positions",
+		"during_session_examples": ["That motion feels like it might slip again."]
+	},
+	"screening_challenge_ids": ["Y6", "R1", "R2"],
+		"special_question_ids": ["SQ_K_2"],
+	"objective_guardrails": {
+		"never_volunteer_data": true,
+		"require_explicit_physical_consent": true,
+		"fatigue_prompt_threshold": 7,
+		"deflection_lines": [
+			"Just tell me the exact test or movement you want.",
+			"I’ll describe what I feel but not interpret structural damage."
+		]
+	},
+	"guardrails": { "min_age": 16 },
+	"objective_catalog": [
+		{
+			"test_id": "lachman_test",
+			"label": "Lachman Test",
+			"region": "knee",
+			"patient_output_script": {
+				"binary_flags": { "soft_end_feel": true, "apprehension": true },
+				"qualitative": ["Feels a little loose and makes me tense."]
+			},
+			"guardrails": { "data_only": true }
+		},
+		{
+			"test_id": "anterior_drawer",
+			"label": "Anterior Drawer",
+			"region": "knee",
+			"patient_output_script": {
+				"binary_flags": { "increased_translation": true },
+				"qualitative": ["Sliding forward more than my other knee."]
+			},
+			"guardrails": { "data_only": true }
+		},
+		{
+			"test_id": "pivot_shift_attempt",
+			"label": "Pivot Shift (attempt)",
+			"region": "knee",
+			"patient_output_script": {
+				"binary_flags": { "attempt_aborted": true },
+				"qualitative": ["I'd rather not push that—it feels unstable in that motion."]
+			},
+			"guardrails": { "data_only": true, "refusal_reason": "instability_risk" }
+		},
+		{
+			"test_id": "single_leg_squat_form",
+			"label": "Single-Leg Squat (partial range)",
+			"region": "knee",
+			"patient_output_script": {
+				"numeric": { "reps_before_apprehension": 5 },
+				"binary_flags": { "dynamic_valgus": "mild" },
+				"qualitative": ["Gets more wobbly after a few reps."]
+			},
+			"guardrails": { "data_only": true }
+		},
+		{
+			"test_id": "quad_set_activation",
+			"label": "Quad Set Activation",
+			"region": "knee",
+			"patient_output_script": {
+				"numeric": { "activation_quality_percent": 70 },
+				"qualitative": ["Hard to fully tighten compared to the other side."]
+			},
+			"guardrails": { "data_only": true }
+		},
+		{
+			"test_id": "step_down_20cm",
+			"label": "Step-Down Test (20 cm)",
+			"region": "knee",
+			"patient_output_script": {
+				"numeric": { "pain_nrs": 4 },
+				"binary_flags": { "instability_apprehension": true },
+				"qualitative": ["Feels uncertain near the bottom."]
+			},
+			"guardrails": { "data_only": true }
+		},
+		{
+			"test_id": "girth_measure_mid_patella",
+			"label": "Girth Measure (mid-patella)",
+			"region": "knee",
+			"patient_output_script": {
+				"numeric": { "cm_affected": 38.5, "cm_unaffected": 40.0 },
+				"qualitative": ["Slightly smaller on the injured side."]
+			},
+			"guardrails": { "data_only": true }
+		},
+		{
+			"test_id": "gait_observation",
+			"label": "Gait Observation (casual walk)",
+			"region": "knee",
+			"patient_output_script": {
+				"numeric": { "pain_nrs": 1 },
+				"binary_flags": { "antalgic": false },
+				"qualitative": ["Walking is mostly fine, just cautious."]
+			},
+			"guardrails": { "data_only": true }
+		}
+	]
+}

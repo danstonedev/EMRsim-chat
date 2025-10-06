@@ -1,0 +1,35 @@
+{
+  "module_id": "primary_care_low_back_pain",
+  "lbp_class": "nonspecific|radicular|stenosis|serious_pathology_suspected",
+  "psychosocial": {
+    "start_back_score": null,
+    "fabq_total": null,
+    "pcs_total": null,
+    "sleep_quality": "poor|fair|good"
+  },
+  "directional_preference": {
+    "movement": "flexion|extension|lateral_glide|none",
+    "centralization": false
+  },
+  "neuro_detail": {
+    "slr_deg": null,
+    "slump": "",
+    "myotome_L2_S1": {},
+    "reflexes": {
+      "L4": "",
+      "S1": ""
+    },
+    "saddle_anesthesia": false,
+    "bladder_bowel_flags": false
+  },
+  "imaging_appropriateness": {
+    "gate": "allowed|defer_per_guideline",
+    "rationale": ""
+  },
+  "education_seeds": [
+    "stay_active",
+    "self_management",
+    "graded_exposure",
+    "flare_plan"
+  ]
+}

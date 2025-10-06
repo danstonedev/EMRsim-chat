@@ -1,0 +1,22 @@
+[
+  {
+    "id": "SQ_C_1",
+    "region": "cervical_spine",
+    "student_prompt_patterns": ["dizziness", "vertigo", "blackout"],
+    "patient_cue_intent": "Screen vertebrobasilar insufficiency symptoms",
+    "reveal_triggers": [],
+    "example_phrases": ["No dizziness or blackout feelings."],
+    "instructor_imaging_note": "No vascular red flags reported.",
+    "refs": []
+  },
+  {
+    "id": "SQ_C_2",
+    "region": "cervical_spine",
+    "student_prompt_patterns": ["numb", "tingl", "finger", "hand"],
+    "patient_cue_intent": "Clarify distal upper limb neuro symptoms",
+    "reveal_triggers": [],
+    "example_phrases": ["No numbness or tingling into the hands."],
+    "instructor_imaging_note": "Peripheral neuro screen benign.",
+    "refs": []
+  }
+]

@@ -1,0 +1,91 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_region_condition_v3",
+  "version": 3,
+  "status": "draft",
+  "meta": {
+    "title": "Condition—Concise Functional Impact",
+    "region": "hip|knee|ankle_foot|shoulder|cervical_spine|lumbar_spine|thoracic_spine|elbow|wrist_hand|sports_trauma_general",
+    "difficulty": "easy|moderate|advanced",
+    "setting": "primary_care_pt|sports_rehab|post_op|acute|telehealth|outpatient_pt|sports_pt_outpatient|sports_medicine_outpatient|sports_rehab_clinic",
+    "tags": [],
+    "profession": "physical_therapy|occupational_therapy|athletic_training|other",
+    "created_at": "",
+    "updated_at": ""
+  },
+  "linkage": {
+    "persona_id": "prsn_example_v1",
+    "instructions_file": "../instructions/instructions.template.json",
+    "soap_subjective_file": "../soap/soap.subjective.template.json",
+    "soap_objective_file": "../soap/soap.objective.template.json",
+    "soap_assessment_file": "../soap/soap.assessment.template.json",
+    "soap_plan_file": "../soap/soap.plan.template.json",
+    "active_context_modules": [
+      "../context_modules/acute_care.template.json",
+      "../context_modules/primary_care_spine.template.json"
+    ],
+    "rubric_file": "../rubrics/rubric_core.template.json",
+    "governance_file": "../governance/governance.template.json"
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "lo1",
+        "persona_id": "prsn_example_v1",
+        "bloom_level": "apply|analyze|evaluate|create",
+        "capte_refs": [
+          "safety_screening",
+          "evidence_based_practice",
+          "communication_education",
+          "documentation",
+          "plan_of_care",
+          "JEDI_belonging_anti_racism"
+        ],
+        "npte_map": {
+          "system": "musculoskeletal|neuromuscular|cardiopulmonary|integumentary|other_systems",
+          "domain": "examination|foundations|interventions",
+          "nonsystem": "safety|professional|equipment_devices|modalities|research"
+        },
+        "assessment_focus": [
+          "safety",
+          "clinical_reasoning"
+        ],
+        "evidence_req": "CPG|systematic_review|RCT"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": []
+  },
+  "presenting_problem": {
+    "primary_dx": "",
+    "onset": "acute|gradual|insidious",
+    "duration_weeks": 0,
+    "dominant_symptoms": [],
+    "pain_nrs_rest": 0,
+    "pain_nrs_activity": 0,
+    "aggravators": [],
+    "easers": [],
+    "pattern_24h": "",
+    "red_flags_ruled_out": false
+  },
+  "icf": {
+    "health_condition": "",
+    "body_functions_structures": [],
+    "activities": [],
+    "participation": [],
+    "environmental_factors": [],
+    "personal_factors": []
+  },
+  "provenance": {
+    "sources": [
+      {
+        "title": "Primary CPG for condition",
+        "identifier": "doi_or_url",
+        "level_of_evidence": "CPG"
+      }
+    ],
+    "reviewers": [],
+    "last_reviewed": ""
+  }
+}

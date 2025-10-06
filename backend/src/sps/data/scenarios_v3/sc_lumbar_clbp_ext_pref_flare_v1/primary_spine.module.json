@@ -1,0 +1,41 @@
+{
+  "module_id": "primary_care_low_back_pain",
+  "lbp_class": "nonspecific",
+  "psychosocial": {
+    "start_back_score": "low",
+    "fabq_total": 9,
+    "pcs_total": 8,
+    "sleep_quality": "fair"
+  },
+  "directional_preference": {
+    "movement": "extension",
+    "centralization": true
+  },
+  "neuro_detail": {
+    "slr_deg": 85,
+    "slump": "negative",
+    "myotome_L2_S1": {
+      "L2": "5",
+      "L3": "5",
+      "L4": "5",
+      "L5": "5",
+      "S1": "5"
+    },
+    "reflexes": {
+      "L4": "2+",
+      "S1": "2+"
+    },
+    "saddle_anesthesia": false,
+    "bladder_bowel_flags": false
+  },
+  "imaging_appropriateness": {
+    "gate": "defer_per_guideline",
+    "rationale": "No red flags; chronic course; no progressive neuro deficit"
+  },
+  "education_seeds": [
+    "stay_active",
+    "self_management",
+    "graded_exposure",
+    "flare_plan"
+  ]
+}

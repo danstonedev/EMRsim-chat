@@ -1,0 +1,22 @@
+[
+  {
+    "id": "SQ_SG_1",
+    "region": "sports_trauma_general",
+    "student_prompt_patterns": ["nutrition", "diet", "fuel"],
+    "patient_cue_intent": "Screen for relative energy deficiency risk",
+    "reveal_triggers": [],
+    "example_phrases": ["I eat regularly—no big changes recently."],
+    "instructor_imaging_note": "No immediate RED-S indicators disclosed.",
+    "refs": []
+  },
+  {
+    "id": "SQ_SG_2",
+    "region": "sports_trauma_general",
+    "student_prompt_patterns": ["sleep", "rest"],
+    "patient_cue_intent": "Assess recovery adequacy via sleep",
+    "reveal_triggers": [],
+    "example_phrases": ["Sleep has been decent—6 to 7 hours."],
+    "instructor_imaging_note": "Sleep borderline for high training load.",
+    "refs": []
+  }
+]

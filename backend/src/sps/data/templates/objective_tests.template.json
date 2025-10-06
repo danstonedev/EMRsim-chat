@@ -1,0 +1,14 @@
+[
+  {
+    "test_id": "active_rom_flexion",
+    "label": "Active ROM Flexion",
+    "region": "knee",
+    "instructions_brief": "Ask patient to actively bend the knee as far as comfortable.",
+    "patient_output_script": {
+      "numeric": { "flexion_deg": 120 },
+      "binary_flags": { "end_range_pain": true },
+      "qualitative": ["A stretching ache shows up near the end."]
+    },
+    "guardrails": { "data_only": true }
+  }
+]

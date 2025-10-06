@@ -1,0 +1,1 @@
+Place 3 short WAV files here for the audio harness tests (quiet, moderate, noisy).

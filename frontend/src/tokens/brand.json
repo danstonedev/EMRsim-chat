@@ -1,0 +1,13 @@
+{
+  "colors": {
+    "undGreen": "#009A44",
+    "white": "#FFFFFF",
+    "black": "#000000",
+    "undGray": "#AEAEAE",
+    "flameOrange": "#FF671F"
+  },
+  "a11y": {
+    "textContrastAA": ">=4.5:1",
+    "focusIndicatorContrast": ">=3:1"
+  }
+}

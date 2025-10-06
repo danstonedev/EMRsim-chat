@@ -1,0 +1,42 @@
+# Node modules
+node_modules/
+npm-debug.log*
+
+# Environment files
+.env
+.env.*
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Tests
+tests/
+*.test.ts
+*.test.js
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Documentation
+*.md
+docs/

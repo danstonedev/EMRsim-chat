@@ -1,0 +1,28 @@
+{
+  "name": "emrsim-chat-monorepo",
+  "private": true,
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report"
+  },
+  "lint-staged": {
+    "backend/src/**/*.{ts,js}": [
+      "cd backend && eslint --fix",
+      "cd backend && prettier --write"
+    ],
+    "frontend/src/**/*.{ts,tsx}": [
+      "cd frontend && eslint --fix",
+      "cd frontend && prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.1",
+    "lint-staged": "^16.2.3"
+  }
+}
