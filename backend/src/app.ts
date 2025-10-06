@@ -16,6 +16,11 @@ import { transcriptRouter } from './routes/transcript.ts';
 export function createApp(): Application {
   const app = express();
   
+  // Trust proxy if running behind reverse proxy (for accurate IP-based rate limiting)
+  if (process.env.TRUST_PROXY === 'true') {
+    app.set('trust proxy', 1);
+  }
+  
   // Security headers
   app.use(helmet({
     contentSecurityPolicy: false, // Disable CSP for now to avoid breaking functionality

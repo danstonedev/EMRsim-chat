@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import rateLimit from 'express-rate-limit';
 import { config } from '../config.ts';
 import { getSessionById } from '../db.ts';
 import { spsRegistry } from '../sps/core/registry.ts';
@@ -9,6 +10,24 @@ import { relayTranscript } from './transcript_relay.ts';
 
 // In-memory store for realtime RTC tokens keyed by session id (dev/demo only)
 const rtcTokenStore = new Map<string, string>();
+
+// Rate limiter for voice token requests
+const voiceTokenLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Max 20 voice tokens per 15 minutes per IP
+  message: 'Too many voice session requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Rate limiter for transcript relay (protects against transcript spam)
+const transcriptRelayLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 120, // Max 120 transcript relays per minute per IP (allows ~2/sec during active conversation)
+  message: 'Too many transcript requests from this IP, please slow down.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 let languageDisplayNames: Intl.DisplayNames | undefined;
 
 const LANGUAGE_OVERRIDES: Record<string, string> = {
@@ -31,7 +50,7 @@ const LANGUAGE_OVERRIDES: Record<string, string> = {
 
 export const router = Router();
 
-router.post('/token', async (req: Request, res: Response) => {
+router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => {
   if (!config.VOICE_ENABLED) return res.status(403).json({ error: 'voice_disabled' });
   if (!process.env.OPENAI_API_KEY) return res.status(503).json({ error: 'no_openai_key' });
   const { session_id: sessionId, voice: voiceOverride, input_language: inputLanguage, model: modelOverride, transcription_model: transcriptionModelOverride, reply_language: replyLanguage } = req.body || {};
@@ -208,7 +227,7 @@ router.get('/voices', (req: Request, res: Response) => {
   return res.json({ voices });
 });
 
-router.post('/transcript/relay/:sessionId', relayTranscript);
+router.post('/transcript/relay/:sessionId', transcriptRelayLimiter, relayTranscript);
 
 function chooseVoice(allowedVoices: Set<string>, configuredVoice: string, preferredVoice: string): string {
   if (preferredVoice && allowedVoices.has(preferredVoice)) return preferredVoice;
@@ -316,7 +335,7 @@ function buildSpsPersonaPayload(persona: any, fallbackId: string): any {
  * Transcript relay endpoint
  * Frontend sends OpenAI Realtime transcript events here for broadcast to all session clients
  */
-router.post('/transcript', (req: Request, res: Response) => {
+router.post('/transcript', transcriptRelayLimiter, (req: Request, res: Response) => {
   try {
     const { session_id, role, text, is_final, timestamp, item_id } = req.body || {};
     
@@ -355,7 +374,7 @@ router.post('/transcript', (req: Request, res: Response) => {
 /**
  * Transcript error relay endpoint
  */
-router.post('/transcript-error', (req: Request, res: Response) => {
+router.post('/transcript-error', transcriptRelayLimiter, (req: Request, res: Response) => {
   try {
     const { session_id, error } = req.body || {};
     

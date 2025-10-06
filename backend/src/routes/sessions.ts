@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import rateLimit from 'express-rate-limit';
 import { createSession, getSessionById, insertTurn, getSessionTurns, endSession, updateSpsSessionData } from '../db.ts';
 import { spsRegistry } from '../sps/core/registry.ts';
 import crypto from 'node:crypto';
@@ -9,6 +10,15 @@ import { logEvent } from '../sps/runtime/telemetry.js';
 import type { GateFlags } from '../sps/core/types.js';
 
 export const router = Router();
+
+// Stricter rate limit for session creation
+const sessionCreationLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 10, // Max 10 sessions per 5 minutes per IP
+  message: 'Too many sessions created from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 function newGateFlags(): GateFlags {
   return {
@@ -45,7 +55,7 @@ function createTurnFingerprint({ sessionId, role, text, channel, timestampMs }: 
     .digest('hex');
 }
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', sessionCreationLimiter, async (req: Request, res: Response) => {
   try {
     const { persona_id, mode, scenario_id } = req.body || {};
     if (!persona_id) return res.status(400).json({ error: 'bad_request', detail: 'persona_id required' });
