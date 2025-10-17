@@ -21,7 +21,7 @@ function makeAction() {
     setEffectiveWeight: vi.fn(function(this: any, w: number){ this.weight = w }),
     setEffectiveTimeScale: vi.fn(function(this: any, s: number){ this.timeScale = s }),
     getEffectiveWeight: vi.fn(function(this: any){ return this.weight }),
-    setLoop: vi.fn(function(this: any, _loopMode: number, _repetitions: number){ /* noop */ }),
+  setLoop: vi.fn(function(this: any){ /* noop */ }),
     crossFadeTo: vi.fn(),
     getClip: vi.fn(() => new THREE.AnimationClip('X', 1, [])),
   }

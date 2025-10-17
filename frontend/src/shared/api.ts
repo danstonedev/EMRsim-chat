@@ -40,7 +40,7 @@ export const api = {
   async getHealth(): Promise<HealthResponse> {
     const r = await fetchWithTimeout(`${BASE}/api/health`);
     if (!r.ok) throw new Error(`health_http_${r.status}`);
-    return r.json();
+  return (await r.json()) as HealthResponse;
   },
   async getVoiceInstructions(
     sessionId: string,
@@ -58,7 +58,7 @@ export const api = {
       const txt = await r.text().catch(() => '');
       throw new Error(`voice_instructions_http_${r.status}_${txt}`);
     }
-    return r.json();
+  return (await r.json()) as { instructions: string; phase?: string; outstanding_gate?: string[] };
   },
   async saveSpsTurns(
     sessionId: string,
@@ -81,7 +81,7 @@ export const api = {
       const txt = await r.text().catch(() => '');
       throw new Error(`sps_turns_http_${r.status}_${txt}`);
     }
-    const data = await r.json();
+  const data = (await r.json()) as { ok?: boolean; saved?: number; received?: number; duplicates?: number };
     const saved = typeof data?.saved === 'number' ? data.saved : 0;
     const received = typeof data?.received === 'number' ? data.received : undefined;
     const duplicates = typeof data?.duplicates === 'number' ? data.duplicates : undefined;
@@ -108,7 +108,7 @@ export const api = {
       } catch { }
       throw new Error(`http_${r.status}_${bodyTxt || 'create_session_failed'}`);
     }
-    return r.json();
+  return (await r.json()) as { session_id: string; sps_session_id?: string; phase?: string; gate?: any; gate_state?: string };
   },
   async endSession(sessionId: string): Promise<{ summary?: string; metrics?: unknown }> {
     const r = await fetchWithTimeout(`${BASE}/api/sessions/${encodeURIComponent(sessionId)}/end`, { method: 'POST' });
@@ -119,7 +119,7 @@ export const api = {
       } catch { }
       throw new Error(`end_http_${r.status}_${bodyTxt}`);
     }
-    return r.json();
+  return (await r.json()) as { summary?: string; metrics?: unknown };
   },
   async getVoiceToken(
     sessionId: string,
@@ -151,7 +151,13 @@ export const api = {
       } catch { }
       throw new Error(`${code} (${r.status}) ${txt}`.trim());
     }
-    return r.json();
+    return (await r.json()) as {
+      rtc_token: string;
+      model: string;
+      tts_voice: string;
+      opts?: { expires_at?: string };
+      persona?: { id: string; display_name: string | null; speaking_rate: string | null; voice_id: string | null };
+    };
   },
   async getSessionTurns(sessionId: string): Promise<Array<{
     id: string;
@@ -165,14 +171,14 @@ export const api = {
       const txt = await r.text().catch(() => '');
       throw new Error(`get_turns_http_${r.status}_${txt}`);
     }
-    const data = await r.json();
+  const data = (await r.json()) as { turns?: Array<{ id: string; role: string; text: string; created_at: string; timestamp: number }>; };
     return Array.isArray(data?.turns) ? data.turns : [];
   },
   async getVoiceVoices(): Promise<string[]> {
     const r = await fetchWithTimeout(`${BASE}/api/voice/voices`);
     if (!r.ok) throw new Error('voice_voices_http_' + r.status);
-    const data = await r.json().catch(() => ({}));
-    return Array.isArray(data?.voices) ? data.voices : [];
+  const data = (await r.json().catch(() => ({}))) as Partial<{ voices: string[] }>;
+  return Array.isArray(data.voices) ? data.voices : [];
   },
   async postVoiceSdp(sessionId: string, sdp: string): Promise<string> {
     const r = await fetchWithTimeout(`${BASE}/api/voice/sdp`, {
@@ -186,7 +192,7 @@ export const api = {
       throw new Error(`voice_sdp_http_${r.status}_${txt}`);
     }
     // Backend returns plain text SDP answer
-    return r.text();
+  return (await r.text()) as string;
   },
   async relayTranscript(
     sessionId: string,
@@ -258,7 +264,7 @@ export const api = {
       const txt = await r.text().catch(() => '');
       throw new Error(`sps_generate_http_${r.status}_${txt}`);
     }
-    const data = await r.json();
+  const data = (await r.json()) as { ok?: boolean; scenario?: ClinicalScenarioV3; sources?: ScenarioSourceLite[] };
     if (!data?.scenario) {
       throw new Error('sps_generate_missing_scenario');
     }
@@ -279,7 +285,7 @@ export const api = {
       const txt = await r.text().catch(() => '');
       throw new Error(`sps_save_http_${r.status}_${txt}`);
     }
-    const data = await r.json();
+  const data = (await r.json()) as { ok: boolean; scenario_id: string };
     return data;
   },
   async listSpsScenarios(): Promise<
@@ -297,7 +303,7 @@ export const api = {
   > {
     const r = await fetchWithTimeout(`${BASE}/api/sps/scenarios`);
     if (!r.ok) throw new Error(`sps_list_http_${r.status}`);
-    const data = await r.json();
+  const data = (await r.json()) as { scenarios?: Array<{ scenario_id: string; title: string; region: string; difficulty?: string | null; setting?: string | null; tags?: string[]; persona_id?: string | null; persona_name?: string | null; persona_headline?: string | null }>; };
     return Array.isArray(data?.scenarios) ? data.scenarios : [];
   },
   async getSpsScenarios(): Promise<
@@ -329,19 +335,19 @@ export const api = {
   > {
     const r = await fetchWithTimeout(`${BASE}/api/sps/personas`);
     if (!r.ok) throw new Error(`sps_personas_http_${r.status}`);
-    const data = await r.json();
+  const data = (await r.json()) as { personas?: Array<{ id: string; display_name: string | null; headline: string | null; age?: number | null; sex?: string | null; voice?: string | null; tags?: string[] }>; };
     return Array.isArray(data?.personas) ? data.personas : [];
   },
   async getSpsScenarioById(scenarioId: string): Promise<ClinicalScenarioV3 | null> {
     const r = await fetchWithTimeout(`${BASE}/api/sps/scenarios/${scenarioId}`);
     if (!r.ok) throw new Error(`sps_scenario_http_${r.status}`);
-    const data = await r.json();
+  const data = (await r.json()) as { scenario?: ClinicalScenarioV3 | null };
     return (data?.scenario as ClinicalScenarioV3 | null) || null;
   },
   async getSpsPersonaById(personaId: string): Promise<any> {
     const r = await fetchWithTimeout(`${BASE}/api/sps/personas/${personaId}`);
     if (!r.ok) throw new Error(`sps_persona_http_${r.status}`);
-    const data = await r.json();
+  const data = (await r.json()) as { persona?: any };
     return data?.persona || null;
   },
   openSpsExport(personaId: string | null, scenarioId: string | null): void {

@@ -7,7 +7,8 @@ import globals from 'globals'
 
 const typescriptConfigs = tseslint.configs.recommendedTypeChecked.map((config) => ({
   ...config,
-  files: ['src/**/*.{ts,tsx}'],
+  // Include TS not only under src but also root config files and TS-based scripts
+  files: ['src/**/*.{ts,tsx}', 'vite.config.ts', 'playwright.config.ts', 'scripts/**/*.ts'],
   languageOptions: {
     ...config.languageOptions,
     parserOptions: {
@@ -32,8 +33,20 @@ export default [
   },
   js.configs.recommended,
   ...typescriptConfigs,
+  // Node script overrides (.mjs / .cjs / .js in scripts)
   {
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['scripts/**/*.{js,mjs,cjs}'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        ...globals.es2021,
+      },
+    },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}', 'vite.config.ts', 'playwright.config.ts', 'scripts/**/*.ts'],
     plugins: {
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
@@ -57,7 +70,40 @@ export default [
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      // Triage: reduce false positives/noise while we incrementally fix
+      'no-empty': ['warn', { allowEmptyCatch: true }],
+      '@typescript-eslint/no-redundant-type-constituents': 'off',
+      '@typescript-eslint/no-floating-promises': ['warn', { ignoreVoid: true, ignoreIIFE: true }],
+      '@typescript-eslint/no-misused-promises': ['warn', { checksVoidReturn: { attributes: false } }],
+      '@typescript-eslint/unbound-method': 'warn',
       'no-control-regex': 'off',
+    },
+  },
+  // Test overrides (Vitest): relax strict rules inside tests
+  {
+    files: [
+      'src/**/*.test.ts',
+      'src/**/*.test.tsx',
+      'src/**/*.spec.ts',
+      'src/**/*.spec.tsx',
+      'src/**/__tests__/**/*.{ts,tsx}',
+    ],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        vi: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
     },
   },
 ]

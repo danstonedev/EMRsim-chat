@@ -30,6 +30,7 @@ export interface SpeechEventHandlers {
  * Manages turn boundaries, endpointing coordination, and initial transcript emission.
  */
 export function createSpeechEventHandlers(deps: SpeechEventDependencies): SpeechEventHandlers {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function handleSpeechEvent(type: string, _payload: unknown): boolean {
     // speech_started: initiate new user turn
     if (type === 'input_audio_buffer.speech_started' || type.endsWith('input_audio_buffer.speech_started')) {
