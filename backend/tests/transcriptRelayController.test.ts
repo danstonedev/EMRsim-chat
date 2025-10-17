@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { relayTranscript } from '../src/controllers/transcriptRelayController.js'
+import { relayTranscript } from '../src/controllers/transcriptRelayController.ts'
 
-vi.mock('../src/services/transcript_broadcast.js', () => ({
+vi.mock('../src/services/transcript_broadcast.ts', () => ({
   broadcastUserTranscript: vi.fn(),
   broadcastAssistantTranscript: vi.fn(),
 }))
 
-const mockedBroadcast = await import('../src/services/transcript_broadcast.js')
+const mockedBroadcast = await import('../src/services/transcript_broadcast.ts')
 
 function createMockRes() {
   const res: any = {}
@@ -48,12 +48,18 @@ describe('relayTranscript controller', () => {
 
     relayTranscript(req, res)
 
-    expect(mockedBroadcast.broadcastUserTranscript).toHaveBeenCalledWith('abc123', {
-      text: 'Hello world',
-      isFinal: false,
-      timestamp: 123,
-      itemId: 'item-1',
-    })
+    expect(mockedBroadcast.broadcastUserTranscript).toHaveBeenCalledWith(
+      'abc123',
+      expect.objectContaining({
+        text: 'Hello world',
+        isFinal: false,
+        timestamp: 123,
+        finalizedAtMs: 123,
+        emittedAtMs: 123,
+        startedAtMs: undefined,
+        itemId: 'item-1',
+      })
+    )
     expect(res.sendStatus).toHaveBeenCalledWith(204)
   })
 
@@ -77,8 +83,12 @@ describe('relayTranscript controller', () => {
     expect(payload.text).toBe('Response')
     expect(payload.isFinal).toBe(true)
     expect(payload.itemId).toBeUndefined()
-    expect(payload.timestamp).toBeGreaterThanOrEqual(before)
-    expect(payload.timestamp).toBeLessThanOrEqual(after)
+    expect(payload.finalizedAtMs).toBe(payload.timestamp)
+    expect(payload.emittedAtMs).toBeGreaterThanOrEqual(before)
+    expect(payload.emittedAtMs).toBeLessThanOrEqual(after)
+    if (payload.startedAtMs != null) {
+      expect(payload.startedAtMs).toBeLessThanOrEqual(payload.finalizedAtMs)
+    }
     expect(res.sendStatus).toHaveBeenCalledWith(204)
   })
 })

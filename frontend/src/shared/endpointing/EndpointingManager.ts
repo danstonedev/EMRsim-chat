@@ -1,3 +1,5 @@
+import { voiceDebug } from '../utils/voiceLogging'
+
 export interface EndpointingManagerOptions {
   sttFallbackMs: number
   sttExtendedMs: number
@@ -82,11 +84,11 @@ export class EndpointingManager {
     this.adaptiveEnabled = options.adaptiveEnabled
     this.adaptiveDebug = options.adaptiveDebug
     this.baseVadThreshold = options.baseVadThreshold ?? 0.35
-    this.baseVadSilenceMs = options.baseVadSilenceMs ?? 700
+    this.baseVadSilenceMs = options.baseVadSilenceMs ?? 1000  // Increased from 700ms to allow natural pauses
     this.minVadThreshold = options.minVadThreshold ?? 0.25
     this.maxVadThreshold = options.maxVadThreshold ?? 0.75
-    this.minVadSilenceMs = options.minVadSilenceMs ?? 500
-    this.maxVadSilenceMs = options.maxVadSilenceMs ?? 1500
+    this.minVadSilenceMs = options.minVadSilenceMs ?? 800  // Increased from 500ms to prevent premature interruption
+    this.maxVadSilenceMs = options.maxVadSilenceMs ?? 1800  // Increased from 1500ms for longer pauses
     this.emaAlphaQuiet = options.emaAlphaQuiet ?? 0.03
     this.emaAlphaSpeech = options.emaAlphaSpeech ?? 0.12
     this.maxTrackedUtterances = options.maxTrackedUtterances ?? 5
@@ -354,7 +356,7 @@ export class EndpointingManager {
       }
       if (patienceBonus > 0 && patienceBonus !== this.lastLoggedPatienceBonus) {
         this.lastLoggedPatienceBonus = patienceBonus
-        console.log('[EndpointingManager] 🧠 Smart patience active:', {
+        voiceDebug('EndpointingManager smart patience active', {
           bonus: patienceBonus,
           shortFragments: shortFragments.length,
           rapidUtterances: rapidUtterances.length,

@@ -1,5 +1,5 @@
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import './RecordingPill.css'
+// CSS now imported globally via voice.css
 
 export type RecordingPillProps = {
   isRecording?: boolean
@@ -94,13 +94,17 @@ function useAudioMeter(options: {
       }
       try {
         src.disconnect()
-      } catch {}
+      } catch (disconnectError) {
+        console.debug?.('[RecordingPill] Failed to disconnect source', disconnectError)
+      }
       try {
         analyser.disconnect()
-      } catch {}
-      try {
-        audioCtx.close()
-      } catch {}
+      } catch (disconnectError) {
+        console.debug?.('[RecordingPill] Failed to disconnect analyser', disconnectError)
+      }
+      void audioCtx.close().catch(closeError => {
+        console.debug?.('[RecordingPill] Failed to close audio context', closeError)
+      })
       audioCtxRef.current = null
       srcRef.current = null
       analyserRef.current = null
@@ -185,7 +189,7 @@ export function RecordingPill(props: RecordingPillProps) {
     }
     const activateThreshold = 0.08
     const releaseThreshold = activateThreshold * 0.6
-    setIsSpeaking((prev) => {
+    setIsSpeaking(prev => {
       if (level >= activateThreshold) return true
       if (level <= releaseThreshold) return false
       return prev
@@ -209,20 +213,11 @@ export function RecordingPill(props: RecordingPillProps) {
     }
   }, [isRecording])
 
-  useEffect(() => {
-    if (!isRecording) return
-    if (elapsedMs / 1000 >= maxSeconds) {
-      stopRecording()
-    }
-  }, [elapsedMs, isRecording, maxSeconds])
-
   const acquireMic = useCallback(async () => {
     if (streamRef.current) return streamRef.current
     if (typeof window === 'undefined') throw new Error('Microphone unavailable')
     try {
-      const stream = onRequestMic
-        ? await onRequestMic()
-        : await navigator.mediaDevices.getUserMedia({ audio: true })
+      const stream = onRequestMic ? await onRequestMic() : await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
       ownsStreamRef.current = !waveformSource
       return stream
@@ -237,8 +232,12 @@ export function RecordingPill(props: RecordingPillProps) {
   const releaseOwnedStream = useCallback(() => {
     if (!ownsStreamRef.current || !streamRef.current) return
     const tracks = streamRef.current.getTracks()
-    tracks.forEach((track) => {
-      try { track.stop() } catch {}
+    tracks.forEach(track => {
+      try {
+        track.stop()
+      } catch (stopError) {
+        console.debug?.('[RecordingPill] Failed to stop track', stopError)
+      }
     })
     streamRef.current = null
     ownsStreamRef.current = false
@@ -259,7 +258,7 @@ export function RecordingPill(props: RecordingPillProps) {
           : 'audio/webm'
       const recorder = new MediaRecorder(stream, { mimeType: mime })
       chunksRef.current = []
-      recorder.ondataavailable = (event) => {
+      recorder.ondataavailable = event => {
         if (event.data && event.data.size > 0) {
           chunksRef.current.push(event.data)
         }
@@ -302,10 +301,20 @@ export function RecordingPill(props: RecordingPillProps) {
     }
   }, [])
 
+  useEffect(() => {
+    if (!isRecording) return
+    if (elapsedMs / 1000 >= maxSeconds) {
+      stopRecording()
+    }
+  }, [elapsedMs, isRecording, maxSeconds, stopRecording])
+
   const toggleRecording = useCallback(() => {
     if (disabled) return
-    if (isRecording) stopRecording()
-    else startRecording()
+    if (isRecording) {
+      stopRecording()
+    } else {
+      void startRecording()
+    }
   }, [disabled, isRecording, startRecording, stopRecording])
 
   const pauseOrResume = useCallback(() => {
@@ -355,7 +364,9 @@ export function RecordingPill(props: RecordingPillProps) {
       }
       try {
         recRef.current?.stop()
-      } catch {}
+      } catch (stopError) {
+        console.debug?.('[RecordingPill] Failed to stop recorder during cleanup', stopError)
+      }
       recRef.current = null
       releaseOwnedStream()
     }
@@ -417,8 +428,8 @@ export function RecordingPill(props: RecordingPillProps) {
         {endSlot && (
           <span
             className="recording-pill__control"
-            onClick={(event) => event.stopPropagation()}
-            onMouseDown={(event) => event.stopPropagation()}
+            onClick={event => event.stopPropagation()}
+            onMouseDown={event => event.stopPropagation()}
           >
             {endSlot}
           </span>
@@ -436,7 +447,9 @@ export function RecordingPill(props: RecordingPillProps) {
   if (mode === 'passive') {
     return (
       <div
-        className={['recording-pill', 'recording-pill--passive', disabled ? 'recording-pill--disabled' : '', className].filter(Boolean).join(' ')}
+        className={['recording-pill', 'recording-pill--passive', disabled ? 'recording-pill--disabled' : '', className]
+          .filter(Boolean)
+          .join(' ')}
         data-state={state}
         data-speaking={isSpeaking ? 'true' : 'false'}
         aria-label={ariaLabel}
@@ -454,7 +467,7 @@ export function RecordingPill(props: RecordingPillProps) {
       aria-label={ariaLabel}
       onKeyDown={handleKeyDown}
       onClick={toggleRecording}
-      onContextMenu={(event) => {
+      onContextMenu={event => {
         if (!allowPause) return
         event.preventDefault()
         pauseOrResume()

@@ -269,7 +269,7 @@ export interface ScenarioPlan {
 
 export interface ScenarioMediaAsset {
   id: string
-  type: 'image' | 'video'
+  type: 'image' | 'video' | 'youtube'
   url: string
   thumbnail?: string
   caption: string

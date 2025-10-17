@@ -146,6 +146,1180 @@
 			],
 			"isBackground": false,
 			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: install deps",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm i --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck only",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests (viewer smoke)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm test --silent"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck only",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests (viewer smoke)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm test --silent"
+			]
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests (viewer smoke)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm test --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: scan animations now",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; node scripts/scan-animations.mjs"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests (viewer smoke)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm test --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run viewer-only tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run test:viewer --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; if (Test-Path node_modules) { $true } else { npm i }; npm test --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm test --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: quick typecheck after CaseBuilder filters",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Backend: build & typecheck quick",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd backend; npm run -s build:types ; npm run -s build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Backend: test and validate (quick)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd backend; npm test --silent ; npm run --silent sps:validate"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick (manual)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Backend: restart to pick up DB env",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"if (Test-Path backend/.env) { Get-Content backend/.env | Select-String -Pattern 'SQLITE_PATH' } ; Write-Host 'Restarting backend...' ; $Env:NODE_ENV='development'; cd backend; npm run -s dev"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick (manual 2)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick (manual 3)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			]
+		},
+		{
+			"label": "Frontend: quick typecheck after animation fix",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			]
+		},
+		{
+			"label": "Frontend: typecheck (on-demand)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; if (!(Test-Path node_modules)) { npm i --silent }; npm run type-check"
+			]
+		},
+		{
+			"label": "Frontend: build (on-demand)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run build"
+			]
+		},
+		{
+			"label": "Frontend: typecheck & build quick (manual)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			]
+		},
+		{
+			"label": "Frontend: typecheck & build quick (manual) - pass2",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			]
+		},
+		{
+			"label": "Frontend: quick typecheck+build (diagnostics)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick (manual 4)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: quick typecheck+build (diagnostics)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend quick typecheck+build now",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build after scroll fix",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend quick typecheck+build now",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build (add /builder)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Frontend quick typecheck+build now",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend quick typecheck+build now",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests (on-demand)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; if (Test-Path node_modules) { $true } else { npm i --silent }; npm test --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend quick typecheck+build now",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: quick typecheck+build (diagnostics)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests (on-demand)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; if (Test-Path node_modules) { $true } else { npm i --silent }; npm test --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend quick typecheck+build now",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: typecheck & build quick (manual) - pass2",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run -s type-check ; npm run -s build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests (on-demand)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm test --silent"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend quick typecheck+build now",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; npm run type-check ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Frontend: run tests (on-demand)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd frontend; if (Test-Path node_modules) { $true } else { npm i --silent }; npm test --silent"
+			],
+			"isBackground": false,
+			"group": "build"
 		}
 	]
 }

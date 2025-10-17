@@ -43,3 +43,23 @@ Testing sequence:
 
 1. Enable overlap test: set `VITE_VOICE_BARGE_IN=true`, restart dev server, then talk while the assistant is mid‑reply—your transcript should continue updating instead of being suppressed.
 2. Validate finalization under background noise: set `VITE_ADAPTIVE_VAD_BADGE=true`, open a session, and observe the badge switch between Quiet/Noisy/Very Noisy as you introduce ambient noise. Turns should finalize reliably without having to over-emphasize sentence endings.
+
+## 3D Viewer debug HUD
+
+You can enable a lightweight on-screen HUD for the 3D viewer to help diagnose animation playback and model metrics.
+
+- Where: open the viewer at `/3d-viewer`
+- Enable via URL: append `?viewerDebug=1` (or `?debug=1`)
+	- Example: `http://localhost:5173/3d-viewer?viewerDebug=1`
+- Enable via env: set `VITE_VIEWER_DEBUG=true` in `frontend/.env.local` and restart the dev server
+
+What it shows:
+
+- Model metrics: scale factor and bounding sphere radius
+- Playback snapshot: current animation id, time (s), speed, and whether the system is animating
+
+Notes:
+
+- The HUD is off by default and only appears when the flag is set.
+- If the HUD shows time stuck at `0.00` for a selected clip, that animation likely didn’t bind to the rig. Try a different clip, or check the browser console for retargeting/remap logs.
+- The animation selector filters out clips that don’t report a valid duration on the current rig to avoid T‑pose selections.

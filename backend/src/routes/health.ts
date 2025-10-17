@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import dbApi, { migrate, healthCheck } from '../db.ts';
+import dbApi, { migrate, healthCheck, getStorageMode } from '../db.ts';
 
 export const router = Router();
 
@@ -65,11 +65,15 @@ router.get('/', (_req: Request, res: Response) => {
   const voiceEnabled = toBool(process.env.VOICE_ENABLED ?? process.env.VITE_VOICE_ENABLED, false);
   const spsEnabled = toBool(process.env.SPS_ENABLED ?? 'true', true);
   const voiceDebug = toBool(process.env.VOICE_DEBUG ?? process.env.VITE_VOICE_DEBUG, false);
+  const storageMode = getStorageMode();
+  const persistenceWarning = storageMode === 'memory' ? 'using_in_memory_storage' : undefined;
   res.json({
     ok: true,
     uptime_s: Math.floor((Date.now() - startedAt) / 1000),
     db: dbState,
     openai: openaiOk ? 'ok' : 'err',
+    storage: storageMode,
+    warnings: persistenceWarning ? [persistenceWarning] : [],
     features: {
       voiceEnabled,
       spsEnabled,

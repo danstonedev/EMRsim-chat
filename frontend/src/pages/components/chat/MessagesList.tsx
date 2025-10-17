@@ -1,41 +1,51 @@
 import type { MutableRefObject } from 'react'
 import type { Message, MediaReference } from '../../chatShared'
-import type { VoiceSessionHandle } from '../../../shared/useVoiceSession'
-import { MessageSkeleton } from './MessageSkeleton'
+import RenderProfiler from '../../../shared/utils/renderProfiler'
+
 import { MessageItem } from './MessageItem'
 
 type MessagesListProps = {
   messages: Message[]
-  isLoadingInitialData: boolean
   messagesContainerRef: MutableRefObject<HTMLDivElement | null>
   messagesEndRef: MutableRefObject<HTMLDivElement | null>
-  pendingElapsed: Record<string, number>
-  voiceSession: VoiceSessionHandle
   onMediaClick?: (media: MediaReference) => void
+  onImageLoad?: () => void
+  selectedMedia?: MediaReference | null
 }
 
 export function MessagesList({
   messages,
-  isLoadingInitialData,
   messagesContainerRef,
   messagesEndRef,
-  pendingElapsed,
-  voiceSession,
   onMediaClick,
+  onImageLoad,
+  selectedMedia,
 }: MessagesListProps) {
   return (
-    <div className="messages" ref={messagesContainerRef}>
-      {isLoadingInitialData && <MessageSkeleton />}
-      {messages.map((message) => (
-        <MessageItem
-          key={message.id}
-          message={message}
-          voiceSession={voiceSession}
-          elapsedSeconds={pendingElapsed[message.id]}
-          onMediaClick={onMediaClick}
-        />
-      ))}
-      <div ref={messagesEndRef} />
-    </div>
+    <RenderProfiler id="MessagesList">
+      <div className="messages" ref={messagesContainerRef}>
+      {messages.map((message) => {
+        // Check if this message's media is currently open in the modal
+        const isMediaOpenInModal = Boolean(
+          selectedMedia && 
+          message.media && 
+          selectedMedia.type === 'animation' && 
+          message.media.type === 'animation' &&
+          selectedMedia.animationId === message.media.animationId
+        )
+        
+        return (
+          <MessageItem
+            key={message.id}
+            message={message}
+            onMediaClick={onMediaClick}
+            onImageLoad={onImageLoad}
+            isMediaOpenInModal={isMediaOpenInModal}
+          />
+        )
+      })}
+      <div ref={messagesEndRef} className="messages-scroll-anchor" />
+      </div>
+    </RenderProfiler>
   )
 }

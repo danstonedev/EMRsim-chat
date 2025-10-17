@@ -464,12 +464,16 @@ export async function generateScenarioWithAI({ prompt, options = {} }: GenerateR
 
   let json: any;
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+    };
+    
+    // Project API keys don't need Organization ID
+    
     const r = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
+      headers,
       body: JSON.stringify({
         model,
         messages: [

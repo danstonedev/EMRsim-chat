@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 import { config } from '../config.ts';
 import { getSessionById } from '../db.ts';
 import { spsRegistry } from '../sps/core/registry.ts';
-import { sessions as spsSessions } from '../sps/runtime/store.js';
+import { sessions as spsSessions } from '../sps/runtime/store.ts';
 import { composeRealtimeInstructions, normalizeGate, computeOutstandingGate } from '../sps/runtime/sps.service.ts';
 import { broadcastUserTranscript, broadcastAssistantTranscript, broadcastTranscriptError } from '../services/transcript_broadcast.ts';
 import { relayTranscript } from './transcript_relay.ts';
@@ -95,13 +95,17 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
   try {
     const t0 = Date.now();
     console.log('[voice] Requesting token with config:', { model, voice, transcriptionModel, inputLanguage: inputLanguage || 'auto' });
-    const r = await fetch('https://api.openai.com/v1/realtime/sessions', {
-      method: 'POST',
-      headers: {
+    const headers: Record<string, string> = {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
         'OpenAI-Beta': 'realtime=v1',
-      },
+    };
+    
+    // Project API keys don't need Organization ID
+    
+    const r = await fetch('https://api.openai.com/v1/realtime/sessions', {
+      method: 'POST',
+      headers,
       body: JSON.stringify({
         model,
         voice,
@@ -222,7 +226,7 @@ router.post('/sdp', async (req: Request, res: Response) => {
 });
 
 // Public list of supported voices (kept in sync with allowed set above)
-router.get('/voices', (req: Request, res: Response) => {
+router.get('/voices', (_req: Request, res: Response) => {
   const voices = ['alloy','ash','ballad','coral','echo','sage','shimmer','verse','marin','cedar'];
   return res.json({ voices });
 });

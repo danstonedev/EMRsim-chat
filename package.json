@@ -2,11 +2,17 @@
   "name": "emrsim-chat-monorepo",
   "private": true,
   "scripts": {
+    "postinstall": "playwright install chromium",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "sps:generate-manifests": "tsx ./scripts/generateManifest.ts",
+    "sps:compile": "tsx ./src/sps/tools/compile-content.ts",
+    "sps:compile:tmp": "tsx ./src/sps/tools/compile-content.ts --tmp",
+    "sps:validate-compiled": "tsx ./src/sps/tools/validate-compiled.ts",
+    "sps:bump-version": "tsx ./src/sps/tools/bump-version.ts"
   },
   "lint-staged": {
     "backend/src/**/*.{ts,js}": [

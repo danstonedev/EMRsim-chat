@@ -3,11 +3,11 @@ import rateLimit from 'express-rate-limit';
 import { createSession, getSessionById, insertTurn, getSessionTurns, endSession, updateSpsSessionData } from '../db.ts';
 import { spsRegistry } from '../sps/core/registry.ts';
 import crypto from 'node:crypto';
-import { sessions as spsSessions } from '../sps/runtime/store.js';
+import { sessions as spsSessions } from '../sps/runtime/store.ts';
 // Added persona detail endpoint
-import { touchPersistence } from '../sps/runtime/persistence.js';
-import { logEvent } from '../sps/runtime/telemetry.js';
-import type { GateFlags } from '../sps/core/types.js';
+import { touchPersistence } from '../sps/runtime/persistence.ts';
+import { logEvent } from '../sps/runtime/telemetry.ts';
+import type { GateFlags } from '../sps/core/types.ts';
 
 export const router = Router();
 
@@ -17,7 +17,6 @@ const sessionCreationLimiter = rateLimit({
   max: 10, // Max 10 sessions per 5 minutes per IP
   message: 'Too many sessions created from this IP, please try again later.',
   standardHeaders: true,
-  legacyHeaders: false,
 });
 
 function newGateFlags(): GateFlags {
@@ -120,7 +119,7 @@ router.post('/', sessionCreationLimiter, async (req: Request, res: Response) => 
 });
 
 // SPS personas endpoint (for unified persona selection)
-router.get('/sps/personas', (req: Request, res: Response) => {
+router.get('/sps/personas', (_req: Request, res: Response) => {
   try {
     const personas = Object.values(spsRegistry.personas).map(p => ({
       id: p.patient_id,
@@ -144,7 +143,7 @@ router.get('/sps/personas', (req: Request, res: Response) => {
 });
 
 // SPS scenarios endpoint
-router.get('/sps/scenarios', (req: Request, res: Response) => {
+router.get('/sps/scenarios', (_req: Request, res: Response) => {
   try {
     const scenarios = Object.values(spsRegistry.scenarios).map(s => ({
       scenario_id: s.scenario_id,
@@ -230,6 +229,33 @@ router.post('/:id/end', (req: Request, res: Response) => {
   
   endSession(sessionId);
   res.json({ summary: 'ended', metrics: {} });
+});
+
+// GET /api/sessions/:id/turns - Fetch all turns for a session as JSON
+router.get('/:id/turns', (req: Request, res: Response) => {
+  try {
+    const sessionId = String(req.params.id || '');
+    if (!sessionId) return res.status(400).json({ error: 'bad_request' });
+    
+    const session = getSessionById(sessionId);
+    if (!session) return res.status(404).json({ error: 'session_not_found' });
+    
+    const turns = getSessionTurns(sessionId);
+    
+    // Return turns with timestamps converted to milliseconds
+    const turnsWithTimestamps = turns.map(turn => ({
+      id: turn.id,
+      role: turn.role,
+      text: turn.text,
+      created_at: turn.created_at,
+      timestamp: turn.created_at ? new Date(turn.created_at).getTime() : Date.now(),
+    }));
+    
+    res.json({ turns: turnsWithTimestamps });
+  } catch (error) {
+    console.error('[sessions] GET /turns error:', error);
+    res.status(500).json({ error: 'internal_error' });
+  }
 });
 
 // Persist finalized SPS turns for a session (lightweight persistence API for unified Realtime flows)
@@ -351,7 +377,6 @@ router.get('/:id/transcript', (req: Request, res: Response) => {
     const turnsHtml = turns.map((turn: any, index: number) => {
       const roleLabel = turn.role === 'user' ? 'Student' : 'Patient';
       const text = escapeHtml(turn.text || '');
-      const timestamp = turn.created_at ? new Date(turn.created_at).toLocaleTimeString() : '';
       
       // Debug: log the order and timestamps
       console.log(`[transcript] Turn ${index + 1}: ${turn.role} at ${turn.created_at} - "${text.slice(0, 30)}"`);

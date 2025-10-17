@@ -2,8 +2,8 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { z } from 'zod';
 import { zClinicalScenario, zPersona, zScreeningChallenge, zSpecialQuestion } from '../src/sps/core/schemas';
 import { loadSPSContent } from '../src/sps/runtime/session';
-import challenges from '../src/sps/data/challenges/red_yellow.core.json';
-import sqKnee from '../src/sps/data/special_questions/knee.json';
+import challenges from '../src/sps/content/banks/challenges/red_yellow.core.json';
+import sqKnee from '../src/sps/content/banks/special_questions/knee.json';
 
 let scenario: any;
 let persona: any;

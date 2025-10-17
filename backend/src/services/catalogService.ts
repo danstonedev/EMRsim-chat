@@ -25,13 +25,13 @@ interface CatalogMap {
 }
 
 const CATALOG_PATHS: Record<CatalogType, string> = {
-  special_tests: '../sps/data/catalogs/tests/special_tests.library.json',
-  functional_tests: '../sps/data/catalogs/tests/functional_tests.library.json',
-  interventions: '../sps/data/catalogs/interventions/intervention_templates.library.json',
-  outcomes: '../sps/data/catalogs/outcomes/outcome_measures.library.json',
-  rom_norms: '../sps/data/catalogs/norms/rom_norms.library.json',
-  safety: '../sps/data/catalogs/safety/safety_thresholds.library.json',
-  protocols: '../sps/data/catalogs/protocols/protocol_sources.library.json',
+  special_tests: '../sps/content/banks/catalogs/tests/special_tests.library.json',
+  functional_tests: '../sps/content/banks/catalogs/tests/functional_tests.library.json',
+  interventions: '../sps/content/banks/catalogs/interventions/intervention_templates.library.json',
+  outcomes: '../sps/content/banks/catalogs/outcomes/outcome_measures.library.json',
+  rom_norms: '../sps/content/banks/catalogs/norms/rom_norms.library.json',
+  safety: '../sps/content/banks/catalogs/safety/safety_thresholds.library.json',
+  protocols: '../sps/content/banks/catalogs/protocols/protocol_sources.library.json',
 };
 
 class CatalogService {

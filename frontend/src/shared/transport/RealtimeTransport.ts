@@ -62,9 +62,29 @@ export class RealtimeTransport {
       this.options.callbacks.onDataChannel(channel, 'server')
     })
     pc.addEventListener('track', (event) => {
+      if (import.meta.env.DEV) {
+        console.debug('[RealtimeTransport] track event received', {
+          trackKind: event.track.kind,
+          trackId: event.track.id,
+          trackEnabled: event.track.enabled,
+          streamsCount: event.streams.length
+        });
+      }
       const [stream] = event.streams
       if (stream) {
+        if (import.meta.env.DEV) {
+          console.debug('[RealtimeTransport] calling onRemoteStream callback', {
+            streamId: stream.id,
+            streamActive: stream.active,
+            audioTracks: stream.getAudioTracks().length,
+            videoTracks: stream.getVideoTracks().length
+          });
+        }
         this.options.callbacks.onRemoteStream?.(stream)
+      } else {
+        if (import.meta.env.DEV) {
+          console.debug('[RealtimeTransport] no stream in track event');
+        }
       }
     })
 

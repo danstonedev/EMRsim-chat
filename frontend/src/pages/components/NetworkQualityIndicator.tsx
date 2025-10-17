@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Chip, Tooltip } from '@mui/material'
+import { Chip, Tooltip } from '@mui/material'
 import { SignalWifi4Bar, SignalWifi3Bar, SignalWifi2Bar, SignalWifi1Bar, SignalWifiOff } from '@mui/icons-material'
 
 interface NetworkQualityProps {
@@ -121,11 +121,11 @@ export function NetworkQualityIndicator({ peerConnection, updateInterval = 2000 
       }
     }
 
-    // Initial update
-    updateMetrics()
+  // Initial update
+  void updateMetrics()
 
     // Set up periodic updates
-    const interval = setInterval(updateMetrics, updateInterval)
+  const interval = setInterval(() => { void updateMetrics() }, updateInterval)
 
     return () => clearInterval(interval)
   }, [peerConnection, updateInterval])
@@ -133,12 +133,12 @@ export function NetworkQualityIndicator({ peerConnection, updateInterval = 2000 
   const config = qualityConfig[metrics.level]
   
   const tooltipContent = (
-    <Box>
+    <div>
       <div>{config.description}</div>
       {metrics.rtt !== undefined && <div>RTT: {metrics.rtt.toFixed(1)}ms</div>}
       {metrics.packetLoss !== undefined && <div>Loss: {metrics.packetLoss.toFixed(1)}%</div>}
       {metrics.jitter !== undefined && <div>Jitter: {metrics.jitter.toFixed(1)}ms</div>}
-    </Box>
+    </div>
   )
 
   return (

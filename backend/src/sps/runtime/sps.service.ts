@@ -1,7 +1,4 @@
 import { GOLD_STANDARD_SPS_INSTRUCTIONS } from '../core/instructions';
-import { nextGateState } from '../core/gate';
-import { findSpecialHit, findScreeningHit } from '../core/matcher';
-import { realizeCue } from '../core/cue';
 import { ActiveCase, EncounterPhase, GateFlags } from '../core/types';
 
 export function getGoldInstructions(){ return GOLD_STANDARD_SPS_INSTRUCTIONS; }
@@ -11,99 +8,6 @@ export function nextPhase(current: EncounterPhase, signal?: 'move_objective'|'mo
   return current;
 }
 
-export function handleStudentTurn(active: ActiveCase, phase: EncounterPhase, gate: GateFlags, text: string) {
-  const gateState = nextGateState(gate);
-  // New policy: do NOT block when gate is locked. Always respond in character.
-  // Gate remains for grading/telemetry only.
-
-  if (phase==='subjective') {
-    const sq = findSpecialHit(active.scenario, text);
-    if (sq) return { gateState, patientReply: realizeCue(active.persona, sq) };
-    const sc = findScreeningHit(active.scenario, text);
-    if (sc) return { gateState, patientReply: realizeCue(active.persona, sc) };
-    // Optional: if scenario has a subjective_catalog, try simple pattern match
-    const subj = active.scenario.subjective_catalog;
-    if (Array.isArray(subj) && subj.length) {
-      const t = text.toLowerCase();
-      const hit = subj.find(it => it.patterns.some(p => t.includes(p.toLowerCase())));
-      if (hit) {
-        const scr = hit.patient_response_script;
-        const lines: string[] = [];
-        if (scr.qualitative?.length) lines.push(scr.qualitative[0]);
-        if (scr.numeric) { const kv = Object.entries(scr.numeric).map(([k,v]) => `${k}: ${v}`); if (kv.length) lines.push(kv.join('; ')); }
-        if (scr.binary_flags) { const flags = Object.entries(scr.binary_flags).map(([k,v]) => `${k.replace(/_/g,' ')}: ${v}`); if (flags.length) lines.push(flags.join('; ')); }
-        return { gateState, patientReply: lines.join('. ') };
-      }
-    }
-    // Default, stay in character with a neutral, tone-aware reply
-    return { gateState, patientReply: defaultSubjectiveReply(active, text) };
-  }
-
-  if (phase==='objective') return runObjectiveExchange(active, text, gate);
-
-  return { gateState, patientReply: realizePlanDialogue(active, text) };
-}
-
-function defaultSubjectiveReply(active: ActiveCase, _text: string): string {
-  const tone = active.persona.dialogue_style?.tone || 'balanced';
-  const name = active.persona.demographics?.preferred_name || active.persona.demographics?.name || 'I';
-  const genericByTone: Record<string,string> = {
-    friendly: `Hi—sure. What would you like to know?`,
-    guarded: `Honestly, what do you want to know first?`,
-    disinterested: `What do you want to know?`,
-    worried: `Lately, I’ve just been worried about how this feels. What do you need to ask?`,
-    irritable: `Can we just get to your questions?`,
-    stoic: `Go ahead with your questions.`,
-    optimistic: `I’m ready—what should we start with?`,
-    balanced: `Sure—what would you like to know?`
-  };
-  const base = genericByTone[tone] || genericByTone['balanced'];
-  // Light personalization without revealing protected details unless asked later
-  return base.replace('Hi—sure', `Hi—${name} here, sure`);
-}
-
-function runObjectiveExchange(active: ActiveCase, text: string, gate: GateFlags) {
-  const scn = active.scenario; const guard = scn.objective_guardrails ?? {};
-  const t = text.toLowerCase();
-  // Only gate on consent if explicitly required, gate flags show consent not yet done, AND user has not indicated consent keywords.
-  if (guard.require_explicit_physical_consent && !gate.consent_done && !/(consent|okay to test|you have my consent|that is okay)/i.test(t)) {
-    return { gateState: 'UNLOCKED' as const, patientReply: 'Before we do any physical tests, could you explain what you’ll do and make sure I’m comfortable with it?' };
-  }
-  // Flexible token-based match: split test_id words and allow partial token presence.
-  const match = scn.objective_catalog.find(o => {
-    const label = o.label.toLowerCase();
-    if (t.includes(o.test_id) || t.includes(label)) return true;
-    // allow simplified queries like 'palp femoral'
-    const tokens = label.split(/[^a-z0-9]+/).filter(Boolean).slice(0,3); // first few distinctive tokens
-    return tokens.filter(tok => tok.length>3).some(tok => t.includes(tok));
-  });
-  if (!match) {
-    const deflect = guard.deflection_lines?.[0] ?? 'Tell me which movement you want me to try, and I’ll describe what I feel.';
-    return { gateState: 'UNLOCKED' as const, patientReply: deflect };
-  }
-  // Refusal pathway for unsafe impact / hop tests
-  if (active.scenario.guardrails?.impact_testing_unsafe && /hop|impact|jump/.test(match.label.toLowerCase())) {
-    return { gateState: 'UNLOCKED' as const, patientReply: 'Given what’s going on, I’d rather avoid any hopping or impact tests until we’re sure it’s safe.' };
-  }
-  const scr = match.patient_output_script;
-  const lines: string[] = [];
-  if (scr.numeric) { const kv = Object.entries(scr.numeric).map(([k,v]) => `${k}: ${v}`); if (kv.length) lines.push(kv.join('; ')); }
-  if (scr.binary_flags) { const flags = Object.entries(scr.binary_flags).map(([k,v]) => `${k.replace(/_/g,' ')}: ${v}`); if (flags.length) lines.push(flags.join('; ')); }
-  if (scr.qualitative?.length) lines.push(scr.qualitative[0]);
-  const out = lines.join('. ') || 'Okay—guide me through and I’ll say how it feels.';
-  return { gateState: 'UNLOCKED' as const, patientReply: out };
-}
-
-function realizePlanDialogue(active: ActiveCase, text: string) {
-  const pf = active.persona.function_context || {}; const sc = active.scenario.scenario_context || {};
-  const deflect = 'I can say what seems realistic for me—does that help?';
-  if (/home\s?exercise|how often|per week|sets|reps|program/i.test(text)) {
-    const bits = [ pf.work_demands && `Work: ${pf.work_demands}`, sc.environment && `Environment: ${sc.environment}`, pf.sleep_quality && `Sleep: ${pf.sleep_quality}`].filter(Boolean).join('. ');
-    return bits || deflect;
-  }
-  if (/goals?|timeline|return/i.test(text)) return (sc.goals?.[0] || 'Something realistic that fits my routine.');
-  return deflect;
-}
 
 const BOOLEAN_GATE_KEYS = ['greeting_done', 'intro_done', 'consent_done', 'identity_verified'] as const;
 
@@ -180,6 +84,30 @@ function buildScenarioSection(scenario?: ActiveCase['scenario'] | null): string 
   const goals = formatList(scenario.scenario_context?.goals);
   if (goals) lines.push(`- Patient goals: ${goals}`);
   if (scenario.scenario_context?.environment) lines.push(`- Environment: ${scenario.scenario_context.environment}`);
+  
+  // Include subjective catalog responses with media markers
+  if (scenario.subjective_catalog && scenario.subjective_catalog.length > 0) {
+    lines.push('\nYour prepared responses to common questions:');
+    scenario.subjective_catalog.forEach(item => {
+      const label = item.label || item.id;
+      const patterns = item.patterns?.slice(0, 3).join(', ') || '';
+      const responses = item.patient_response_script?.qualitative || [];
+      if (responses.length > 0) {
+        lines.push(`\nWhen asked about "${label}" (${patterns}):`);
+        responses.forEach(response => {
+          lines.push(`  → "${response}"`);
+        });
+        // Add media marker hint if there's a note about media
+        if (item.notes && item.notes.includes('[MEDIA:')) {
+          const mediaMatch = item.notes.match(/\[MEDIA:([^\]]+)\]/);
+          if (mediaMatch) {
+            lines.push(`  ⚠️ IMPORTANT: Include ${mediaMatch[0]} at the end of your response to display visual media!`);
+          }
+        }
+      }
+    });
+  }
+  
   return lines.join('\n');
 }
 
@@ -210,20 +138,49 @@ function buildMediaGuidance(scenario: ActiveCase['scenario']): string {
   if (!scenario.media_library || scenario.media_library.length === 0) return '';
   
   const lines = ['Visual demonstration capability:'];
-  lines.push('When clinically appropriate during the OBJECTIVE phase, you may trigger visual media by including [MEDIA:media_id] in your response.');
-  lines.push('Use this when:');
-  lines.push('- Student explicitly asks to see or demonstrate something physical (e.g., "show me your knee ROM")');
-  lines.push('- Visual observation would significantly enhance clinical understanding');
-  lines.push('- During physical examination or functional testing');
-  
-  lines.push('\nAvailable media assets:');
+  lines.push('You can display images and videos to the student by including [MEDIA:media_id] anywhere in your spoken response.');
+  lines.push('The [MEDIA:...] marker will NOT be spoken aloud - it silently triggers the visual display.');
+  lines.push('');
+  lines.push('WHEN TO USE MEDIA:');
+  lines.push('- Student asks about imaging (X-rays, MRI, CT, etc.) you\'ve already had → Include the [MEDIA:...] marker when mentioning you had those images done');
+  lines.push('- Student asks to see imaging results → Include the marker when confirming you can show them');
+  lines.push('- Student asks you to demonstrate movement/function → Include the marker when you describe the movement');
+  lines.push('- Student explicitly requests to review or see something → Include the marker in your affirmative response');
+  lines.push('');
+  lines.push('Available media assets:');
   scenario.media_library.forEach(media => {
     const contexts = media.clinical_context.slice(0, 3).join(', ');
-    lines.push(`- [MEDIA:${media.id}] (${media.type}): ${contexts}`);
+    lines.push(`  [MEDIA:${media.id}] - ${media.type}: ${media.caption}`);
   });
-  
-  lines.push('\nExample: "Sure, let me bend my knee for you. [MEDIA:knee_flexion_active]"');
-  lines.push('Note: Text will be shown to student; [MEDIA:...] marker triggers visual display.');
+  lines.push('');
+  lines.push('CRITICAL EXAMPLES - Follow these patterns exactly:');
+  lines.push('');
+  lines.push('Student: "Did you get any X-rays?"');
+  lines.push('You: "Yes, I got X-rays at urgent care right after I hurt it. Here, I have them on my patient portal. [MEDIA:knee_xray_bilateral] They said no bones were broken."');
+  lines.push('');
+  lines.push('Student: "Can I see the X-rays?"');
+  lines.push('You: "Sure, let me pull them up. [MEDIA:knee_xray_bilateral] Here they are from my patient portal account."');
+  lines.push('');
+  lines.push('Student: "Do you have any imaging?"');
+  lines.push('You: "Yeah, I got some X-rays done. Let me show you. [MEDIA:knee_xray_bilateral] They said everything looked normal bone-wise."');
+  lines.push('');
+  lines.push('Student: "Can you bend your knee for me?"');  
+  lines.push('You: "Sure, let me bend it for you. [MEDIA:knee_flexion_active]"');
+  lines.push('');
+  lines.push('Student: "Can you show me how you walk?"');
+  lines.push('You: "Sure, I can walk for you. [MEDIA:gait_demonstration]"');
+  lines.push('');
+  lines.push('⚠️ CRITICAL RULES:');
+  lines.push('1. When showing media for objective tests/demonstrations, NEVER interpret or analyze the findings');
+  lines.push('2. Simply comply with the request and include the [MEDIA:...] marker');
+  lines.push('3. Do NOT say things like "as you can see...", "you\'ll notice...", or describe what the media shows');
+  lines.push('4. Let the student observe and interpret - that\'s their job!');
+  lines.push('');
+  lines.push('⚠️ CRITICAL: When answering about imaging you have, ALWAYS:');
+  lines.push('1. Confirm you have the imaging');
+  lines.push('2. Offer to show it ("Here, I have them on my patient portal", "Let me pull them up", "Let me show you")');
+  lines.push('3. Include the [MEDIA:...] marker so the student can see the image');
+  lines.push('The student cannot see the images unless you include the marker in your response!');
   
   return lines.join('\n');
 }
@@ -319,43 +276,7 @@ export function formatScenarioSection(scenario: any) {
 }
 
 /**
- * Find media asset matching the clinical context from user input
- * Returns media reference if appropriate for the current phase and context
+ * Note: Rule-based media matching has been removed in favor of the AI/LLM-based media insertion system
+ * that uses [MEDIA:id] markers in AI responses.
  */
-export function findMediaForContext(
-  scenario: ActiveCase['scenario'],
-  userText: string,
-  phase: EncounterPhase
-): { id: string; type: string; url: string; caption: string; thumbnail?: string } | null {
-  // Only show media during objective examination phase
-  if (phase !== 'objective') return null;
-  if (!scenario.media_library || !Array.isArray(scenario.media_library) || scenario.media_library.length === 0) {
-    return null;
-  }
-
-  const t = userText.toLowerCase();
-
-  // Find media that matches clinical context or trigger patterns
-  const match = scenario.media_library.find(media => {
-    // Check clinical context tags
-    if (media.clinical_context?.some(ctx => t.includes(ctx.toLowerCase()))) {
-      return true;
-    }
-    // Check explicit trigger patterns
-    if (media.trigger_patterns?.some(pattern => t.includes(pattern.toLowerCase()))) {
-      return true;
-    }
-    return false;
-  });
-
-  if (!match) return null;
-
-  return {
-    id: match.id,
-    type: match.type,
-    url: match.url,
-    caption: match.caption,
-    thumbnail: match.thumbnail,
-  };
-}
 

@@ -1,0 +1,843 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-08T14:01:00.734Z",
+  "scenario_id": "sc_knee_acl_preop_direct_access_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:f1057699572621a89819fc76047197764ca0087c38af2e8be88c3a9b83de3aab",
+  "dependencies_checksum": "sha256:5e278c8eca571d418b6b713bb818a1a9e869c049423c911761bb568d2c6f8b19",
+  "source_bundle": "scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_acl_preop_direct_access_v1",
+    "title": "Direct Access—Suspected ACL Tear (Pre-Op)",
+    "region": "knee",
+    "difficulty": "advanced",
+    "setting": "sports_medicine_outpatient",
+    "tags": [
+      "ACL",
+      "prehab",
+      "direct_access",
+      "sports_pt"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "published",
+    "meta": {
+      "title": "Direct Access—Suspected ACL Tear (Pre-Op)",
+      "region": "knee",
+      "difficulty": "advanced",
+      "setting": "sports_medicine_outpatient",
+      "tags": [
+        "ACL",
+        "prehab",
+        "direct_access",
+        "sports_pt"
+      ],
+      "profession": "physical_therapy",
+      "created_at": "2025-10-01T16:57:26Z",
+      "updated_at": "2025-10-01T16:57:26Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "lo1",
+          "text": "Identify clinical features of ACL rupture and determine appropriate referral while initiating prehab.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "safety_screening",
+            "plan_of_care",
+            "communication_education"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "differential_diagnosis",
+            "triage"
+          ],
+          "evidence_req": "CPG|systematic_review"
+        },
+        {
+          "id": "lo2",
+          "text": "Dose pre-operative rehab to restore extension, reduce effusion, and re-activate quadriceps.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care",
+            "evidence_based_practice"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions"
+          },
+          "assessment_focus": [
+            "intervention_selection",
+            "dose_progression"
+          ],
+          "evidence_req": "guideline_or_sr"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "What tests were unsafe to perform today? Why?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Suspected right ACL rupture",
+      "onset": "acute",
+      "duration_weeks": 0.5,
+      "dominant_symptoms": [
+        "giving way",
+        "swelling",
+        "pain with pivoting",
+        "stiffness"
+      ],
+      "pain_nrs_rest": 2,
+      "pain_nrs_activity": 7,
+      "aggravators": [
+        "weight-bearing pivot",
+        "descending stairs"
+      ],
+      "easers": [
+        "rest",
+        "ice",
+        "compression",
+        "elevation"
+      ],
+      "pattern_24h": "Worse later day with activity",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "acute knee ligament injury",
+      "body_functions_structures": [
+        "effusion",
+        "loss of extension",
+        "quad inhibition"
+      ],
+      "activities": [
+        "ambulation with antalgia",
+        "stairs",
+        "squatting limited"
+      ],
+      "participation": [
+        "sport participation limited"
+      ],
+      "environmental_factors": [
+        "brace available"
+      ],
+      "personal_factors": [
+        "competitive athlete",
+        "high motivation"
+      ]
+    },
+    "scenario_context": {
+      "module_id": "sports_pt_generic",
+      "module_version": "v1",
+      "content_version": "1.0.0",
+      "updated_at": "2025-10-07T00:00:00Z",
+      "sport": "soccer",
+      "position_event": "winger",
+      "season_phase": "in",
+      "competition_level": "college",
+      "workload_metrics": {
+        "acute_load": null,
+        "chronic_load": null,
+        "minutes": null,
+        "throws": null,
+        "jumps": null
+      },
+      "criterion_batteries": {
+        "knee_acl": [
+          "hop_single",
+          "hop_triple",
+          "hop_crossover",
+          "hop_6m_timed",
+          "y_balance",
+          "isokinetic_hhd",
+          "LESS"
+        ]
+      },
+      "readiness_indicators": {
+        "ACL_RSI": null
+      },
+      "clearance_checklist": [],
+      "goals": [
+        "quad strength ≥90% of uninvolved prior to surgery",
+        "normal gait without instability",
+        "restore full passive knee extension within 2 weeks",
+        "reduce effusion to trace",
+        "SLR without extensor lag"
+      ],
+      "environment": "stairs to apartment"
+    },
+    "subjective_catalog": [
+      {
+        "id": "imaging_xray",
+        "label": "Imaging (X-ray)",
+        "patterns": [
+          "imaging",
+          "x-ray",
+          "xray",
+          "radiograph",
+          "films",
+          "pictures",
+          "scans"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "I got X-rays done at urgent care right after I hurt it. Here, I have them on my patient portal. They said no bones were broken."
+          ]
+        },
+        "notes": "Patient had knee X-rays that showed no fractures. When student asks about imaging, naturally offer to show them: 'Here, I have them on my patient portal' or 'Let me pull them up'. MUST include [MEDIA:knee_xray_bilateral] marker when offering to show the X-rays during subjective history."
+      }
+    ],
+    "media_library": [
+      {
+        "id": "knee_xray_bilateral",
+        "type": "image",
+        "url": "/media/scenarios/acl/knee-x-ray.jpg",
+        "caption": "Bilateral knee X-ray showing no bony abnormalities. Joint spaces preserved, no fractures or dislocations visible. Consistent with soft tissue injury.",
+        "clinical_context": [
+          "imaging",
+          "xray",
+          "x-ray",
+          "radiograph",
+          "knee"
+        ],
+        "trigger_patterns": [
+          "xray",
+          "x-ray",
+          "imaging",
+          "radiograph",
+          "have any films",
+          "show me the imaging"
+        ]
+      },
+      {
+        "id": "gait_demonstration",
+        "type": "youtube",
+        "url": "https://www.youtube.com/watch?v=olZYoe3gr2Q",
+        "caption": "Patient demonstrates current walking pattern with noticeable antalgic gait, favoring right leg and reduced stance phase on affected side.",
+        "clinical_context": [
+          "gait",
+          "walking",
+          "movement",
+          "functional",
+          "ambulation"
+        ],
+        "trigger_patterns": [
+          "show me how you walk",
+          "can you walk",
+          "demonstrate walking",
+          "see your gait",
+          "show your walking"
+        ]
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "tmpl_lachman",
+        "label": "Tmpl Lachman",
+        "region": "knee",
+        "patient_output_script": {
+          "numeric": {},
+          "qualitative": [
+            "soft_end_point"
+          ],
+          "binary_flags": {
+            "positive": true
+          }
+        }
+      },
+      {
+        "test_id": "tmpl_anterior_drawer_knee",
+        "label": "Tmpl Anterior Drawer Knee",
+        "region": "knee",
+        "patient_output_script": {
+          "numeric": {},
+          "qualitative": [
+            "increased_translation"
+          ],
+          "binary_flags": {
+            "positive": true
+          }
+        }
+      },
+      {
+        "test_id": "tmpl_30s_chair_stand",
+        "label": "Tmpl 30s Chair Stand",
+        "region": "knee",
+        "patient_output_script": {
+          "numeric": {
+            "reps": 18
+          },
+          "qualitative": [
+            "compensates on R"
+          ]
+        }
+      }
+    ],
+    "guardrails": {
+      "impact_testing_unsafe": true
+    },
+    "instructions": {
+      "sp_instructions": {
+        "affect": "guarded",
+        "pain_behavior": "guarding",
+        "cueing_rules": [
+          "do_not_volunteer_diagnosis",
+          "use_patient_words"
+        ]
+      },
+      "llm_prompt_hooks": {
+        "coaching_cues": [
+          "Screen for red flags; establish mechanism with pop/swelling timeline.",
+          "Decide what to defer (hop tests) due to irritability.",
+          "Educate on prehab and referral."
+        ]
+      },
+      "authoring_notes": "Direct access; ensure referral for imaging/ortho while initiating prehab."
+    },
+    "soap": {
+      "subjective": {
+        "chief_complaint": "Right knee instability and swelling after a pivot during a match 3 days ago.",
+        "history_present_illness": {
+          "mechanism": "non-contact pivot/deceleration; felt pop; immediate pain",
+          "first_onset": "2025-09-28T16:57:26.437550Z",
+          "course_since_onset": "worsening",
+          "prior_episodes": "no prior ACL injury",
+          "prior_treatment_response": [
+            "rest",
+            "ice",
+            "compression",
+            "elevation"
+          ],
+          "red_flag_denials_affirmations": {
+            "fever_chills": false,
+            "night_pain_unrelieved": false,
+            "unexplained_weight_loss": false,
+            "recent_infection": false,
+            "cancer_history": false,
+            "neurologic_bowel_bladder_changes": false
+          }
+        },
+        "pain": {
+          "location": [
+            "anteromedial knee"
+          ],
+          "quality": [
+            "deep ache",
+            "sharp with pivot"
+          ],
+          "irritability": "high",
+          "nrs_rest": 2,
+          "nrs_activity": 7,
+          "nrs_best": 1,
+          "nrs_worst": 8,
+          "aggravators": [
+            "pivot",
+            "descending stairs"
+          ],
+          "easers": [
+            "rest",
+            "ice"
+          ],
+          "24h_pattern": "worse PM",
+          "sleep_disturbance": "difficulty_staying"
+        },
+        "past_medical_history": [],
+        "surgical_history": [],
+        "medications": [
+          "NSAID PRN"
+        ],
+        "allergies": [
+          "NKDA"
+        ],
+        "imaging": {
+          "available": true,
+          "modality": "xray",
+          "date": "2 days ago",
+          "body_region": "knee",
+          "summary_patient_facing": "I got X-rays done at urgent care right after I hurt it. They said no bones were broken.",
+          "clinical_interpretation": "Bilateral knee radiographs show no acute fracture, dislocation, or bony abnormality. Joint spaces preserved. Soft tissue injury suspected."
+        },
+        "social_history": {
+          "tobacco": "never",
+          "alcohol": "none",
+          "sleep_hours": 7,
+          "diet_notes": "athlete diet",
+          "work_demands": "student",
+          "sport_hobbies": [
+            "soccer",
+            "gym"
+          ]
+        },
+        "sdoh": {
+          "home_environment": "stairs to apartment",
+          "transportation": "reliable",
+          "financial_barriers": "none",
+          "caregiving_roles": []
+        },
+        "goals": [
+          "stop giving way",
+          "prepare for surgery",
+          "return next season"
+        ],
+        "systems_review": {
+          "cardiovascular_pulmonary": {
+            "dyspnea": false,
+            "chest_pain": false,
+            "orthopnea": false,
+            "edema": false
+          },
+          "neuromuscular": {
+            "dizziness": false,
+            "falls_history": false,
+            "headache_neck": false,
+            "paresthesia": false
+          },
+          "integumentary": {
+            "wounds": false,
+            "rash": false,
+            "color_changes": false
+          },
+          "other": []
+        },
+        "special_questions_region_specific": [
+          "locking? (no true locking)",
+          "catching? (occasional)"
+        ]
+      },
+      "objective": {
+        "vitals": {
+          "bp_mmHg": {
+            "systolic": 128,
+            "diastolic": 74
+          },
+          "hr_bpm": 70,
+          "rr_bpm": 14,
+          "spo2_percent": 99,
+          "temperature_c": 36.7,
+          "position": "seated",
+          "oxygen_delivery": {
+            "mode": "room_air",
+            "fio2_or_flow": "",
+            "target_spo2": ""
+          },
+          "orthostatics": {
+            "performed": false,
+            "supine_bp_hr": {
+              "systolic": 0,
+              "diastolic": 0,
+              "hr_bpm": 0
+            },
+            "standing_1min_bp_hr": {
+              "systolic": 0,
+              "diastolic": 0,
+              "hr_bpm": 0
+            },
+            "standing_3min_bp_hr": {
+              "systolic": 0,
+              "diastolic": 0,
+              "hr_bpm": 0
+            },
+            "symptoms": []
+          },
+          "vitals_trend": []
+        },
+        "observation": {
+          "skin_incisions": [],
+          "effusion": "moderate",
+          "ecchymosis": "mild",
+          "other_findings": [
+            "antalgic posture"
+          ]
+        },
+        "posture": {
+          "global": [
+            "guarded stance"
+          ],
+          "region_specific": []
+        },
+        "gait": {
+          "qualitative": [
+            "antalgic with decreased knee flexion during swing"
+          ],
+          "spatiotemporal_numeric": {
+            "speed_m_per_s": 1,
+            "cadence_steps_per_min": 100,
+            "step_length_cm_R": 55,
+            "step_length_cm_L": 65
+          },
+          "assistive_device": "none",
+          "surface": "clinic",
+          "footwear": "sneakers"
+        },
+        "palpation": {
+          "structures_assessed": [
+            "joint line",
+            "patellar tendon"
+          ],
+          "tenderness_grading": "mild",
+          "temperature_edema_skin": [
+            "warm_effusion"
+          ]
+        },
+        "rom": {
+          "method": "goniometry",
+          "active": {
+            "knee_flexion_deg_R": 100,
+            "knee_extension_deg_R": -5
+          },
+          "passive": {
+            "knee_flexion_deg_R": 110,
+            "knee_extension_deg_R": 0
+          },
+          "end_feel": {
+            "extension_R": "empty"
+          },
+          "symptom_reproduction": {
+            "flexion_R": "tightness"
+          },
+          "norm_reference_ids": [
+            "norms_knee"
+          ]
+        },
+        "mmt_strength": {
+          "method": "manual_0_to_5",
+          "grades": {
+            "quad_R": "3",
+            "hamstrings_R": "4-"
+          },
+          "pain_inhibition": {
+            "present": true
+          }
+        },
+        "joint_mobility": {
+          "scale": "0_to_6",
+          "segments": {}
+        },
+        "special_tests": [
+          {
+            "test_template_id": "tmpl_lachman",
+            "performed": true,
+            "findings": {
+              "numeric": {},
+              "qualitative": [
+                "soft_end_point"
+              ],
+              "binary_flags": {
+                "positive": true
+              }
+            }
+          },
+          {
+            "test_template_id": "tmpl_anterior_drawer_knee",
+            "performed": true,
+            "findings": {
+              "numeric": {},
+              "qualitative": [
+                "increased_translation"
+              ],
+              "binary_flags": {
+                "positive": true
+              }
+            }
+          },
+          {
+            "test_template_id": "tmpl_pivot_shift",
+            "performed": false,
+            "findings": {
+              "numeric": {},
+              "qualitative": [
+                "guarding"
+              ],
+              "binary_flags": {}
+            }
+          }
+        ],
+        "neuro_screen": {
+          "dermatomes": {
+            "L2": "intact",
+            "L3": "intact",
+            "L4": "intact",
+            "L5": "intact",
+            "S1": "intact"
+          },
+          "myotomes": {
+            "L2": "5",
+            "L3": "5",
+            "L4": "5-",
+            "L5": "5",
+            "S1": "5"
+          },
+          "reflexes": {
+            "patellar": "2+",
+            "achilles": "2+"
+          },
+          "neural_tension": [],
+          "cranial_nerve_screen": {
+            "performed": false,
+            "abnormal_findings": []
+          },
+          "coordination_balance": {
+            "romberg": "normal",
+            "tandem": "normal"
+          },
+          "dual_task_variants": {
+            "tug_cog_seconds": null
+          }
+        },
+        "functional_tests": [
+          {
+            "test_template_id": "tmpl_30s_chair_stand",
+            "performed": true,
+            "findings": {
+              "numeric": {
+                "reps": 18
+              },
+              "qualitative": [
+                "compensates on R"
+              ]
+            },
+            "protocol_source_id": "src_protocol_30s_cs",
+            "norm_reference_id": "norms_30s_cs"
+          }
+        ],
+        "outcome_measures": [
+          {
+            "measure_id": "om_lefs",
+            "score_raw": 38,
+            "score_interpretation": "marked functional limitation",
+            "minimal_clinically_important_difference": 9,
+            "protocol_source_id": "src_lefs",
+            "norm_reference_id": "norms_lefs"
+          }
+        ],
+        "contraindications_precautions": [
+          "avoid pivoting/hopping",
+          "brace as indicated"
+        ],
+        "test_session_notes": "Deferred hop testing due to irritability."
+      },
+      "assessment": {
+        "problem_list": [
+          "effusion",
+          "loss_of_extension",
+          "quad_inhibition",
+          "instability_giving_way"
+        ],
+        "working_diagnoses": [
+          "suspected ACL rupture"
+        ],
+        "clinical_impression": "Mechanism (pivot/pop), hemarthrosis, and positive Lachman suggest ACL rupture. No red flags. Initiate prehab and refer to orthopedics for imaging/surgical consult.",
+        "irritability_severity": "high",
+        "staging_subgrouping": "acute_ligament_injury",
+        "prognosis": "good",
+        "icd10_codes": [
+          "S83.511A"
+        ],
+        "differential_diagnoses_considered": [
+          "meniscal_tear",
+          "MCL_sprain"
+        ],
+        "rationale_evidence_links": []
+      },
+      "plan": {
+        "frequency_duration": {
+          "visits_per_week": 2,
+          "weeks": 4
+        },
+        "referrals_imaging_requests": [
+          "orthopedics_consult",
+          "MRI_knee_right"
+        ],
+        "goals": {
+          "stg_2_4_weeks": [
+            "restore full passive knee extension within 2 weeks",
+            "reduce effusion to trace",
+            "SLR without extensor lag"
+          ],
+          "ltg_6_12_weeks": [
+            "quad strength ≥90% of uninvolved prior to surgery",
+            "normal gait without instability"
+          ]
+        },
+        "interventions_planned": [
+          {
+            "intervention_id": "education_pacing",
+            "dose": {
+              "time_min": 10
+            },
+            "progression_criteria": [
+              "demonstrates edema control plan"
+            ],
+            "regression_criteria": [],
+            "home_program_elements": [
+              "RICE_protocol",
+              "brace_usage"
+            ],
+            "expected_response": {
+              "immediate_session": [
+                "understands precautions"
+              ],
+              "2_6_weeks": [
+                "effusion_down"
+              ]
+            },
+            "evidence_bindings": []
+          },
+          {
+            "intervention_id": "motor_control",
+            "dose": {
+              "time_min": 15
+            },
+            "progression_criteria": [
+              "SLR_no_lag"
+            ],
+            "regression_criteria": [
+              "return_of_effusion"
+            ],
+            "home_program_elements": [
+              "quad_sets",
+              "heel_slides",
+              "patellar_mobs_grade_I_II"
+            ],
+            "expected_response": {
+              "2_6_weeks": [
+                "extension_restored",
+                "quad_activation_up"
+              ]
+            },
+            "evidence_bindings": []
+          }
+        ],
+        "patient_education": {
+          "topics": [
+            "brace_and_crutch_use",
+            "effusion_control",
+            "surgery_timeline_expectations"
+          ],
+          "teach_back_confirmed": true,
+          "printed_digital_resources": []
+        },
+        "safety_netting": [
+          "report increased locking or severe night pain",
+          "seek urgent care for calf swelling/chest pain"
+        ]
+      }
+    },
+    "provenance": {
+      "sources": [],
+      "reviewers": [],
+      "last_reviewed": "2025-10-01T16:57:26Z"
+    },
+    "linked_persona_id": "prsn_acl_preop_v1",
+    "persona_snapshot": {
+      "id": "prsn_acl_preop_v1",
+      "display_name": "Mateo Rivera",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "prsn_acl_preop_v1",
+    "content_version": "1.0.0",
+    "checksum": "sha256:69d711d0751aadb7c0dcc69b47eb7fa53b3121b9941918d14762d1e97136b33b",
+    "updated_at": "2025-10-08T14:01:00.736Z",
+    "file": "personas/shared/prsn_acl_preop_v1.json",
+    "data": {
+      "patient_id": "prsn_acl_preop_v1",
+      "display_name": "Mateo Rivera",
+      "demographics": {
+        "name": "Mateo Rivera",
+        "preferred_name": "Mateo",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": null,
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Mateo Rivera, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Mateo Rivera. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [
+    {
+      "module_id": "sports_pt_generic",
+      "version": "v1",
+      "module_version": "v1",
+      "content_version": "1.0.0",
+      "checksum": "sha256:d3686d842fdaf163ab0ab9c8a077802028a4144910ce1ceff2ca17b2b17ed41c",
+      "updated_at": "2025-10-07T00:00:00Z",
+      "file": "banks/modules/sports_pt_generic.v1.json",
+      "data": {
+        "module_id": "sports_pt_generic",
+        "module_version": "v1",
+        "content_version": "1.0.0",
+        "updated_at": "2025-10-07T00:00:00Z",
+        "sport": "soccer",
+        "position_event": "winger",
+        "season_phase": "in",
+        "competition_level": "college",
+        "workload_metrics": {
+          "acute_load": null,
+          "chronic_load": null,
+          "minutes": null,
+          "throws": null,
+          "jumps": null
+        },
+        "criterion_batteries": {
+          "knee_acl": [
+            "hop_single",
+            "hop_triple",
+            "hop_crossover",
+            "hop_6m_timed",
+            "y_balance",
+            "isokinetic_hhd",
+            "LESS"
+          ]
+        },
+        "readiness_indicators": {
+          "ACL_RSI": null
+        },
+        "clearance_checklist": []
+      }
+    }
+  ],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1/soap.objective.json",
+    "soap_assessment": "scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1/soap.assessment.json",
+    "soap_plan": "scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1/soap.plan.json"
+  }
+}

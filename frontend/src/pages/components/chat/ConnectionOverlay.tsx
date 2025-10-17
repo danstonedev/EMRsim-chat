@@ -18,9 +18,20 @@ export const ConnectionOverlay = memo(function ConnectionOverlay({
   isVoiceConnecting,
   progress,
 }: ConnectionOverlayProps) {
-  if (!isComposing && !isVoiceConnecting && !progress) {
+  // Handle all possible states that should NOT show any UI
+  // 1. If we're not composing AND not connecting to voice with progress
+  // 2. If we're at the "complete" step
+  // 3. If we're composing but not actively connecting yet (prevents dots flash)
+  if (
+    (!isComposing && (!isVoiceConnecting || !progress)) || 
+    (progress?.step === 'complete') ||
+    (isComposing && !isVoiceConnecting)
+  ) {
     return null
   }
+
+  // Use a local state variable to avoid race conditions in parent component
+  const showVoiceProgress = isVoiceConnecting && Boolean(progress)
 
   return (
     <div
@@ -29,18 +40,13 @@ export const ConnectionOverlay = memo(function ConnectionOverlay({
       aria-label={isComposing ? 'Setting up encounter' : 'Connecting to voice chat'}
     >
       <div className="connection-overlay__card">
-        {progress ? (
+        {showVoiceProgress && (
           <ConnectionProgressIndicator
-            step={progress.step}
-            progress={progress.progress}
-            estimatedMs={progress.estimatedMs}
+            step={progress?.step ?? 'mic'}
+            progress={progress?.progress ?? 12}
+            estimatedMs={progress?.estimatedMs}
+            placeholder={!progress}
           />
-        ) : (
-          <div className="voice-loading" aria-live="polite">
-            <div className="voice-loading__dot" />
-            <div className="voice-loading__dot" />
-            <div className="voice-loading__dot" />
-          </div>
         )}
       </div>
     </div>

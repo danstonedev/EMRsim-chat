@@ -1,10 +1,18 @@
 import { featureFlags } from './flags'
-import type { VoiceStatus } from './ConversationController'
+import type { VoiceStatus } from './types'
 import type { TranscriptTimings } from './transcript/TranscriptEngine'
 
 export type VoiceTelemetryEvent =
   | { type: 'status'; status: VoiceStatus; error: string | null; sessionId: string | null }
-  | { type: 'transcript'; role: 'user' | 'assistant'; text: string; isFinal: boolean; timestamp: number; sessionId: string | null; timings?: TranscriptTimings }
+  | {
+      type: 'transcript'
+      role: 'user' | 'assistant'
+      text: string
+      isFinal: boolean
+      timestamp: number
+      sessionId: string | null
+      timings?: TranscriptTimings
+    }
   | { type: 'start-request'; personaId: string | null | undefined; scenarioId: string | null | undefined }
   | { type: 'start-success'; sessionId: string | null }
   | { type: 'start-error'; error: string; sessionId: string | null }
@@ -27,7 +35,10 @@ export function isVoiceTelemetryEnabled(): boolean {
     try {
       const stored = window.localStorage?.getItem('voice.debug')
       if (stored && truthy.has(stored.toLowerCase())) return true
-    } catch {}
+    } catch (error) {
+      // Swallow storage errors (e.g., private browsing mode).
+      console.debug?.('[voice:telemetry]', 'localStorage unavailable', error)
+    }
     const win = window as any
     const runtime = win?.__VOICE_DEBUG
     if (typeof runtime === 'boolean') return runtime
@@ -47,7 +58,10 @@ export function recordVoiceEvent(event: VoiceTelemetryEvent): void {
     win.__VOICE_TELEMETRY__ = win.__VOICE_TELEMETRY__.slice(-MAX_BUFFER)
     try {
       window.dispatchEvent(new CustomEvent('voice-telemetry', { detail: record }))
-    } catch {}
+    } catch (error) {
+      // Ignore if dispatching events is not permitted (e.g., during tests).
+      console.debug?.('[voice:telemetry]', 'dispatch failed', error)
+    }
   }
   if (typeof console !== 'undefined' && typeof console.debug === 'function') {
     console.debug('[voice:telemetry]', record)

@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { spsRegistry } from '../sps/core/registry.ts';
 import { getGoldInstructions, formatPersonaSection as fmtPersona, formatScenarioSection as fmtScenario } from '../sps/runtime/sps.service.ts';
-import { upsertScenario, getScenarioByIdFull, listScenariosLite } from '../db.ts';
+import { upsertScenario, getScenarioByIdFull, listScenariosLite, getStorageMode } from '../db.ts';
 import { zClinicalScenario } from '../sps/core/schemas.ts';
 import { generateScenarioWithAI } from '../services/ai_generate.ts';
 import { catalogService } from '../services/catalogService.ts';
@@ -54,6 +54,46 @@ function ensureTestIds(scenario: any): void {
 // Gold standard instructions (dev/instructor aid)
 router.get('/instructions', (_req: Request, res: Response) => {
   res.json({ instructions: getGoldInstructions() });
+});
+
+// Debug endpoint: quick visibility into counts and storage mode
+router.get('/debug', (_req: Request, res: Response) => {
+  try {
+    const regScenarioCount = Object.keys(spsRegistry.scenarios).length;
+    const regPersonaCount = Object.keys(spsRegistry.personas).length;
+    const dbScenarios = listScenariosLite();
+    const dbScenarioCount = Array.isArray(dbScenarios) ? dbScenarios.length : 0;
+
+    // Unique merged IDs to reflect catalog endpoint behavior
+    const mergedIds = new Set<string>();
+    Object.keys(spsRegistry.scenarios).forEach((id) => mergedIds.add(id));
+    (dbScenarios || []).forEach((s: any) => {
+      if (s?.scenario_id) mergedIds.add(String(s.scenario_id));
+    });
+
+    res.json({
+      ok: true,
+      storage: getStorageMode(),
+      counts: {
+        registry: { scenarios: regScenarioCount, personas: regPersonaCount },
+        db: { scenarios: dbScenarioCount },
+        merged: { scenarios: mergedIds.size },
+      },
+      endpoints: {
+        scenarios: '/api/sps/scenarios',
+        personas: '/api/sps/personas',
+        sessions_scenarios_legacy: '/api/sessions/sps/scenarios',
+        sessions_personas_legacy: '/api/sessions/sps/personas',
+      },
+      notes: [
+        'Catalog merges registry (disk) and DB (authoring) entries; DB wins on conflicts.',
+        'Prefer /api/sps/*; /api/sessions/sps/* is maintained for compatibility and will be deprecated.'
+      ],
+    });
+  } catch (e) {
+    console.error('[sps][debug][error]', e);
+    res.status(500).json({ ok: false, error: 'internal_error' });
+  }
 });
 
 // Scenarios catalog (metadata only)
@@ -136,6 +176,12 @@ router.get('/personas/:id', (req: Request, res: Response) => {
     if (!persona) {
       return res.status(404).json({ error: 'persona_not_found' });
     }
+
+    // Add version headers for cache invalidation
+    const contentVersion = (persona as any).content_version || '1.0.0';
+    res.setHeader('X-Content-Version', contentVersion);
+    res.setHeader('ETag', `"${personaId}-${contentVersion}"`);
+    res.setHeader('Cache-Control', 'private, max-age=3600, must-revalidate');
 
     res.json({ persona });
   } catch (e) {
@@ -286,6 +332,13 @@ router.get('/scenarios/:id', (req: Request, res: Response) => {
     const fromDb = getScenarioByIdFull(id);
     const scenario = fromDb || spsRegistry.scenarios[id] || null;
     if (!scenario) return res.status(404).json({ error: 'not_found' });
+    
+    // Add version headers for cache invalidation
+    const contentVersion = (scenario as any).content_version || '1.0.0';
+    res.setHeader('X-Content-Version', contentVersion);
+    res.setHeader('ETag', `"${id}-${contentVersion}"`);
+    res.setHeader('Cache-Control', 'private, max-age=3600, must-revalidate');
+    
     res.json({ scenario });
   } catch (e) {
     console.error('[sps][scenarios][get][error]', e);

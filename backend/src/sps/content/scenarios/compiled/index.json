@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2025-10-16T15:55:49.154Z",
+  "generator": "sps-compiler",
+  "scenarios": {
+    "sc_hip_tha_anterior_pod0_v1": {
+      "scenario_id": "sc_hip_tha_anterior_pod0_v1",
+      "file": "scenarios/compiled/sc_hip_tha_anterior_pod0_v1.json",
+      "checksum": "sha256:57dee18dada97735d2319d57553d2f8c52443554da1262d0c59063eaaed37ed9",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-08T14:01:00.734Z",
+      "manifest_checksum": "sha256:43eff75d871b3f97c7cf0cea51870cf94966bf58a64ed83f2f10fdcca884853a",
+      "dependencies_checksum": "sha256:46f2f8a45c2e8a39c2951c72fd49f49948d079b9aa19dfe3b55e6e9f7e5c4e73",
+      "persona_id": "prsn_tha_pod0_v1",
+      "persona_checksum": "sha256:b6aaf1c3ab41917d6c12441d26688371306b32bbd21fb6f6ca877c2264680fbe",
+      "modules": [
+        {
+          "module_id": "acute_care_total_joint",
+          "version": "v1",
+          "checksum": "sha256:9f4b3fb75778431d16d391a421b81628bbd07831712c970263ed4a3c24d69a34"
+        }
+      ]
+    },
+    "sc_knee_acl_preop_direct_access_v1": {
+      "scenario_id": "sc_knee_acl_preop_direct_access_v1",
+      "file": "scenarios/compiled/sc_knee_acl_preop_direct_access_v1.json",
+      "checksum": "sha256:ae5741ca3eb318fd0ec9cb3c9d5252119cc92e5539d72df3ff43fb2ebd5c0cd4",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-08T14:01:00.734Z",
+      "manifest_checksum": "sha256:f1057699572621a89819fc76047197764ca0087c38af2e8be88c3a9b83de3aab",
+      "dependencies_checksum": "sha256:5e278c8eca571d418b6b713bb818a1a9e869c049423c911761bb568d2c6f8b19",
+      "persona_id": "prsn_acl_preop_v1",
+      "persona_checksum": "sha256:69d711d0751aadb7c0dcc69b47eb7fa53b3121b9941918d14762d1e97136b33b",
+      "modules": [
+        {
+          "module_id": "sports_pt_generic",
+          "version": "v1",
+          "checksum": "sha256:d3686d842fdaf163ab0ab9c8a077802028a4144910ce1ceff2ca17b2b17ed41c"
+        }
+      ]
+    },
+    "sc_lumbar_clbp_ext_pref_flare_v1": {
+      "scenario_id": "sc_lumbar_clbp_ext_pref_flare_v1",
+      "file": "scenarios/compiled/sc_lumbar_clbp_ext_pref_flare_v1.json",
+      "checksum": "sha256:8baaff8fc708f20b6775682f194e5ea14014ff4e97cc6066a9d3fdbc3b85b138",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-08T14:01:00.734Z",
+      "manifest_checksum": "sha256:11cf23c56b9f8c1c551c2b9e635ec6f2f493614a9c050b1e15538f82aa7c32fa",
+      "dependencies_checksum": "sha256:05024d4243f4542ceff74bf015a64b5136b42747d40552f45214c79543706063",
+      "persona_id": "prsn_clbp_extpref_v1",
+      "persona_checksum": "sha256:5e951ad1b61dd8332750b65c700779c9b485326970f552b06c6f438598a11c1a",
+      "modules": [
+        {
+          "module_id": "primary_care_low_back_pain",
+          "version": "v1",
+          "checksum": "sha256:554df798f07cb74975f3e9f3522871b9c364dcc52e103735431fa5331098cf11"
+        }
+      ]
+    },
+    "sc_knee_anterior_knee_pain_entry_v1": {
+      "scenario_id": "sc_knee_anterior_knee_pain_entry_v1",
+      "file": "scenarios/compiled/sc_knee_anterior_knee_pain_entry_v1.json",
+      "checksum": "sha256:0965a9e6605e6fc65dc578cc80db8ba4f37e2ac1873687b8fbcd974b1d56a64c",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-16T15:55:49.154Z",
+      "manifest_checksum": "sha256:34985b173f3fce92e17c140260fc161400d5f1d7702e9d2f1038921fbb65595a",
+      "dependencies_checksum": "sha256:0efb6c3d07343f3370ae4043c3c3af03954990f5f5010b687fe7dd6ee1bee684",
+      "persona_id": null,
+      "persona_checksum": null,
+      "modules": []
+    }
+  },
+  "statistics": {
+    "total_scenarios": 4,
+    "scenarios_with_persona": 3,
+    "total_modules": 3,
+    "total_compiled_files": 4
+  }
+}

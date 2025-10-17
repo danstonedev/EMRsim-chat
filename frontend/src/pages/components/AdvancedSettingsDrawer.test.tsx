@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import React from 'react'
 import AdvancedSettingsDrawer from './AdvancedSettingsDrawer'
 import { SettingsProvider } from '../../shared/settingsContext'
@@ -8,16 +8,16 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe('AdvancedSettingsDrawer', () => {
+  afterEach(cleanup)
+
   it('renders when open and shows sections', () => {
     render(
       <Wrapper>
         <AdvancedSettingsDrawer open={true} onClose={() => {}} />
       </Wrapper>
     )
-  expect(screen.getByRole('dialog', { name: /Advanced settings/i })).toBeTruthy()
-  expect(screen.getByText('Voice')).toBeTruthy()
-  expect(screen.getByText('Language')).toBeTruthy()
-  expect(screen.getByText('Behavior')).toBeTruthy()
+    expect(screen.getByRole('dialog', { name: /Advanced settings/i })).toBeTruthy()
+    expect(screen.getByText(/Voice & language/i)).toBeTruthy()
   })
 
   it('does not render when closed', () => {

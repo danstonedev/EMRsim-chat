@@ -22,10 +22,13 @@ export type ScenarioLite = {
 
 export interface MediaReference {
   id: string
-  type: 'image' | 'video'
+  type: 'image' | 'video' | 'youtube' | 'animation'
   url: string
   thumbnail?: string
   caption: string
+  // For type === 'animation'
+  animationId?: string
+  options?: { speed?: number; loop?: 'repeat' | 'once' }
 }
 
 export type Message = {
@@ -34,7 +37,7 @@ export type Message = {
   text: string
   channel: 'text' | 'voice'
   pending?: boolean
-  source?: 'openai' | 'mock' | string
+  source?: string
   timestamp: number
   sequenceId?: number
   media?: MediaReference
@@ -48,7 +51,7 @@ export const createMessage = (
   role: 'user' | 'assistant',
   text: string,
   channel: 'text' | 'voice',
-  options: { pending?: boolean; source?: string; id?: string; timestamp?: number } = {}
+  options: { pending?: boolean; source?: string; id?: string; timestamp?: number; media?: MediaReference } = {}
 ): Message => ({
   id: options.id || newId(),
   role,
@@ -57,16 +60,14 @@ export const createMessage = (
   pending: options.pending,
   source: options.source,
   timestamp: options.timestamp ?? Date.now(),
-  sequenceId: ++globalSequenceCounter
+  sequenceId: ++globalSequenceCounter,
+  media: options.media,
 })
 
 export const sortMessages = (messages: Message[]): Message[] => {
-  return [...messages].sort((a, b) => {
-    if (a.timestamp !== b.timestamp) {
-      return a.timestamp - b.timestamp
-    }
-    return (a.sequenceId || 0) - (b.sequenceId || 0)
-  })
+  // Trust the backend order - it already sorts by created_at ASC
+  // Frontend doesn't need to re-sort, just preserve the order we receive
+  return messages
 }
 
 export const nextSequenceId = () => ++globalSequenceCounter

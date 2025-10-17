@@ -1,6 +1,7 @@
 import type { MutableRefObject, ReactElement } from 'react'
 import type { Message, PersonaLite, ScenarioLite } from '../chatShared'
 import type { VoiceSessionHandle } from '../../shared/useVoiceSession'
+import RenderProfiler from '../../shared/utils/renderProfiler'
 import { ConnectionOverlay, type ConnectionProgressState } from './chat/ConnectionOverlay'
 import { MessagesList } from './chat/MessagesList'
 import { VoiceStatusPanel } from './chat/VoiceStatusPanel'
@@ -12,10 +13,8 @@ export interface ChatViewProps {
   connectionProgress: ConnectionProgressState | null
   messagesContainerRef: MutableRefObject<HTMLDivElement | null>
   messagesEndRef: MutableRefObject<HTMLDivElement | null>
-  isLoadingInitialData: boolean
   sortedMessages: Message[]
   voiceSession: VoiceSessionHandle
-  pendingElapsed: Record<string, number>
   voiceErrorMessage: string | null
   runtimeFeatures: {
     voiceEnabled: boolean
@@ -36,6 +35,7 @@ export interface ChatViewProps {
   setPrintDropdownOpen: (open: boolean) => void
   onPrintScenario: () => boolean
   onPrintTranscript: () => boolean
+  onContinueAfterStop?: () => void
   postStopOpen: boolean
   setPostStopOpen: (open: boolean) => void
   sessionId: string | null
@@ -43,18 +43,19 @@ export interface ChatViewProps {
   backendOk: boolean | null
   caseSetupIds: { section: string; title: string }
   onMediaClick?: (media: import('../chatShared').MediaReference) => void
+  selectedMedia?: import('../chatShared').MediaReference | null
+  onReset?: () => Promise<void>
 }
 
 export function ChatView({
   isComposing,
   isVoiceConnecting,
   connectionProgress,
+  onReset,
   messagesContainerRef,
   messagesEndRef,
-  isLoadingInitialData,
   sortedMessages,
   voiceSession,
-  pendingElapsed,
   voiceErrorMessage,
   runtimeFeatures,
   renderMicControl,
@@ -78,11 +79,19 @@ export function ChatView({
   backendOk,
   caseSetupIds,
   onMediaClick,
+  selectedMedia,
 }: ChatViewProps) {
   const showVoiceDisabledBanner = !runtimeFeatures.voiceEnabled || !runtimeFeatures.spsEnabled
+  const isActivelyListening = voiceSession.status === 'connected' && !voiceSession.micPaused
+
+  const handleImageLoad = () => {
+    // Scroll to bottom when images load (they change container height)
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+  }
 
   return (
-    <>
+    <RenderProfiler id="ChatView">
+      <>
       <div className="chat-panel">
         <div className="chat-panel__body">
           <ConnectionOverlay
@@ -93,12 +102,11 @@ export function ChatView({
 
           <MessagesList
             messages={sortedMessages}
-            isLoadingInitialData={isLoadingInitialData}
             messagesContainerRef={messagesContainerRef}
             messagesEndRef={messagesEndRef}
-            pendingElapsed={pendingElapsed}
-            voiceSession={voiceSession}
             onMediaClick={onMediaClick}
+            onImageLoad={handleImageLoad}
+            selectedMedia={selectedMedia}
           />
 
           <VoiceStatusPanel voiceSession={voiceSession} renderMicControl={renderMicControl} />
@@ -108,7 +116,16 @@ export function ChatView({
               {voiceErrorMessage}
             </div>
           )}
-          <audio ref={voiceSession.remoteAudioRef as any} autoPlay playsInline hidden />
+          <audio 
+            ref={voiceSession.remoteAudioRef as any} 
+            autoPlay 
+            playsInline 
+            hidden
+            onPlay={() => console.log('[Audio] Started playing')}
+            onPause={() => console.log('[Audio] Paused')}
+            onError={(e) => console.error('[Audio] Error:', e)}
+            onLoadedMetadata={() => console.log('[Audio] Metadata loaded')}
+          />
         </div>
         {showVoiceDisabledBanner && (
           <div className="voice-disabled-banner" role="status">
@@ -124,32 +141,36 @@ export function ChatView({
         )}
       </div>
 
-      <CaseSetupBar
-        personas={personas}
-        personaId={personaId}
-        selectedPersona={selectedPersona}
-        setPersonaId={setPersonaId}
-        scenarios={scenarios}
-        scenarioId={scenarioId}
-        selectedScenario={selectedScenario}
-        setScenarioId={setScenarioId}
-        renderMicControl={renderMicControl}
-        isComposing={isComposing}
-        isVoiceConnecting={isVoiceConnecting}
-        connectionProgress={connectionProgress}
-        voiceSession={voiceSession}
-        setSettingsOpen={setSettingsOpen}
-        printDropdownOpen={printDropdownOpen}
-        setPrintDropdownOpen={setPrintDropdownOpen}
-        onPrintScenario={onPrintScenario}
-        onPrintTranscript={onPrintTranscript}
-        postStopOpen={postStopOpen}
-        setPostStopOpen={setPostStopOpen}
-        sessionId={sessionId}
-        spsError={spsError}
-        backendOk={backendOk}
-        caseSetupIds={caseSetupIds}
-      />
-    </>
+      {!isActivelyListening && (
+        <CaseSetupBar
+          personas={personas}
+          personaId={personaId}
+          selectedPersona={selectedPersona}
+          setPersonaId={setPersonaId}
+          scenarios={scenarios}
+          scenarioId={scenarioId}
+          selectedScenario={selectedScenario}
+          setScenarioId={setScenarioId}
+          renderMicControl={renderMicControl}
+          isComposing={isComposing}
+          isVoiceConnecting={isVoiceConnecting}
+          connectionProgress={connectionProgress}
+          voiceSession={voiceSession}
+          setSettingsOpen={setSettingsOpen}
+          printDropdownOpen={printDropdownOpen}
+          setPrintDropdownOpen={setPrintDropdownOpen}
+          onPrintScenario={onPrintScenario}
+          onPrintTranscript={onPrintTranscript}
+          onContinueAfterStop={onReset}
+          postStopOpen={postStopOpen}
+          setPostStopOpen={setPostStopOpen}
+          sessionId={sessionId}
+          spsError={spsError}
+          backendOk={backendOk}
+          caseSetupIds={caseSetupIds}
+        />
+      )}
+      </>
+    </RenderProfiler>
   )
 }

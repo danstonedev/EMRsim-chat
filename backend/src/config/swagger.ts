@@ -1,5 +1,7 @@
 import swaggerJsdoc from 'swagger-jsdoc';
-import { version } from '../../package.json';
+import packageJson from '../../package.json' with { type: 'json' };
+
+const { version } = packageJson;
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -174,9 +176,7 @@ const options: swaggerJsdoc.Options = {
   // Paths to files containing OpenAPI annotations
   apis: [
     './src/routes/*.ts',
-    './src/routes/*.js',
     './src/controllers/*.ts',
-    './src/controllers/*.js',
   ],
 };
 

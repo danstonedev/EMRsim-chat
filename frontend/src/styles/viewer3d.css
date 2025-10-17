@@ -1,0 +1,503 @@
+/**
+ * 3D Viewer Styles
+ * UND-branded 3D anatomy viewer with immersive full-screen experience
+ */
+
+.viewer3d-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+  overflow: hidden;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.viewer3d-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  touch-action: none; /* prevent page scroll during touch pan/zoom */
+  overscroll-behavior: contain;
+}
+
+/* Full-screen overlay that sits above the chat */
+.viewer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.6);
+  display: grid;
+  place-items: center;
+  padding: var(--space-lg, 16px);
+}
+
+/* Embedded variant (rendered inside a modal container) */
+.viewer3d-container--embed {
+  position: relative;
+  width: 100%;
+  height: clamp(420px, 65vh, 720px);
+  background: transparent;
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+}
+.viewer3d-container--embed .viewer3d-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Error box */
+.viewer-error-box {
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  min-width: 160px;
+}
+.viewer-error-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Header */
+.viewer-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.85),
+    transparent
+  );
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.viewer-header > * {
+  pointer-events: auto;
+}
+
+.viewer-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary, #111111);
+  letter-spacing: -0.02em;
+}
+
+.viewer-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.viewer-debug-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.viewer-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary, #111111);
+  border-radius: 50%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.viewer-close-btn:hover {
+  background: rgba(0, 0, 0, 0.12);
+  transform: scale(1.05);
+}
+
+.viewer-close-btn:active {
+  transform: scale(0.95);
+}
+
+.viewer-close-btn:focus-visible {
+  outline: 2px solid var(--color-und-green, #009A44);
+  outline-offset: 2px;
+}
+
+/* Bottom Controls */
+.viewer-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.85),
+    transparent
+  );
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.viewer-controls > * {
+  pointer-events: auto;
+}
+
+/* Buttons */
+.viewer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--border-muted, #aeaeae);
+  background: var(--surface, #ffffff);
+  color: var(--text-primary, #111111);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.viewer-btn:hover {
+  background: var(--bg, #f5f5f5);
+  border-color: var(--color-und-green, #009A44);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.viewer-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.viewer-btn:focus-visible {
+  outline: 2px solid var(--color-und-green, #009A44);
+  outline-offset: 2px;
+}
+
+/* Primary Button (Play/Pause) */
+.viewer-btn--primary {
+  background: var(--color-und-green, #009A44);
+  border-color: var(--color-und-green, #009A44);
+  color: var(--color-white, #ffffff);
+  font-weight: 600;
+}
+
+.viewer-btn--primary:hover {
+  background: #00802f;
+  border-color: #00802f;
+  color: var(--color-white, #ffffff);
+}
+
+/* Select Dropdown */
+.viewer-select {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-muted, #aeaeae);
+  background: var(--surface, #ffffff);
+  color: var(--text-primary, #111111);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  outline: none;
+}
+
+.viewer-select:hover {
+  border-color: var(--color-und-green, #009A44);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.viewer-select:focus-visible {
+  outline: 2px solid var(--color-und-green, #009A44);
+  outline-offset: 2px;
+  border-color: var(--color-und-green, #009A44);
+}
+
+/* Help Text */
+.viewer-help-text {
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.8rem;
+  color: var(--text-muted, #333333);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.viewer-loading {
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  background: rgba(0, 154, 68, 0.12);
+  color: #004225;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Playback Modal */
+.playback-modal {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  z-index: 50;
+  min-width: 520px;
+}
+
+.playback-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.playback-speed-value {
+  min-width: 48px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary, #111111);
+}
+
+.playback-select {
+  margin-left: 12px;
+}
+
+.playback-timeline {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+.playback-timeline::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-und-green, #009A44);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.playback-timeline::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.playback-timeline::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-und-green, #009A44);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.playback-timeline::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .viewer-header {
+    padding: var(--space-md);
+  }
+
+  .viewer-title {
+    font-size: 1.25rem;
+  }
+
+  .viewer-controls {
+    flex-wrap: wrap;
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .viewer-help-text {
+    width: 100%;
+    text-align: center;
+    font-size: 0.75rem;
+  }
+
+  .viewer-btn {
+    font-size: 0.85rem;
+    padding: var(--space-xs) var(--space-md);
+  }
+
+  .playback-modal {
+    min-width: 90%;
+    left: 5%;
+    transform: none;
+    bottom: 16px;
+  }
+
+  .playback-controls {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .playback-speed-value {
+    font-size: 0.85rem;
+  }
+
+  .playback-select {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* Animation Prompt Panel */
+.viewer-prompt-panel {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 80px;
+  background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: var(--space-md);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 500px;
+  max-width: 700px;
+  z-index: 20;
+}
+
+.viewer-prompt-form {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.viewer-prompt-input {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.viewer-prompt-input:focus {
+  border-color: #009a44;
+}
+
+.viewer-prompt-result {
+  padding: var(--space-xs) var(--space-sm);
+  background: rgba(0, 154, 68, 0.1);
+  border-left: 3px solid #009a44;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  margin-bottom: var(--space-sm);
+  color: #006632;
+}
+
+.viewer-prompt-suggestions {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.viewer-prompt-label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.viewer-suggestion-btn {
+  padding: var(--space-xs) var(--space-sm);
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewer-suggestion-btn:hover {
+  background: #009a44;
+  color: white;
+  border-color: #009a44;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .viewer-btn,
+  .viewer-close-btn,
+  .viewer-suggestion-btn {
+    transition: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .viewer-prompt-panel {
+    min-width: 90%;
+    left: 5%;
+    transform: none;
+    bottom: 70px;
+  }
+}
+
+/* Lazy route fallback */
+.viewer3d-loading-fallback {
+  padding: 16px;
+}
+
+/* Mini Viewer Controls */
+.mini-viewer-controls {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  left: 12px;
+}
+
+.mini-viewer-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary, #111111);
+}
+

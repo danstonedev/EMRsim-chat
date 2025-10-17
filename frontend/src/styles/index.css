@@ -1,0 +1,9 @@
+/**
+ * Global Styles Entry Point
+ * Ensures consistent order for design tokens, chat styles, and modular app styles
+ */
+
+@import './fonts.css';
+@import './brand.css';
+@import './chat.css';
+@import './app.css';

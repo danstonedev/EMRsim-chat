@@ -5,19 +5,25 @@
   - Prints a concise report and exits non-zero on any error
 */
 import { zScreeningChallenge, zSpecialQuestion, zPersona, zClinicalScenario } from '../core/schemas';
-import { convertPersonaBundle, convertScenarioBundle } from '../runtime/session';
+import {
+  convertPersonaBundle,
+  convertScenarioBundle,
+  loadContextModules,
+  resolveModule,
+} from '../runtime/session';
+import type { ModuleReference } from '../runtime/session';
 import fs from 'node:fs';
 import path from 'node:path';
 
 type Issue = { level: 'ERROR' | 'WARN'; file: string; message: string };
 
-const ROOT = path.resolve(process.cwd(), 'src', 'sps', 'data');
+const ROOT = path.resolve(process.cwd(), 'src', 'sps', 'content');
 const PATHS = {
-  challenges: path.join(ROOT, 'challenges', 'red_yellow.core.json'),
-  specials: path.join(ROOT, 'special_questions'),
+  challenges: path.join(ROOT, 'banks', 'challenges', 'red_yellow.core.json'),
+  specials: path.join(ROOT, 'banks', 'special_questions'),
   personas: path.join(ROOT, 'personas'),
   scenarios: path.join(ROOT, 'scenarios'),
-  scenariosV3: path.join(ROOT, 'scenarios_v3'),
+  scenariosV3: path.join(ROOT, 'scenarios', 'bundles_src'),
 };
 
 function readJson(file: string) {
@@ -91,7 +97,7 @@ async function main() {
 
   // 3) Personas (all nested JSON)
   const personaFiles = listJsonFilesDeep(PATHS.personas);
-  const scenarioPersonaDir = path.join(PATHS.personas, 'scenario') + path.sep;
+  const scenarioPersonaDir = path.join(PATHS.personas, 'shared') + path.sep;
   const personaIds = new Set<string>();
   const scenarioPersonaBundles = new Map<string, { raw: any; persona: any }>();
   for (const f of personaFiles) {
@@ -225,6 +231,51 @@ async function main() {
     const assessment = readOrDefault(linkage.soap_assessment_file || 'soap.assessment.json', {});
     const plan = readOrDefault(linkage.soap_plan_file || 'soap.plan.json', {});
 
+    const moduleRefsRaw = Array.isArray(linkage.active_context_modules) ? linkage.active_context_modules : [];
+    const moduleRefs: ModuleReference[] = [];
+    moduleRefsRaw.forEach((ref: unknown, idx: number) => {
+      if (typeof ref === 'string') {
+        issues.push({
+          level: 'ERROR',
+          file: headerPath,
+          message: `active_context_modules[${idx}] uses deprecated string reference (${ref}). Expected object with module_id/version.`,
+        });
+        return;
+      }
+      if (!ref || typeof ref !== 'object') {
+        issues.push({
+          level: 'ERROR',
+          file: headerPath,
+          message: `active_context_modules[${idx}] is not a valid module reference`,
+        });
+        return;
+      }
+
+      const moduleId = typeof (ref as any).module_id === 'string' ? (ref as any).module_id.trim() : '';
+      const version = typeof (ref as any).version === 'string' ? (ref as any).version.trim() : '';
+      if (!moduleId) {
+        issues.push({
+          level: 'ERROR',
+          file: headerPath,
+          message: `active_context_modules[${idx}] missing module_id`,
+        });
+        return;
+      }
+
+      const moduleRef: ModuleReference = { module_id: moduleId, version: version || '' };
+      moduleRefs.push(moduleRef);
+      const resolved = resolveModule(moduleRef);
+      if (!resolved) {
+        issues.push({
+          level: 'ERROR',
+          file: headerPath,
+          message: `active_context_modules[${idx}] failed to resolve module ${moduleId}${version ? `@${version}` : ''}`,
+        });
+      }
+    });
+
+    const contextModules = loadContextModules(moduleRefs);
+
     const scenario = convertScenarioBundle(
       bundleName,
       header,
@@ -236,6 +287,7 @@ async function main() {
       objective,
       assessment,
       plan,
+      contextModules,
     );
 
     if (!scenario) {

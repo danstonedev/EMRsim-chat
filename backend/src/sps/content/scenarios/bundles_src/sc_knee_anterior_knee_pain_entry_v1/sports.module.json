@@ -1,0 +1,7 @@
+{
+  "module_id": "sports_pt_generic",
+  "version": "v1",
+  "context": {
+    "environment": "clinic with step and treatment table"
+  }
+}

@@ -1,75 +1,58 @@
-import { memo, useMemo } from 'react'
+import { memo } from 'react'
 import type { Message, MediaReference } from '../../chatShared'
-import type { VoiceSessionHandle } from '../../../shared/useVoiceSession'
-import { MessageVoiceIndicator } from './MessageVoiceIndicator'
+import { getYouTubeThumbnail } from './MediaModal'
+import ChatAnimationInlinePreview from '../viewer/ChatAnimationInlinePreview'
 
 type MessageItemProps = {
   message: Message
-  voiceSession: VoiceSessionHandle
-  elapsedSeconds?: number
   onMediaClick?: (media: MediaReference) => void
+  onImageLoad?: () => void
+  isMediaOpenInModal?: boolean
 }
 
-function MessageItemComponent({ message, voiceSession, elapsedSeconds, onMediaClick }: MessageItemProps) {
-  const { role, channel, pending, timestamp, text, media } = message
+function MessageItemComponent({ message, onMediaClick, onImageLoad, isMediaOpenInModal }: MessageItemProps) {
+  const { role, pending, timestamp, text, media } = message
   const isUser = role === 'user'
-  const isVoice = channel === 'voice'
   const isPending = Boolean(pending)
-  const isVoicePending = isVoice && isPending
 
-  const classNames = useMemo(() => {
-    const messageClass = [
-      'message',
-      isUser ? 'message--user' : 'message--assistant',
-      isVoice ? 'message--voice' : 'message--text',
-      isPending ? 'message--pending' : 'message--final',
-    ]
-      .filter(Boolean)
-      .join(' ')
+  // Simplified: only show finalized messages, no intermediate states
+  if (isPending) {
+    return null
+  }
 
-    const bubbleClass = [
-      'message__bubble',
-      isVoice ? 'message__bubble--voice' : '',
-      isVoicePending ? 'message__bubble--voice-pending' : '',
-      isUser && isVoice && !isPending ? 'message__bubble--voice-final' : '',
-      !isUser && isVoice && !isPending ? 'message__bubble--assistant-voice-final' : '',
-    ]
-      .filter(Boolean)
-      .join(' ')
+  const messageClass = [
+    'message',
+    isUser ? 'message--user' : 'message--assistant',
+  ].join(' ')
 
-    return { messageClass, bubbleClass }
-  }, [isPending, isUser, isVoice, isVoicePending])
-
-  const livePartial = isUser ? voiceSession.userPartial : voiceSession.assistantPartial
-  const shouldShowLivePartial = !isUser && isVoicePending
-  const pendingPreview = isVoicePending
-    ? shouldShowLivePartial
-      ? livePartial || text || 'Listening…'
-      : 'Listening…'
-    : null
-  const displayText = isVoicePending ? pendingPreview || '' : text || (isPending ? '…' : '')
+  const displayText = text || ''
+  const hasText = displayText.trim().length > 0
 
   return (
-    <div className={classNames.messageClass}>
-      <div
-        className={classNames.bubbleClass}
-        title={new Date(timestamp).toLocaleTimeString()}
-        data-pending={isPending ? 'true' : 'false'}
-        data-channel={channel}
-        data-role={role}
-      >
-        {isVoicePending && (
-          <MessageVoiceIndicator isAssistant={!isUser} elapsedSeconds={elapsedSeconds} />
-        )}
-        {isVoicePending ? (
-          <div className="message__text" aria-live="polite">
-            {displayText}
-          </div>
-        ) : (
+    <div className={messageClass}>
+      {hasText && (
+        <div
+          className="message__bubble"
+          title={new Date(timestamp).toLocaleTimeString()}
+          data-role={role}
+        >
           <div className="message__text">{displayText}</div>
-        )}
-        
-        {media && !isPending && onMediaClick && (
+        </div>
+      )}
+      
+      {media && !isPending && onMediaClick && (
+        media.type === 'animation' ? (
+          // For animations, do NOT make the wrapper clickable. Only the explicit Expand button opens the modal.
+          // Hide the inline preview when the modal is open to prevent model conflicts
+          !isMediaOpenInModal && (
+            <div className="message__media-preview" aria-label={media.caption}>
+              <ChatAnimationInlinePreview
+                animationId={media.animationId}
+                onExpand={() => onMediaClick(media)}
+              />
+            </div>
+          )
+        ) : (
           <div 
             className="message__media-preview" 
             onClick={() => onMediaClick(media)}
@@ -83,16 +66,32 @@ function MessageItemComponent({ message, voiceSession, elapsedSeconds, onMediaCl
             }}
             aria-label={`View clinical observation: ${media.caption}`}
           >
-            <img 
-              src={media.thumbnail || media.url} 
-              alt={media.caption}
-            />
-            <span className="message__media-badge">
-              {media.type === 'video' ? '▶' : '🔍'}
-            </span>
+            <>
+              <img 
+                src={
+                  media.type === 'youtube' 
+                    ? (media.thumbnail || getYouTubeThumbnail(media.url))
+                    : (media.thumbnail || media.url)
+                }
+                alt={media.caption}
+                onLoad={onImageLoad}
+              />
+              <span className="message__media-badge" aria-hidden="true">
+                {media.type === 'youtube' ? (
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.8 4.8c-.2-1-.8-1.7-1.6-1.9C12.7 2.5 8 2.5 8 2.5s-4.7 0-6.2.4c-.8.2-1.4.9-1.6 1.9C0 6.1 0 8 0 8s0 1.9.2 3.2c.2 1 .8 1.7 1.6 1.9 1.5.4 6.2.4 6.2.4s4.7 0 6.2-.4c.8-.2 1.4-.9 1.6-1.9.2-1.3.2-3.2.2-3.2s0-1.9-.2-3.2zM6.4 10.5V5.5L10.6 8l-4.2 2.5z"/>
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                    <line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                )}
+              </span>
+            </>
           </div>
-        )}
-      </div>
+        )
+      )}
     </div>
   )
 }

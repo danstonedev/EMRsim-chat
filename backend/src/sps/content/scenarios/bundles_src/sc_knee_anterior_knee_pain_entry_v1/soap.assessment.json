@@ -1,0 +1,10 @@
+{
+  "problem_list": ["anterior knee pain with stairs", "peripatellar tenderness", "pain with prolonged sitting"],
+  "working_diagnoses": ["patellofemoral pain syndrome"],
+  "clinical_impression": "Presentation aligns with PFPS; irritability low; impairments minimal strength loss; symptoms reproduced with patellofemoral load.",
+  "irritability_severity": "low",
+  "staging_subgrouping": "patellofemoral pain",
+  "prognosis": "good",
+  "icd10_codes": ["M22.2X1"],
+  "differential_diagnoses_considered": ["patellar tendinopathy", "plica irritation", "meniscal irritation (unlikely)"]
+}

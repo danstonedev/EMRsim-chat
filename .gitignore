@@ -52,6 +52,11 @@ yarn.lock
 *.swo
 *~
 
+# Backup files (never commit backups)
+*.backup
+*.bak
+*.old
+
 # Database
 *.db
 *.db-shm

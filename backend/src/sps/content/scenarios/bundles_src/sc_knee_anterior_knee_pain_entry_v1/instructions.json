@@ -1,0 +1,20 @@
+{
+  "sp_instructions": {
+    "affect": "calm",
+    "pain_behavior": "mild guarding on patellar palpation",
+    "cueing_rules": [
+      "avoid diagnosing; answer with lived experience",
+      "if unclear, ask the student to be specific"
+    ]
+  },
+  "llm_prompt_hooks": {
+    "coaching_cues": [
+      "ask about sitting tolerance and stairs",
+      "screen for swelling, locking, or giving way"
+    ],
+    "deflection_lines": [
+      "Could you tell me exactly what movement or test you want me to try?"
+    ]
+  },
+  "authoring_notes": "Entry-level case. Keep language plain and avoid complex rehab programming."
+}

@@ -137,12 +137,16 @@ export function mergeDelta(existing: string, addition: string): string {
   }
 
   if (existing.includes(addition)) {
-    console.log('[TranscriptEngine] ⏭️ Skipping redundant delta (already in buffer)')
+    if (import.meta.env.DEV) {
+      console.debug('[TranscriptEngine] ⏭️ Skipping redundant delta (already in buffer)')
+    }
     return existing
   }
 
   if (existing.startsWith(addition)) {
-    console.log('[TranscriptEngine] ⏭️ Skipping stale delta (older than buffer)')
+    if (import.meta.env.DEV) {
+      console.debug('[TranscriptEngine] ⏭️ Skipping stale delta (older than buffer)')
+    }
     return existing
   }
 
@@ -151,7 +155,9 @@ export function mergeDelta(existing: string, addition: string): string {
   while (idx < max && existing[idx] === addition[idx]) idx += 1
 
   if (idx === 0) {
-    console.log('[TranscriptEngine] ⚠️ No overlap detected, appending delta')
+    if (import.meta.env.DEV) {
+      console.debug('[TranscriptEngine] ⚠️ No overlap detected, appending delta')
+    }
     const merged = `${existing}${addition}`
     return normalizeFullCandidate(merged) ?? merged.trim()
   }

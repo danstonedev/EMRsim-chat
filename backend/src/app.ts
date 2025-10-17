@@ -21,41 +21,48 @@ export function createApp(): Application {
     app.set('trust proxy', 1);
   }
   
-  // Security headers
-  app.use(helmet({
-    contentSecurityPolicy: false, // Disable CSP for now to avoid breaking functionality
-    crossOriginEmbedderPolicy: false,
-  }));
-  
-  // Rate limiting - more permissive for development, adjust for production
-  const limiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 100, // Limit each IP to 100 requests per minute (allows burst traffic during page loads)
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: 'Too many requests from this IP, please try again later.',
-    skipSuccessfulRequests: false,
-    skipFailedRequests: true, // Don't count failed requests (4xx/5xx) toward the limit
-  });
-  app.use('/api/', limiter);
-  
-  app.use(express.json({ limit: '1mb' }));
   const allowedOrigins = resolveAllowedOrigins();
   const ALLOWED_ORIGINS = new Set(allowedOrigins);
   app.use(cors({
     origin: (origin, cb) => {
+      // Allow requests with no origin (like mobile apps, Postman, curl)
       if (!origin) return cb(null, true);
       if (ALLOWED_ORIGINS.has(origin)) return cb(null, true);
+      // Log rejected origins for debugging
+      console.warn('[cors] Rejected origin:', origin);
       // Return error instead of false to properly reject with CORS headers
       return cb(new Error('Not allowed by CORS'));
     },
-    credentials: false,
+    credentials: true, // Allow credentials (cookies, authorization headers)
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     preflightContinue: false,
     optionsSuccessStatus: 204,
   }));
   console.log('[backend] CORS allowed origins:', [...ALLOWED_ORIGINS]);
+
+  // Security headers
+  app.use(helmet({
+    contentSecurityPolicy: false, // Disable CSP for now to avoid breaking functionality
+    crossOriginEmbedderPolicy: false,
+  }));
+
+  app.use(express.json({ limit: '1mb' }));
+
+  // Rate limiting - disable entirely for local development to avoid interfering with historical turn loads
+  if (process.env.NODE_ENV === 'production') {
+    const limiter = rateLimit({
+      windowMs: 1 * 60 * 1000, // 1 minute
+      max: 500, // Limit each IP to 500 requests per minute (allows burst traffic during page loads)
+      standardHeaders: true,
+      message: 'Too many requests from this IP, please try again later.',
+      skipSuccessfulRequests: false,
+      skipFailedRequests: true, // Don't count failed requests (4xx/5xx) toward the limit
+    });
+    app.use('/api/', limiter);
+  } else {
+    console.warn('[backend] Rate limiting disabled for development environment');
+  }
 
   // Performance tracking middleware (before request logger)
   app.use(performanceMiddleware);

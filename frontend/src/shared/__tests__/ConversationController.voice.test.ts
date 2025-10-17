@@ -47,7 +47,7 @@ describe('ConversationController - Voice & Transcription', () => {
     })
     
     // Listen to events
-    controller.on((event) => {
+    controller.addListener((event) => {
       events.push(event)
     })
 

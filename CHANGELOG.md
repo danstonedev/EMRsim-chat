@@ -2,6 +2,47 @@
 
 ## Unreleased
 
+### ConversationController Modularization - Phase 9 Complete (Oct 16, 2025)
+
+- **StateCoordinator Extraction:** Coordinator pattern for state operations - 67-line reduction (-8.9%)
+- Created `StateCoordinator.ts` (84 lines) - coordinator for state management across multiple managers
+- Extracted 8 helper methods: `isOpStale`, `invalidateOps`, `resetInitialAssistantGuards`, `scheduleInitialAssistantRelease`, `releaseInitialAssistantAutoPause`, `handleSessionReuse`, `setAutoMicPaused`, `applyMicPausedState`
+- ConversationController reduced from 750 lines → 683 lines (-67, -8.9% this phase)
+- **Cumulative progress:** 58.8% total reduction from original 1473 lines (866 lines removed across 9 phases)
+- Introduced Coordinator pattern for cross-cutting state concerns with clean dependency injection
+- All TypeScript compilation, builds, and tests passing ✅
+- **Mission Accomplished** - 9 focused modules created, all ≤300 lines, 8 architectural patterns demonstrated
+- See `MODULARIZATION_PHASE9_COMPLETE.md` and `PHASE9_SUMMARY.md` for full details
+
+### ConversationController Modularization - Phase 8 Complete (Oct 16, 2025)
+
+- **ConnectionFlowOrchestrator Extraction:** Clean orchestrator pattern - 34-line reduction (-4.8%)
+- Created `ConnectionFlowOrchestrator.ts` (202 lines) - orchestrator for connection flow context creation
+- Reduced `createConnectionContext()` from 67 lines → 3 lines (-64 lines, -95.5% method simplification)
+- Removed `createSessionWithLogging()` method (11 lines) - moved to orchestrator
+- ConversationController reduced from 708 lines → 674 lines (-34, -4.8% this phase)
+- **Cumulative progress:** 54.2% total reduction from original 1473 lines (799 lines removed across 8 phases)
+- Demonstrated orchestrator pattern for complex object creation with dependency injection
+- All TypeScript compilation, builds, and tests passing ✅
+- **Modularization goal achieved** - clean architecture with excellent separation of concerns
+- See `MODULARIZATION_PHASE8_COMPLETE.md` and `PHASE8_SUMMARY.md` for full details
+
+### ConversationController Modularization - Phase 7 Complete (Oct 16, 2025)
+
+- **ServiceInitializer Extraction:** Massive 438-line reduction (-38.2%) by extracting 411-line constructor into factory pattern
+- Created `ServiceInitializer.ts` (672 lines) - centralized factory for all service initialization with 8-phase architecture
+- Constructor reduced from 411 lines → 48 lines (-363 lines, -88.3% reduction)
+- ConversationController reduced from 1146 lines → 708 lines (-38.2% this phase)
+- **Cumulative progress:** 51.9% total reduction from original 1473 lines (765 lines removed across 7 phases)
+- Implemented dependency injection pattern via `ServiceInitializerCallbacks` interface (40+ callbacks)
+- Added definite assignment assertions (`!`) for factory-initialized properties
+- Fixed timer types: `ReturnType<typeof setInterval>` and `ReturnType<typeof setTimeout>`
+- All TypeScript compilation, builds, and tests passing ✅
+- **Largest single-phase reduction achieved** - factory pattern demonstrates excellent separation of concerns
+- See `MODULARIZATION_PHASE7_COMPLETE.md` and `PHASE7_SUMMARY.md` for full details
+
+### Other Updates
+
 - Unified SPS encounter UI: merged previous SPS drawer into main sidebar. Persona & scenario selection, gate/phase controls, instructions, and SPS mini-chat now coexist with persona picker. Eliminates drawer fetch timing conflicts and simplifies workflow.
 - SPS data model: optional `subjective_catalog` added to `ClinicalScenario` (with `SubjectiveItem` schema) to streamline authoring a comprehensive subjective exam without breaking existing flows. Runtime now matches student prompts against `subjective_catalog` after specials/screening.
 - Authoring aids: new templates `subjective.template.json` and `objective_tests.template.json`; `scenario.template.json` updated with sample `subjective_catalog` entries; template README updated.

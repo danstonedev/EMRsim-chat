@@ -32,4 +32,13 @@ Open `http://localhost:5173`.
 
 ## Docs
 
-See `ops/docs/README.md`, `ops/docs/BUILD_GUIDE.md`, and `ops/docs/API_CONTRACTS.md` for roadmap and contracts.
+📚 **[DOCS_INDEX.md](DOCS_INDEX.md)** - **START HERE** for complete documentation navigation
+
+Quick links:
+
+- Architecture overview: [docs/README.md](docs/README.md)
+- Ops docs landing: [ops/docs/README.md](ops/docs/README.md)
+- Build guide: [ops/docs/BUILD_GUIDE.md](ops/docs/BUILD_GUIDE.md)
+- API contracts: [ops/docs/API_CONTRACTS.md](ops/docs/API_CONTRACTS.md)
+- Testing guide: [TESTING_GUIDE.md](TESTING_GUIDE.md)
+- Production readiness: [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md)

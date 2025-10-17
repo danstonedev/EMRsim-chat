@@ -1,13 +1,76 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Character encoding and viewport -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UND Sim Patient v0.1</title>
-  <link rel="icon" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    <!-- Primary Meta Tags -->
+    <title>EMRsim Chat - UND Medical Simulation Platform</title>
+    <meta name="title" content="EMRsim Chat - UND Medical Simulation Platform" />
+    <meta name="description" content="Interactive medical simulation platform for training healthcare professionals through realistic patient scenarios and AI-powered conversations." />
+    <meta name="keywords" content="medical simulation, healthcare training, EMR, patient simulation, medical education" />
+    <meta name="author" content="University of North Dakota" />
+    
+    <!-- Theme and appearance -->
+    <meta name="theme-color" content="#009A44" />
+    <meta name="color-scheme" content="light" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="EMRsim Chat - UND Medical Simulation Platform" />
+    <meta property="og:description" content="Interactive medical simulation platform for training healthcare professionals." />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:site_name" content="EMRsim Chat" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="EMRsim Chat - UND Medical Simulation Platform" />
+    <meta name="twitter:description" content="Interactive medical simulation platform for training healthcare professionals." />
+    <meta name="twitter:image" content="/twitter-image.png" />
+    
+  <!-- Mobile app capability -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <!-- Apple iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="EMRsim Chat" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- Icons and manifest -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap" rel="stylesheet">
+    
+    <!-- Security -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    
+    <!-- Accessibility -->
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Robots and indexing -->
+    <meta name="robots" content="noindex, nofollow" /> <!-- Change to "index, follow" for production -->
   </head>
   <body>
+    <!-- App root -->
     <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Fallback for users with JavaScript disabled -->
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
+        <h1>JavaScript Required</h1>
+        <p>EMRsim Chat requires JavaScript to function. Please enable JavaScript in your browser settings.</p>
+      </div>
+    </noscript>
+    
+    <!-- Main application bundle -->
+    <script type="module" src="/src/main.tsx"></script>
   </body>
-  </html>
+</html>

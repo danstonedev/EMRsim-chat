@@ -7,6 +7,7 @@
  */
 
 import type { Server as SocketIOServer } from 'socket.io';
+import { getSessionTurns } from '../db.ts';
 
 type TranscriptRole = 'user' | 'assistant';
 
@@ -61,7 +62,29 @@ function appendTranscriptHistory(sessionId: string, role: TranscriptRole, payloa
 }
 
 export function getTranscriptHistory(sessionId: string): TranscriptHistoryEntry[] {
-  return transcriptHistory.get(sessionId) ?? [];
+  // First check in-memory cache (for recent real-time transcripts)
+  const memoryHistory = transcriptHistory.get(sessionId);
+  if (memoryHistory && memoryHistory.length > 0) {
+    return memoryHistory;
+  }
+
+  // If not in memory, load from database
+  try {
+    const turns = getSessionTurns(sessionId);
+    return turns.map(turn => {
+      const timestamp = turn.created_at ? new Date(turn.created_at).getTime() : Date.now();
+      return {
+        role: turn.role as TranscriptRole,
+        text: turn.text,
+        isFinal: true,
+        timestamp,
+        source: 'database',
+      };
+    });
+  } catch (error) {
+    console.error('[transcript-broadcast] Failed to load history from database:', error);
+    return [];
+  }
 }
 
 /**

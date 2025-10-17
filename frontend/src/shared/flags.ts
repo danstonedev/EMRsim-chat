@@ -1,6 +1,8 @@
 const coerceString = (value: unknown): string | undefined => {
   if (value == null) return undefined
-  return typeof value === 'string' ? value : String(value)
+  if (typeof value === 'string') return value
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  return undefined
 }
 
 const toBool = (value: string | undefined, defaultValue: boolean): boolean => {
@@ -23,9 +25,9 @@ const getEnvSnapshot = (): EnvSource => {
   const metaEnv = ((import.meta as any)?.env ?? {}) as EnvSource
   const nodeEnv = (typeof globalThis !== 'undefined' && (globalThis as any)?.process?.env) || undefined
   if (nodeEnv) {
-    return { ...nodeEnv, ...metaEnv }
+    return { ...(nodeEnv as Record<string, unknown>), ...(metaEnv as Record<string, unknown>) }
   }
-  return { ...metaEnv }
+  return { ...(metaEnv as Record<string, unknown>) }
 }
 
 const getRuntimeOverrides = (): Partial<FeatureFlagConfig> => {
@@ -102,6 +104,7 @@ type FeatureFlagConfig = {
   voiceDebug: boolean
   voiceAutostart: boolean
   bannersEnabled: boolean
+  chatAnimationsEnabled: boolean
 }
 
 export type FeatureFlags = Readonly<FeatureFlagConfig>
@@ -119,6 +122,11 @@ export const buildFeatureFlags = (
   const voiceDebug = toBool(read('VITE_VOICE_DEBUG'), false)
   const voiceAutostart = toBool(read('VITE_VOICE_AUTOSTART'), false)
   const bannersEnabled = toBool(read('VITE_BANNERS_ENABLED'), true)
+  // Default ON in dev for easier QA unless explicitly disabled via env/override
+  const chatAnimationsEnabled = toBool(
+    read('VITE_CHAT_ANIMATIONS_ENABLED'),
+    ((import.meta as any)?.env?.DEV ? true : false)
+  )
 
   const base: FeatureFlags = {
     voiceEnabled,
@@ -128,6 +136,7 @@ export const buildFeatureFlags = (
     voiceDebug,
     voiceAutostart,
     bannersEnabled,
+    chatAnimationsEnabled,
   }
 
   const merged = { ...base, ...sanitizeOverrides(overrides, base) }

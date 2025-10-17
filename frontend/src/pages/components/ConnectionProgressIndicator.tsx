@@ -1,64 +1,136 @@
-import { LinearProgress, Box, Typography, Stack, Chip } from '@mui/material'
+import type { ReactElement } from 'react'
+import { LinearProgress, Typography, Stack, Chip } from '@mui/material'
+import './ConnectionProgressIndicator.css'
 import { Mic, PlayCircle, VpnKey, Settings, CheckCircle } from '@mui/icons-material'
+import ConnectionStepRow from './connection/ConnectionStepRow'
+
+type ConnectionStep = 'mic' | 'session' | 'token' | 'webrtc' | 'complete'
 
 interface ConnectionProgressProps {
-  step: 'mic' | 'session' | 'token' | 'webrtc' | 'complete'
+  step: ConnectionStep
   progress: number
   estimatedMs?: number
+  placeholder?: boolean
 }
 
-const stepConfig = {
-  mic: { label: 'Microphone Access', icon: <Mic fontSize="small" />, color: '#1976d2' },
-  session: { label: 'Creating Session', icon: <PlayCircle fontSize="small" />, color: '#388e3c' },
-  token: { label: 'Voice Token', icon: <VpnKey fontSize="small" />, color: '#f57c00' },
-  webrtc: { label: 'WebRTC Setup', icon: <Settings fontSize="small" />, color: '#7b1fa2' },
-  complete: { label: 'Connected!', icon: <CheckCircle fontSize="small" />, color: '#2e7d32' }
+const stepOrder: ConnectionStep[] = ['mic', 'session', 'token', 'webrtc', 'complete']
+
+// UND Brand Colors
+const UND_GREEN = '#009A44'
+
+const stepConfig: Record<ConnectionStep, { label: string; subtitle: string; icon: ReactElement; color: string }> = {
+  mic: {
+    label: 'Microphone Access',
+    subtitle: 'Requesting microphone permission and audio stream',
+    icon: <Mic fontSize="small" />,
+    color: UND_GREEN,
+  },
+  session: {
+    label: 'Creating Session',
+    subtitle: 'Scheduling the SPS encounter and syncing roster',
+    icon: <PlayCircle fontSize="small" />,
+    color: UND_GREEN,
+  },
+  token: {
+    label: 'Voice Token',
+    subtitle: 'Fetching secure credentials for realtime voice',
+    icon: <VpnKey fontSize="small" />,
+    color: UND_GREEN,
+  },
+  webrtc: {
+    label: 'WebRTC Setup',
+    subtitle: 'Negotiating network path and preparing audio channels',
+    icon: <Settings fontSize="small" />,
+    color: UND_GREEN,
+  },
+  complete: {
+    label: 'Connected!',
+    subtitle: 'Audio streams linked — you can speak now',
+    icon: <CheckCircle fontSize="small" />,
+    color: UND_GREEN,
+  },
 }
 
-export function ConnectionProgressIndicator({ step, progress, estimatedMs }: ConnectionProgressProps) {
-  const config = stepConfig[step]
-  
+type StepStatus = 'done' | 'active' | 'pending'
+
+export function ConnectionProgressIndicator({ step, progress, estimatedMs, placeholder = false }: ConnectionProgressProps) {
+  const activeIndex = stepOrder.indexOf(step)
+  const clampedActiveIndex = activeIndex === -1 ? 0 : activeIndex
+  const statuses: StepStatus[] = stepOrder.map((_, idx) => {
+    if (placeholder) {
+      return idx === 0 ? 'active' : 'pending'
+    }
+    if (step === 'complete') {
+      return idx <= clampedActiveIndex ? 'done' : 'pending'
+    }
+    if (idx < clampedActiveIndex) return 'done'
+    if (idx === clampedActiveIndex) return 'active'
+    return 'pending'
+  })
+
+  const progressValue = Math.max(0, Math.min(100, Math.round(progress)))
+  const estimatedSeconds = !placeholder && estimatedMs ? Math.ceil(estimatedMs / 1000) : null
+
+  // container styles applied via CSS class
+  const progressSx = {
+    height: 6,
+    borderRadius: 999,
+    bgcolor: 'rgba(0,0,0,0.08)',
+    '& .MuiLinearProgress-bar': {
+      transition: 'transform 160ms ease',
+      backgroundColor: stepConfig[step === 'complete' ? 'complete' : step].color,
+      borderRadius: 999,
+    },
+  }
   return (
-    <Box sx={{ width: '100%', maxWidth: 400, p: 2 }}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-        <Box sx={{ color: config.color }}>{config.icon}</Box>
-        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-          {config.label}
+  <div className="connection-progress__container">
+      <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.75 }}>
+        Preparing voice session…
+      </Typography>
+
+      <LinearProgress
+        variant={placeholder ? 'indeterminate' : 'determinate'}
+        value={placeholder ? undefined : progressValue}
+        sx={progressSx}
+      />
+
+  <div className="connection-progress__header-row">
+        <Typography variant="caption" color="text.secondary">
+          {placeholder ? 'Starting connection…' : `${progressValue}%`}
         </Typography>
-        {estimatedMs && step !== 'complete' && (
-          <Chip 
-            label={`~${Math.ceil(estimatedMs / 1000)}s`} 
-            size="small" 
+        {estimatedSeconds && step !== 'complete' && (
+          <Chip
+            label={`~${estimatedSeconds}s remaining`}
+            size="small"
             variant="outlined"
-            sx={{ fontSize: '0.7rem', height: 20 }}
+            sx={{ fontSize: '0.7rem', height: 22, borderRadius: 999 }}
           />
         )}
+  </div>
+
+      <Stack spacing={1.25} sx={{ mt: 2 }}>
+        {stepOrder.map((key, idx) => (
+          <ConnectionStepRow
+            key={key}
+            status={statuses[idx]}
+            label={stepConfig[key].label}
+            subtitle={stepConfig[key].subtitle}
+            icon={stepConfig[key].icon}
+            baseColor={stepConfig[key].color}
+            placeholder={placeholder}
+            dim={idx > 0}
+          />
+        ))}
       </Stack>
-      
-      <LinearProgress 
-        variant="determinate" 
-        value={progress} 
-        sx={{ 
-          height: 6, 
-          borderRadius: 3,
-          bgcolor: 'rgba(0,0,0,0.1)',
-          '& .MuiLinearProgress-bar': {
-            backgroundColor: config.color,
-            borderRadius: 3
-          }
-        }} 
-      />
-      
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
-        <Typography variant="caption" color="text.secondary">
-          {progress}%
-        </Typography>
-        {step === 'complete' && (
-          <Typography variant="caption" sx={{ color: config.color, fontWeight: 500 }}>
+
+      {!placeholder && step === 'complete' && (
+  <div className="connection-progress__final-row">
+          <CheckCircle fontSize="small" sx={{ color: stepConfig.complete.color }} />
+          <Typography variant="body2" sx={{ color: stepConfig.complete.color, fontWeight: 600 }}>
             Ready to chat!
           </Typography>
-        )}
-      </Box>
-    </Box>
+  </div>
+      )}
+  </div>
   )
 }

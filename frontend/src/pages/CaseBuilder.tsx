@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { api } from '../shared/api'
+import { api, API_BASE_URL } from '../shared/api'
 import type { ClinicalScenarioV3, ScenarioRegion, ScenarioSourceLite } from '../shared/types/scenario'
 import { saveAs } from 'file-saver'
 import { Document, Paragraph, TextRun, HeadingLevel, Packer } from 'docx'
@@ -61,7 +61,7 @@ function formatApiError(error: unknown): string {
       const parsed = JSON.parse(raw.slice(jsonStart))
       if (parsed?.error === 'validation_error' && Array.isArray(parsed.issues)) {
         const details = parsed.issues
-          .map((issue: any) => issue?.message || issue?.path?.join?.('.') || issue?.code)
+          .map((issue: any) => String(issue?.message || issue?.path?.join?.('.') || issue?.code || ''))
           .filter(Boolean)
           .slice(0, 5)
         if (details.length) {
@@ -70,14 +70,14 @@ function formatApiError(error: unknown): string {
         return 'Scenario failed schema validation on the server.'
       }
       if (typeof parsed?.error === 'string') {
-        return parsed.error.replace(/_/g, ' ')
+        return String(parsed.error).replace(/_/g, ' ')
       }
     } catch {
       // Ignore JSON parse errors and fall back to the raw message
     }
   }
 
-  return raw
+  return String(raw)
 }
 
 /**
@@ -90,6 +90,14 @@ export default function CaseBuilder() {
   const [personas, setPersonas] = useState<PersonaLite[]>([])
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState<'scenarios' | 'personas'>('scenarios')
+  const [storageMode, setStorageMode] = useState<'sqlite' | 'memory' | null>(null)
+  const [warnings, setWarnings] = useState<string[]>([])
+  const [debugCounts, setDebugCounts] = useState<{ storage?: string; merged?: number; registry?: number; db?: number } | null>(null)
+  // Library filters (client-side)
+  const [search, setSearch] = useState('')
+  const [filterRegion, setFilterRegion] = useState<string>('')
+  const [filterDifficulty, setFilterDifficulty] = useState<string>('')
+  const [filterSetting, setFilterSetting] = useState<string>('')
   
   // Preview modal (for both scenarios and personas)
   const [previewScenario, setPreviewScenario] = useState<any>(null)
@@ -114,20 +122,57 @@ export default function CaseBuilder() {
     async function loadData() {
       try {
         setLoading(true)
-        const [scenariosData, personasData] = await Promise.all([
+        const [scenariosData, personasData, health, debug] = await Promise.all([
           api.listSpsScenarios(),
-          api.getSpsPersonas()
+          api.getSpsPersonas(),
+          api.getHealth().catch(() => null),
+          fetch(`${API_BASE_URL}/api/sps/debug`).then(r => r.json()).catch(() => null),
         ])
         setScenarios(scenariosData)
         setPersonas(personasData)
+        if (health) {
+          setStorageMode((health.storage as any) || null)
+          setWarnings(Array.isArray(health.warnings) ? health.warnings : [])
+        }
+        if (debug && debug.ok) {
+          setDebugCounts({
+            storage: debug.storage,
+            merged: debug.counts?.merged?.scenarios,
+            registry: debug.counts?.registry?.scenarios,
+            db: debug.counts?.db?.scenarios,
+          })
+        }
+        
       } catch (e) {
         console.error('Failed to load library:', e)
       } finally {
         setLoading(false)
       }
     }
-    loadData()
+    void loadData()
   }, [])
+
+  // Derived filtered scenarios
+  const filteredScenarios = (() => {
+    const q = search.trim().toLowerCase()
+    return scenarios.filter(s => {
+      if (filterRegion && String(s.region) !== filterRegion) return false
+      if (filterDifficulty && (s.difficulty ?? '') !== filterDifficulty) return false
+      // Normalize setting values to tolerate variations like 'outpatient_pt' vs 'outpatient'
+      const normalizeSetting = (v: string | null | undefined) => (v || '').toLowerCase().replace(/_pt$/, '')
+      if (filterSetting && normalizeSetting(s.setting) !== normalizeSetting(filterSetting)) return false
+      if (!q) return true
+      const hay = [
+        s.title,
+        s.region,
+        s.difficulty ?? '',
+        s.setting ?? '',
+        (s.tags ?? []).join(' '),
+        s.persona_name ?? ''
+      ].join(' ').toLowerCase()
+      return hay.includes(q)
+    })
+  })()
 
   // Check if value is simple (can be shown inline)
   function isSimpleValue(val: any): boolean {
@@ -186,7 +231,7 @@ export default function CaseBuilder() {
       
       // Simple object - show as comma-separated
       if (isSimpleObject(value)) {
-        const parts = keys.map(k => `${k.replace(/_/g, ' ')}: ${value[k]}`)
+        const parts = keys.map(k => `${k.replace(/_/g, ' ')}: ${String(value[k])}`)
         return <span className="cb-doc-value">{parts.join(', ')}</span>
       }
       
@@ -219,8 +264,9 @@ export default function CaseBuilder() {
     return <span className="cb-doc-value">{String(value)}</span>
   }
   
-  function renderOutline(data: any) {
-    return renderValue(data, 0)
+  function renderOutline(data: any): JSX.Element | null {
+    const out = renderValue(data, 0)
+    return (out as JSX.Element) || null
   }
 
   // Load full scenario for preview
@@ -234,7 +280,7 @@ export default function CaseBuilder() {
       setPreviewScenario(scenario)
     } catch (e) {
       console.error('[CaseBuilder] Failed to load scenario preview:', e)
-      setPreviewScenario({ error: `Failed to load scenario: ${e}` })
+      setPreviewScenario({ error: `Failed to load scenario: ${String(e)}` })
     } finally {
       setLoadingPreview(false)
     }
@@ -250,7 +296,7 @@ export default function CaseBuilder() {
       setPreviewPersona(persona)
     } catch (e) {
       console.error('[CaseBuilder] Failed to load persona preview:', e)
-      setPreviewPersona({ error: `Failed to load persona: ${e}` })
+      setPreviewPersona({ error: `Failed to load persona: ${String(e)}` })
     } finally {
       setLoadingPreview(false)
     }
@@ -387,7 +433,21 @@ export default function CaseBuilder() {
           const parts: string[] = []
           Object.entries(val).forEach(([k, v]) => {
             if (v !== null && v !== undefined) {
-              parts.push(`${k.replace(/_/g, ' ')}: ${v}`)
+              const toText = (val: any): string => {
+                if (val === null || val === undefined) return ''
+                if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean') return String(val)
+                if (Array.isArray(val)) return val.map(toText).filter(Boolean).join(', ')
+                if (typeof val === 'object') {
+                  const inner = Object.entries(val as Record<string, unknown>)
+                    .map(([kk, vv]) => `${kk.replace(/_/g, ' ')}: ${toText(vv)}`)
+                    .filter(Boolean)
+                    .join(', ')
+                  return inner || '[object]'
+                }
+                return String(val)
+              }
+              const textVal = toText(v)
+              parts.push(`${k.replace(/_/g, ' ')}: ${textVal}`)
             }
           })
           if (parts.length > 0 && label) {
@@ -482,6 +542,16 @@ export default function CaseBuilder() {
       </header>
 
       <main className="casebuilder-layout">
+        {debugCounts && (
+          <div className="cb-card">
+            <div className="cb-card-body">
+              <p className="cb-muted">
+                Runtime: storage=<code>{debugCounts.storage || storageMode || 'unknown'}</code>
+                {' '}· scenarios: merged={debugCounts.merged ?? '?'} (registry={debugCounts.registry ?? '?'} + db={debugCounts.db ?? '?'})
+              </p>
+            </div>
+          </div>
+        )}
         <section className="casebuilder-main">
           {/* Tab Navigation & Actions */}
           <div className="cb-toolbar">
@@ -516,12 +586,92 @@ export default function CaseBuilder() {
             </div>
           ) : (
             <>
+              {(storageMode === 'memory' || (warnings && warnings.includes('using_in_memory_storage'))) && (
+                <div className="cb-card" role="status" aria-live="polite">
+                  <div className="cb-card-body">
+                    <p className="cb-text-warning">
+                      Warning: Backend is using in-memory storage. Scenarios you create may not persist after restart. Configure SQLite to enable persistence.
+                    </p>
+                  </div>
+                </div>
+              )}
               {view === 'scenarios' && (
                 <div className="cb-table-container">
+                  {/* Filters */}
+                  <div className="cb-card cb-card--spaced">
+                    <div className="cb-card-body cb-card-body--stack">
+                      <div className="cb-grid">
+                        <label className="cb-field cb-field--full">
+                          <span>Search</span>
+                          <input
+                            type="text"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            placeholder="Search title, tags, persona, region…"
+                          />
+                        </label>
+                        <label className="cb-field">
+                          <span>Region</span>
+                          <select value={filterRegion} onChange={e => setFilterRegion(e.target.value)}>
+                            <option value="">All</option>
+                            {REGION_OPTIONS.map(opt => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="cb-field">
+                          <span>Difficulty</span>
+                          <select value={filterDifficulty} onChange={e => setFilterDifficulty(e.target.value)}>
+                            <option value="">All</option>
+                            <option value="easy">Easy</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="advanced">Advanced</option>
+                          </select>
+                        </label>
+                        <label className="cb-field">
+                          <span>Setting</span>
+                          <select value={filterSetting} onChange={e => setFilterSetting(e.target.value)}>
+                            <option value="">All</option>
+                            <option value="outpatient">Outpatient</option>
+                            <option value="inpatient">Inpatient</option>
+                            <option value="acute_care">Acute Care</option>
+                            <option value="home_health">Home Health</option>
+                            <option value="sports_medicine">Sports Medicine</option>
+                          </select>
+                        </label>
+                      </div>
+                      <div className="cb-btn-group">
+                        <span className="cb-muted">Showing {filteredScenarios.length} of {scenarios.length}</span>
+                        <button
+                          type="button"
+                          className="cb-btn cb-btn-ghost"
+                          onClick={() => { setSearch(''); setFilterRegion(''); setFilterDifficulty(''); setFilterSetting('') }}
+                          disabled={!search && !filterRegion && !filterDifficulty && !filterSetting}
+                        >
+                          Clear filters
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                   {scenarios.length === 0 ? (
                     <div className="cb-card">
                       <div className="cb-card-body">
                         <p>No scenarios found. Generate one to get started!</p>
+                      </div>
+                    </div>
+                  ) : filteredScenarios.length === 0 ? (
+                    <div className="cb-card">
+                      <div className="cb-card-body">
+                        <p>No scenarios match your filters.</p>
+                        <div className="cb-btn-group cb-mt-2">
+                          <button
+                            type="button"
+                            className="cb-btn cb-btn-ghost"
+                            onClick={() => { setSearch(''); setFilterRegion(''); setFilterDifficulty(''); setFilterSetting('') }}
+                          >
+                            Clear filters
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ) : (
@@ -538,7 +688,7 @@ export default function CaseBuilder() {
                         </tr>
                       </thead>
                       <tbody>
-                        {scenarios.map(scenario => (
+                        {filteredScenarios.map(scenario => (
                           <tr key={scenario.scenario_id}>
                             <td className="cb-table-title">{scenario.title}</td>
                             <td>
@@ -564,7 +714,7 @@ export default function CaseBuilder() {
                             <td>
                               <button
                                 className="cb-btn cb-btn-sm cb-btn-ghost"
-                                onClick={() => loadScenarioPreview(scenario.scenario_id)}
+                                onClick={() => { void loadScenarioPreview(scenario.scenario_id) }}
                               >
                                 👁 Preview
                               </button>
@@ -621,7 +771,7 @@ export default function CaseBuilder() {
                             <td>
                               <button
                                 className="cb-btn cb-btn-sm cb-btn-ghost"
-                                onClick={() => loadPersonaPreview(persona.id)}
+                                onClick={() => { void loadPersonaPreview(persona.id) }}
                               >
                                 👁 Preview
                               </button>
@@ -672,7 +822,7 @@ export default function CaseBuilder() {
                         <>
                           <button
                             className="cb-print-btn"
-                            onClick={exportToWord}
+                            onClick={() => { void exportToWord() }}
                             title="Download as Word document"
                           >
                             📄 Download Word
@@ -703,7 +853,7 @@ export default function CaseBuilder() {
                       <button 
                         className="cb-btn cb-btn-sm cb-btn-ghost"
                         onClick={() => {
-                          navigator.clipboard.writeText(JSON.stringify(previewScenario, null, 2))
+                          void navigator.clipboard.writeText(JSON.stringify(previewScenario, null, 2))
                         }}
                       >
                         📋 Copy JSON
@@ -761,7 +911,7 @@ export default function CaseBuilder() {
                         <>
                           <button
                             className="cb-print-btn"
-                            onClick={exportToWord}
+                            onClick={() => { void exportToWord() }}
                             title="Download as Word document"
                           >
                             📄 Download Word
@@ -792,7 +942,7 @@ export default function CaseBuilder() {
                       <button 
                         className="cb-btn cb-btn-sm cb-btn-ghost"
                         onClick={() => {
-                          navigator.clipboard.writeText(JSON.stringify(previewPersona, null, 2))
+                          void navigator.clipboard.writeText(JSON.stringify(previewPersona, null, 2))
                         }}
                       >
                         📋 Copy JSON
@@ -886,7 +1036,7 @@ export default function CaseBuilder() {
               <div className="cb-btn-group">
                 <button
                   className="cb-btn cb-btn-primary"
-                  onClick={generateWithAI}
+                  onClick={() => { void generateWithAI() }}
                   disabled={generating || !genPrompt.trim()}
                 >
                   {generating ? '⏳ Generating…' : '✨ Generate Scenario'}
@@ -936,12 +1086,14 @@ export default function CaseBuilder() {
               <div className="cb-card-footer">
                 <button
                   className="cb-btn cb-btn-primary cb-btn-full"
-                  onClick={async () => {
-                    await saveScenario()
-                    // Reload scenarios after save
-                    const scenariosData = await api.listSpsScenarios()
-                    setScenarios(scenariosData)
-                    setShowGenerateModal(false)
+                  onClick={() => {
+                    void (async () => {
+                      await saveScenario()
+                      // Reload scenarios after save
+                      const scenariosData = await api.listSpsScenarios()
+                      setScenarios(scenariosData)
+                      setShowGenerateModal(false)
+                    })()
                   }}
                   disabled={saving}
                 >

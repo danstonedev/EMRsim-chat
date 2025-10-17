@@ -1,0 +1,85 @@
+{
+  "schema_version": "3.1.0",
+  "scenario_id": "sc_knee_anterior_knee_pain_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry-Level: Anterior Knee Pain with Stairs",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": ["entry_level_dpt", "anterior_knee_pain", "patellofemoral"],
+    "profession": "physical_therapy",
+    "created_at": "2025-10-16T00:00:00Z",
+    "updated_at": "2025-10-16T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "",
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Apply region-specific tests and functional measures to characterize anterior knee pain.",
+        "bloom_level": "apply",
+        "capte_refs": ["7D1", "7D2"],
+        "npte_map": {"system": "musculoskeletal", "domain": "examination", "nonsystem": "safety"},
+        "assessment_focus": ["clinical_reasoning", "safety"],
+        "evidence_req": "CPG"
+      },
+      {
+        "id": "LO2",
+        "text": "Educate patient on activity modification and basic home exercise to reduce patellofemoral stress.",
+        "bloom_level": "apply",
+        "capte_refs": ["7D3"],
+        "npte_map": {"system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional"},
+        "assessment_focus": ["patient_education"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": [
+      "Which findings supported a patellofemoral source vs. tendinopathy?",
+      "What safety considerations apply today?"
+    ]
+  },
+  "presenting_problem": {
+    "primary_dx": "Anterior knee pain (patellofemoral pain syndrome)",
+    "onset": "gradual",
+    "duration_weeks": 6,
+    "dominant_symptoms": ["anterior knee ache", "pain with stairs", "pain after prolonged sitting"],
+    "pain_nrs_rest": 1,
+    "pain_nrs_activity": 5,
+    "aggravators": ["descending stairs", "prolonged sitting", "deep squatting"],
+    "easers": ["rest", "ice"],
+    "pattern_24h": "stiff morning that eases, aches later after activity",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "PFPS limiting stair and squat tolerance",
+    "body_functions_structures": ["patellar tendon tenderness", "peripatellar pain"],
+    "activities": ["descending stairs limited", "squatting limited"],
+    "participation": ["reduced recreational activity"],
+    "environmental_factors": ["office work with prolonged sitting"],
+    "personal_factors": ["increased recent training volume"]
+  },
+  "provenance": {
+    "sources": [
+      {
+        "title": "2019 CPG: Patellofemoral Pain",
+        "identifier": "CPG-2019-PFPS",
+        "level_of_evidence": "CPG"
+      }
+    ],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-16"
+  }
+}

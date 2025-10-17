@@ -26,6 +26,7 @@ type CaseSetupBarProps = {
   setPrintDropdownOpen: (open: boolean) => void
   onPrintScenario: () => boolean
   onPrintTranscript: () => boolean
+  onContinueAfterStop?: () => void | Promise<void>
   postStopOpen: boolean
   setPostStopOpen: (open: boolean) => void
   sessionId: string | null
@@ -53,6 +54,7 @@ export function CaseSetupBar({
   setPrintDropdownOpen,
   onPrintScenario,
   onPrintTranscript,
+  onContinueAfterStop,
   postStopOpen,
   setPostStopOpen,
   sessionId,
@@ -115,6 +117,7 @@ export function CaseSetupBar({
         open={postStopOpen}
         onClose={() => setPostStopOpen(false)}
         onPrintTranscript={onPrintTranscript}
+        onContinue={onContinueAfterStop}
         sessionId={sessionId}
       />
 

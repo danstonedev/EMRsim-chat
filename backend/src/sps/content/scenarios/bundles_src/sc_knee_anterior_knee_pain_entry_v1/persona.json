@@ -1,0 +1,35 @@
+{
+  "patient_id": "prsn_pfps_entry_v1",
+  "display_name": "Jordan",
+  "headline": "Wants stairs and sitting without knee pain",
+  "voice_id": null,
+  "tags": ["entry_level_dpt"],
+  "demographics": {
+    "name": "Jordan",
+    "preferred_name": "Jordan",
+    "pronouns": "they/them",
+    "age": 26,
+    "sex": "female",
+    "occupation": "office worker",
+    "sport_activity": "jogging",
+    "education_health_literacy": "moderate",
+    "primary_language": "English",
+    "dob": "1999-05-01"
+  },
+  "social_context": {},
+  "function_context": {
+    "goals": ["stairs without pain", "sit an hour without pain"],
+    "barriers": ["prolonged sitting at work"],
+    "facilitators": ["motivated to exercise"]
+  },
+  "beliefs_affect": {},
+  "medical_baseline": {},
+  "dialogue_style": {
+    "pace": "normal",
+    "detail": "moderate",
+    "literalness": "high"
+  },
+  "hidden_agenda": null,
+  "closure_style": null,
+  "dob_challenges": []
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2025-10-16T15:55:41.525Z",
+  "generator": "sps-manifest-generator",
+  "catalogs": {
+    "subjective": {
+      "total_occurrences": 1,
+      "by_id": {
+        "imaging_xray": {
+          "occurrences": 1,
+          "scenarios": [
+            "sc_knee_acl_preop_direct_access_v1"
+          ],
+          "checksums": [
+            "sha256:c22cc617f1fc248fb685d83c4e81fe17c6736e53eee28a0bc821d4b73448b730"
+          ]
+        }
+      },
+      "by_checksum": {
+        "sha256:c22cc617f1fc248fb685d83c4e81fe17c6736e53eee28a0bc821d4b73448b730": {
+          "occurrences": 1,
+          "ids": [
+            "imaging_xray"
+          ],
+          "scenarios": [
+            "sc_knee_acl_preop_direct_access_v1"
+          ]
+        }
+      }
+    }
+  },
+  "statistics": {
+    "total_entries": 1,
+    "unique_ids": 1,
+    "unique_checksums": 1,
+    "duplicate_ids": [],
+    "duplicate_checksums": []
+  }
+}

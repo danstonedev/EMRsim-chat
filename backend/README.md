@@ -76,7 +76,21 @@ If additional cue variants are introduced (e.g., multiple detail fragments), rep
 
 - `dev`: Start the backend API with hot reload.
 - `test`: Run unit tests with Vitest.
+- `sps:generate-manifests`: Rebuild content manifest, dependency manifest, and catalog analysis.
+- `sps:compile`: Compile source scenario bundles into the optimized `content/scenarios/compiled` artifacts and index.
+- `sps:validate-content`: Run the Scenario Validation Service against manifest/linkage metadata and compiled assets.
 - `sps:validate`: Validate SPS JSON banks and cross-references.
+
+### Scenario validation CLI
+
+The compiled content validator inspects both the raw bundles and the compiled artifacts:
+
+```powershell
+cd backend
+npm run sps:validate-content
+```
+
+Use `--scenario <id>` to scope to a specific scenario and `--json` for machine-readable output (useful for CI dashboards or authoring tooling).
 
 ### Optional: pre-commit validation (Husky)
 

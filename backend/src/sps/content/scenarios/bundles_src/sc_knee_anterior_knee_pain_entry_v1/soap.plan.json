@@ -1,0 +1,24 @@
+{
+  "frequency_duration": {"visits_per_week": 1, "weeks": 4},
+  "referrals_imaging_requests": [],
+  "goals": {
+    "stg_2_4_weeks": ["Descend a flight of stairs without knee pain", "Sit 60 minutes without pain >2/10"],
+    "ltg_6_12_weeks": ["Return to 5K run without next-day pain"]
+  },
+  "interventions_planned": [
+    {
+      "intervention_id": "quad_set_SLR",
+      "dose": {"sets": 2, "reps": 10, "frequency_per_week": 5},
+      "progression_criteria": ["no increase in pain >2/10"],
+      "expected_response": {"rationale": "Improve quad activation and reduce PF joint stress"}
+    },
+    {
+      "intervention_id": "hip_abduction_isometrics",
+      "dose": {"sets": 2, "reps": 10, "frequency_per_week": 5},
+      "progression_criteria": ["tolerates without increased symptoms"],
+      "expected_response": {"rationale": "Improve patellar tracking through hip control"}
+    }
+  ],
+  "patient_education": {"topics": ["activity modification", "sitting breaks", "relative rest"], "teach_back_confirmed": false},
+  "safety_netting": ["If pain worsens significantly or you notice swelling, reduce volume and contact the clinic."]
+}

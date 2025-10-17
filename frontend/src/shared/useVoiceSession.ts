@@ -1,173 +1,286 @@
-import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ConversationController, ConversationEvent, InstructionRefreshOptions, VoiceDebugEvent, VoiceStatus } from './ConversationController'
-import type { TranscriptTimings } from './transcript/TranscriptEngine'
-import { recordVoiceEvent } from './telemetry'
+import { MutableRefObject, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { ConversationController, InstructionRefreshOptions } from './ConversationController';
+import type { ConversationEvent, VoiceDebugEvent, VoiceStatus, MediaReference } from './types';
+import type { TranscriptTimings } from './transcript/TranscriptEngine';
+import { recordVoiceEvent } from './telemetry';
+import { voiceSessionReducer, createInitialState } from './useVoiceSession/reducer';
+import { useBackendSocket } from './hooks/useBackendSocket';
+import type { BackendSocketClient, SocketConfig, SocketEventHandlers } from './services/BackendSocketManager';
 
 export interface VoiceSessionOptions {
-  personaId: string | null
-  sessionId?: string | null
-  scenarioId?: string | null
-  onUserTranscript?: (text: string, isFinal: boolean, timestamp: number, timings?: TranscriptTimings) => void
-  onAssistantTranscript?: (text: string, isFinal: boolean, timestamp: number, timings?: TranscriptTimings) => void
-  onEvent?: (payload: unknown) => void
-  debugEnabled?: boolean
-  voice?: string | null
-  inputLanguage?: 'auto' | string
-  replyLanguage?: 'default' | string
+  personaId: string | null;
+  sessionId?: string | null;
+  scenarioId?: string | null;
+  scenarioMedia?: MediaReference[];
+  onUserTranscript?: (
+    text: string,
+    isFinal: boolean,
+    timestamp: number,
+    timings?: TranscriptTimings,
+    media?: MediaReference
+  ) => void;
+  onAssistantTranscript?: (
+    text: string,
+    isFinal: boolean,
+    timestamp: number,
+    timings?: TranscriptTimings,
+    media?: MediaReference
+  ) => void;
+  onEvent?: (payload: unknown) => void;
+  debugEnabled?: boolean;
+  voice?: string | null;
+  inputLanguage?: 'auto' | (string & {});
+  replyLanguage?: 'default' | (string & {});
 }
 
 export interface VoiceSessionHandle {
-  status: VoiceStatus
-  error: string | null
-  start: () => Promise<void>
-  stop: () => void
-  pause: () => void
-  resume: () => void
-  sendText?: (text: string) => Promise<void>
-  refreshInstructions: (reason?: string, options?: InstructionRefreshOptions) => Promise<void>
-  remoteAudioRef: MutableRefObject<HTMLAudioElement | null>
-  sessionId: string | null
-  userPartial: string
-  assistantPartial: string
-  micLevel: number
-  debugEnabled: boolean
-  micPaused: boolean
-  micStream: MediaStream | null
-  peerConnection: RTCPeerConnection | null
-  encounterPhase: string | null
-  encounterGate: Record<string, unknown> | null
-  outstandingGate: string[]
-  adaptive: { enabled: boolean; status: 'quiet' | 'noisy' | 'very-noisy'; noise: number; snr: number; threshold: number | null; silenceMs: number | null }
-  updateEncounterState: (state: { phase?: string | null; gate?: Record<string, unknown> | null }, reason?: string) => void
-  addEventListener: (listener: (e: VoiceDebugEvent) => void) => () => void
-  addConversationListener: (listener: (e: ConversationEvent) => void) => () => void
+  status: VoiceStatus;
+  error: string | null;
+  start: () => Promise<void>;
+  stop: () => void;
+  pause: () => void;
+  resume: () => void;
+  sendText?: (text: string) => Promise<void>;
+  refreshInstructions: (reason?: string, options?: InstructionRefreshOptions) => Promise<void>;
+  remoteAudioRef: MutableRefObject<HTMLAudioElement | null>;
+  sessionId: string | null;
+  userPartial: string;
+  assistantPartial: string;
+  micLevel: number;
+  debugEnabled: boolean;
+  micPaused: boolean;
+  micStream: MediaStream | null;
+  peerConnection: RTCPeerConnection | null;
+  encounterPhase: string | null;
+  encounterGate: Record<string, unknown> | null;
+  outstandingGate: string[];
+  adaptive: {
+    enabled: boolean;
+    status: 'quiet' | 'noisy' | 'very-noisy';
+    noise: number;
+    snr: number;
+    threshold: number | null;
+    silenceMs: number | null;
+  };
+  updateEncounterState: (
+    state: { phase?: string | null; gate?: Record<string, unknown> | null },
+    reason?: string
+  ) => void;
+  addEventListener: (listener: (e: VoiceDebugEvent) => void) => () => void;
+  addConversationListener: (listener: (e: ConversationEvent) => void) => () => void;
 }
 
 export function useVoiceSession(options: VoiceSessionOptions): VoiceSessionHandle {
-  const controllerRef = useRef<ConversationController | null>(null)
+  const [socketConfig, setSocketConfig] = useState<SocketConfig>(() => ({
+    apiBaseUrl: import.meta.env.VITE_API_BASE_URL || '',
+    enabled: true,
+    maxFailures: 3,
+  }));
+  const [socketHandlers, setSocketHandlers] = useState<SocketEventHandlers>({});
+  const backendSocket = useBackendSocket({ sessionId: null, config: socketConfig, handlers: socketHandlers });
+  const backendSocketRef = useRef(backendSocket);
+  backendSocketRef.current = backendSocket;
+  const backendSocketClient = useMemo<BackendSocketClient>(() => ({
+    connect(sessionId: string) {
+      backendSocketRef.current.connect(sessionId);
+    },
+    disconnect() {
+      backendSocketRef.current.disconnect();
+    },
+    isEnabled() {
+      return backendSocketRef.current.getSnapshot().isEnabled;
+    },
+    setEnabled(enabled: boolean) {
+      backendSocketRef.current.setEnabled?.(enabled);
+    },
+    joinSession(sessionId: string) {
+      backendSocketRef.current.joinSession?.(sessionId);
+    },
+    requestCatchup(sessionId: string, since?: number) {
+      backendSocketRef.current.requestCatchup?.(sessionId, since);
+    },
+    resetFailureCount() {
+      backendSocketRef.current.resetFailureCount?.();
+    },
+    updateLastReceivedTimestamp(timestamp: number) {
+      backendSocketRef.current.updateLastReceivedTimestamp?.(timestamp);
+    },
+    getSnapshot() {
+      return backendSocketRef.current.getSnapshot?.() ?? backendSocketRef.current.getSnapshot();
+    },
+  }), []);
+  const pendingSocketSetupRef = useRef<{ config: SocketConfig; handlers: SocketEventHandlers } | null>(null);
+  const applyPendingSocketSetup = useCallback(() => {
+    const next = pendingSocketSetupRef.current;
+    if (!next) return;
+    pendingSocketSetupRef.current = null;
+    setSocketConfig(next.config);
+    setSocketHandlers(next.handlers);
+  }, [setSocketConfig, setSocketHandlers]);
+
+  const controllerRef = useRef<ConversationController | null>(null);
   if (!controllerRef.current) {
     controllerRef.current = new ConversationController({
       personaId: options.personaId ?? null,
       scenarioId: options.scenarioId ?? null,
       sessionId: options.sessionId ?? null,
+      scenarioMedia: options.scenarioMedia ?? [],
       debugEnabled: options.debugEnabled,
       backendTranscriptMode: true,
-    })
+      socketFactory: ({ config, handlers }) => {
+        pendingSocketSetupRef.current = { config, handlers };
+        return backendSocketClient;
+      },
+    });
   }
-  const controller = controllerRef.current!
-
-  const initialSnapshotRef = useRef(controller.getSnapshot())
-  const initialEncounterRef = useRef(controller.getEncounterState())
-  const [status, setStatus] = useState<VoiceStatus>(initialSnapshotRef.current.status)
-  const [error, setError] = useState<string | null>(initialSnapshotRef.current.error)
-  const [sessionId, setSessionId] = useState<string | null>(initialSnapshotRef.current.sessionId)
-  const [userPartial, setUserPartial] = useState(initialSnapshotRef.current.userPartial)
-  const [assistantPartial, setAssistantPartial] = useState(initialSnapshotRef.current.assistantPartial)
-  const [micLevel, setMicLevel] = useState(initialSnapshotRef.current.micLevel)
-  const [debugEnabled, setDebugEnabled] = useState(controller.isDebugEnabled())
-  const [micPaused, setMicPaused] = useState(controller.isMicPaused?.() ?? false)
-  const [micStream, setMicStream] = useState<MediaStream | null>(controller.getMicStream())
-  const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(controller.getPeerConnection())
-  const [encounterPhase, setEncounterPhase] = useState<string | null>(initialEncounterRef.current.phase)
-  const [encounterGate, setEncounterGate] = useState<Record<string, unknown> | null>(initialEncounterRef.current.gate)
-  const [outstandingGate, setOutstandingGate] = useState<string[]>(initialEncounterRef.current.outstandingGate)
-  const [adaptive, setAdaptive] = useState(controller.getAdaptiveSnapshot())
-
-  const onUserTranscriptRef = useRef<VoiceSessionOptions['onUserTranscript']>(options.onUserTranscript)
-  const onAssistantTranscriptRef = useRef<VoiceSessionOptions['onAssistantTranscript']>(options.onAssistantTranscript)
+  const controller = controllerRef.current!;
 
   useEffect(() => {
-    onUserTranscriptRef.current = options.onUserTranscript
-  }, [options.onUserTranscript])
+    applyPendingSocketSetup();
+  }, [applyPendingSocketSetup]);
+
+  // Phase 3+: Consolidated state management with useReducer
+  // Replaces 15 separate useState calls with single atomic state object
+  // Benefits: atomic updates, predictable transitions, easier debugging, fewer re-renders
+  // See: REFACTORING_OPPORTUNITIES.md #3
+  const [state, dispatch] = useReducer(
+    voiceSessionReducer,
+    controller,
+    createInitialState
+  );
+
+  const onUserTranscriptRef = useRef<VoiceSessionOptions['onUserTranscript']>(options.onUserTranscript);
+  const onAssistantTranscriptRef = useRef<VoiceSessionOptions['onAssistantTranscript']>(options.onAssistantTranscript);
 
   useEffect(() => {
-    onAssistantTranscriptRef.current = options.onAssistantTranscript
-  }, [options.onAssistantTranscript])
+    onUserTranscriptRef.current = options.onUserTranscript;
+  }, [options.onUserTranscript]);
 
   useEffect(() => {
-    controller.setPersonaId(options.personaId ?? null)
-  }, [controller, options.personaId])
+    onAssistantTranscriptRef.current = options.onAssistantTranscript;
+  }, [options.onAssistantTranscript]);
 
+  // Phase 3: Consolidated configuration effect
+  // Batches all related controller updates into a single effect to reduce overhead
+  // and provide centralized logging for voice session configuration changes
   useEffect(() => {
-    controller.setScenarioId(options.scenarioId ?? null)
-  }, [controller, options.scenarioId])
+    const config = {
+      personaId: options.personaId ?? null,
+      scenarioId: options.scenarioId ?? null,
+      scenarioMedia: options.scenarioMedia ?? [],
+      sessionId: options.sessionId ?? null,
+      voice: options.voice ?? null,
+      inputLanguage: options.inputLanguage ?? 'en-US',
+      replyLanguage: options.replyLanguage ?? 'en-US',
+    };
 
-  useEffect(() => {
-    controller.setExternalSessionId(options.sessionId ?? null)
-    setSessionId(options.sessionId ?? null)
-  }, [controller, options.sessionId])
+    // Batch all controller configuration updates
+    controller.setPersonaId(config.personaId);
+    controller.setScenarioId(config.scenarioId);
+    controller.setScenarioMedia?.(config.scenarioMedia);
+    controller.setExternalSessionId(config.sessionId);
+    dispatch({ type: 'SESSION_ID_CONFIGURED', sessionId: config.sessionId });
+    
+    // Advanced overrides
+    controller.setVoiceOverride(config.voice);
+    controller.setInputLanguage(config.inputLanguage);
+    controller.setReplyLanguage(config.replyLanguage);
 
-  // Advanced overrides
-  useEffect(() => {
-    controller.setVoiceOverride(options.voice ?? null)
-  }, [controller, options.voice])
-  useEffect(() => {
-    controller.setInputLanguage(options.inputLanguage ?? 'en-US')
-  }, [controller, options.inputLanguage])
-  useEffect(() => {
-    controller.setReplyLanguage(options.replyLanguage ?? 'en-US')
-  }, [controller, options.replyLanguage])
-
-  useEffect(() => {
-    controller.setRealtimeEventListener(options.onEvent ?? null)
-    return () => {
-      controller.setRealtimeEventListener(null)
+    // Consolidated debug logging
+    if (import.meta.env.DEV) {
+      console.debug('[useVoiceSession] Configuration updated:', {
+        personaId: config.personaId,
+        scenarioId: config.scenarioId,
+        mediaCount: config.scenarioMedia.length,
+        sessionId: config.sessionId,
+        voice: config.voice,
+        inputLanguage: config.inputLanguage,
+        replyLanguage: config.replyLanguage,
+      });
     }
-  }, [controller, options.onEvent])
+  }, [
+    controller,
+    options.personaId,
+    options.scenarioId,
+    options.scenarioMedia,
+    options.sessionId,
+    options.voice,
+    options.inputLanguage,
+    options.replyLanguage,
+  ]);
 
   useEffect(() => {
-    if (options.debugEnabled === undefined) return
-    controller.setDebugEnabled(Boolean(options.debugEnabled))
-    setDebugEnabled(controller.isDebugEnabled())
-  }, [controller, options.debugEnabled])
+    controller.setRealtimeEventListener();
+    return () => {
+      controller.setRealtimeEventListener();
+    };
+  }, [controller, options.onEvent]);
+
+  useEffect(() => {
+    if (options.debugEnabled === undefined) return;
+    controller.setDebugEnabled(Boolean(options.debugEnabled));
+    dispatch({ type: 'DEBUG_TOGGLED', enabled: controller.isDebugEnabled() });
+  }, [controller, options.debugEnabled]);
 
   useEffect(() => {
     return () => {
-      controller.dispose()
-    }
-  }, [controller])
+      controller.dispose();
+    };
+  }, [controller]);
 
   useEffect(() => {
     const listener = (event: ConversationEvent) => {
       switch (event.type) {
         case 'status':
-          setStatus(event.status)
-          setError(event.error)
-          // Update mic stream and peer connection when status changes
-          setMicStream(controller.getMicStream())
-          setPeerConnection(controller.getPeerConnection())
-          recordVoiceEvent({ type: 'status', status: event.status, error: event.error, sessionId: controller.getSessionId() })
-          break
+          dispatch({
+            type: 'STATUS_CHANGED',
+            status: event.status,
+            error: event.error,
+            micStream: controller.getMicStream(),
+            peerConnection: controller.getPeerConnection(),
+          });
+          recordVoiceEvent({
+            type: 'status',
+            status: event.status,
+            error: event.error,
+            sessionId: controller.getSessionId(),
+          });
+          break;
         case 'session':
-          setSessionId(event.sessionId)
-          {
-            const snapshot = controller.getEncounterState()
-            setEncounterPhase(snapshot.phase)
-            setEncounterGate(snapshot.gate)
-            setOutstandingGate(snapshot.outstandingGate)
-          }
-          break
+          dispatch({
+            type: 'SESSION_CREATED',
+            sessionId: event.sessionId,
+            encounter: controller.getEncounterState(),
+          });
+          break;
         case 'partial':
-          if (event.role === 'user') setUserPartial(event.text)
-          else setAssistantPartial(event.text)
-          break
+          dispatch({
+            type: event.role === 'user' ? 'USER_PARTIAL' : 'ASSISTANT_PARTIAL',
+            text: event.text,
+          });
+          break;
         case 'mic-level':
-          setMicLevel(event.level)
-          // Update adaptive on mic ticks to keep it fresh without extra events
-          setAdaptive(controller.getAdaptiveSnapshot())
-          break
+          dispatch({
+            type: 'MIC_LEVEL_UPDATED',
+            level: event.level,
+            adaptive: controller.getAdaptiveSnapshot(),
+          });
+          break;
         case 'pause':
-          setMicPaused(event.paused)
-          break
-        case 'transcript':
-          if (event.role === 'user' && event.isFinal) {
-            setUserPartial('')
+          dispatch({
+            type: 'MIC_PAUSED',
+            paused: event.paused,
+          });
+          break;
+        case 'transcript': {
+          if (event.isFinal) {
+            dispatch({
+              type: 'TRANSCRIPT_FINALIZED',
+              role: event.role,
+            });
           }
-          if (event.role === 'assistant' && event.isFinal) {
-            setAssistantPartial('')
-          }
-          const callback = event.role === 'user' ? onUserTranscriptRef.current : onAssistantTranscriptRef.current
-          callback?.(event.text, event.isFinal, event.timestamp, event.timings)
+          const callback = event.role === 'user' ? onUserTranscriptRef.current : onAssistantTranscriptRef.current;
+          callback?.(event.text, event.isFinal, event.timestamp, event.timings, event.media);
           if (event.isFinal) {
             recordVoiceEvent({
               type: 'transcript',
@@ -177,84 +290,106 @@ export function useVoiceSession(options: VoiceSessionOptions): VoiceSessionHandl
               timestamp: event.timestamp,
               timings: event.timings,
               sessionId: controller.getSessionId(),
-            })
+            });
           }
-          break
+          break;
+        }
         case 'instructions':
-          setEncounterPhase(event.phase ?? null)
-          setOutstandingGate(event.outstandingGate ?? [])
-          break
+          dispatch({
+            type: 'INSTRUCTIONS_UPDATED',
+            phase: event.phase ?? null,
+            outstandingGate: event.outstandingGate ?? [],
+          });
+          break;
       }
-    }
-    return controller.addListener(listener)
-  }, [controller])
+    };
+    return controller.addListener(listener);
+  }, [controller]);
 
   const remoteAudioRef = useMemo<MutableRefObject<HTMLAudioElement | null>>(() => {
-    const holder: { current: HTMLAudioElement | null } = { current: null }
+    const holder: { current: HTMLAudioElement | null } = { current: null };
     Object.defineProperty(holder, 'current', {
       get: () => controller.getRemoteAudioElement(),
       set: (value: HTMLAudioElement | null) => {
-        controller.attachRemoteAudioElement(value)
+        controller.attachRemoteAudioElement(value);
       },
       configurable: true,
       enumerable: true,
-    })
-    return holder as MutableRefObject<HTMLAudioElement | null>
-  }, [controller])
+    });
+    return holder as MutableRefObject<HTMLAudioElement | null>;
+  }, [controller]);
 
   const start = useCallback(async () => {
-    recordVoiceEvent({ type: 'start-request', personaId: options.personaId, scenarioId: options.scenarioId })
+    recordVoiceEvent({ type: 'start-request', personaId: options.personaId, scenarioId: options.scenarioId });
     try {
-      await controller.startVoice()
-      recordVoiceEvent({ type: 'start-success', sessionId: controller.getSessionId() })
+      await controller.startVoice();
+      recordVoiceEvent({ type: 'start-success', sessionId: controller.getSessionId() });
     } catch (err) {
-      recordVoiceEvent({ type: 'start-error', error: err instanceof Error ? err.message : String(err), sessionId: controller.getSessionId() })
-      throw err
+      recordVoiceEvent({
+        type: 'start-error',
+        error: err instanceof Error ? err.message : String(err),
+        sessionId: controller.getSessionId(),
+      });
+      throw err;
     }
-  }, [controller, options.personaId, options.scenarioId])
+  }, [controller, options.personaId, options.scenarioId]);
 
   const stop = useCallback(() => {
-    recordVoiceEvent({ type: 'stop', sessionId: controller.getSessionId() })
-    controller.stopVoice()
-  }, [controller])
+    recordVoiceEvent({ type: 'stop', sessionId: controller.getSessionId() });
+    controller.stopVoice();
+  }, [controller]);
 
   const pause = useCallback(() => {
-    controller.setMicPaused?.(true)
-  }, [controller])
+    controller.setMicPaused?.(true);
+  }, [controller]);
   const resume = useCallback(() => {
-    controller.setMicPaused?.(false)
-  }, [controller])
+    controller.setMicPaused?.(false);
+  }, [controller]);
 
-  const sendText = useCallback((text: string) => {
-    recordVoiceEvent({ type: 'send-text', length: text.length, sessionId: controller.getSessionId() })
-    return controller.sendText(text)
-  }, [controller])
+  const sendText = useCallback(
+    (text: string) => {
+      recordVoiceEvent({ type: 'send-text', length: text.length, sessionId: controller.getSessionId() });
+      return controller.sendText(text);
+    },
+    [controller]
+  );
 
-  const refreshInstructions = useCallback((reason?: string, options?: InstructionRefreshOptions) => {
-    return controller.refreshInstructions(reason, options)
-  }, [controller])
+  const refreshInstructions = useCallback(
+    (reason?: string, options?: InstructionRefreshOptions) => {
+      return controller.refreshInstructions(reason, options);
+    },
+    [controller]
+  );
 
-  const updateEncounterState = useCallback((state: { phase?: string | null; gate?: Record<string, unknown> | null }, reason?: string) => {
-    if (state && Object.prototype.hasOwnProperty.call(state, 'phase')) {
-      setEncounterPhase(state.phase ?? null)
-    }
-    if (state && Object.prototype.hasOwnProperty.call(state, 'gate')) {
-      setEncounterGate(state.gate ? { ...state.gate } : null)
-    }
-    controller.updateEncounterState(state, reason)
-  }, [controller])
+  const updateEncounterState = useCallback(
+    (encounterUpdate: { phase?: string | null; gate?: Record<string, unknown> | null }, reason?: string) => {
+      dispatch({
+        type: 'ENCOUNTER_STATE_UPDATED',
+        phase: encounterUpdate.phase,
+        gate: encounterUpdate.gate,
+      });
+      controller.updateEncounterState(encounterUpdate, reason);
+    },
+    [controller]
+  );
 
-  const addEventListener = useCallback((listener: (e: VoiceDebugEvent) => void) => {
-    return controller.addDebugListener(listener)
-  }, [controller])
+  const addEventListener = useCallback(
+    (listener: (e: VoiceDebugEvent) => void) => {
+      return controller.addDebugListener(listener);
+    },
+    [controller]
+  );
 
-  const addConversationListener = useCallback((listener: (e: ConversationEvent) => void) => {
-    return controller.addListener(listener)
-  }, [controller])
+  const addConversationListener = useCallback(
+    (listener: (e: ConversationEvent) => void) => {
+      return controller.addListener(listener);
+    },
+    [controller]
+  );
 
   return {
-    status,
-    error,
+    status: state.status,
+    error: state.error,
     start,
     stop,
     pause,
@@ -262,20 +397,20 @@ export function useVoiceSession(options: VoiceSessionOptions): VoiceSessionHandl
     sendText,
     refreshInstructions,
     remoteAudioRef,
-    sessionId,
-    userPartial,
-    assistantPartial,
-    micLevel,
-    debugEnabled,
-    micPaused,
-    micStream,
-    peerConnection,
-    encounterPhase,
-    encounterGate,
-    outstandingGate,
-    adaptive,
+    sessionId: state.sessionId,
+    userPartial: state.userPartial,
+    assistantPartial: state.assistantPartial,
+    micLevel: state.micLevel,
+    debugEnabled: state.debugEnabled,
+    micPaused: state.micPaused,
+    micStream: state.micStream,
+    peerConnection: state.peerConnection,
+    encounterPhase: state.encounter.phase,
+    encounterGate: state.encounter.gate,
+    outstandingGate: state.encounter.outstandingGate,
+    adaptive: state.adaptive,
     updateEncounterState,
     addEventListener,
     addConversationListener,
-  }
+  };
 }

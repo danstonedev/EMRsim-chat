@@ -87,7 +87,7 @@ export interface SpsSessionData {
   sps_session_id: string;
   scenario_id: string;
   phase: string;
-  gate: Record<string, unknown> | import('./sps/core/types.js').GateFlags;
+  gate: Record<string, unknown> | import('./sps/core/types.ts').GateFlags;
 }
 
 // In-memory storage
@@ -189,10 +189,6 @@ export async function migrate(pathOrDb?: string | Database): Promise<void> {
     usingSqlite = false;
   }
 
-  const existingCount = usingSqlite
-    ? (sqliteDb!.prepare('SELECT COUNT(*) as c FROM personas').get() as { c: number }).c
-    : 0;
-
   // Legacy personas table cleanup removed - using SPS registry now
 }
 
@@ -205,6 +201,10 @@ export function healthCheck(): 'ok' | 'err' {
   } catch (e) {
     return 'err';
   }
+}
+
+export function getStorageMode(): 'sqlite' | 'memory' {
+  return usingSqlite && sqliteDb ? 'sqlite' : 'memory';
 }
 
 export function createSession(persona_id: string, mode: string, spsData: SpsSessionData | null = null): string {
@@ -256,27 +256,17 @@ export function insertTurn(session_id: string, role: string, text: string, extra
     return Number.isFinite(num) && num > 0 ? Math.round(num) : null;
   };
 
-  const startedMs = coerceMs((payload as any).started_timestamp_ms ?? (payload as any).startedTimestampMs ?? (payload as any).started_at_ms ?? (payload as any).startedAtMs);
+  const startedMs = coerceMs((payload as any).started_timestamp_ms);
   delete (payload as any).started_timestamp_ms;
-  delete (payload as any).startedTimestampMs;
-  delete (payload as any).started_at_ms;
-  delete (payload as any).startedAtMs;
 
-  const finalizedMs = coerceMs((payload as any).finalized_timestamp_ms ?? (payload as any).finalizedTimestampMs ?? (payload as any).finalized_at_ms ?? (payload as any).finalizedAtMs);
+  const finalizedMs = coerceMs((payload as any).finalized_timestamp_ms);
   delete (payload as any).finalized_timestamp_ms;
-  delete (payload as any).finalizedTimestampMs;
-  delete (payload as any).finalized_at_ms;
-  delete (payload as any).finalizedAtMs;
 
-  const emittedMs = coerceMs((payload as any).emitted_timestamp_ms ?? (payload as any).emittedTimestampMs ?? (payload as any).emitted_at_ms ?? (payload as any).emittedAtMs);
+  const emittedMs = coerceMs((payload as any).emitted_timestamp_ms);
   delete (payload as any).emitted_timestamp_ms;
-  delete (payload as any).emittedTimestampMs;
-  delete (payload as any).emitted_at_ms;
-  delete (payload as any).emittedAtMs;
 
-  const legacyTimestampMs = coerceMs((payload as any).timestamp_ms ?? (payload as any).timestampMs);
+  const legacyTimestampMs = coerceMs((payload as any).timestamp_ms);
   delete payload.timestamp_ms;
-  delete payload.timestampMs;
 
   const finalTimestampMs = finalizedMs ?? legacyTimestampMs ?? emittedMs;
 

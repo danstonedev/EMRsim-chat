@@ -311,14 +311,144 @@
 .mic-popover-item--danger { color: #b91c1c; }
 .mic-popover-item--danger:hover { background: #fdecec; }
 
-/* Post-stop small dialog */
-.mic-poststop-container { position: fixed; inset-inline-end: 16px; inset-block-start: 80px; z-index: 1100; }
-.mic-poststop-menu {
-  position: relative; background: #fff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-  padding: 10px; min-width: 220px;
+/* Encounter End Modal - Centered Dialog */
+.encounter-end-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 1100;
+  animation: fadeIn 0.2s ease;
+  cursor: pointer;
 }
-.mic-poststop-close { position: absolute; top: 6px; right: 6px; border: none; background: none; cursor: pointer; color: #666; }
-.mic-poststop-actions { display: flex; gap: 8px; padding-top: 8px; }
+
+.encounter-end-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  padding: 32px;
+  min-width: 400px;
+  max-width: 90vw;
+  z-index: 1101;
+  animation: slideIn 0.3s ease;
+  pointer-events: auto;
+  cursor: default;
+}
+
+.encounter-end-modal__header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.encounter-end-modal__icon {
+  width: 56px;
+  height: 56px;
+  color: var(--color-und-green, #009A44);
+  margin-bottom: 16px;
+}
+
+.encounter-end-modal__title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111111;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.encounter-end-modal__subtitle {
+  font-size: 15px;
+  color: #666666;
+  margin: 0;
+  font-weight: 400;
+}
+
+.encounter-end-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.encounter-end-modal__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  width: 100%;
+}
+
+.encounter-end-modal__button--primary {
+  background: var(--color-und-green, #009A44);
+  color: #ffffff;
+}
+
+.encounter-end-modal__button--primary:hover {
+  background: #007a36;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 154, 68, 0.3);
+}
+
+.encounter-end-modal__button--primary:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.encounter-end-modal__button--secondary {
+  background: #f5f5f5;
+  color: #333333;
+  border: 1px solid #e0e0e0;
+}
+
+.encounter-end-modal__button--secondary:hover {
+  background: #eeeeee;
+  border-color: #d0d0d0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .encounter-end-modal {
+    min-width: unset;
+    width: 90vw;
+    padding: 24px;
+  }
+  
+  .encounter-end-modal__title {
+    font-size: 20px;
+  }
+  
+  .encounter-end-modal__icon {
+    width: 48px;
+    height: 48px;
+  }
+}
 
 /* Voice Status Panel */
 .voice-status-panel {
@@ -616,4 +746,16 @@
   padding: 16px; /* equal padding */
   margin: 16px; /* equal margin from edges on small viewports */
   width: min(92vw, 460px); /* consistent centered width */
+}
+
+/* Header logo styles */
+.header-logo {
+  height: 32px;
+  width: auto;
+  vertical-align: middle;
+}
+
+.title.header__brand {
+  display: flex;
+  align-items: center;
 }

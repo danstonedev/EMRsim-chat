@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { serializeSessions, hydrateSession, sessions, type HydratedSessionRecord } from './store.js';
-import type { SPSRegistry } from '../core/registry.js';
+import { serializeSessions, hydrateSession, sessions, type HydratedSessionRecord } from './store.ts';
+import type { SPSRegistry } from '../core/registry.ts';
 
 function sessionFilePath(): string {
   const p = process.env.SPS_SESSION_FILE || path.join(process.cwd(), 'backend', 'data', 'sps-sessions.json');

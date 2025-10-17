@@ -156,9 +156,9 @@ export interface SubjectiveItem {
 
 export interface MediaAsset {
   id: string; // stable identifier (e.g., "knee_flexion_active")
-  type: "image" | "video";
-  url: string; // path or URL to media file
-  thumbnail?: string; // optional thumbnail for videos
+  type: "image" | "video" | "youtube";
+  url: string; // path or URL to media file (for youtube: full YouTube URL)
+  thumbnail?: string; // optional thumbnail (auto-generated for YouTube if not provided)
   caption: string; // clinical description shown with media
   clinical_context: string[]; // semantic tags (e.g., ["rom_assessment", "knee_flexion"])
   trigger_patterns?: string[]; // optional phrases that should trigger display

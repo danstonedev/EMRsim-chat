@@ -1,0 +1,276 @@
+/**
+ * SPS (Simulated Patient System) Drawer Styles
+ * Advanced scenario control panel
+ */
+
+/* SPS Drawer */
+.sps-drawer {
+  --sps-bg: #111111;
+  --sps-surface: #181818;
+  --sps-border: #222222;
+  --sps-border-strong: #333333;
+  --sps-text: #eeeeee;
+  --sps-muted: #cccccc;
+  --sps-control-bg: #222222;
+  --sps-input-border: #444444;
+  --sps-accent: #2dd55b;
+  --sps-accent-hover: #3ae86a;
+  --sps-badge-bg: #2a6544;
+  --sps-badge-text: #ffffff;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  max-width: 100%;
+  height: 100%;
+  background: var(--sps-bg);
+  color: var(--sps-text);
+  border-left: 2px solid var(--sps-border-strong);
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  z-index: 20;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
+}
+
+/* SPS Header */
+.sps-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--sps-surface);
+  border-bottom: 1px solid var(--sps-border);
+}
+
+.sps-header h2 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.sps-header button {
+  background: var(--sps-control-bg);
+  color: var(--sps-text);
+  border: 1px solid var(--sps-input-border);
+  padding: var(--space-xs) var(--space-sm);
+  cursor: pointer;
+  border-radius: var(--radius-xs, 4px);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.sps-header button:hover {
+  background: var(--sps-control-bg);
+  background: color-mix(in srgb, var(--sps-control-bg) 70%, #ffffff 30%);
+}
+
+/* SPS Configuration */
+.sps-config {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  flex-wrap: wrap;
+}
+
+.sps-config label {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  gap: 2px;
+  color: var(--sps-muted);
+}
+
+.sps-config select,
+.sps-input input {
+  background: var(--sps-control-bg);
+  border: 1px solid var(--sps-input-border);
+  color: var(--sps-text);
+  padding: var(--space-xs);
+  border-radius: var(--radius-xs, 4px);
+}
+
+.sps-config button,
+.sps-input button,
+.phase-controls button {
+  background: var(--sps-accent);
+  color: #000000;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: var(--radius-xs, 4px);
+  transition: background 0.15s ease, transform 0.15s ease;
+  outline: none;
+}
+
+.sps-config button:hover,
+.sps-input button:hover,
+.phase-controls button:hover {
+  background: var(--sps-accent-hover);
+  transform: translateY(-1px);
+}
+
+.sps-config button:focus-visible,
+.sps-input button:focus-visible,
+.phase-controls button:focus-visible {
+  outline: var(--focus-ring-width, 2px) solid var(--focus-ring, var(--color-und-green));
+  outline-offset: 3px;
+}
+
+.sps-config button:disabled,
+.phase-controls button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* SPS State */
+.sps-state {
+  padding: 6px var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  border-top: 1px solid var(--sps-border);
+  border-bottom: 1px solid var(--sps-border);
+  background: var(--sps-bg);
+  background: color-mix(in srgb, var(--sps-bg) 85%, #000000 15%);
+}
+
+/* SPS Panel */
+.sps-panel {
+  border-top: 1px solid var(--sps-border-strong);
+  padding-top: 1rem;
+  font-size: 0.875rem;
+}
+
+.sps-panel select,
+.sps-panel input {
+  width: 100%;
+}
+
+.sps-panel .stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.sps-panel .sps-state {
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.sps-panel .sps-state .kv {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Gate Flags */
+.gate-flags,
+.sps-panel .gate-flags-wrap {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.gate-flags span,
+.sps-panel .flag {
+  background: var(--sps-control-bg);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.gate-flags span.on,
+.sps-panel .flag.on {
+  background: var(--sps-badge-bg);
+  color: var(--sps-badge-text);
+}
+
+.sps-panel .gate-flags-wrap {
+  margin-top: 4px;
+}
+
+/* Phase Controls */
+.phase-controls,
+.sps-panel .phase-adv {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* SPS Input */
+.sps-input,
+.sps-panel .sps-input-inline {
+  display: flex;
+  gap: 6px;
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--sps-border);
+}
+
+.sps-input input {
+  flex: 1;
+}
+
+.sps-panel .sps-input-inline {
+  margin-top: 4px;
+  padding: 0;
+}
+
+/* SPS Messages */
+.sps-msgs {
+  max-height: 160px;
+  overflow: auto;
+  border: 1px solid var(--border-muted, #dddddd);
+  padding: var(--space-xs);
+  background: var(--surface, #fafafa);
+  font-size: 0.75rem;
+  color: var(--text-primary, #111111);
+}
+
+.sps-msg {
+  margin: 2px 0;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.sps-msg.student {
+  background: #d1ecff;
+  background: color-mix(in srgb, #d1ecff 85%, #ffffff 15%);
+}
+
+.sps-msg.patient {
+  background: #e7ffe2;
+  background: color-mix(in srgb, #e7ffe2 85%, #ffffff 15%);
+}
+
+/* SPS Error */
+.sps-error {
+  color: var(--danger, #ff5555);
+  padding: var(--space-xs) var(--space-md);
+  font-size: 12px;
+}
+
+/* SPS Instructions */
+.sps-instructions {
+  padding: var(--space-xs) var(--space-md) var(--space-md);
+  overflow: auto;
+}
+
+.sps-instructions summary {
+  cursor: pointer;
+  color: var(--sps-muted);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.sps-instructions pre {
+  white-space: pre-wrap;
+  font-size: 11px;
+  background: var(--sps-bg);
+  background: color-mix(in srgb, var(--sps-bg) 80%, #000000 20%);
+  padding: 6px;
+  border: 1px solid var(--sps-border);
+  border-radius: var(--radius-xs, 4px);
+  max-height: 180px;
+  overflow: auto;
+}

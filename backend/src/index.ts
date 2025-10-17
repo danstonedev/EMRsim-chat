@@ -4,8 +4,8 @@ import { Server } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { createApp } from './app.ts';
 import { migrate } from './db.ts';
-import { restorePersistedSessions, isPersistenceEnabled, flushPersistence } from './sps/runtime/persistence.js';
-import { sessions } from './sps/runtime/store.js';
+import { restorePersistedSessions, isPersistenceEnabled, flushPersistence } from './sps/runtime/persistence.ts';
+import { sessions } from './sps/runtime/store.ts';
 import { logger } from './utils/logger.ts';
 import { resolveAllowedOrigins } from './utils/origin.ts';
 
@@ -64,7 +64,13 @@ const app = createApp();
 (async () => {
   try {
     mark('before migrate');
-    await migrate();
+    const dbPath = process.env.SQLITE_PATH || process.env.DB_PATH;
+    if (dbPath && dbPath.trim()) {
+      await migrate(dbPath.trim());
+      console.log('[backend] database path configured:', dbPath.trim());
+    } else {
+      await migrate();
+    }
     mark('after migrate');
     console.log('[backend] database initialized');
   } catch (e) {
@@ -215,3 +221,4 @@ const hb = setInterval(() => {
   }
 }, HEARTBEAT_INTERVAL_MS);
 hb.unref();
+

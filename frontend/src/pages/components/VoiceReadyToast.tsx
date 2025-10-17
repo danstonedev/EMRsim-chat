@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import '../../styles/voice-ready-toast.css'
+import MicOutlined from '@mui/icons-material/MicOutlined'
+// Styles imported globally via app.css (voice bundle)
 
 interface VoiceReadyToastProps {
   show: boolean
@@ -24,8 +25,14 @@ export function VoiceReadyToast({ show, onDismiss }: VoiceReadyToastProps) {
   if (!show) return null
 
   return (
-    <div className={`voice-ready-toast ${visible ? 'voice-ready-toast--visible' : ''}`}>
-      <div className="voice-ready-toast__icon">🎤</div>
+    <div
+      className={`voice-ready-toast ${visible ? 'voice-ready-toast--visible' : ''}`}
+      role="status"
+      aria-live="polite"
+    >
+      <div className="voice-ready-toast__icon" aria-hidden="true">
+        <MicOutlined fontSize="inherit" />
+      </div>
       <div className="voice-ready-toast__message">
         <strong>Voice Ready</strong>
         <span>You can start speaking now</span>

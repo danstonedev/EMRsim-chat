@@ -2,9 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAdvancedSettings } from '../../shared/settingsContext'
 import { api } from '../../shared/api'
 import { AdvancedSettingsLayout } from './advancedSettings/AdvancedSettingsLayout'
-import { VoiceSettingsSection } from './advancedSettings/VoiceSettingsSection'
-import { LanguageSettingsSection } from './advancedSettings/LanguageSettingsSection'
-import { BehaviorSettingsSection } from './advancedSettings/BehaviorSettingsSection'
+import { VoiceLanguageSettingsSection } from './advancedSettings/VoiceLanguageSettingsSection'
 import { DEFAULT_VOICES, type VoiceOption } from './advancedSettings/constants'
 
 type AdvancedSettingsDrawerProps = {
@@ -73,24 +71,16 @@ export function AdvancedSettingsDrawer({ open, onClose, onReconnectRequest }: Ad
       </header>
 
       <div className="drawer-body">
-        <VoiceSettingsSection
+        <VoiceLanguageSettingsSection
           voices={voices}
           selectedVoice={settings.voice ?? null}
           onSelectVoice={(voiceId) => update({ voice: voiceId })}
           fetchFailed={fetchFailed}
-        />
-
-        <LanguageSettingsSection
           inputLanguage={settings.inputLanguage}
           replyLanguage={settings.replyLanguage}
           onInputLanguageChange={(value) => update({ inputLanguage: value as any })}
           onReplyLanguageChange={(value) => update({ replyLanguage: value })}
           helperText={appliedNote}
-        />
-
-        <BehaviorSettingsSection
-          autostart={settings.autostart}
-          onToggleAutostart={(value) => update({ autostart: value })}
         />
       </div>
     </AdvancedSettingsLayout>

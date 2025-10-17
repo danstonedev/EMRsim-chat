@@ -1,0 +1,767 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-08T14:01:00.734Z",
+  "scenario_id": "sc_hip_tha_anterior_pod0_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:43eff75d871b3f97c7cf0cea51870cf94966bf58a64ed83f2f10fdcca884853a",
+  "dependencies_checksum": "sha256:46f2f8a45c2e8a39c2951c72fd49f49948d079b9aa19dfe3b55e6e9f7e5c4e73",
+  "source_bundle": "scenarios/bundles_src/sc_hip_tha_anterior_pod0_v1",
+  "scenario": {
+    "scenario_id": "sc_hip_tha_anterior_pod0_v1",
+    "title": "Acute THA—Anterior Approach (POD0)",
+    "region": "hip",
+    "difficulty": "moderate",
+    "setting": "acute",
+    "tags": [
+      "THA",
+      "anterior_approach",
+      "acute_care",
+      "mobility_first_day"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "published",
+    "meta": {
+      "title": "Acute THA—Anterior Approach (POD0)",
+      "region": "hip",
+      "difficulty": "moderate",
+      "setting": "acute",
+      "tags": [
+        "THA",
+        "anterior_approach",
+        "acute_care",
+        "mobility_first_day"
+      ],
+      "profession": "physical_therapy",
+      "created_at": "2025-10-01T16:57:26Z",
+      "updated_at": "2025-10-01T16:57:26Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "lo1",
+          "text": "Assess post-operative stability (vitals/orthostatics/lines) and determine safe mobilization on POD0.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "safety_screening",
+            "plan_of_care",
+            "communication_education"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "safety",
+            "clinical_reasoning"
+          ],
+          "evidence_req": "CPG|systematic_review"
+        },
+        {
+          "id": "lo2",
+          "text": "Teach anterior hip precautions and DME use with caregiver.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "communication_education",
+            "documentation"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "foundations",
+            "nonsystem": "equipment_devices"
+          },
+          "assessment_focus": [
+            "patient_education"
+          ],
+          "evidence_req": "guideline_or_sr"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "Which vitals or symptoms would prompt holding therapy today?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Primary osteoarthritis s/p right THA (anterior approach)",
+      "onset": "acute",
+      "duration_weeks": 0,
+      "dominant_symptoms": [
+        "surgical pain at incision",
+        "stiffness",
+        "dizziness when sitting up"
+      ],
+      "pain_nrs_rest": 3,
+      "pain_nrs_activity": 6,
+      "aggravators": [
+        "end-range hip movement",
+        "prolonged dependent position"
+      ],
+      "easers": [
+        "repositioning",
+        "ice",
+        "analgesics"
+      ],
+      "pattern_24h": "Immediate post-op fluctuations",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "s/p THA—anterior approach",
+      "body_functions_structures": [
+        "post-op pain",
+        "hip mobility limits",
+        "quadriceps/gluteal inhibition"
+      ],
+      "activities": [
+        "bed mobility",
+        "transfers",
+        "ambulation with device",
+        "stairs soon"
+      ],
+      "participation": [
+        "home mobility with daughter support"
+      ],
+      "environmental_factors": [
+        "two steps at entry",
+        "walker available at bedside"
+      ],
+      "personal_factors": [
+        "highly motivated",
+        "concerned about dislocation"
+      ]
+    },
+    "scenario_context": {
+      "module_id": "acute_care_total_joint_generic",
+      "module_version": "v1",
+      "content_version": "1.0.0",
+      "updated_at": "2025-10-07T00:00:00Z",
+      "post_op_day": 0,
+      "procedure": "THA",
+      "approach": "anterior",
+      "wb_status": "WBAT",
+      "joint_precautions": [
+        "avoid_combined_hip_extension_with_external_rotation"
+      ],
+      "lines_tubes_drains": [
+        "IV",
+        "Foley",
+        "hemovac"
+      ],
+      "mobility_orders": [
+        "OOB_with_assist",
+        "ambulate_in_hall"
+      ],
+      "pain_management": {
+        "PCA": false,
+        "regional_block": true,
+        "last_dose_time": ""
+      },
+      "dvt_pe_prophylaxis": {
+        "agent": "LMWH",
+        "dose": "per protocol",
+        "last_admin_time": ""
+      },
+      "incision_status": {
+        "dressing_type": "occlusive",
+        "drainage": "minimal",
+        "redness": "none",
+        "temp": "warm"
+      },
+      "hemodynamic_limits": {
+        "hr_min": 40,
+        "hr_max": 120,
+        "sbp_min": 90,
+        "sbp_max": 180,
+        "spo2_min": 92
+      },
+      "milestones": [
+        "bed_mobility",
+        "transfers",
+        "150_300ft_ambulation",
+        "stairs_trial",
+        "HEP_checkoff"
+      ],
+      "discharge_planning": {
+        "destination": "home",
+        "dme": [
+          "RW"
+        ],
+        "caregiver_training": [
+          "transfers",
+          "stairs"
+        ],
+        "home_barriers": [
+          "two_steps_no_rail"
+        ]
+      },
+      "goals": [
+        "Independent HEP adherence at discharge",
+        "Ambulate 150–300 ft with RW and CGA by POD1",
+        "Perform 4 steps with rail with CGA by POD1"
+      ],
+      "environment": "single-story with two entry steps"
+    },
+    "objective_catalog": [
+      {
+        "test_id": "tmpl_tug",
+        "label": "Tmpl Tug",
+        "region": "hip",
+        "patient_output_script": {
+          "numeric": {
+            "seconds": 18.5
+          },
+          "qualitative": [
+            "uses RW, contact guard"
+          ]
+        }
+      }
+    ],
+    "instructions": {
+      "sp_instructions": {
+        "affect": "calm",
+        "pain_behavior": "grimace_with_end_range",
+        "cueing_rules": [
+          "answer_only_what_is_asked",
+          "use_patient_words"
+        ]
+      },
+      "llm_prompt_hooks": {
+        "coaching_cues": [
+          "Verify joint precautions for anterior approach (avoid combined hip extension with ER).",
+          "Tie vitals/orthostatics to mobility readiness; use hold criteria if needed.",
+          "End with safety netting and caregiver training review."
+        ]
+      },
+      "authoring_notes": "POD0 mobilization with RW; dizziness and nausea risk post-anesthesia."
+    },
+    "soap": {
+      "subjective": {
+        "chief_complaint": "Right hip post-op pain and stiffness; wants to get to the chair and bathroom today.",
+        "history_present_illness": {
+          "mechanism": "Elective THA for end-stage OA",
+          "first_onset": "2025-10-01T16:57:26Z",
+          "course_since_onset": "fluctuating",
+          "prior_episodes": "Progressive hip OA pain >3 years",
+          "prior_treatment_response": [
+            "PT with limited relief",
+            "NSAIDs",
+            "intra-articular injection"
+          ],
+          "red_flag_denials_affirmations": {
+            "fever_chills": false,
+            "night_pain_unrelieved": false,
+            "unexplained_weight_loss": false,
+            "recent_infection": false,
+            "cancer_history": false,
+            "neurologic_bowel_bladder_changes": false
+          }
+        },
+        "pain": {
+          "location": [
+            "anterior hip incision"
+          ],
+          "quality": [
+            "aching",
+            "tight"
+          ],
+          "irritability": "moderate",
+          "nrs_rest": 3,
+          "nrs_activity": 6,
+          "nrs_best": 2,
+          "nrs_worst": 7,
+          "aggravators": [
+            "sit_to_stand",
+            "end_range"
+          ],
+          "easers": [
+            "ice",
+            "repositioning"
+          ],
+          "24h_pattern": "worse 2–6h post-op; improves with analgesics",
+          "sleep_disturbance": "difficulty_staying"
+        },
+        "past_medical_history": [
+          "HTN well-controlled"
+        ],
+        "surgical_history": [
+          "Right THA today"
+        ],
+        "medications": [
+          "acetaminophen",
+          "opioid PRN",
+          "LMWH"
+        ],
+        "allergies": [
+          "NKDA"
+        ],
+        "imaging": {
+          "available": true,
+          "modality": "xray",
+          "date": "2025-10-01T16:57:26Z",
+          "body_region": "hip",
+          "summary_patient_facing": "New hip is in place.",
+          "clinical_interpretation": "Prosthesis aligned; no complication noted."
+        },
+        "social_history": {
+          "tobacco": "never",
+          "alcohol": "social",
+          "sleep_hours": 6,
+          "diet_notes": "regular",
+          "work_demands": "retired",
+          "sport_hobbies": [
+            "gardening"
+          ]
+        },
+        "sdoh": {
+          "home_environment": "single-story with two entry steps",
+          "transportation": "reliable",
+          "financial_barriers": "none",
+          "caregiving_roles": []
+        },
+        "goals": [
+          "stand and transfer safely",
+          "walk in hall with walker",
+          "learn precautions"
+        ],
+        "systems_review": {
+          "cardiovascular_pulmonary": {
+            "dyspnea": false,
+            "chest_pain": false,
+            "orthopnea": false,
+            "edema": false
+          },
+          "neuromuscular": {
+            "dizziness": true,
+            "falls_history": false,
+            "headache_neck": false,
+            "paresthesia": false
+          },
+          "integumentary": {
+            "wounds": true,
+            "rash": false,
+            "color_changes": false
+          },
+          "other": []
+        },
+        "special_questions_region_specific": [
+          "anterior_approach_precautions_review"
+        ]
+      },
+      "objective": {
+        "vitals": {
+          "bp_mmHg": {
+            "systolic": 142,
+            "diastolic": 78
+          },
+          "hr_bpm": 84,
+          "rr_bpm": 16,
+          "spo2_percent": 95,
+          "temperature_c": 37.1,
+          "position": "seated",
+          "oxygen_delivery": {
+            "mode": "room_air",
+            "fio2_or_flow": "",
+            "target_spo2": "≥92%"
+          },
+          "orthostatics": {
+            "performed": true,
+            "supine_bp_hr": {
+              "systolic": 138,
+              "diastolic": 76,
+              "hr_bpm": 78
+            },
+            "standing_1min_bp_hr": {
+              "systolic": 130,
+              "diastolic": 74,
+              "hr_bpm": 92
+            },
+            "standing_3min_bp_hr": {
+              "systolic": 128,
+              "diastolic": 72,
+              "hr_bpm": 95
+            },
+            "symptoms": [
+              "brief lightheadedness on first stand"
+            ]
+          },
+          "vitals_trend": []
+        },
+        "observation": {
+          "skin_incisions": [
+            "occlusive dressing clean/dry"
+          ],
+          "effusion": "mild",
+          "ecchymosis": "mild",
+          "other_findings": []
+        },
+        "posture": {
+          "global": [
+            "slight forward trunk lean when standing"
+          ],
+          "region_specific": [
+            "hip flexed posture initially"
+          ]
+        },
+        "gait": {
+          "qualitative": [
+            "step-to pattern with RW",
+            "reduced right stance time"
+          ],
+          "spatiotemporal_numeric": {
+            "speed_m_per_s": 0.4,
+            "cadence_steps_per_min": 70,
+            "step_length_cm_R": 30,
+            "step_length_cm_L": 40
+          },
+          "assistive_device": "walker",
+          "surface": "hallway",
+          "footwear": "socks"
+        },
+        "palpation": {
+          "structures_assessed": [
+            "peri-incisional region"
+          ],
+          "tenderness_grading": "moderate",
+          "temperature_edema_skin": [
+            "warmth mild"
+          ]
+        },
+        "rom": {
+          "method": "goniometry",
+          "active": {
+            "hip_flexion_deg_R": 60
+          },
+          "passive": {
+            "hip_flexion_deg_R": 75
+          },
+          "end_feel": {
+            "hip_flexion_R": "capsular"
+          },
+          "symptom_reproduction": {
+            "hip_flexion_R": "incisional_ache"
+          },
+          "norm_reference_ids": [
+            "norms_hip"
+          ]
+        },
+        "mmt_strength": {
+          "method": "manual_0_to_5",
+          "grades": {
+            "quad_R": "3-",
+            "glute_med_R": "3-"
+          },
+          "pain_inhibition": {
+            "present": true
+          }
+        },
+        "joint_mobility": {
+          "scale": "0_to_6",
+          "segments": {}
+        },
+        "special_tests": [],
+        "neuro_screen": {
+          "dermatomes": {},
+          "myotomes": {},
+          "reflexes": {},
+          "neural_tension": [],
+          "cranial_nerve_screen": {
+            "performed": false,
+            "abnormal_findings": []
+          },
+          "coordination_balance": {
+            "romberg": "NT",
+            "tandem": "NT",
+            "single_leg_stance_sec_R": null,
+            "single_leg_stance_sec_L": null
+          },
+          "dual_task_variants": {
+            "tug_cog_seconds": null
+          }
+        },
+        "functional_tests": [
+          {
+            "test_template_id": "tmpl_tug",
+            "performed": true,
+            "findings": {
+              "numeric": {
+                "seconds": 18.5
+              },
+              "qualitative": [
+                "uses RW, contact guard"
+              ]
+            },
+            "protocol_source_id": "src_protocol_tug",
+            "norm_reference_id": "norms_tug"
+          }
+        ],
+        "outcome_measures": [
+          {
+            "measure_id": "om_hoos",
+            "score_raw": null,
+            "score_interpretation": "baseline not obtained day 0",
+            "minimal_clinically_important_difference": null,
+            "protocol_source_id": "src_hoos",
+            "norm_reference_id": "norms_hoos"
+          }
+        ],
+        "contraindications_precautions": [
+          "avoid_combined_hip_extension_with_external_rotation"
+        ],
+        "test_session_notes": "Sat EOB 3 min, BP stable; ambulated 60 ft with RW CGA."
+      },
+      "assessment": {
+        "problem_list": [
+          "post-op pain",
+          "gait impairment",
+          "decreased hip ROM",
+          "quad/gluteal inhibition",
+          "balance impairment",
+          "dizziness with first stand"
+        ],
+        "working_diagnoses": [
+          "s/p R THA (anterior approach) POD0"
+        ],
+        "clinical_impression": "Medically stable POD0 with transient orthostatic symptoms; safe to initiate mobilization with RW and CGA; education on anterior precautions required.",
+        "irritability_severity": "moderate",
+        "staging_subgrouping": "acute_postoperative",
+        "prognosis": "good",
+        "icd10_codes": [
+          "Z96.641"
+        ],
+        "differential_diagnoses_considered": [
+          "orthostatic hypotension",
+          "post-op anemia (screen if symptomatic)"
+        ],
+        "rationale_evidence_links": []
+      },
+      "plan": {
+        "frequency_duration": {
+          "visits_per_week": 2,
+          "weeks": 1
+        },
+        "referrals_imaging_requests": [],
+        "goals": {
+          "stg_2_4_weeks": [
+            "Ambulate 150–300 ft with RW and CGA by POD1",
+            "Perform 4 steps with rail with CGA by POD1"
+          ],
+          "ltg_6_12_weeks": [
+            "Independent HEP adherence at discharge"
+          ]
+        },
+        "interventions_planned": [
+          {
+            "intervention_id": "gait_training",
+            "dose": {
+              "time_min": 15,
+              "frequency_per_week": 2
+            },
+            "progression_criteria": [
+              "tolerates 150 ft without symptomatic dizziness"
+            ],
+            "regression_criteria": [
+              "SBP drop >20 mmHg with symptoms"
+            ],
+            "home_program_elements": [
+              "ankle_pumps",
+              "quad_sets",
+              "glute_sets",
+              "heel_slides"
+            ],
+            "expected_response": {
+              "immediate_session": [
+                "safe transfer to chair"
+              ],
+              "next_24_48h": [
+                "distance up to 150–300 ft"
+              ],
+              "2_6_weeks": [
+                "community amb goals as OP"
+              ]
+            },
+            "evidence_bindings": []
+          },
+          {
+            "intervention_id": "education_pacing",
+            "dose": {
+              "time_min": 10
+            },
+            "progression_criteria": [
+              "teach_back_precautions"
+            ],
+            "regression_criteria": [],
+            "home_program_elements": [
+              "precautions_handout"
+            ],
+            "expected_response": {
+              "immediate_session": [
+                "verbalize precautions"
+              ]
+            },
+            "evidence_bindings": []
+          }
+        ],
+        "patient_education": {
+          "topics": [
+            "hip_precautions",
+            "DVT_signs",
+            "ice_schedule",
+            "walker_safety"
+          ],
+          "teach_back_confirmed": true,
+          "printed_digital_resources": []
+        },
+        "safety_netting": [
+          "call nurse if dizziness persists",
+          "report calf pain/swelling",
+          "911 if chest pain or SOB"
+        ]
+      }
+    },
+    "provenance": {
+      "sources": [],
+      "reviewers": [],
+      "last_reviewed": "2025-10-01T16:57:26Z"
+    },
+    "linked_persona_id": "prsn_tha_pod0_v1",
+    "persona_snapshot": {
+      "id": "prsn_tha_pod0_v1",
+      "display_name": "Grace Lin",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "prsn_tha_pod0_v1",
+    "content_version": "1.0.0",
+    "checksum": "sha256:b6aaf1c3ab41917d6c12441d26688371306b32bbd21fb6f6ca877c2264680fbe",
+    "updated_at": "2025-10-08T14:01:00.736Z",
+    "file": "personas/shared/prsn_tha_pod0_v1.json",
+    "data": {
+      "patient_id": "prsn_tha_pod0_v1",
+      "display_name": "Grace Lin",
+      "demographics": {
+        "name": "Grace Lin",
+        "preferred_name": "Grace",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": null,
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Grace Lin, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Grace Lin. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [
+    {
+      "module_id": "acute_care_total_joint",
+      "version": "v1",
+      "module_version": "v1",
+      "content_version": "1.0.0",
+      "checksum": "sha256:9f4b3fb75778431d16d391a421b81628bbd07831712c970263ed4a3c24d69a34",
+      "updated_at": "2025-10-07T00:00:00Z",
+      "file": "banks/modules/acute_care_total_joint.v1.json",
+      "data": {
+        "module_id": "acute_care_total_joint_generic",
+        "module_version": "v1",
+        "content_version": "1.0.0",
+        "updated_at": "2025-10-07T00:00:00Z",
+        "post_op_day": 0,
+        "procedure": "THA",
+        "approach": "anterior",
+        "wb_status": "WBAT",
+        "joint_precautions": [
+          "avoid_combined_hip_extension_with_external_rotation"
+        ],
+        "lines_tubes_drains": [
+          "IV",
+          "Foley",
+          "hemovac"
+        ],
+        "mobility_orders": [
+          "OOB_with_assist",
+          "ambulate_in_hall"
+        ],
+        "pain_management": {
+          "PCA": false,
+          "regional_block": true,
+          "last_dose_time": ""
+        },
+        "dvt_pe_prophylaxis": {
+          "agent": "LMWH",
+          "dose": "per protocol",
+          "last_admin_time": ""
+        },
+        "incision_status": {
+          "dressing_type": "occlusive",
+          "drainage": "minimal",
+          "redness": "none",
+          "temp": "warm"
+        },
+        "hemodynamic_limits": {
+          "hr_min": 40,
+          "hr_max": 120,
+          "sbp_min": 90,
+          "sbp_max": 180,
+          "spo2_min": 92
+        },
+        "milestones": [
+          "bed_mobility",
+          "transfers",
+          "150_300ft_ambulation",
+          "stairs_trial",
+          "HEP_checkoff"
+        ],
+        "discharge_planning": {
+          "destination": "home",
+          "dme": [
+            "RW"
+          ],
+          "caregiver_training": [
+            "transfers",
+            "stairs"
+          ],
+          "home_barriers": [
+            "two_steps_no_rail"
+          ]
+        }
+      }
+    }
+  ],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_hip_tha_anterior_pod0_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_hip_tha_anterior_pod0_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_hip_tha_anterior_pod0_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_hip_tha_anterior_pod0_v1/soap.objective.json",
+    "soap_assessment": "scenarios/bundles_src/sc_hip_tha_anterior_pod0_v1/soap.assessment.json",
+    "soap_plan": "scenarios/bundles_src/sc_hip_tha_anterior_pod0_v1/soap.plan.json"
+  }
+}

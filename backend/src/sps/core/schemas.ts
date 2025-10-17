@@ -33,7 +33,7 @@ export const zDOBChallenge = z.object({
 
 export const zMediaAsset = z.object({
   id: z.string(),
-  type: z.enum(["image", "video"]),
+  type: z.enum(["image", "video", "youtube"]),
   url: z.string(),
   thumbnail: z.string().optional(),
   caption: z.string(),
@@ -65,9 +65,40 @@ export const zPersona = z.object({
 
 // PLACEHOLDER: Clinical scenario schema - replace with new structure
 export const zClinicalScenario = z.object({
-  scenario_id: z.string(),
-  title: z.string(),
-  region: z.enum(["ankle_foot","knee","cervical_spine","shoulder","sports_trauma_general","hip","lumbar_spine","thoracic_spine","elbow","wrist_hand"]),
+  // Core identity
+  scenario_id: z.string().min(3, 'scenario_id must be at least 3 characters'),
+  title: z.string().min(3, 'title must be at least 3 characters'),
+  region: z.enum([
+    "ankle_foot",
+    "knee",
+    "cervical_spine",
+    "shoulder",
+    "sports_trauma_general",
+    "hip",
+    "lumbar_spine",
+    "thoracic_spine",
+    "elbow",
+    "wrist_hand",
+  ]),
+
+  // Soft validations for common metadata (optional to avoid breaking existing content)
+  difficulty: z.enum(["easy", "moderate", "advanced"]).optional(),
+  // Keep setting broad (string) to avoid rejecting legacy values; can be tightened later
+  setting: z.string().min(2).optional(),
+  tags: z.array(z.string()).optional(),
+
+  // Versioning/status (optional)
+  schema_version: z.string().optional(),
+  version: z.number().int().nonnegative().optional(),
+  status: z.string().optional(),
+
+  // Known sections (kept permissive during transition)
+  meta: z.any().optional(),
+  pedagogy: z.any().optional(),
+  presenting_problem: z.any().optional(),
+  icf: z.any().optional(),
+  instructions: z.any().optional(),
   media_library: zMediaAsset.array().optional(),
-  // Add new schema fields here
+  soap: z.any().optional(),
+  provenance: z.any().optional(),
 }).passthrough(); // Allow additional fields during transition
