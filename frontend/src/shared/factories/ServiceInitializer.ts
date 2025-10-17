@@ -441,7 +441,12 @@ export class ServiceInitializer {
 
     const socketManager: BackendSocketClient = config.socketFactory
       ? config.socketFactory({ config: socketConfig, handlers: socketHandlers })
-      : new BackendSocketManager(socketConfig, socketHandlers)
+      : (() => {
+          if (import.meta.env.DEV) {
+            console.warn('[ServiceInitializer] Falling back to BackendSocketManager. Prefer providing a socketFactory (e.g., via useVoiceSession) to use the React hook-based socket.');
+          }
+          return new BackendSocketManager(socketConfig, socketHandlers)
+        })()
 
     // Phase 5: Initialize WebRTC and connection handlers
     const webrtcManager = new WebRTCConnectionManager()

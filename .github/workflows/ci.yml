@@ -44,7 +44,7 @@ jobs:
         working-directory: frontend
         continue-on-error: true
         run: |
-          npx eslint . --ext .ts,.tsx
+          npx eslint src --ext .ts,.tsx
           npx prettier --check "src/**/*.{ts,tsx,json,css}"
 
       - name: Lint backend

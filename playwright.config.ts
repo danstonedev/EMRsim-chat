@@ -57,6 +57,9 @@ export default defineConfig({
     {
       command: 'cd backend && npm run dev',
       url: 'http://localhost:3002/api/health',
+      env: {
+        OPENAI_API_KEY: process.env.OPENAI_API_KEY || 'test-test-test-test',
+      },
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
     },

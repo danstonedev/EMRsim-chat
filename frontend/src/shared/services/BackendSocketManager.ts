@@ -82,6 +82,11 @@ export type BackendSocketFactory = (options: {
  * Manages WebSocket connection to backend for unified transcript broadcast.
  * Handles connection lifecycle, event routing, reconnection logic, and failure tracking.
  */
+/**
+ * @deprecated For React surfaces, prefer using the `useBackendSocket` hook and inject a
+ * BackendSocketClient via a `socketFactory` (see useVoiceSession). Directly instantiating
+ * BackendSocketManager from components can complicate lifecycle and testing.
+ */
 export class BackendSocketManager implements BackendSocketClient {
   private socket: Socket | null = null
   private failureCount = 0
