@@ -1,8 +1,11 @@
 @description('The environment name (staging, production)')
 param environment string = 'production'
 
-@description('Location for all resources - must match available regions')
+@description('Location for most resources')
 param location string = 'eastus'
+
+@description('Location for Static Web App - must be westus2, centralus, eastus2, westeurope, or eastasia')
+param staticWebAppLocation string = 'eastus2'
 
 @description('Administrator login for PostgreSQL server')
 @secure()
@@ -60,7 +63,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'PG_HOST'
-          value: '${postgreSQLServer.properties.fullyQualifiedDomainName}'
+          value: postgreSQLServer.properties.fullyQualifiedDomainName
         }
         {
           name: 'PG_DATABASE'
@@ -84,7 +87,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'REDIS_HOST'
-          value: '${redisCache.properties.hostName}'
+          value: redisCache.properties.hostName
         }
         {
           name: 'REDIS_PORT'
@@ -112,10 +115,10 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
-// Create Static Web App for frontend (must be in supported region)
+// Create Static Web App for frontend (deployed to supported region)
 resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
   name: staticWebAppName
-  location: location
+  location: staticWebAppLocation
   sku: {
     name: 'Free'
     tier: 'Free'

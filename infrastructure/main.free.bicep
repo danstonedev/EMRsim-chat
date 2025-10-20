@@ -1,8 +1,8 @@
-@description('The environment name (staging, production)')
+@description('The environment name')
 param environment string = 'production'
 
-@description('Location for all resources - must match available regions')
-param location string = 'eastus'
+@description('Location for most resources')
+param location string = 'westus2'
 
 @description('Administrator login for PostgreSQL server')
 @secure()
@@ -12,28 +12,27 @@ param administratorLogin string
 @secure()
 param administratorLoginPassword string
 
-// Define variables with simplified naming
+// Define variables
 var appServicePlanName = 'emrsim-plan-${environment}'
-var webAppName = 'emrsim-api-${environment}'
-var staticWebAppName = 'emrsim-web-${environment}'
-var postgreSQLServerName = 'emrsim-db-${environment}'
+var webAppName = 'emrsim-api-${environment}-${uniqueString(resourceGroup().id)}'
+var staticWebAppName = 'emrsim-web-${environment}-${uniqueString(resourceGroup().id)}'
+var postgreSQLServerName = 'emrsim-db-${environment}-${uniqueString(resourceGroup().id)}'
 var postgreSQLDatabaseName = 'emrsimdb'
-var redisCacheName = 'emrsim-redis-${environment}'
+var redisCacheName = 'emrsim-redis-${environment}-${uniqueString(resourceGroup().id)}'
 
-// Create App Service Plan (using lower tier for students)
+// Create App Service Plan with FREE tier (no quota needed)
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: appServicePlanName
   location: location
   sku: {
-    name: 'B1'
-    tier: 'Basic'
-    size: 'B1'
-    family: 'B'
+    name: 'F1'
+    tier: 'Free'
+    size: 'F1'
+    family: 'F'
     capacity: 1
   }
-  kind: 'linux'
   properties: {
-    reserved: true // Required for Linux
+    reserved: false // Free tier is Windows only
   }
 }
 
@@ -44,15 +43,15 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     siteConfig: {
-      linuxFxVersion: 'NODE|22-lts'
+      nodeVersion: '~22'
       webSocketsEnabled: true
-      alwaysOn: true
+      alwaysOn: false // Not available on Free tier
       http20Enabled: true
       minTlsVersion: '1.2'
       appSettings: [
         {
           name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '22-lts'
+          value: '~22'
         }
         {
           name: 'DB_TYPE'
@@ -60,7 +59,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'PG_HOST'
-          value: '${postgreSQLServer.properties.fullyQualifiedDomainName}'
+          value: postgreSQLServer.properties.fullyQualifiedDomainName
         }
         {
           name: 'PG_DATABASE'
@@ -84,7 +83,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'REDIS_HOST'
-          value: '${redisCache.properties.hostName}'
+          value: redisCache.properties.hostName
         }
         {
           name: 'REDIS_PORT'
@@ -107,12 +106,11 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
           value: '8080'
         }
       ]
-      healthCheckPath: '/api/health'
     }
   }
 }
 
-// Create Static Web App for frontend (must be in supported region)
+// Create Static Web App (Free tier)
 resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
   name: staticWebAppName
   location: location
@@ -129,7 +127,7 @@ resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
   }
 }
 
-// Create PostgreSQL Flexible Server
+// Create PostgreSQL Flexible Server (smallest tier)
 resource postgreSQLServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-03-01-preview' = {
   name: postgreSQLServerName
   location: location
@@ -174,7 +172,7 @@ resource postgreSQLDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases
   }
 }
 
-// Create Redis Cache (using Basic tier for students)
+// Create Redis Cache (Basic tier - smallest paid tier)
 resource redisCache 'Microsoft.Cache/redis@2023-08-01' = {
   name: redisCacheName
   location: location
@@ -200,3 +198,13 @@ output staticWebAppUrl string = 'https://${staticWebApp.properties.defaultHostna
 output postgresServerName string = postgreSQLServer.name
 output postgresFQDN string = postgreSQLServer.properties.fullyQualifiedDomainName
 output redisHostName string = redisCache.properties.hostName
+
+output deploymentNotes string = '''
+IMPORTANT: This deployment uses FREE tier App Service which has limitations:
+- No "Always On" (app may sleep after 20 min idle)
+- 60 minutes of compute per day
+- 1 GB storage
+- Windows only (no Linux containers)
+
+For production use, you'll need to request quota increase for Basic VMs or use a paid subscription.
+'''
