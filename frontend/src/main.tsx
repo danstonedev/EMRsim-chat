@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 // Import all styles through a single entry point to guarantee order
 import './styles/index.css'
-import AppRouter from './AppRouter'
+import App from './app/App'
 import { SettingsProvider } from './shared/settingsContext'
 import ErrorBoundary from './shared/ErrorBoundary'
 
@@ -20,7 +20,7 @@ const root = createRoot(document.getElementById('root')!)
 root.render(
   <ErrorBoundary>
     <SettingsProvider>
-      <AppRouter />
+      <App />
     </SettingsProvider>
   </ErrorBoundary>
 )

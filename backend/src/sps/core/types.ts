@@ -1,36 +1,56 @@
 // Standardized Patient Simulator Types
-export type Flag = "red" | "yellow";
-export type Literacy = "low" | "moderate" | "high";
-export type Tone = "friendly" | "guarded" | "disinterested" | "worried" | "irritable" | "stoic" | "optimistic";
-export type Verbosity = "brief" | "balanced" | "talkative";
-export type SleepQuality = "good" | "fair" | "poor";
-export type Onset = "acute" | "gradual" | "insidious";
+export type Flag = 'red' | 'yellow';
+export type Literacy = 'low' | 'moderate' | 'high';
+export type Tone = 'friendly' | 'guarded' | 'disinterested' | 'worried' | 'irritable' | 'stoic' | 'optimistic';
+export type Verbosity = 'brief' | 'balanced' | 'talkative';
+export type SleepQuality = 'good' | 'fair' | 'poor';
+export type Onset = 'acute' | 'gradual' | 'insidious';
 export type Region =
-  | "ankle_foot"
-  | "knee"
-  | "cervical_spine"
-  | "shoulder"
-  | "sports_trauma_general"
-  | "hip"
-  | "lumbar_spine"
-  | "thoracic_spine"
-  | "elbow"
-  | "wrist_hand";
+  | 'ankle_foot'
+  | 'knee'
+  | 'cervical_spine'
+  | 'shoulder'
+  | 'sports_trauma_general'
+  | 'hip'
+  | 'lumbar_spine'
+  | 'thoracic_spine'
+  | 'elbow'
+  | 'wrist_hand';
 
 export interface ScreeningChallenge {
-  id: string; flag: Flag; cue_intent: string;
-  semantic_tags?: string[]; delivery_guidelines?: string[];
-  example_phrases?: string[]; reveal_triggers: string[];
+  id: string;
+  flag: Flag;
+  cue_intent: string;
+  semantic_tags?: string[];
+  delivery_guidelines?: string[];
+  example_phrases?: string[];
+  reveal_triggers: string[];
   learning_objectives: string[];
 }
 export interface SpecialQuestion {
-  id: string; region: Region; student_prompt_patterns: string[];
-  patient_cue_intent: string; delivery_guidelines?: string[];
-  example_phrases?: string[]; instructor_imaging_note: string; refs?: string[];
+  id: string;
+  region: Region;
+  student_prompt_patterns: string[];
+  patient_cue_intent: string;
+  delivery_guidelines?: string[];
+  example_phrases?: string[];
+  instructor_imaging_note: string;
+  refs?: string[];
 }
 export interface DOBChallenge {
-  style: "straightforward"|"clarification"|"humor"|"privacy"|"misstatement"|"partial"|"deflection"|"annoyance"|"roleplay"|"delayed";
-  example_response: string; learning_objectives?: string[];
+  style:
+    | 'straightforward'
+    | 'clarification'
+    | 'humor'
+    | 'privacy'
+    | 'misstatement'
+    | 'partial'
+    | 'deflection'
+    | 'annoyance'
+    | 'roleplay'
+    | 'delayed';
+  example_response: string;
+  learning_objectives?: string[];
 }
 
 export interface PatientPersona {
@@ -40,17 +60,48 @@ export interface PatientPersona {
   voice_id?: string | null;
   tags?: string[];
   demographics: {
-    name: string; preferred_name?: string; pronouns?: string;
-    age: number; sex: string; occupation: string; sport_activity?: string;
-    education_health_literacy: Literacy; primary_language?: string; dob: string;
+    name: string;
+    preferred_name?: string;
+    pronouns?: string;
+    age: number;
+    sex: string;
+    occupation: string;
+    sport_activity?: string;
+    education_health_literacy: Literacy;
+    primary_language?: string;
+    dob: string;
   };
-  social_context?: { family_roles?: string[]; support_system?: string[]; financial_stressors?: string[]; transportation?: string; cultural_values?: string[]; };
-  function_context?: { adl_limitations?: string[]; sport_limitations?: string[]; work_demands?: string; sleep_quality?: SleepQuality; goals?: string[]; };
-  beliefs_affect?: { fears?: string[]; beliefs?: string[]; mood?: Tone; coping_style?: string; };
-  medical_baseline?: { comorbidities?: string[]; medications?: string[]; };
-  dialogue_style: { verbosity: Verbosity; tone: Tone; quirks?: string[]; privacy_hesitations?: string[]; misunderstanding_patterns?: string[]; voice_id?: string | null; speaking_rate?: string | null; };
-  hidden_agenda?: { concerns?: string[]; reveal_triggers?: string[]; };
-  closure_style?: { preferred_questions?: string[]; cost_concerns?: boolean; role_focus?: ("work"|"sport"|"caregiving"|"school")[]; };
+  social_context?: {
+    family_roles?: string[];
+    support_system?: string[];
+    financial_stressors?: string[];
+    transportation?: string;
+    cultural_values?: string[];
+  };
+  function_context?: {
+    adl_limitations?: string[];
+    sport_limitations?: string[];
+    work_demands?: string;
+    sleep_quality?: SleepQuality;
+    goals?: string[];
+  };
+  beliefs_affect?: { fears?: string[]; beliefs?: string[]; mood?: Tone; coping_style?: string };
+  medical_baseline?: { comorbidities?: string[]; medications?: string[] };
+  dialogue_style: {
+    verbosity: Verbosity;
+    tone: Tone;
+    quirks?: string[];
+    privacy_hesitations?: string[];
+    misunderstanding_patterns?: string[];
+    voice_id?: string | null;
+    speaking_rate?: string | null;
+  };
+  hidden_agenda?: { concerns?: string[]; reveal_triggers?: string[] };
+  closure_style?: {
+    preferred_questions?: string[];
+    cost_concerns?: boolean;
+    role_focus?: ('work' | 'sport' | 'caregiving' | 'school')[];
+  };
   dob_challenges?: DOBChallenge[];
 }
 
@@ -93,7 +144,7 @@ export interface SymptomFluctuation {
 export interface ScenarioGuardrails {
   min_age?: number;
   max_age?: number;
-  sex_required?: "male" | "female";
+  sex_required?: 'male' | 'female';
   disallow_medications?: string[];
   impact_testing_unsafe?: boolean;
 }
@@ -125,19 +176,22 @@ export interface ScenarioProvenance {
   notes?: string;
 }
 
-export type ScenarioSOAPKey = "subjective" | "objective" | "assessment" | "plan";
+export type ScenarioSOAPKey = 'subjective' | 'objective' | 'assessment' | 'plan';
 export type ScenarioSOAP = Partial<Record<ScenarioSOAPKey, unknown>> & Record<string, unknown>;
 
 export interface ObjectiveFinding {
-  test_id: string; label: string; region: Region;
-  preconditions?: string[]; contraindications?: string[];
+  test_id: string;
+  label: string;
+  region: Region;
+  preconditions?: string[];
+  contraindications?: string[];
   instructions_brief?: string;
   patient_output_script: {
     numeric?: Record<string, number | string>;
     qualitative?: string[];
     binary_flags?: Record<string, boolean | string>;
   };
-  guardrails?: { data_only?: boolean; deflection_lines?: string[]; refuse_if_contraindicated?: boolean; };
+  guardrails?: { data_only?: boolean; deflection_lines?: string[]; refuse_if_contraindicated?: boolean };
 }
 
 // Optional, structured Subjective catalog entries to make authoring easier.
@@ -156,7 +210,7 @@ export interface SubjectiveItem {
 
 export interface MediaAsset {
   id: string; // stable identifier (e.g., "knee_flexion_active")
-  type: "image" | "video" | "youtube";
+  type: 'image' | 'video' | 'youtube';
   url: string; // path or URL to media file (for youtube: full YouTube URL)
   thumbnail?: string; // optional thumbnail (auto-generated for YouTube if not provided)
   caption: string; // clinical description shown with media
@@ -165,9 +219,20 @@ export interface MediaAsset {
 }
 
 export interface ClinicalScenario {
-  scenario_id: string; title: string; region: Region;
-  setting?: "primary_care_pt"|"sports_rehab"|"post_op"|"acute"|"telehealth"|"outpatient_pt"|"sports_pt_outpatient"|"sports_medicine_outpatient"|"sports_rehab_clinic";
-  difficulty?: "easy"|"moderate"|"advanced";
+  scenario_id: string;
+  title: string;
+  region: Region;
+  setting?:
+    | 'primary_care_pt'
+    | 'sports_rehab'
+    | 'post_op'
+    | 'acute'
+    | 'telehealth'
+    | 'outpatient_pt'
+    | 'sports_pt_outpatient'
+    | 'sports_medicine_outpatient'
+    | 'sports_rehab_clinic';
+  difficulty?: 'easy' | 'moderate' | 'advanced';
   tags?: string[];
   schema_version?: string;
   version?: number;
@@ -178,7 +243,8 @@ export interface ClinicalScenario {
   icf?: ICF;
   scenario_context?: ScenarioContext;
   symptom_fluctuation?: SymptomFluctuation;
-  screening_challenge_ids?: string[]; special_question_ids?: string[];
+  screening_challenge_ids?: string[];
+  special_question_ids?: string[];
   subjective_catalog?: SubjectiveItem[]; // optional, structured subjective items
   objective_catalog?: ObjectiveFinding[];
   objective_guardrails?: ObjectiveGuardrails;
@@ -197,7 +263,7 @@ export interface ClinicalScenario {
   };
 }
 
-export type GateState = "LOCKED" | "UNLOCKED";
+export type GateState = 'LOCKED' | 'UNLOCKED';
 export interface GateFlags {
   greeting_done: boolean;
   intro_done: boolean;
@@ -206,6 +272,10 @@ export interface GateFlags {
   locked_pressure_count?: number;
   supervisor_escalated?: boolean;
 }
-export type EncounterPhase = "subjective" | "objective" | "treatment_plan";
+export type EncounterPhase = 'subjective' | 'objective' | 'treatment_plan';
 
-export interface ActiveCase { id: string; persona: PatientPersona; scenario: ClinicalScenario; }
+export interface ActiveCase {
+  id: string;
+  persona: PatientPersona;
+  scenario: ClinicalScenario;
+}

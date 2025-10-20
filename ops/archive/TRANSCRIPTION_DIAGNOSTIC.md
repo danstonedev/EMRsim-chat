@@ -19,6 +19,7 @@ Based on your console logs, the transcription system is working correctly:
 ### The Real Problem
 
 **The HTTP relay requests are not reaching the backend**, even though the frontend reports success. This causes:
+
 - Frontend waits for backend broadcast
 - Backend never receives the relay request
 - Backend never broadcasts
@@ -34,9 +35,11 @@ Based on your console logs, the transcription system is working correctly:
    - Check if they're succeeding (204) or failing
 
 2. **Check backend terminal** for relay logs:
-   ```
+
+``` text
    [TranscriptRelay] 📥 Received relay request
    ```
+
    - If you DON'T see these, the requests aren't reaching the backend
 
 3. **Check WebSocket connection**:
@@ -58,6 +61,7 @@ if (this.backendTranscriptMode) {
 ```
 
 When `backendTranscriptMode` is enabled (which it is), final transcripts are NOT emitted locally. Instead, the code:
+
 1. Relays transcript to backend via HTTP POST
 2. Expects backend to broadcast via WebSocket
 3. Waits for that broadcast before showing in UI
@@ -83,6 +87,7 @@ Then speak - you should see transcript events in the console even if they don't 
 ### Solution Options
 
 **Option 1: Debug the HTTP relay failure** (recommended)
+
 - Check if CORS is blocking the request
 - Check if the route path is correct
 - Check if the session ID is valid

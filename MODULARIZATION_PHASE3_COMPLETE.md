@@ -33,6 +33,7 @@ Successfully extracted WebRTC data channel callback configuration from Conversat
 #### 1. `frontend/src/shared/configurators/DataChannelConfigurator.ts` (182 lines)
 
 **Responsibilities:**
+
 - Configure WebRTC data channel event callbacks
 - Handle channel open (enable transcription & audio modalities)
 - Handle incoming messages (delegate to EventDispatcher)
@@ -40,6 +41,7 @@ Successfully extracted WebRTC data channel callback configuration from Conversat
 - Handle channel close (cleanup ping interval)
 
 **Key Features:**
+
 - ✅ **Single Responsibility:** Handles ONLY data channel configuration
 - ✅ **Comprehensive JSDoc:** Detailed documentation with usage examples
 - ✅ **Modality Management:** Enables transcription + audio via session.update
@@ -60,9 +62,11 @@ export interface DataChannelConfiguratorDependencies {
 ```
 
 **Public Methods:**
+
 - `createDataChannelCallbacks()` - Returns configured callback object for WebRTCConnectionManager
 
 **Private Methods:**
+
 - `handleOpen(channel)` - Data channel open event handler
 - `enableTranscriptionAndAudio(channel)` - Send session.update to enable modalities
 - `handleMessage(data)` - Delegate incoming messages to EventDispatcher
@@ -102,6 +106,7 @@ this.webrtcManager.setDataChannelCallbacks(dataChannelConfigurator.createDataCha
 ```
 
 **Removed:**
+
 - 58 lines of inline data channel callback definitions (onOpen, onMessage, onError, onClose)
 - Complex nested logic for modality enablement
 - Duplicate ping interval cleanup code
@@ -111,6 +116,7 @@ this.webrtcManager.setDataChannelCallbacks(dataChannelConfigurator.createDataCha
 ## Architecture Benefits
 
 ### Before Phase 3
+
 ```typescript
 class ConversationController {
   // 1290 lines total
@@ -141,6 +147,7 @@ class ConversationController {
 ```
 
 ### After Phase 3
+
 ```typescript
 class ConversationController {
   // 1250 lines total
@@ -216,15 +223,19 @@ class DataChannelConfigurator {
 ## Critical Feature: Modality Enablement
 
 ### What is it?
+
 The `enableTranscriptionAndAudio()` method sends a `session.update` message to the OpenAI Realtime API to enable both text transcriptions AND audio responses.
 
 ### Why is it important?
+
 Without this, the API would only provide audio OR text, not both:
+
 - **Audio only:** Voice responses work, but no chat UI
 - **Text only:** Chat UI works, but no voice playback
 - **Both (required):** Full experience with voice AND chat
 
 ### Implementation
+
 ```typescript
 private enableTranscriptionAndAudio(channel: RTCDataChannel): void {
   this.deps.logDebug(
@@ -253,11 +264,13 @@ private enableTranscriptionAndAudio(channel: RTCDataChannel): void {
 ## Testing Strategy
 
 ### Automated Tests (Passing)
+
 - ✅ **TypeScript Compilation:** `npm run type-check` - No errors
 - ✅ **Unit Tests:** `npm test` - All tests passing
 - ✅ **Zero Regressions:** No breaking changes to public APIs
 
 ### Recommended Unit Tests (Future)
+
 ```typescript
 describe('DataChannelConfigurator', () => {
   it('should enable transcription and audio modalities on open', () => {
@@ -346,6 +359,7 @@ describe('DataChannelConfigurator', () => {
 ## Production Verification
 
 ### Validation Steps
+
 1. ✅ TypeScript compilation successful (no type errors)
 2. ✅ Unit tests passing (no regressions)
 3. 🔄 **TODO:** Test in dev environment (voice conversation flow)
@@ -353,6 +367,7 @@ describe('DataChannelConfigurator', () => {
 5. 🔄 **TODO:** Check data channel open/close/error events in console
 
 ### Expected Behavior
+
 - Data channel opens successfully
 - Session.update sent with modalities: ['text', 'audio']
 - Transcriptions appear in chat UI
@@ -364,16 +379,19 @@ describe('DataChannelConfigurator', () => {
 ## Next Steps
 
 ### Phase 4: ConnectionHandlers (Recommended Next)
+
 **Target:** Extract WebRTC connection state handlers (~180 lines)  
 **Impact:** Remove ~150 lines from ConversationController  
 **Benefit:** Isolated connection state logic, easier testing
 
 ### Phase 5: BackendIntegration (Planned)
+
 **Target:** Extract backend socket & relay logic (~150 lines)  
 **Impact:** Remove ~150 lines from ConversationController  
 **Benefit:** Clear backend integration boundary
 
 ### Phase 6: PublicAPI (Planned)
+
 **Target:** Extract public API methods (~280 lines)  
 **Impact:** Remove ~280 lines from ConversationController  
 **Benefit:** Clean public API facade
@@ -399,18 +417,21 @@ describe('DataChannelConfigurator', () => {
 ## Lessons Learned
 
 ### What Went Well
+
 1. ✅ **Clean Extraction:** DataChannelConfigurator has zero coupling to ConversationController internals
 2. ✅ **Dependency Injection:** All dependencies passed via interface (testable)
 3. ✅ **Zero Breaking Changes:** Public API unchanged, backward compatible
 4. ✅ **Comprehensive Documentation:** JSDoc with implementation details
 
 ### Challenges
+
 1. ⚠️ **Constructor Still Large:** Constructor is still ~440 lines (need more extraction)
    - **Resolution:** Continue with Phase 4 (ConnectionHandlers) to extract more logic
 2. ⚠️ **Callback Closures:** Many callbacks reference `this` (harder to extract)
    - **Mitigation:** Use dependency injection pattern with setter callbacks
 
 ### Recommendations
+
 1. ✅ **Continue Sequential:** Proceed with Phase 4 (ConnectionHandlers) next
 2. ✅ **Document as We Go:** Keep creating completion docs for each phase
 3. ✅ **Test Incrementally:** Run TypeScript + tests after each phase
@@ -431,6 +452,7 @@ Phase 3 successfully extracted WebRTC data channel callback configuration into a
 ## Appendix: Code Snippets
 
 ### DataChannelConfigurator Usage Example
+
 ```typescript
 // In ConversationController constructor
 const dataChannelConfigurator = new DataChannelConfigurator({
@@ -451,7 +473,8 @@ this.webrtcManager.setDataChannelCallbacks(
 ```
 
 ### Data Channel Lifecycle Flow
-```
+
+``` text
 WebRTC Connection Established
     ↓
 Data Channel Created (by peer or locally)

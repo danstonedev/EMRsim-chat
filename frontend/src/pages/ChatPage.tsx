@@ -34,7 +34,7 @@ import {
   useUIEffects,
 } from '../shared/hooks';
 
-export default function App() {
+export default function ChatPage() {
   const [view, setView] = useState<'chat' | 'builder'>('chat');
 
   // Backend data (personas, scenarios, health) managed by custom hook
@@ -82,7 +82,6 @@ export default function App() {
 
   // Initialize message state first (needed by both hooks)
   const [messages, setMessages] = useState<Message[]>([]);
-
   const { updateVoiceMessage, resetVoiceTrackingState, voiceUserStartTimeRef } = useVoiceTranscripts({
     sessionId,
     queueMessageUpdate,
@@ -138,9 +137,10 @@ export default function App() {
   );
 
   // Scenario media loading (extracted to custom hook)
+  // Defer loading until session is created to avoid premature media display
   // isLoading is available but not currently used in UI
   const { scenarioMedia } = useScenarioMedia({
-    scenarioId,
+    scenarioId: sessionId ? scenarioId : null, // Only load media after session created
     closeMedia: uiState.closeMedia,
   });
 
@@ -255,6 +255,11 @@ export default function App() {
       setSpsError('SPS encounters are currently disabled by the backend. Please retry later.');
       return;
     }
+    // Prevent concurrent session creation (race condition protection)
+    if (isComposing) {
+      console.warn('[composeEncounter] Already composing, skipping duplicate call');
+      return;
+    }
     setIsComposing(true);
     setSpsError(null);
     setMessages([]);
@@ -278,7 +283,7 @@ export default function App() {
       setIsComposing(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- setTtftMs is a stable state setter
-  }, [personaId, scenarioId, runtimeFeatures.spsEnabled, updateEncounterStateRef, firstDeltaRef]);
+  }, [personaId, scenarioId, runtimeFeatures.spsEnabled, updateEncounterStateRef, firstDeltaRef, isComposing]);
 
   // Unified selection lifecycle effect - consolidates persona/scenario/session state management
   // Replaces 4 separate effects: personaId reset, sessionId reset, encounter reset, auto-compose
@@ -293,21 +298,12 @@ export default function App() {
     updateEncounterStateRef({ phase: null, gate: null }, 'encounter.reset.selection');
     compositionScheduledRef.current = false;
 
-    // Auto-compose new encounter if both selections are present and SPS is enabled
-    if (!personaId || !scenarioId || !runtimeFeatures.spsEnabled) return;
-    if (compositionScheduledRef.current) return; // Don't create if already scheduled
-
-    // Debounce to prevent rapid re-creation when rapidly switching selections
-    compositionScheduledRef.current = true;
-    const timer = setTimeout(() => {
-      void composeEncounter();
-    }, 300);
-
-    return () => {
-      clearTimeout(timer);
-      compositionScheduledRef.current = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- State setters and callbacks are stable; isComposing removed to prevent trigger loop
+    // Session creation is now deferred until voice session starts
+    // This prevents creating sessions before the user activates the mic
+    
+    // Note: Auto-compose removed - session will be created when user starts voice session
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- State setters and callbacks are stable
   }, [
     personaId,
     scenarioId,
@@ -360,17 +356,20 @@ export default function App() {
     voiceDisabledReason = 'Voice is currently unavailable for SPS encounters. Check backend health configuration.';
   } else if (isComposing) {
     voiceDisabledReason = "We're composing the SPS encounter. Voice will unlock once the session is ready.";
-  } else if (!sessionId) {
-    voiceDisabledReason = 'Start the encounter to unlock realtime voice.';
   }
+  // Note: No longer checking !sessionId - session is created when mic is clicked
 
   const voiceLocked = Boolean(voiceDisabledReason);
-  const voiceButtonDisabled = voiceLocked || !sessionId || isComposing || isVoiceConnecting;
+  // Allow mic activation if persona+scenario selected (session will be created on click)
+  const canStartVoice = Boolean(personaId && scenarioId);
+  const voiceButtonDisabled = voiceLocked || !canStartVoice || isComposing || isVoiceConnecting;
   const voiceButtonTooltip = voiceLocked
     ? (voiceDisabledReason ?? undefined)
-    : isVoiceConnecting
-      ? 'Voice session is connecting…'
-      : undefined;
+    : !canStartVoice
+      ? 'Select a persona and scenario to start'
+      : isVoiceConnecting
+        ? 'Voice session is connecting…'
+        : undefined;
 
   let voiceErrorMessage: string | null = null;
   if (!voiceLocked && voiceSession.error) {
@@ -441,11 +440,21 @@ export default function App() {
     }
   }, [voiceSession]);
 
+  // Wrapper to create session before starting voice (deferred session creation)
+  const handleStartVoice = useCallback(async () => {
+    // Only create session if we don't have one yet
+    if (!sessionId && personaId && scenarioId) {
+      await composeEncounter();
+    }
+    // Start voice session (will use the newly created sessionId)
+    return voiceSession.start();
+  }, [sessionId, personaId, scenarioId, composeEncounter, voiceSession]);
+
   const renderMicControl = () => (
     <VoiceControls
       status={voiceSession.status}
       micPaused={voiceSession.micPaused}
-      start={() => voiceSession.start()}
+      start={handleStartVoice}
       pause={() => voiceSession.pause()}
       resume={() => voiceSession.resume()}
       stop={() => voiceSession.stop()}

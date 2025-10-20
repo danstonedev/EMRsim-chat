@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getRequestLogger } from '../utils/requestContext.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,17 +70,20 @@ class CatalogService {
     try {
       const fileContent = await readFile(catalogPath, 'utf8');
       const catalog = JSON.parse(fileContent);
-      console.log(`[catalog-service] Loaded ${catalogType} catalog`);
+      const log = getRequestLogger();
+      log.info({ catalogType }, '[catalog-service] loaded catalog');
       return catalog;
     } catch (error) {
-      console.error(`[catalog-service] Failed to load ${catalogType}:`, error);
+      const log = getRequestLogger();
+      log.error({ catalogType, error }, '[catalog-service] failed to load catalog');
       throw new Error(`Failed to load catalog: ${catalogType}`);
     }
   }
 
   // Preload all catalogs at startup for better performance
   async preloadAll(): Promise<void> {
-    console.log('[catalog-service] Preloading all catalogs...');
+    const log = getRequestLogger();
+    log.info('[catalog-service] preloading all catalogs...');
     const catalogTypes: CatalogType[] = [
       'special_tests',
       'functional_tests',
@@ -90,17 +94,23 @@ class CatalogService {
       'protocols',
     ];
 
-    await Promise.all(catalogTypes.map(type => this.getCatalog(type).catch(err => {
-      console.warn(`[catalog-service] Failed to preload ${type}:`, err.message);
-    })));
+    await Promise.all(
+      catalogTypes.map(type =>
+        this.getCatalog(type).catch(err => {
+          const l = getRequestLogger();
+          l.warn({ catalogType: type, error: err?.message }, '[catalog-service] failed to preload');
+        })
+      )
+    );
 
-    console.log('[catalog-service] Preloading complete');
+    log.info('[catalog-service] preloading complete');
   }
 
   // Clear cache (useful for testing or hot-reload scenarios)
   clearCache(): void {
     this.cache.clear();
-    console.log('[catalog-service] Cache cleared');
+    const log = getRequestLogger();
+    log.info('[catalog-service] cache cleared');
   }
 }
 

@@ -155,9 +155,7 @@ export function useSessionLifecycle({
     if (sessionId || isComposing) return // Don't create if already have session or composing
     
     // Small delay to prevent rapid re-creation when switching selections
-    const timer = setTimeout(() => {
-      composeEncounter()
-    }, 300)
+    const timer = setTimeout(() => { void composeEncounter() }, 300)
     
     return () => clearTimeout(timer)
   }, [personaId, scenarioId, runtimeFeatures.spsEnabled, sessionId, isComposing, composeEncounter])
@@ -176,31 +174,32 @@ export function useSessionLifecycle({
     if (isComposing) return
     if (voiceSessionStatus === 'connected' || voiceSessionStatus === 'connecting') return
 
-    if (autostartStateRef.current.attemptedFor === sessionId) return
-    autostartStateRef.current.attemptedFor = sessionId
-    autostartStateRef.current.retries = 0
+  const localAuto = autostartStateRef.current
+  if (localAuto.attemptedFor === sessionId) return
+  localAuto.attemptedFor = sessionId
+  localAuto.retries = 0
 
     const delay = Number((import.meta as any)?.env?.VITE_VOICE_AUTOSTART_DELAY_MS) || 250
     const retryMs = Number((import.meta as any)?.env?.VITE_VOICE_AUTOSTART_RETRY_MS) || 500
     const maxRetries = Number((import.meta as any)?.env?.VITE_VOICE_AUTOSTART_MAX_RETRIES) || 2
 
-    const tryStart = async () => {
+    const tryStart = async (): Promise<void> => {
       try {
         await voiceSessionStart()
       } catch {
-        if (autostartStateRef.current.retries < maxRetries) {
-          autostartStateRef.current.retries += 1
-          autostartStateRef.current.timer = window.setTimeout(tryStart, retryMs) as unknown as number
+        if (localAuto.retries < maxRetries) {
+          localAuto.retries += 1
+          localAuto.timer = window.setTimeout(() => { void tryStart() }, retryMs) as unknown as number
         }
       }
     }
 
-    autostartStateRef.current.timer = window.setTimeout(tryStart, delay) as unknown as number
+    localAuto.timer = window.setTimeout(() => { void tryStart() }, delay) as unknown as number
 
     return () => {
-      if (autostartStateRef.current.timer != null) {
-        try { window.clearTimeout(autostartStateRef.current.timer) } catch { }
-        autostartStateRef.current.timer = null
+      if (localAuto.timer != null) {
+        try { window.clearTimeout(localAuto.timer) } catch { }
+        localAuto.timer = null
       }
     }
   }, [

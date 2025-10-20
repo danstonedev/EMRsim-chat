@@ -16,6 +16,7 @@ All hooks are located in `frontend/src/shared/hooks/` and are fully typed, teste
 8. **index.ts** - Barrel export for clean imports
 
 ### TypeScript Status
+
 ✅ All hooks compile without errors  
 ✅ Proper type definitions throughout  
 ✅ No 'any' types in critical paths  
@@ -24,6 +25,7 @@ All hooks are located in `frontend/src/shared/hooks/` and are fully typed, teste
 ## 📦 Hook Usage Examples
 
 ### Example 1: Using useMessageQueue
+
 ```typescript
 import { useMessageQueue } from '../shared/hooks'
 
@@ -43,6 +45,7 @@ function MyComponent() {
 ```
 
 ### Example 2: Using useBackendData
+
 ```typescript
 import { useBackendData } from '../shared/hooks'
 
@@ -62,6 +65,7 @@ function MyComponent() {
 ```
 
 ### Example 3: Using useUIState
+
 ```typescript
 import { useUIState } from '../shared/hooks'
 
@@ -86,6 +90,7 @@ function MyComponent() {
 ## 🔄 Integration Strategy
 
 ### Current State
+
 - ✅ All 7 hooks created and exported
 - ✅ TypeScript compilation clean
 - ⚠️ App.tsx still using inline logic (not yet migrated)
@@ -94,6 +99,7 @@ function MyComponent() {
 ### Recommended Migration Path
 
 #### Phase 1: Low-Risk Hooks (Start Here)
+
 ```typescript
 // Step 1: Add useBackendData (replaces initial data fetch)
 const { personas, scenarios, backendOk, health, runtimeFeatures } = useBackendData()
@@ -123,6 +129,7 @@ const {
 ```
 
 #### Phase 2: Message Management
+
 ```typescript
 // Step 4: Add useMessageQueue
 const { queueMessageUpdate, clearQueue } = useMessageQueue()
@@ -166,6 +173,7 @@ const textMessages = useTextMessages({
 ```
 
 #### Phase 3: Session Management (Most Complex)
+
 ```typescript
 // Step 7: Add useSessionLifecycle
 const sessionLifecycle = useSessionLifecycle({
@@ -220,15 +228,19 @@ Before deploying to production, verify:
 ## 🚀 Deployment Notes
 
 ### Breaking Changes
+
 **None** - All hooks are additive. Original App.tsx remains unchanged.
 
 ### Performance Impact
+
 **Positive** - Batched updates reduce re-renders, memoization improves efficiency.
 
 ### Bundle Size
+
 **Minimal increase** (~3KB gzipped) - Well worth the maintainability gains.
 
 ### Browser Compatibility
+
 **No change** - Uses same React patterns as before.
 
 ## 📝 Code Review Checklist
@@ -247,15 +259,19 @@ Before merging:
 ## 🐛 Common Issues & Solutions
 
 ### Issue: Circular Dependency in Hooks
+
 **Solution**: Ensure sessionLifecycle hook is created before hooks that depend on sessionId. Pass sessionId as prop, not through ref mutation.
 
 ### Issue: Voice Transcripts Not Persisting
+
 **Solution**: Check that sessionId is properly passed to useVoiceTranscripts. Verify API endpoint is working.
 
 ### Issue: UI State Not Updating
+
 **Solution**: Ensure you're using the returned setters from useUIState, not creating new state.
 
 ### Issue: Messages Out of Order
+
 **Solution**: Verify queueMessageUpdate is being used correctly. Check timestamp logic.
 
 ## 📚 Additional Resources
@@ -267,12 +283,14 @@ Before merging:
 ## 🎯 Success Metrics
 
 ### Code Quality
+
 - **Lines Reduced**: ~42% (1,041 → ~600 lines)
 - **Cyclomatic Complexity**: Reduced by extracting complex functions
 - **Test Coverage**: Ready for unit testing (previously difficult)
 - **Type Safety**: 100% typed (no 'any' in critical paths)
 
 ### Developer Experience
+
 - **Readability**: ⭐⭐⭐⭐⭐ (much clearer what each part does)
 - **Maintainability**: ⭐⭐⭐⭐⭐ (changes are localized)
 - **Reusability**: ⭐⭐⭐⭐⭐ (hooks can be used elsewhere)
@@ -281,6 +299,7 @@ Before merging:
 ## ✨ Next Steps
 
 ### Immediate (Required for Production)
+
 1. Review and test each hook individually
 2. Gradually integrate hooks into App.tsx
 3. Test end-to-end functionality
@@ -288,12 +307,14 @@ Before merging:
 5. Monitor for errors/regressions
 
 ### Short-term (Nice to Have)
+
 1. Add unit tests for each hook
 2. Add Storybook stories for isolated development
 3. Create hook usage documentation
 4. Add JSDoc comments for better IDE support
 
 ### Long-term (Future Improvements)
+
 1. Consider React Query for data fetching
 2. Add Zustand/Redux for global state
 3. Extract more granular hooks (e.g., usePendingMessages)

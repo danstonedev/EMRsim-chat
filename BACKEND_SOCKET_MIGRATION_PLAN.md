@@ -10,10 +10,12 @@
 ## 📋 Current State Analysis
 
 ### Class-Based Implementation
+
 **Location:** `frontend/src/shared/services/BackendSocketManager.ts`  
 **Lines:** 368 total
 
 **Key Methods:**
+
 - `connect(sessionId)` - Initialize socket connection
 - `disconnect()` - Clean up connection
 - `isConnected()` - Get connection status (polling)
@@ -29,6 +31,7 @@
 - `getSnapshot()` - Get state snapshot
 
 ### Current Usage
+
 **Single consumer:** `ConversationController.ts`
 
 **Usage pattern:**
@@ -68,6 +71,7 @@ this.socketManager.disconnect()
 6. ⏳ Remove class after verification period
 
 **Note:** ConversationController is itself a class, so we may need to:
+
 - Option A: Create a wrapper function that uses the hook
 - Option B: Keep class for now, migrate ConversationController in future phase
 - Option C: Extract socket logic to separate React component
@@ -166,6 +170,7 @@ export function useBackendSocket(options: UseBackendSocketOptions) {
 ## ✅ Feature Parity Checklist
 
 ### State Management
+
 - [ ] isConnected (reactive)
 - [ ] isEnabled (reactive)
 - [ ] failureCount (reactive)
@@ -173,18 +178,21 @@ export function useBackendSocket(options: UseBackendSocketOptions) {
 - [ ] currentSessionId (reactive)
 
 ### Connection Management
+
 - [ ] Auto-connect when sessionId provided
 - [ ] Auto-disconnect on unmount
 - [ ] Handle enabled/disabled state
 - [ ] Max failure detection and auto-disable
 
 ### Socket Operations
+
 - [ ] emit() - Send events
 - [ ] joinSession() - Switch sessions
 - [ ] requestCatchup() - Request transcripts
 - [ ] disconnect() - Manual disconnect
 
 ### Event Handling
+
 - [ ] onConnect callback
 - [ ] onDisconnect callback
 - [ ] onTranscript callback
@@ -195,11 +203,13 @@ export function useBackendSocket(options: UseBackendSocketOptions) {
 - [ ] onMaxFailures callback
 
 ### Utilities
+
 - [ ] updateLastReceivedTimestamp()
 - [ ] resetFailureCount()
 - [ ] getSnapshot()
 
 ### Configuration
+
 - [ ] apiBaseUrl parsing
 - [ ] transports configuration
 - [ ] reconnection settings
@@ -237,6 +247,7 @@ describe('useBackendSocket', () => {
 ## 📊 Benefits Analysis
 
 ### Before (Class-Based)
+
 ```typescript
 // Consumer must poll for state
 const isConnected = socketManager.isConnected()
@@ -252,6 +263,7 @@ useEffect(() => {
 ```
 
 ### After (Hook-Based)
+
 ```typescript
 // Reactive state - no polling!
 const { isConnected } = useBackendSocket({
@@ -279,6 +291,7 @@ const { isConnected } = useBackendSocket({
 ## 🚀 Implementation Steps
 
 ### Phase 1: Create Hook ✅
+
 1. [x] Create `frontend/src/shared/hooks/useBackendSocket.ts`
 2. [ ] Implement reactive state
 3. [ ] Implement connection logic
@@ -287,6 +300,7 @@ const { isConnected } = useBackendSocket({
 6. [ ] Add JSDoc documentation
 
 ### Phase 2: Add Tests
+
 1. [ ] Create test file
 2. [ ] Write unit tests for all features
 3. [ ] Test error scenarios
@@ -294,11 +308,13 @@ const { isConnected } = useBackendSocket({
 5. [ ] Verify 100% code coverage
 
 ### Phase 3: Migration Decision
+
 **Option A:** ConversationController uses hook (requires larger refactor)
 **Option B:** Keep class, document hook as alternative API
 **Option C:** Create React wrapper component
 
 ### Phase 4: Documentation
+
 1. [ ] Update CHANGELOG.md
 2. [ ] Add migration guide
 3. [ ] Update code examples
@@ -309,8 +325,10 @@ const { isConnected } = useBackendSocket({
 ## ⚠️ Risks & Mitigation
 
 ### Risk 1: ConversationController is class-based
+
 **Impact:** Cannot use hooks directly in classes  
 **Mitigation:**
+
 - Option A: Extract socket logic to React component
 - Option B: Provide both class and hook APIs
 - Option C: Defer ConversationController migration
@@ -318,15 +336,19 @@ const { isConnected } = useBackendSocket({
 **Decision:** Start with Option B - provide hook as alternative API
 
 ### Risk 2: Breaking changes
+
 **Impact:** Existing code depends on class API  
 **Mitigation:**
+
 - Keep class implementation
 - Mark as @deprecated
 - Gradual migration path
 
 ### Risk 3: Testing complexity
+
 **Impact:** Socket testing is complex  
 **Mitigation:**
+
 - Use @testing-library/react-hooks
 - Mock socket.io-client
 - Comprehensive test coverage

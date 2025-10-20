@@ -10,7 +10,7 @@ Comprehensive audit of frontend UI interaction with transcript system reveals a 
 
 ### Data Flow: Backend → Frontend → UI
 
-```
+``` text
 OpenAI Realtime API
     ↓
 ConversationController (relays to backend)
@@ -101,6 +101,7 @@ for (let i = prev.length - 1; i >= 0; i--) {
 **Verdict:** ✅ Prevents duplicate final messages with same content
 
 #### Timestamp Handling:
+
 ```typescript
 // Capture turn START time, not first event arrival time
 if (!startTimeRef.current) {
@@ -116,6 +117,7 @@ const newMessage = createMessage(role, text, 'voice', {
 **Verdict:** ✅ Excellent! Uses turn start time for proper chronological ordering
 
 #### Empty Update Guard:
+
 ```typescript
 if (!isFinal && text === '' && msg.text && msg.text.length > 0) {
   return msg  // Don't overwrite visible text with empty string
@@ -139,6 +141,7 @@ export const sortMessages = (messages: Message[]): Message[] => {
 ```
 
 **Verdict:** ✅ Two-tier sorting ensures:
+
 - Primary: Chronological order by timestamp
 - Secondary: Arrival order for simultaneous events
 
@@ -169,6 +172,7 @@ const queueMessageUpdate = useCallback((updateFn: () => void) => {
 ### 5. Visual Feedback States ✅
 
 #### Pending Transcript Indicator:
+
 ```tsx
 {isVoicePending && (
   <div className="message__voice-indicator">
@@ -191,6 +195,7 @@ const queueMessageUpdate = useCallback((updateFn: () => void) => {
 **Accessibility:** ✅ Uses `aria-hidden="true"` on decorative indicator
 
 #### Live Partial Updates:
+
 ```tsx
 const livePartial = isUser 
   ? voiceSession.userPartial 
@@ -204,6 +209,7 @@ const pendingPreview = isVoicePending
 **UX:** ✅ Provides immediate feedback that speech is being processed
 
 #### ARIA Live Regions:
+
 ```tsx
 const textAriaProps = isVoicePending 
   ? { 'aria-live': 'polite' as const } 
@@ -246,6 +252,7 @@ useEffect(() => {
 **Edge Case Handling:** ✅ Guards against unnecessary updates with mutation tracking
 
 #### Manual Finalization (Pause/Stop):
+
 ```typescript
 const finalizePendingMessages = useCallback(() => {
   queueMessageUpdate(() => {
@@ -338,20 +345,24 @@ if (isFinal && text && text.trim() && sessionId) {
 ## Issues Found
 
 ### Critical Issues: 
+
 **None** ❌
 
 ### High Priority Issues:
+
 **None** ❌
 
 ### Medium Priority Issues:
 
 #### 1. Auto-scroll May Interrupt User ⚠️
+
 **Current Behavior:** Always scrolls to bottom on new message
 **Problem:** Interrupts user if reading older transcripts
 **Fix:** Add scroll-lock detection (see Section 7 above)
 **Impact:** Medium - UX annoyance during review
 
 #### 2. No Visual Feedback for Persistence Errors ⚠️
+
 **Current Behavior:** Persistence errors only logged to console
 **Problem:** User doesn't know if transcript failed to save
 **Fix:** Show toast/banner on persist failure
@@ -360,12 +371,14 @@ if (isFinal && text && text.trim() && sessionId) {
 ### Low Priority Issues:
 
 #### 3. No Loading State for Initial Messages 📝
+
 **Current Behavior:** Messages array starts empty
 **Problem:** No indication if historical messages are loading
 **Fix:** Add skeleton loader for first render
 **Impact:** Low - Quick connection makes this rarely visible
 
 #### 4. Pending Bubbles Don't Show Elapsed Time 📝
+
 **Current Behavior:** "Transcribing…" text is static
 **Problem:** Can't tell if transcription is stalled
 **Fix:** Add elapsed time indicator after 3 seconds
@@ -376,6 +389,7 @@ if (isFinal && text && text.trim() && sessionId) {
 ## Accessibility Review ✅
 
 ### Screen Reader Support:
+
 - ✅ `aria-live="polite"` on pending transcripts
 - ✅ `aria-hidden="true"` on decorative indicators
 - ✅ `role="alert"` on error banners
@@ -383,11 +397,13 @@ if (isFinal && text && text.trim() && sessionId) {
 - ✅ Semantic HTML elements
 
 ### Keyboard Navigation:
+
 - ✅ All controls keyboard accessible
 - ✅ Focus management on modal dialogs
 - ✅ Tab order follows visual order
 
 ### Visual Indicators:
+
 - ✅ Color not sole indicator (uses animation + text)
 - ✅ Sufficient color contrast (needs manual verification)
 - ✅ Clear visual distinction between user/assistant
@@ -399,17 +415,20 @@ if (isFinal && text && text.trim() && sessionId) {
 ## Performance Review ✅
 
 ### Rendering Optimization:
+
 - ✅ `useMemo` for sorted messages
 - ✅ `useCallback` for event handlers
 - ✅ Update queue batches rapid changes
 - ✅ Immutable updates prevent unnecessary re-renders
 
 ### Memory Management:
+
 - ✅ Cleanup on unmount
 - ✅ Ref cleanup when persona changes
 - ✅ No observed memory leaks
 
 ### Bundle Size:
+
 - ✅ 453.03 KB (144.41 KB gzipped) - reasonable
 - ✅ Code splitting by route
 
@@ -422,16 +441,19 @@ if (isFinal && text && text.trim() && sessionId) {
 ### Test Scenarios:
 
 #### Scenario 1: Two tabs, same session
+
 **Expected:** Both tabs show identical transcripts in real-time
 **Implementation:** ✅ Socket.IO rooms ensure proper broadcast
 **Status:** Should work (needs manual verification)
 
 #### Scenario 2: Network reconnection
+
 **Expected:** Missed transcripts appear on reconnect
 **Implementation:** ⚠️ Socket.IO handles reconnection, but no transcript catch-up
 **Recommendation:** Add missed message retrieval on reconnect
 
 #### Scenario 3: Tab backgrounded
+
 **Expected:** Transcripts continue to accumulate
 **Implementation:** ✅ Socket.IO continues receiving events
 **Status:** Should work
@@ -492,16 +514,19 @@ describe('Transcript UI', () => {
 ## Recommendations Summary
 
 ### Implement Now:
+
 1. ✅ **All critical fixes already implemented** (none found)
 2. 📋 Add scroll-lock detection for auto-scroll
 3. 📋 Show toast on persistence errors
 
 ### Implement Soon:
+
 4. 📋 Add transcript catch-up on reconnect
 5. 📋 Add elapsed time indicator for pending transcripts
 6. 📋 Run accessibility audit (axe/WAVE)
 
 ### Consider Later:
+
 7. 📋 Virtualize message list for 100+ messages
 8. 📋 Add skeleton loader for initial render
 9. 📋 Add transcript search/filter
@@ -513,6 +538,7 @@ describe('Transcript UI', () => {
 **Overall Assessment:** ✅ **Excellent**
 
 The transcript UI/UX is **well-architected** with:
+
 - ✅ Sophisticated multi-layer deduplication
 - ✅ Proper chronological ordering
 - ✅ Smooth real-time updates with batching
@@ -524,6 +550,7 @@ The transcript UI/UX is **well-architected** with:
 **Minor improvements recommended** but **no critical issues blocking production**.
 
 The system demonstrates thoughtful handling of edge cases like:
+
 - Simultaneous typed/voice input
 - Empty transcript updates
 - Pending bubble finalization

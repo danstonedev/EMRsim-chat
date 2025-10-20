@@ -16,11 +16,13 @@ The 3D mannequin viewer is now functional with animations!
 ## Current Animation
 
 The model has **1 built-in animation**:
+
 - `Armature|mixamo.com|Layer0` - Currently auto-playing
 
 ## The Fix
 
 ### Problem 1: SkeletonUtils.clone() ❌
+
 **Old code:**
 ```typescript
 const model = SkeletonUtils.clone(scene)  // BROKE React Three Fiber!
@@ -40,7 +42,9 @@ return (
 ```
 
 ### Problem 2: Custom Animation System ❌
+
 **Old approach:**
+
 - ProceduralAnimator with manual bone manipulation
 - MovementController with custom locomotion
 - Required cloned/wrapped objects
@@ -60,6 +64,7 @@ useEffect(() => {
 ```
 
 ### Problem 3: Infinite Metrics Loop 🔄
+
 **Old code:**
 ```typescript
 const handleMetrics = useCallback((newMetrics) => {
@@ -87,7 +92,7 @@ const handleMetrics = useCallback((newMetrics) => {
 
 ## Console Output (Success)
 
-```
+``` text
 ✅ HumanFigure: Model loaded
 🎬 HumanFigure: Found animations: ['Armature|mixamo.com|Layer0']
 ▶️ HumanFigure: Playing animation: Armature|mixamo.com|Layer0
@@ -97,13 +102,16 @@ const handleMetrics = useCallback((newMetrics) => {
 ## Next Steps (Optional Enhancements)
 
 ### Option 1: Add More Mixamo Animations
+
 Download additional animations from Mixamo.com for the same character:
+
 - Idle, Walk, Run, Jump, Wave, etc.
 - Export as FBX, convert to GLB
 - Merge animations into single GLB file
 - Animations will auto-populate in the dropdown
 
 ### Option 2: Animation Selector UI
+
 ```typescript
 <select onChange={(e) => playAnimation(e.target.value)}>
   {names.map(name => (
@@ -113,6 +121,7 @@ Download additional animations from Mixamo.com for the same character:
 ```
 
 ### Option 3: Text-to-Animation Matching
+
 ```typescript
 const animationKeywords = {
   'idle': 'Idle',
@@ -128,7 +137,9 @@ const matchedAnim = Object.entries(animationKeywords)
 ```
 
 ### Option 4: Keep Custom Animation System (Advanced)
+
 To restore ProceduralAnimator/MovementController:
+
 1. Refactor them to work with original GLTF scene (no cloning)
 2. Use R3F's `useFrame` for animation updates
 3. Store bone references without wrapping in Groups
@@ -158,6 +169,7 @@ To restore ProceduralAnimator/MovementController:
 ## Conclusion
 
 The 3D viewer now works reliably using **React Three Fiber best practices**. The key was:
+
 - Using the original GLTF scene directly (no cloning)
 - Using `useAnimations` hook for animations (no custom system)
 - Preventing infinite re-render loops with refs

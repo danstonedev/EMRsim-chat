@@ -33,6 +33,7 @@ Successfully extracted event routing and message classification logic from Conve
 #### 1. `frontend/src/shared/dispatchers/EventDispatcher.ts` (241 lines)
 
 **Responsibilities:**
+
 - Parse incoming JSON messages from WebRTC data channel
 - Classify events by family (session, speech, transcription, assistant, conversation-item, error, unknown)
 - Route events to appropriate handler families
@@ -40,6 +41,7 @@ Successfully extracted event routing and message classification logic from Conve
 - Log unhandled event types for investigation
 
 **Key Features:**
+
 - ✅ **Dependency Injection:** All dependencies passed via interface
 - ✅ **Comprehensive JSDoc:** Detailed documentation with usage examples
 - ✅ **Error Handling:** Catches JSON parse failures, logs unhandled events
@@ -75,9 +77,11 @@ export interface EventDispatcherDependencies {
 ```
 
 **Public Methods:**
+
 - `handleMessage(raw: string): void` - Main entry point for data channel messages
 
 **Private Methods:**
+
 - `emitDebugEvent(type: string, payload: unknown): void` - Debug event emission with error detection
 - `routeEvent(type: string, payload: unknown): void` - Event family routing
 - `handleSessionEvent(type: string, payload: unknown): boolean` - Session event delegation
@@ -134,6 +138,7 @@ private handleMessage(raw: string): void {
 ```
 
 **Removed:**
+
 - Import: `handleSessionEvent` from `sessionEvents` (no longer needed)
 - Import: `classifyEvent` from `eventClassifier` (no longer needed)
 - Import: `VoiceDebugEvent` type (no longer needed)
@@ -144,6 +149,7 @@ private handleMessage(raw: string): void {
 ## Architecture Benefits
 
 ### Before Phase 2
+
 ```typescript
 class ConversationController {
   // 1341 lines total
@@ -163,6 +169,7 @@ class ConversationController {
 ```
 
 ### After Phase 2
+
 ```typescript
 class ConversationController {
   // 1290 lines total
@@ -213,11 +220,13 @@ class EventDispatcher {
 ## Testing Strategy
 
 ### Automated Tests (Passing)
+
 - ✅ **TypeScript Compilation:** `npm run type-check` - No errors
 - ✅ **Unit Tests:** `npm test` - All tests passing
 - ✅ **Zero Regressions:** No breaking changes to public APIs
 
 ### Recommended Unit Tests (Future)
+
 ```typescript
 describe('EventDispatcher', () => {
   it('should parse JSON and route to correct handler family', () => {
@@ -269,6 +278,7 @@ describe('EventDispatcher', () => {
 ## Production Verification
 
 ### Validation Steps
+
 1. ✅ TypeScript compilation successful (no type errors)
 2. ✅ Unit tests passing (no regressions)
 3. 🔄 **TODO:** Test in dev environment (voice conversation flow)
@@ -276,6 +286,7 @@ describe('EventDispatcher', () => {
 5. 🔄 **TODO:** Check console logs for EventDispatcher debug events
 
 ### Expected Behavior
+
 - All WebRTC data channel messages correctly parsed
 - Events routed to appropriate handler families
 - Debug events emitted for all messages
@@ -286,21 +297,25 @@ describe('EventDispatcher', () => {
 ## Next Steps
 
 ### Phase 3: ServiceRegistry (Planned)
+
 **Target:** Extract service initialization from constructor (~500 lines)  
 **Impact:** Reduce constructor from 500 → ~100 lines  
 **Benefit:** Clearest dependency graph, easiest testing
 
 ### Phase 4: ConnectionHandlers (Planned)
+
 **Target:** Extract WebRTC connection handlers (~180 lines)  
 **Impact:** Remove ~150 lines from ConversationController  
 **Benefit:** Isolated connection state logic
 
 ### Phase 5: BackendIntegration (Planned)
+
 **Target:** Extract backend socket & relay logic (~150 lines)  
 **Impact:** Remove ~150 lines from ConversationController  
 **Benefit:** Clear backend integration boundary
 
 ### Phase 6: PublicAPI (Planned)
+
 **Target:** Extract public API methods (~280 lines)  
 **Impact:** Remove ~280 lines from ConversationController  
 **Benefit:** Clean public API facade
@@ -325,18 +340,21 @@ describe('EventDispatcher', () => {
 ## Lessons Learned
 
 ### What Went Well
+
 1. ✅ **Clean Extraction:** EventDispatcher has zero coupling to ConversationController internals
 2. ✅ **Dependency Injection:** All dependencies passed via interface (testable)
 3. ✅ **Zero Breaking Changes:** Public API unchanged, backward compatible
 4. ✅ **Comprehensive Documentation:** JSDoc with usage examples
 
 ### Challenges
+
 1. ⚠️ **Net Line Increase:** Total code increased by 190 lines (duplication in JSDoc, interfaces)
    - **Mitigation:** Acceptable trade-off for improved modularity and testability
 2. ⚠️ **Dependency Management:** Many dependencies to wire up in constructor
    - **Resolution:** Phase 3 (ServiceRegistry) will address this with centralized initialization
 
 ### Recommendations
+
 1. ✅ **Continue Sequential:** Proceed with Phase 3 (ServiceRegistry) next
 2. ✅ **Document as We Go:** Keep creating completion docs for each phase
 3. ✅ **Test Incrementally:** Run TypeScript + tests after each phase
@@ -357,6 +375,7 @@ Phase 2 successfully extracted event routing and message classification logic in
 ## Appendix: Code Snippets
 
 ### EventDispatcher Usage Example
+
 ```typescript
 // In ConversationController constructor
 this.eventDispatcher = new EventDispatcher({
@@ -386,7 +405,8 @@ private handleMessage(raw: string): void {
 ```
 
 ### Event Routing Flow
-```
+
+``` text
 WebRTC Data Channel Message (raw JSON string)
     ↓
 EventDispatcher.handleMessage(raw)

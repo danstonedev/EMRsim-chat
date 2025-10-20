@@ -9,6 +9,7 @@ Successfully extracted transcript handling logic from the monolithic `Conversati
 ### Files Created
 
 **`frontend/src/shared/handlers/TranscriptHandler.ts`** (262 lines)
+
 - Handles user and assistant transcript processing
 - Manages timestamp resolution (user start time vs assistant finalized time)
 - Coordinates backend relay for unified transcript broadcast
@@ -19,6 +20,7 @@ Successfully extracted transcript handling logic from the monolithic `Conversati
 ### Files Modified
 
 **`frontend/src/shared/ConversationController.ts`**
+
 - **Before**: 1473 lines (monolithic, hard to debug)
 - **After**: 1341 lines (132 lines removed, 9% reduction)
 - Added `TranscriptHandler` import and initialization
@@ -28,20 +30,24 @@ Successfully extracted transcript handling logic from the monolithic `Conversati
 ## Benefits
 
 ### ✅ Improved Debuggability
+
 - Clear module boundary: Transcript processing logic isolated
 - Easy to add logging/breakpoints in TranscriptHandler
 - Stack traces now show `TranscriptHandler.handleUserTranscript()` instead of generic ConversationController method
 
 ### ✅ Improved Testability
+
 - Can test transcript handling in isolation
 - Mock dependencies easily (eventEmitter, transcriptCoordinator, relay)
 - No need to instantiate entire ConversationController for transcript tests
 
 ### ✅ Single Responsibility
+
 - TranscriptHandler: ONLY handles transcript processing
 - ConversationController: Orchestrates services, delegates specific tasks
 
 ### ✅ Maintainability
+
 - Changes to transcript logic now contained in one module
 - Clear interface: `TranscriptHandlerDependencies` documents all requirements
 - Easier onboarding: New developers can understand TranscriptHandler without reading 1400+ line file
@@ -49,7 +55,8 @@ Successfully extracted transcript handling logic from the monolithic `Conversati
 ## Architecture
 
 ### Before (Monolithic)
-```
+
+``` text
 ConversationController.ts (1473 lines)
 ├── handleUserTranscript (80 lines) ❌
 ├── handleAssistantTranscript (70 lines) ❌
@@ -60,7 +67,8 @@ ConversationController.ts (1473 lines)
 ```
 
 ### After (Modular)
-```
+
+``` text
 ConversationController.ts (1341 lines)
 ├── handleUserTranscript → TranscriptHandler.handleUserTranscript ✅
 ├── handleAssistantTranscript → TranscriptHandler.handleAssistantTranscript ✅
@@ -81,6 +89,7 @@ handlers/TranscriptHandler.ts (262 lines) ✅
 ## Testing Strategy
 
 ### Unit Tests (To Be Created)
+
 ```typescript
 // TranscriptHandler.test.ts
 describe('TranscriptHandler', () => {
@@ -110,7 +119,8 @@ describe('TranscriptHandler', () => {
 ## Debugging Example
 
 ### Before (Confusing)
-```
+
+``` text
 Error at ConversationController.ts:1285
   at ConversationController.handleUserTranscript
   at ConversationController.constructor.<anonymous>
@@ -118,7 +128,8 @@ Error at ConversationController.ts:1285
 ```
 
 ### After (Clear)
-```
+
+``` text
 Error at TranscriptHandler.ts:95
   at TranscriptHandler.handleUserTranscript
   at ConversationController.handleUserTranscript (delegates)
@@ -128,6 +139,7 @@ Error at TranscriptHandler.ts:95
 ## Critical Fix Included
 
 **Timestamp Resolution** (from earlier bug fix):
+
 - **User messages**: Use `startedAtMs` (when mic detected speech)
 - **Assistant messages**: Use `finalizedAtMs` (when response completed)
 - **Result**: Messages appear in chronological order, unified chat timeline

@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { zClinicalScenario } from '../sps/core/schemas.ts';
 
 // Types for AI generation
@@ -97,7 +96,7 @@ async function bingSearch(query: string, count: number = 5): Promise<BingSearchR
   const r = await fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': key } });
   if (!r.ok) return [];
   const data = await r.json().catch(() => ({}));
-  const items = (data.webPages && Array.isArray(data.webPages.value)) ? data.webPages.value : [];
+  const items = data.webPages && Array.isArray(data.webPages.value) ? data.webPages.value : [];
   return items.map((it: any) => ({ title: it.name, url: it.url, snippet: it.snippet }));
 }
 
@@ -112,7 +111,9 @@ async function fetchSources(urls: string[] = []): Promise<FetchedSource[]> {
       const html = await r.text();
       const text = stripHtml(html);
       out.push({ url: u, text });
-    } catch {}
+    } catch {
+      // noop: failed to fetch or parse source; skip
+    }
   }
   return out;
 }
@@ -414,7 +415,7 @@ function buildUserPrompt(prompt: string, opts: GenerateOptions, researchNotes: s
   if (opts?.region) lines.push(`Region: ${opts.region}`);
   if (opts?.difficulty) lines.push(`Difficulty: ${opts.difficulty}`);
   if (opts?.setting) lines.push(`Setting: ${opts.setting}`);
-  
+
   lines.push('\nRequirements:');
   lines.push('- Include complete SOAP notes (Subjective, Objective, Assessment, Plan)');
   lines.push('- Add 2-4 learning objectives with NPTE/CAPTE mapping');
@@ -423,18 +424,18 @@ function buildUserPrompt(prompt: string, opts: GenerateOptions, researchNotes: s
   lines.push('- Add 3-5 evidence-based interventions with dosage');
   lines.push('- Map to ICF framework (body functions, activities, participation)');
   lines.push('- Include provenance with CPG or systematic review citations');
-  
+
   if (researchNotes) {
     lines.push('\n=== RESEARCH EXCERPTS (cite in provenance.sources) ===');
     lines.push(researchNotes);
   }
-  
+
   lines.push('\nReturn JSON with structure: {scenario: {...}, sources: [...]}');
   lines.push('Use current timestamp for created_at/updated_at fields.');
   return lines.join('\n');
 }
 
-export async function generateScenarioWithAI({ prompt, options = {} }: GenerateRequest, req: Request): Promise<GenerateResult> {
+export async function generateScenarioWithAI({ prompt, options = {} }: GenerateRequest): Promise<GenerateResult> {
   if (!process.env.OPENAI_API_KEY) {
     throw Object.assign(new Error('no_openai_key'), { code: 'no_openai_key' });
   }
@@ -443,7 +444,9 @@ export async function generateScenarioWithAI({ prompt, options = {} }: GenerateR
   let researchNotes = '';
   if (options.research) {
     try {
-      const hits = await bingSearch(`${prompt} physical therapy clinical scenario exam findings differential management`);
+      const hits = await bingSearch(
+        `${prompt} physical therapy clinical scenario exam findings differential management`
+      );
       sourcesLite = hits.slice(0, 5);
       const fetched = await fetchSources(sourcesLite.map(s => s.url));
       const lines: string[] = [];
@@ -466,11 +469,11 @@ export async function generateScenarioWithAI({ prompt, options = {} }: GenerateR
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
     };
-    
+
     // Project API keys don't need Organization ID
-    
+
     const r = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers,
@@ -507,9 +510,12 @@ export async function generateScenarioWithAI({ prompt, options = {} }: GenerateR
   }
 
   // Prefer model-provided sources if present, else from search hits
-  const sources = Array.isArray(json?.sources) && json.sources.length
-    ? json.sources.map((s: any) => ({ title: String(s.title || ''), url: String(s.url || '') })).filter((s: SourceLite) => s.url)
-    : sourcesLite;
+  const sources =
+    Array.isArray(json?.sources) && json.sources.length
+      ? json.sources
+          .map((s: any) => ({ title: String(s.title || ''), url: String(s.url || '') }))
+          .filter((s: SourceLite) => s.url)
+      : sourcesLite;
 
   return { scenario: parsed, sources };
 }

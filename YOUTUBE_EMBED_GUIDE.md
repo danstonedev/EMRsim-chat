@@ -55,11 +55,13 @@ You can manually specify a different thumbnail if needed.
 ## User Experience
 
 ### In Chat
+
 1. AI responds with text including `[MEDIA:exercise_demo]`
 2. A thumbnail appears below the message with a YouTube play icon
 3. User clicks the thumbnail
 
 ### In Modal
+
 1. Full-screen overlay opens
 2. YouTube video plays in an embedded iframe
 3. User can play, pause, fullscreen, etc.
@@ -97,6 +99,7 @@ interface MediaAsset {
 ## Examples
 
 ### Exercise Demonstration
+
 ```json
 {
   "id": "single_leg_balance",
@@ -109,6 +112,7 @@ interface MediaAsset {
 ```
 
 ### Patient Education
+
 ```json
 {
   "id": "acl_repair_education",
@@ -121,6 +125,7 @@ interface MediaAsset {
 ```
 
 ### Assessment Video
+
 ```json
 {
   "id": "gait_analysis",
@@ -144,6 +149,7 @@ interface MediaAsset {
 ## Styling
 
 YouTube embeds use these CSS classes:
+
 - `.media-modal-youtube-container` - Maintains 16:9 aspect ratio
 - `.media-modal-youtube` - The iframe element
 - `.message__media-preview` - Thumbnail in chat message
@@ -178,15 +184,18 @@ YouTube embeds use these CSS classes:
 ## Troubleshooting
 
 **Video not loading?**
+
 - Check that the YouTube URL is correct
 - Verify the video is public or unlisted
 - Try the embed URL format directly
 
 **Thumbnail not showing?**
+
 - The system auto-generates thumbnails from YouTube
 - Manually specify thumbnail URL if needed
 
 **Video playback issues?**
+
 - This uses YouTube's standard embed player
 - Check user's network/firewall settings
 - Verify video isn't age-restricted or region-locked

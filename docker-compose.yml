@@ -1,6 +1,24 @@
 version: "3.8"
 
 services:
+  # Redis for session state (enables horizontal backend scaling)
+  redis:
+    image: redis:7-alpine
+    container_name: emrsim-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    restart: unless-stopped
+    networks:
+      - emrsim-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
   # Backend service
   backend:
     build:
@@ -23,10 +41,14 @@ services:
       - VOICE_DEBUG=${VOICE_DEBUG:-false}
       - BANNERS_ENABLED=${BANNERS_ENABLED:-true}
       - DATABASE_URL=file:/app/data/prod.db
+      - REDIS_URL=redis://redis:6379
       - FRONTEND_URL=http://localhost
     volumes:
       # Persist database
       - backend-data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test:
@@ -74,6 +96,8 @@ services:
       - emrsim-network
 
 volumes:
+  redis-data:
+    driver: local
   backend-data:
     driver: local
 

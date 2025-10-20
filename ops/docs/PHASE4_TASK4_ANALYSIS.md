@@ -11,6 +11,7 @@
 ### Content Structure
 
 #### Personas
+
 - **Location**: `src/sps/content/personas/base/`
 - **Format**: Single JSON files (e.g., `linda.json`, `chloe.json`)
 - **Current Metadata**:
@@ -19,6 +20,7 @@
   - **NO version field currently**
 
 #### Scenarios
+
 - **Location**: `src/sps/content/scenarios/bundles_src/`
 - **Format**: Directory bundles with `scenario.header.json`
 - **Current Metadata** (in `scenario.header.json`):
@@ -46,7 +48,7 @@
 ### Semantic Versioning Format
 
 Use **semantic versioning** (SemVer) for all content:
-```
+``` text
 MAJOR.MINOR.PATCH
 ```
 
@@ -59,6 +61,7 @@ MAJOR.MINOR.PATCH
 ### Checksum Algorithm
 
 Use **SHA-256** for file integrity:
+
 - For single-file personas: Hash of JSON file content
 - For directory-based scenarios: Composite hash of all bundle files
   - Hash each file individually
@@ -128,6 +131,7 @@ Use **SHA-256** for file integrity:
 ### Step 1: Add Version Fields
 
 #### Personas
+
 Add `content_version` field to each persona JSON:
 ```json
 {
@@ -138,6 +142,7 @@ Add `content_version` field to each persona JSON:
 ```
 
 #### Scenarios
+
 Update `version` field in `scenario.header.json` to semantic version:
 ```json
 {
@@ -382,6 +387,7 @@ async function fetchPersona(personaId: string) {
 ## Files to Modify
 
 ### Add `content_version` Field
+
 - `src/sps/content/personas/base/linda.json`
 - `src/sps/content/personas/base/chloe.json`
 - `src/sps/content/personas/base/irene.json`
@@ -391,12 +397,14 @@ async function fetchPersona(personaId: string) {
 - `src/sps/content/scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1/scenario.header.json`
 
 ### Create New Files
+
 - `src/sps/utils/checksum.ts` - Checksum generation utilities
 - `src/sps/utils/manifestGenerator.ts` - Manifest generation logic
 - `src/sps/content/manifest.json` - Generated content manifest (gitignored, generated on build)
 - `scripts/generateManifest.ts` - CLI script to generate manifest
 
 ### Modify Existing Files
+
 - `src/controllers/personaController.ts` - Add version headers
 - `src/controllers/scenarioController.ts` - Add version headers
 - `package.json` - Add manifest generation to build script
@@ -408,11 +416,13 @@ async function fetchPersona(personaId: string) {
 ### Unit Tests
 
 **`tests/checksum.test.ts`:**
+
 - Test SHA-256 generation for files
 - Test composite bundle checksums
 - Test checksum stability (same input = same output)
 
 **`tests/manifestGenerator.test.ts`:**
+
 - Test manifest generation completeness
 - Test checksum calculation
 - Test statistics accuracy
@@ -421,6 +431,7 @@ async function fetchPersona(personaId: string) {
 ### Integration Tests
 
 **`tests/versionHeaders.test.ts`:**
+
 - Test API responses include version headers
 - Test ETag format correctness
 - Test Cache-Control headers
@@ -428,6 +439,7 @@ async function fetchPersona(personaId: string) {
 ### E2E Tests
 
 **`e2e/cache-invalidation.spec.ts`:**
+
 - Test client cache behavior
 - Test 304 Not Modified responses
 - Test version change detection

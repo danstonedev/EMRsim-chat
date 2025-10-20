@@ -1,15 +1,15 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import VoiceChatApp from './pages/App'
-import CaseBuilderPage from './pages/CaseBuilderPage'
+import ChatPage from '../pages/ChatPage'
+import CaseBuilderPage from '../pages/CaseBuilderPage'
 import { lazy, Suspense } from 'react'
-import './styles/viewer3d.css'
-const Viewer3D = lazy(() => import('./pages/Viewer3D'))
+import '../styles/viewer3d.css'
+const Viewer3D = lazy(() => import('../pages/Viewer3D'))
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-  <Route path="/voice" element={<VoiceChatApp />} />
+        <Route path="/voice" element={<ChatPage />} />
         <Route path="/builder" element={<CaseBuilderPage />} />
         <Route
           path="/3d-viewer"

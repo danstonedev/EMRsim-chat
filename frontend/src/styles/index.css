@@ -1,9 +1,27 @@
-/**
- * Global Styles Entry Point
- * Ensures consistent order for design tokens, chat styles, and modular app styles
+/* Global Styles Entry Point
+ * Utilize cascade layers to guarantee deterministic overrides.
  */
 
-@import './fonts.css';
-@import './brand.css';
-@import './chat.css';
-@import './app.css';
+@layer reset, tokens, typography, layout, components, features, utilities, animations;
+
+@import './base.css' layer(reset);
+@import './brand.css' layer(tokens);
+@import './fonts.css' layer(typography);
+@import './layout.css' layer(layout);
+@import './components.css' layer(components);
+@import './chat.css' layer(features);
+@import './chat/shell.css' layer(features);
+@import './chat/header.css' layer(features);
+@import './chat/composer.css' layer(features);
+@import './chat/messages.css' layer(features);
+@import './chat/buttons.css' layer(features);
+@import './chat/drawer.css' layer(features);
+@import './chat/casebuilder.css' layer(features);
+@import './chat/case-setup.css' layer(features);
+@import './chat/media.css' layer(features);
+@import './voice.css' layer(features);
+@import './voice-ready-toast.css' layer(features);
+@import './modals.css' layer(features);
+@import './sps.css' layer(features);
+@import './viewer3d.css' layer(features);
+@import './animations.css' layer(animations);

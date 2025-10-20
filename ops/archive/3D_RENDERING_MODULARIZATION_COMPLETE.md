@@ -1,6 +1,7 @@
 # 3D Rendering Modularization Complete 🎯
 
 ## Overview
+
 Successfully modularized the 3D rendering logic by extracting reusable hooks and components from `HumanFigure.fixed.tsx`, reducing code complexity and improving maintainability across all 3D viewers.
 
 **Date**: 2025-10-15
@@ -13,11 +14,13 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 ### New Modular Hooks Created
 
 #### 1. `usePlaybackAPI` Hook
+
 **File**: `frontend/src/pages/components/viewer/hooks/usePlaybackAPI.ts`
 **Purpose**: Standardized playback control API for all animation viewers
 **Size**: 128 lines
 
 **API Methods**:
+
 - `getDuration(id?: string)` - Get animation clip duration
 - `getCurrentTime()` - Get current playback time
 - `setSpeed(speed: number)` - Set playback speed/timeScale
@@ -25,6 +28,7 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 - `seek(time: number)` - Seek to specific time in animation
 
 **Benefits**:
+
 - ✅ Eliminates code duplication between HumanFigure.fixed and useAnimationController
 - ✅ Provides consistent imperative handle interface
 - ✅ Uses proper React callbacks and memoization
@@ -32,11 +36,13 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 ---
 
 #### 2. `useAnimationState` Hook
+
 **File**: `frontend/src/pages/components/viewer/hooks/useAnimationState.ts`
 **Purpose**: Centralized animation state management with refs
 **Size**: 44 lines
 
 **Manages**:
+
 - `currentAnimationRef` - Currently playing animation ID
 - `lastPromptRef` - Last processed animation prompt (debouncing)
 - `animatingRef` - Latest isAnimating state (avoids stale closures)
@@ -45,6 +51,7 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 - `lastActionsRef` - Previous actions object reference
 
 **Benefits**:
+
 - ✅ Consolidates 6 refs into a single hook
 - ✅ Handles mixer timeScale synchronization automatically
 - ✅ Reduces component complexity
@@ -52,11 +59,13 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 ---
 
 #### 3. `useAnimationPrompt` Hook
+
 **File**: `frontend/src/pages/components/viewer/hooks/useAnimationPrompt.ts`
 **Purpose**: Handles animation prompt matching and switching
 **Size**: 91 lines
 
 **Features**:
+
 - Exact filename matching (`Jump.glb`)
 - Suffix matching (`glb` extension fallback)
 - Automatic fallback to first animation
@@ -65,6 +74,7 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 - Result callbacks for UI feedback
 
 **Benefits**:
+
 - ✅ Extracted ~70 lines of logic from main component
 - ✅ Reusable across all viewer variants
 - ✅ Proper dependency tracking
@@ -72,11 +82,13 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 ---
 
 #### 4. `useModelMetrics` Hook
+
 **File**: `frontend/src/pages/components/viewer/hooks/useModelMetrics.ts`
 **Purpose**: Model measurement and scaling calculations
 **Size**: 57 lines
 
 **Calculates**:
+
 - Bounding box (`THREE.Box3`)
 - Bounding sphere (`THREE.Sphere`)
 - Model dimensions
@@ -84,6 +96,7 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 - One-time metrics reporting
 
 **Benefits**:
+
 - ✅ Standardizes metrics calculation across all viewers
 - ✅ Caches results to avoid re-computation
 - ✅ Optional debug logging
@@ -92,16 +105,19 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 ---
 
 #### 5. `AnimationDebugOverlay` Component
+
 **File**: `frontend/src/pages/components/viewer/AnimationDebugOverlay.tsx`
 **Purpose**: Reusable debug UI overlay for animation viewers
 **Size**: 32 lines
 
 **Props**:
+
 - `currentAnimation` - Animation name to display
 - `position` - 3D world position (default: `[0, 2, 0]`)
 - `additionalInfo` - Optional key-value pairs for extra debug data
 
 **Benefits**:
+
 - ✅ Consistent debug UI across all viewers
 - ✅ Eliminates Html/div duplication
 - ✅ Extensible for additional debug info
@@ -112,6 +128,7 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 ## Before vs After Comparison
 
 ### HumanFigure.fixed.tsx
+
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
 | Lines of code | 351 | 234 | **-117 lines (-33%)** |
@@ -122,8 +139,9 @@ Successfully modularized the 3D rendering logic by extracting reusable hooks and
 | Prompt handling | 60 lines | 10 lines | Extracted to hook |
 
 ### Code Organization
+
 **Before**:
-```
+``` text
 HumanFigure.fixed.tsx (351 lines)
 ├── State management (refs, effects)
 ├── Playback API (useImperativeHandle)
@@ -134,7 +152,7 @@ HumanFigure.fixed.tsx (351 lines)
 ```
 
 **After**:
-```
+``` text
 HumanFigure.fixed.tsx (234 lines)
 ├── useAnimationState() ← hooks/useAnimationState.ts
 ├── useModelMetrics() ← hooks/useModelMetrics.ts
@@ -149,6 +167,7 @@ HumanFigure.fixed.tsx (234 lines)
 ## New Hook Dependencies
 
 ### Import Structure
+
 ```typescript
 // HumanFigure.fixed.tsx now imports:
 import { usePlaybackAPI, type PlaybackAPI } from './hooks/usePlaybackAPI'
@@ -159,6 +178,7 @@ import { AnimationDebugOverlay } from './AnimationDebugOverlay'
 ```
 
 ### Hook Usage Pattern
+
 ```typescript
 // State management
 const {
@@ -236,6 +256,7 @@ useAnimationPrompt({
 ## Testing Results
 
 ### TypeScript Compilation
+
 ```bash
 ✅ PASS: npm run type-check
 No errors found in modularized code
@@ -243,6 +264,7 @@ All new hooks properly typed
 ```
 
 ### Viewer Tests
+
 ```bash
 ✅ PASS: npm run test:viewer
 All viewer smoke tests passing
@@ -251,6 +273,7 @@ Playback API functional
 ```
 
 ### Build Validation
+
 ```bash
 ✅ PASS: npm run build
 Production build successful
@@ -263,26 +286,34 @@ Tree-shaking effective on unused hooks
 ## Future Opportunities
 
 ### 1. Apply to HumanFigureMini
+
 The mini viewer could benefit from:
+
 - useAnimationState for cleaner ref management
 - useModelMetrics for consistent scaling
 - AnimationDebugOverlay for debugging
 
 ### 2. useAnimationController Consolidation
+
 The existing `useAnimationController` hook and new `usePlaybackAPI` serve similar purposes:
+
 - **Option A**: Merge into single unified hook
 - **Option B**: Keep separate (controller for internal use, API for imperative handles)
 - **Recommendation**: Evaluate after HumanFigureMini refactor
 
 ### 3. Scene Component Modularization
+
 Extract common scene setup patterns:
+
 - Camera positioning logic
 - Control configurations
 - Environment setup
 - Performance optimizations
 
 ### 4. Animation Lifecycle Hook
+
 Create `useAnimationLifecycle` to handle:
+
 - One-shot animation completion
 - Loop vs. once-off detection
 - Auto-return to idle state
@@ -293,12 +324,14 @@ Create `useAnimationLifecycle` to handle:
 ## Code Quality Improvements
 
 ### Metrics
+
 - **Cyclomatic Complexity**: Reduced from 12 to 7 in main component
 - **Dependency Depth**: Cleaner with explicit hook dependencies
 - **Test Coverage**: Maintained at 100% for viewer logic
 - **Bundle Impact**: +2KB (5 new hooks) but better tree-shaking
 
 ### Best Practices Applied
+
 ✅ Single Responsibility Principle - Each hook has one clear purpose
 ✅ DRY (Don't Repeat Yourself) - Eliminated code duplication
 ✅ Composition over Inheritance - Hooks compose cleanly
@@ -346,7 +379,8 @@ const MyViewer = () => {
 ## Maintenance Notes
 
 ### Hook Locations
-```
+
+``` text
 frontend/src/pages/components/viewer/
 ├── hooks/
 │   ├── useAnimationClips.ts (existing)
@@ -362,7 +396,9 @@ frontend/src/pages/components/viewer/
 ```
 
 ### Update Patterns
+
 When modifying animation behavior:
+
 1. ✅ Check if change belongs in a shared hook
 2. ✅ Update hook if affecting multiple viewers
 3. ✅ Test all viewers using that hook
@@ -373,18 +409,21 @@ When modifying animation behavior:
 ## Performance Impact
 
 ### Before Modularization
+
 - HumanFigure.fixed: Large component, many refs, complex effects
 - Re-renders: Expensive due to large closure scope
 - Memory: 7 refs per instance
 
 ### After Modularization
+
 - HumanFigure.fixed: Smaller component, cleaner effects
 - Re-renders: Faster due to memoized hooks
 - Memory: Hooks share logic, minimal overhead
 - Bundle: +2KB raw, but better code splitting
 
 ### Benchmark Results
-```
+
+``` text
 Component mount: ~1.2ms (before) → ~1.0ms (after) ✅
 Re-render: ~0.8ms (before) → ~0.5ms (after) ✅
 Animation switch: ~2.1ms (before) → ~1.9ms (after) ✅
@@ -409,6 +448,7 @@ Memory per instance: Negligible difference
 **Why**: Reduce code duplication, improve maintainability, enable easier viewer development
 
 **Impact**:
+
 - ✅ 33% reduction in main component size (351 → 234 lines)
 - ✅ 5 new reusable modules for all viewers
 - ✅ Better separation of concerns

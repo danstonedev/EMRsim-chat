@@ -7,6 +7,7 @@ The 3D viewer currently features a simple walking animation using sine wave moti
 ## Animation Architecture
 
 ### Current Animation System
+
 Location: `frontend/src/pages/components/viewer/HumanFigure.tsx`
 
 ```typescript
@@ -31,6 +32,7 @@ useFrame((_state, delta) => {
 ### Phase 1: Improve Walking Animation
 
 #### 1. Add Torso Movement
+
 Add natural torso rotation during walking:
 
 ```typescript
@@ -46,6 +48,7 @@ if (torsoRef.current) {
 ```
 
 #### 2. Add Head Bob
+
 Natural vertical head movement:
 
 ```typescript
@@ -59,6 +62,7 @@ if (headRef.current) {
 ```
 
 #### 3. Add Knee Bending
+
 Create more realistic leg articulation:
 
 ```typescript
@@ -443,18 +447,21 @@ import { Html } from '@react-three/drei'
 ## Resources
 
 ### Learning Resources
+
 - **React Three Fiber Docs**: https://docs.pmnd.rs/react-three-fiber
 - **Three.js Fundamentals**: https://threejs.org/manual/
 - **Drei Helpers**: https://github.com/pmndrs/drei
 - **Animation Techniques**: https://threejs.org/docs/#manual/en/introduction/Animation-system
 
 ### Asset Sources
+
 - **Mixamo**: Free rigged characters and animations
 - **Sketchfab**: 3D models and animations
 - **TurboSquid**: Professional 3D assets
 - **Human Anatomy Atlas**: Medical reference
 
 ### Tools
+
 - **Blender**: 3D modeling and animation (free)
 - **glTF-Pipeline**: Optimize GLTF models
 - **gltfjsx**: Convert GLTF to JSX components
@@ -463,6 +470,7 @@ import { Html } from '@react-three/drei'
 ---
 
 **Next Steps**: 
+
 1. Choose an animation approach (procedural vs. model-based)
 2. Select or create 3D model assets
 3. Implement animation system

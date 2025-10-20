@@ -34,6 +34,7 @@ This is the single source of truth for navigating all project documentation. All
 **Working with 3D models and animations:**
 
 ### Core Guides
+
 - **[3D_VIEWER_START_HERE.md](3D_VIEWER_START_HERE.md)** ⭐ - Complete documentation index for 3D viewer
 - **[3D_VIEWER_IMPLEMENTATION.md](3D_VIEWER_IMPLEMENTATION.md)** - Technical implementation details
 - **[3D_VIEWER_ROADMAP.md](3D_VIEWER_ROADMAP.md)** - Future development roadmap
@@ -41,12 +42,14 @@ This is the single source of truth for navigating all project documentation. All
 - **[3D_MODEL_INTEGRATION_FRAMEWORK.md](3D_MODEL_INTEGRATION_FRAMEWORK.md)** - Integrating professional 3D models
 
 ### Mixamo Integration
+
 - **[TEAM_QUICK_START_MIXAMO.md](TEAM_QUICK_START_MIXAMO.md)** - Quick start guide for Mixamo
 - **[MIXAMO_INTEGRATION_COMPLETE.md](MIXAMO_INTEGRATION_COMPLETE.md)** - Integration completion summary
 - **[frontend/docs/MIXAMO_ASSET_GUIDE.md](frontend/docs/MIXAMO_ASSET_GUIDE.md)** - Asset management guide
 - **[frontend/docs/ANIMATION_BINDING_AND_TESTING.md](frontend/docs/ANIMATION_BINDING_AND_TESTING.md)** - Testing animations
 
 ### Media
+
 - **[MEDIA_SYSTEM_IMPLEMENTATION.md](MEDIA_SYSTEM_IMPLEMENTATION.md)** - Media system overview
 - **[YOUTUBE_EMBED_GUIDE.md](YOUTUBE_EMBED_GUIDE.md)** - Embedding YouTube videos
 
@@ -57,6 +60,7 @@ This is the single source of truth for navigating all project documentation. All
 **Voice session management and conversation flow:**
 
 ### Modularization (Complete ✅)
+
 - **[CONVERSATION_CONTROLLER_REFERENCE.md](CONVERSATION_CONTROLLER_REFERENCE.md)** ⭐ - **START HERE** - Complete navigation guide
 - **[CONVERSATION_CONTROLLER_MODULARIZATION.md](CONVERSATION_CONTROLLER_MODULARIZATION.md)** - Master plan and results
 - **[PHASE9_SUMMARY.md](PHASE9_SUMMARY.md)** - Phase 9 completion summary (latest)
@@ -64,10 +68,12 @@ This is the single source of truth for navigating all project documentation. All
 - **Phase completion docs**: MODULARIZATION_PHASE[1-9]_COMPLETE.md - Individual phase details
 
 ### Architecture & Implementation
+
 - **[frontend/docs/conversation-controller-map.md](frontend/docs/conversation-controller-map.md)** - Conversation controller architecture
 - **[frontend/docs/conversation-controller-refactor-continuation.md](frontend/docs/conversation-controller-refactor-continuation.md)** - Refactoring notes
 
 ### Voice Performance
+
 - **[ops/docs/VOICE_METRICS_SLA_PLAN.md](ops/docs/VOICE_METRICS_SLA_PLAN.md)** - Voice performance metrics
 - **[ops/docs/TRANSCRIPT_RELAY_DEDUPE_SPEC.md](ops/docs/TRANSCRIPT_RELAY_DEDUPE_SPEC.md)** - Transcript deduplication
 - **[ops/docs/TRANSPORT_PATH_SURVEY.md](ops/docs/TRANSPORT_PATH_SURVEY.md)** - Transport layer overview

@@ -1,7 +1,9 @@
 # Startup Loading Refactor Plan
 
 ## Problem Summary
+
 Multiple unnecessary re-renders and state updates during app initialization causing:
+
 - 4x "Setting scenario media" logs (3 empty, 1 with data)
 - Race conditions in media loading
 - Unnecessary voice session reconfigurations
@@ -10,6 +12,7 @@ Multiple unnecessary re-renders and state updates during app initialization caus
 ## Root Causes Identified
 
 ### 1. **Eager State Reset in `useScenarioMedia`**
+
 **File:** `frontend/src/shared/hooks/useScenarioMedia.ts` (lines 36-42)
 
 **Problem:**
@@ -24,6 +27,7 @@ useEffect(() => {
 **Impact:** Creates 3 empty state propagations before actual data loads
 
 ### 2. **Verbose Logging in Production Code**
+
 **File:** `frontend/src/shared/useVoiceSession.ts` (line 122)
 
 **Problem:** Console.log in useEffect fires on every scenarioMedia change
@@ -35,8 +39,9 @@ console.log('[useVoiceSession] Setting scenario media:', {
 ```
 
 ### 3. **Cascading Effect Dependencies**
+
 **Chain:**
-```
+``` text
 App.tsx:138-142 → useScenarioMedia(scenarioId)
   ↓ (resets scenarioMedia to [])
 App.tsx:170-183 → useVoiceSession({ scenarioMedia })
@@ -56,6 +61,7 @@ This chain repeats 3-4 times during initialization.
 #### **File:** `frontend/src/shared/hooks/useScenarioMedia.ts`
 
 **Changes:**
+
 1. **Defer state reset** until after cancellation check
 2. Add loading state to prevent intermediate updates
 3. Use ref to track if initial load completed
@@ -148,6 +154,7 @@ export function useScenarioMedia({
 ```
 
 **Benefits:**
+
 - ✅ Eliminates 3 unnecessary empty updates
 - ✅ Adds cache to prevent reloading same scenario
 - ✅ Moves log to dev-only debug mode
@@ -177,6 +184,7 @@ if (import.meta.env.DEV && media.length > 0) {
 ```
 
 **Benefits:**
+
 - Only logs when there's actual data
 - Uses `console.debug` (filterable in DevTools)
 - Dev-only (stripped in production builds)
@@ -237,6 +245,7 @@ useEffect(() => {
 ```
 
 **Benefits:**
+
 - ✅ Single configuration update instead of 3 separate ones
 - ✅ Reduces effect execution overhead
 - ✅ Centralized logging
@@ -247,6 +256,7 @@ useEffect(() => {
 ## Implementation Order
 
 ### Step 1: Quick Wins (Low Risk)
+
 1. ✅ Update logging in `useVoiceSession.ts` to use `console.debug` + dev-only
 2. ✅ Move scenario media log to only fire when `media.length > 0`
 
@@ -257,6 +267,7 @@ useEffect(() => {
 ---
 
 ### Step 2: Media Loading Optimization (Medium Risk)
+
 1. ✅ Add `hasLoadedRef` cache to `useScenarioMedia`
 2. ✅ Defer state reset until after cancellation check
 3. ✅ Add `isLoading` state
@@ -269,6 +280,7 @@ useEffect(() => {
 ---
 
 ### Step 3: Effect Consolidation (Higher Risk)
+
 1. ✅ Consolidate 3 separate effects in `useVoiceSession`
 2. ⚠️ Test with different scenario transitions
 3. ⚠️ Verify no regression in voice session lifecycle
@@ -282,17 +294,20 @@ useEffect(() => {
 ## Testing Strategy
 
 ### Unit Tests
+
 - Test `useScenarioMedia` with rapid scenario changes
 - Verify cancellation logic works correctly
 - Test cache behavior
 
 ### Integration Tests
+
 - Load app → select scenario → verify only 1 media load log
 - Change scenario → verify cache invalidation
 - Rapid scenario switching → verify no race conditions
 
 ### Visual Verification
-```
+
+``` text
 ✅ Expected console output after refactor:
 [vite] connected.
 [voice] feature flag VOICE_ENABLED = true
@@ -310,6 +325,7 @@ useEffect(() => {
 ## Rollback Plan
 
 If issues arise:
+
 1. Git revert individual commits (modular approach)
 2. Feature flag for new media loading logic
 3. A/B test consolidated effects vs. separate

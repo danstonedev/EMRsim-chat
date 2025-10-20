@@ -1,5 +1,6 @@
 import { TranscriptEngine, TranscriptTimings } from '../transcript/TranscriptEngine'
 import { voiceDebug } from '../utils/voiceLogging'
+import type { MediaReference } from '../types'
 
 /**
  * Transcript role enum
@@ -7,16 +8,6 @@ import { voiceDebug } from '../utils/voiceLogging'
 export const enum TranscriptRole {
   User = 'user',
   Assistant = 'assistant',
-}
-
-/**
- * Media reference extracted from transcript
- */
-export interface MediaReference {
-  id: string
-  url: string
-  type?: string
-  [key: string]: unknown
 }
 
 /**

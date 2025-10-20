@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2025-10-16T15:55:41.525Z",
+  "generated_at": "2025-10-17T17:47:58.250Z",
   "generator": "sps-manifest-generator",
   "content": {
     "personas": {
@@ -8,56 +8,56 @@
         "content_version": "1.0.0",
         "file": "personas/base/chloe.json",
         "checksum": "sha256:f5e76c625ce08a2f00f65edc0425777ee4570df98e0e818d43a4ae2d32b1278e",
-        "updated_at": "2025-10-16T15:55:41.525Z",
+        "updated_at": "2025-10-17T17:47:58.250Z",
         "patient_id": "sp_persona_chloe_v1"
       },
       "irene": {
         "content_version": "1.0.0",
         "file": "personas/base/irene.json",
         "checksum": "sha256:1b5e0e86a46ee9dac42bae7320d8010b682fd2c0cb7891bb72dd63761cc59220",
-        "updated_at": "2025-10-16T15:55:41.525Z",
+        "updated_at": "2025-10-17T17:47:58.250Z",
         "patient_id": "sp_persona_irene_v1"
       },
       "linda": {
         "content_version": "1.0.0",
         "file": "personas/base/linda.json",
         "checksum": "sha256:17b9b10efa54fe24b1f18a2196d7c261683e2ac88b949c4a55e1d929939b79d7",
-        "updated_at": "2025-10-16T15:55:41.525Z",
+        "updated_at": "2025-10-17T17:47:58.250Z",
         "patient_id": "sp_persona_linda_v1"
       },
       "rafa": {
         "content_version": "1.0.0",
         "file": "personas/base/rafa.json",
         "checksum": "sha256:d9ac4a22759a564a3971b93b6dd0fae894af1448661a60662f3a88d5b815b75c",
-        "updated_at": "2025-10-16T15:55:41.525Z",
+        "updated_at": "2025-10-17T17:47:58.250Z",
         "patient_id": "sp_persona_rafa_v1"
       },
       "prsn_acl_preop_v1": {
         "content_version": "1.0.0",
         "file": "personas/shared/prsn_acl_preop_v1.json",
         "checksum": "sha256:69d711d0751aadb7c0dcc69b47eb7fa53b3121b9941918d14762d1e97136b33b",
-        "updated_at": "2025-10-16T15:55:41.525Z",
+        "updated_at": "2025-10-17T17:47:58.250Z",
         "patient_id": "prsn_acl_preop_v1"
       },
       "prsn_clbp_extpref_v1": {
         "content_version": "1.0.0",
         "file": "personas/shared/prsn_clbp_extpref_v1.json",
         "checksum": "sha256:5e951ad1b61dd8332750b65c700779c9b485326970f552b06c6f438598a11c1a",
-        "updated_at": "2025-10-16T15:55:41.525Z",
+        "updated_at": "2025-10-17T17:47:58.250Z",
         "patient_id": "prsn_clbp_extpref_v1"
       },
       "prsn_tha_pod0_v1": {
         "content_version": "1.0.0",
         "file": "personas/shared/prsn_tha_pod0_v1.json",
         "checksum": "sha256:b6aaf1c3ab41917d6c12441d26688371306b32bbd21fb6f6ca877c2264680fbe",
-        "updated_at": "2025-10-16T15:55:41.525Z",
+        "updated_at": "2025-10-17T17:47:58.250Z",
         "patient_id": "prsn_tha_pod0_v1"
       },
       "realtime_personas": {
         "content_version": "1.0.0",
         "file": "personas/realtime/realtime_personas.json",
         "checksum": "sha256:4d996d0478a460ade9e1f2c541494f9ed4791aad64efdefa80d2095dcf3e24ac",
-        "updated_at": "2025-10-16T15:55:41.525Z"
+        "updated_at": "2025-10-17T17:47:58.250Z"
       }
     },
     "scenarios": {

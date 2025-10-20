@@ -1,3 +1,4 @@
+import type { SPSRegistry } from '../../core/registry.ts';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,9 +21,9 @@ const getModulePaths = () => {
   } catch (err) {
     // Fallback for test environments
     console.warn('Failed to resolve module path, using relative paths', err);
-    return { 
+    return {
       filename: '.',
-      dirname: '.'
+      dirname: '.',
     };
   }
 };
@@ -34,24 +35,14 @@ const BASE_CONTENT_DIR = path.resolve(__dirname, '..', '..');
 const SCENARIO_V3_ROOT = path.resolve(BASE_CONTENT_DIR, 'content', 'scenarios', 'bundles_src');
 const SCENARIO_PERSONA_ROOT = path.resolve(BASE_CONTENT_DIR, 'content', 'personas', 'shared');
 
-// Adjust loadJson to use resolved base path
+// Adjust loadJson to use resolved base path (no test-time skipping; tests rely on real content)
 const loadJson = <T = any>(relativePath: string): T => {
   try {
     const fullPath = path.resolve(BASE_CONTENT_DIR, relativePath);
-    
-    // Skip actual file loading in test environment if needed
-    const isTestEnv = process.env.NODE_ENV === 'test' || process.env.VITEST;
-    if (isTestEnv) {
-      console.log(`[TEST ENV] Would load JSON from: ${fullPath}`);
-      // Return mock data for tests
-      return {} as T;
-    }
-    
     if (!fs.existsSync(fullPath)) {
       console.error(`File does not exist: ${fullPath}`);
       return {} as T;
     }
-    
     const content = fs.readFileSync(fullPath, 'utf8');
     return JSON.parse(content) as T;
   } catch (err) {
@@ -76,13 +67,7 @@ type ScenarioPersonaBundle = {
 
 function loadScenarioPersonasFromDisk(): Map<string, ScenarioPersonaBundle> {
   try {
-    // Skip disk operations in test environment
-    const isTestEnv = process.env.NODE_ENV === 'test' || process.env.VITEST;
-    if (isTestEnv) {
-      console.log('[TEST ENV] Skipping loadScenarioPersonasFromDisk');
-      return new Map<string, ScenarioPersonaBundle>();
-    }
-    
+    // Always read from disk; tests expect real content
     const personas = new Map<string, ScenarioPersonaBundle>();
     if (!fs.existsSync(SCENARIO_PERSONA_ROOT)) return personas;
 
@@ -106,13 +91,7 @@ function loadScenarioPersonasFromDisk(): Map<string, ScenarioPersonaBundle> {
 
 function loadScenarioBundlesFromDisk(personaBundles: Map<string, ScenarioPersonaBundle>) {
   try {
-    // Skip disk operations in test environment
-    const isTestEnv = process.env.NODE_ENV === 'test' || process.env.VITEST;
-    if (isTestEnv) {
-      console.log('[TEST ENV] Skipping loadScenarioBundlesFromDisk');
-      return [] as ClinicalScenario[];
-    }
-    
+    // Always read from disk; tests expect real content
     if (!fs.existsSync(SCENARIO_V3_ROOT)) {
       return [] as ClinicalScenario[];
     }
@@ -127,9 +106,8 @@ function loadScenarioBundlesFromDisk(personaBundles: Map<string, ScenarioPersona
       if (!header) continue;
 
       const linkage = header.linkage || {};
-      const personaId = typeof linkage.persona_id === 'string' && linkage.persona_id.trim()
-        ? String(linkage.persona_id).trim()
-        : null;
+      const personaId =
+        typeof linkage.persona_id === 'string' && linkage.persona_id.trim() ? String(linkage.persona_id).trim() : null;
       const personaBundle = personaId ? personaBundles.get(personaId) : undefined;
       if (personaId && !personaBundle) {
         console.warn('[sps][load] persona not found for scenario', entry.name, personaId);
@@ -156,7 +134,7 @@ function loadScenarioBundlesFromDisk(personaBundles: Map<string, ScenarioPersona
         objective,
         assessment,
         plan,
-        contextModules,
+        contextModules
       );
       if (scenario) {
         scenarios.push(scenario);
@@ -170,58 +148,51 @@ function loadScenarioBundlesFromDisk(personaBundles: Map<string, ScenarioPersona
   }
 }
 
-export function loadSPSContent() {
+export function loadSPSContent(): SPSRegistry {
   try {
     const isTestEnv = process.env.NODE_ENV === 'test' || process.env.VITEST;
-    
     console.log('Loading SPS content...');
     console.log(`Environment: ${isTestEnv ? 'TEST' : 'NORMAL'}`);
-    
+
     // Create a safely constructed array for special questions
     const allSpecialQuestions = [
-      ...(Array.isArray(sqAnkle) ? sqAnkle : []), 
-      ...(Array.isArray(sqKnee) ? sqKnee : []), 
+      ...(Array.isArray(sqAnkle) ? sqAnkle : []),
+      ...(Array.isArray(sqKnee) ? sqKnee : []),
       ...(Array.isArray(sqCspine) ? sqCspine : []),
-      ...(Array.isArray(sqShoulder) ? sqShoulder : []), 
-      ...(Array.isArray(sqSports) ? sqSports : [])
+      ...(Array.isArray(sqShoulder) ? sqShoulder : []),
+      ...(Array.isArray(sqSports) ? sqSports : []),
     ];
-    
-    // Safely initialize registry
-    const registry = spsRegistry
-      .addChallenges(challenges || {})
-      .addSpecialQuestions(allSpecialQuestions);
 
-    // Only attempt to load real data outside of test environment
-    if (!isTestEnv) {
-      if (Array.isArray(realtimePersonas) && realtimePersonas.length) {
-        console.log(`Loading ${realtimePersonas.length} realtime personas`);
-        registry.addPersonas(realtimePersonas);
-      } else {
-        console.warn('No realtime personas found or invalid format');
-      }
+    // Safely initialize registry. Ensure challenges is an array.
+    const challengeItems = Array.isArray(challenges)
+      ? challenges
+      : Array.isArray((challenges as any)?.items)
+        ? (challenges as any).items
+        : [];
+    const registry = spsRegistry.addChallenges(challengeItems).addSpecialQuestions(allSpecialQuestions);
 
-      const scenarioPersonas = loadScenarioPersonasFromDisk();
-      console.log(`Loaded ${scenarioPersonas.size} scenario personas from disk`);
-      if (scenarioPersonas.size) {
-        registry.addPersonas(Array.from(scenarioPersonas.values()).map((bundle) => bundle.persona));
-      }
-
-      const scenarios = loadScenarioBundlesFromDisk(scenarioPersonas);
-      console.log(`Loaded ${scenarios.length} scenarios from disk`);
-      if (scenarios.length) registry.addScenarios(scenarios);
+    // Always attempt to load real data (both normal and test environments)
+    if (Array.isArray(realtimePersonas) && realtimePersonas.length) {
+      console.log(`Loading ${realtimePersonas.length} realtime personas`);
+      registry.addPersonas(realtimePersonas);
     } else {
-      console.log('[TEST ENV] Skipping real data loading');
+      console.warn('No realtime personas found or invalid format');
     }
+
+    const scenarioPersonas = loadScenarioPersonasFromDisk();
+    console.log(`Loaded ${scenarioPersonas.size} scenario personas from disk`);
+    if (scenarioPersonas.size) {
+      registry.addPersonas(Array.from(scenarioPersonas.values()).map(bundle => bundle.persona));
+    }
+
+    const scenarios = loadScenarioBundlesFromDisk(scenarioPersonas);
+    console.log(`Loaded ${scenarios.length} scenarios from disk`);
+    if (scenarios.length) registry.addScenarios(scenarios);
 
     return registry;
   } catch (error) {
     console.error('Error in loadSPSContent:', error);
-    // In test environment, don't crash - just return an empty registry
-    const isTestEnv = process.env.NODE_ENV === 'test' || process.env.VITEST;
-    if (isTestEnv) {
-      console.warn('[TEST ENV] Returning empty registry due to error');
-      return spsRegistry;
-    }
-    throw error; // Re-throw in normal environment
+    // For errors, still return current registry state to avoid crashes in non-critical paths
+    return spsRegistry;
   }
 }

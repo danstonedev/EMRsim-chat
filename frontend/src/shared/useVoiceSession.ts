@@ -5,7 +5,7 @@ import type { TranscriptTimings } from './transcript/TranscriptEngine';
 import { recordVoiceEvent } from './telemetry';
 import { voiceSessionReducer, createInitialState } from './useVoiceSession/reducer';
 import { useBackendSocket } from './hooks/useBackendSocket';
-import type { BackendSocketClient, SocketConfig, SocketEventHandlers } from './services/BackendSocketManager';
+import type { BackendSocketClient, SocketConfig, SocketEventHandlers } from './types/backendSocket';
 
 export interface VoiceSessionOptions {
   personaId: string | null;

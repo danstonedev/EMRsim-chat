@@ -5,9 +5,8 @@ import { ANIMATIONS, pickDefaultId } from './manifest'
 import { playAction, setPaused } from './mixer'
 import { applyRestPoseFromSource } from './clipSelection'
 import { SkeletonUtils } from 'three-stdlib'
-import { animationDebug, animationError, animationWarn } from '../../shared/utils/animationLogging'
 
-export function useBaseRigDiagnostics(scene: THREE.Object3D, baseAnimations?: THREE.AnimationClip[], log = false) {
+export function useBaseRigDiagnostics(scene: THREE.Object3D, baseAnimations?: THREE.AnimationClip[]) {
   useEffect(() => {
     let skinned: THREE.SkinnedMesh | null = null
     let boneCount = 0
@@ -16,17 +15,9 @@ export function useBaseRigDiagnostics(scene: THREE.Object3D, baseAnimations?: TH
       if ((o as any).isBone) boneCount++
     })
     if (!skinned || boneCount === 0) {
-      animationError('v2 base model missing skinned mesh or skeleton', {
-        skinnedFound: !!skinned,
-        boneCount,
-      })
-    } else if (log) {
-      animationDebug('v2 base rig ready', {
-        boneCount,
-        hasSkeleton: !!(skinned as any)?.skeleton,
-      })
+      /* Base model missing skinned mesh or skeleton */
     }
-  }, [scene, log])
+  }, [scene])
 
   // Stop any embedded base animations if present (avoid lingering idle)
   useEffect(() => {
@@ -37,7 +28,6 @@ export function useBaseRigDiagnostics(scene: THREE.Object3D, baseAnimations?: TH
         try { tempMixer.clipAction(clip).stop() } catch { /* noop */ }
       }
       tempMixer.stopAllAction()
-  if (log) animationDebug('v2 stopped embedded base animations', baseAnimations.map(c => c.name))
     } catch { /* noop */ }
     // only on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,11 +42,11 @@ export function usePlayback(params: {
   onActiveChange?: (id: string) => void
   scene: THREE.Object3D
   gltfs: Array<{ scene?: THREE.Object3D } | undefined>
-  log?: boolean
 }) {
-  const { actions, names, mixer, isAnimating, onActiveChange, scene, gltfs, log } = params
+  const { actions, names, mixer, isAnimating, onActiveChange, scene, gltfs } = params
   const currentRef = useRef<string | null>(null)
   const lastPoseForId = useRef<string | null>(null)
+  const lastPausedState = useRef<boolean | null>(null)
 
   const applyRestPoseFor = useCallback((id: string) => {
     try {
@@ -67,19 +57,17 @@ export function usePlayback(params: {
       const ok = applyRestPoseFromSource(scene, sourceRoot, SkeletonUtils as any)
       if (ok) {
         lastPoseForId.current = id
-        if (log) animationDebug('v2 applied rest pose', { animationId: id })
       }
-    } catch (e) {
-      if (log) animationWarn('v2 failed to apply rest pose', { animationId: id, message: (e as any)?.message })
+    } catch {
+      /* Failed to apply rest pose */
     }
-  }, [gltfs, scene, log])
+  }, [gltfs, scene])
 
   const switchTo = useCallback((id: string) => {
     if (!actions) return false
     if (!actions[id]) return false
     // Guard: avoid re-triggering the same clip (prevents micro cross-fades/twitch)
     if (currentRef.current === id) {
-      if (log) animationDebug('v2 switchTo ignored (already current)', { animationId: id })
       return true
     }
     // Validate that the action has usable bindings (not just tracks)
@@ -89,11 +77,6 @@ export function usePlayback(params: {
     const hasTracks = !!(clip && Array.isArray(clip.tracks) && clip.tracks.length > 0)
     const hasBindings = typeof bindings === 'number' ? bindings > 0 : hasTracks
     if (!hasBindings) {
-      if (log) animationWarn('v2 switchTo aborted: no bound properties', {
-        animationId: id,
-        trackCount: clip?.tracks?.length ?? 0,
-        bindingCount: bindings,
-      })
       return false
     }
     if (lastPoseForId.current !== id) applyRestPoseFor(id)
@@ -116,18 +99,24 @@ export function usePlayback(params: {
     if (!ok) return false
     ;(currentRef as any).current = id
     onActiveChange?.(id)
-    if (log) {
-      const running = Object.entries(actions)
-        .filter(([, a]) => (a as any)?.isRunning?.())
-        .map(([n]) => n)
-      animationDebug('v2 switchTo result', { activeId: id, running })
-    }
     return true
-  }, [actions, mixer, onActiveChange, log, applyRestPoseFor, names])
+  }, [actions, mixer, onActiveChange, applyRestPoseFor, names])
 
   // default selection
   useEffect(() => {
     if (!actions || names.length === 0 || currentRef.current) return
+    
+    // Check if any clips have bound actions yet (async loading race condition)
+    const hasAnyBoundActions = names.some(n => {
+      const a: any = (actions as any)[n]
+      if (!a) return false
+      const bindings = Array.isArray((a as any)?._propertyBindings) ? (a as any)._propertyBindings.length : 0
+      return bindings > 0
+    })
+    
+    // If clips loaded but no actions bound yet, wait for next render
+    if (!hasAnyBoundActions) return
+    
     // Prefer a default that has bound tracks
     const candidates = [pickDefaultId(names as string[]) || names[0], ...names]
     const chosen = candidates.find(n => {
@@ -139,22 +128,20 @@ export function usePlayback(params: {
       return hasBindings
     })
     if (chosen && actions[chosen]) {
-      const ok = switchTo(chosen)
-      if (ok) {
-        // Pause after starting if needed so mixer has a bound target but no motion
-        if (!isAnimating) setPaused(actions[chosen], true)
-        if (log) animationDebug('v2 default animation selected', { animationId: chosen })
-      }
-    } else if (log) {
-      animationWarn('v2 no valid default animation with bound tracks found')
+      switchTo(chosen)
     }
-  }, [actions, names, mixer, isAnimating, onActiveChange, log, switchTo])
+  }, [actions, names, mixer, onActiveChange, switchTo])
 
-  // play/pause
+  // play/pause (sync pause state when isAnimating or active animation changes)
   useEffect(() => {
     const id = currentRef.current
     if (!id || !actions) return
-    setPaused(actions[id], !isAnimating)
+    const shouldBePaused = !isAnimating
+    // Only call setPaused if the pause state actually changed
+    if (lastPausedState.current !== shouldBePaused) {
+      setPaused(actions[id], shouldBePaused)
+      lastPausedState.current = shouldBePaused
+    }
   }, [isAnimating, actions])
 
   // handle finished -> fallback
@@ -166,7 +153,6 @@ export function usePlayback(params: {
       const firstRepeat = (names as string[]).find(n => ANIMATIONS.find(a => a.id === n && a.loop === 'repeat'))
       if (firstRepeat && actions[firstRepeat]) {
         if (currentRef.current === firstRepeat) {
-          if (log) animationDebug('v2 finished event already on repeat clip', { animationId: firstRepeat })
           return
         }
         // Validate repeat fallback has usable bindings
@@ -176,19 +162,17 @@ export function usePlayback(params: {
         const hasTracks = !!(clip && Array.isArray(clip.tracks) && clip.tracks.length > 0)
         const hasBindings = typeof bindings === 'number' ? bindings > 0 : hasTracks
         if (!hasBindings) {
-          if (log) animationWarn('v2 finished: repeat fallback missing bound properties', { animationId: firstRepeat })
           return
         }
         if (lastPoseForId.current !== firstRepeat) applyRestPoseFor(firstRepeat)
         playAction(actions as any, mixer as any, firstRepeat)
         currentRef.current = firstRepeat
         onActiveChange?.(firstRepeat)
-        if (log) animationDebug('v2 one-shot finished, fallback applied', { animationId: firstRepeat })
       }
     }
     ;(mixer as any).addEventListener?.('finished', onFinished)
     return () => { try { (mixer as any).removeEventListener?.('finished', onFinished) } catch { /* noop */ } }
-  }, [mixer, actions, names, onActiveChange, log, applyRestPoseFor])
+  }, [mixer, actions, names, onActiveChange, applyRestPoseFor])
 
   return { get current() { return currentRef.current }, applyRestPoseFor, switchTo }
 }

@@ -10,6 +10,7 @@ Development and authoring materials (excluded from production builds).
 ## Usage
 
 These files are used during development for:
+
 - Creating new scenarios
 - Validating content structure
 - Providing examples for authors

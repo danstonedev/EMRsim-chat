@@ -1,14 +1,18 @@
 # Unified Transcript Architecture Implementation
 
 ## Overview
+
 Implemented **Option B: Backend WebSocket broadcast system** to create a single source of truth for all transcripts. This ensures chat bubbles and the print transcript page always show identical content from the authoritative backend source.
 
 ## Problem Statement
+
 Previously, there were **two separate transcript pathways**:
+
 1. **Real-time events** → ConversationController → App.tsx `updateVoiceMessage()` → Chat bubbles
 2. **Backend persistence** → Database → Print Transcript page
 
 This caused:
+
 - Chat bubbles not showing transcripts (empty first transcription event issue)
 - Inconsistency between chat UI and printed transcript
 - Duplicate transcript processing logic
@@ -18,11 +22,13 @@ This caused:
 ### Backend Components
 
 #### 1. Socket.IO Server (`backend/src/index.js`)
+
 - Initialized Socket.IO with CORS configuration for frontend connection
 - Supports both WebSocket and polling transports
 - Session-based room management via `join-session` events
 
 #### 2. Transcript Broadcast Service (`backend/src/services/transcript_broadcast.js`)
+
 - **Single source of truth** for all transcript events
 - Functions:
   - `broadcastUserTranscript(sessionId, payload)` - Broadcasts user transcripts to session room
@@ -31,6 +37,7 @@ This caused:
 - All broadcasts scoped to session rooms for proper isolation
 
 #### 3. Transcript Relay Endpoints (`backend/src/routes/voice.js`)
+
 - `POST /api/voice/transcript` - Receives transcript events from frontend
 - `POST /api/voice/transcript-error` - Receives transcription errors
 - Validates payload and broadcasts to all clients in session room
@@ -40,31 +47,36 @@ This caused:
 #### 1. ConversationController WebSocket Client (`frontend/src/shared/ConversationController.ts`)
 
 **New Methods:**
+
 - `initializeBackendSocket(sessionId)` - Establishes Socket.IO connection
   - Auto-joins session room for transcript isolation
   - Listens for `transcript` events from backend
   - Emits received transcripts to UI listeners
-  
+
 - `relayTranscriptToBackend(role, text, isFinal, timestamp, itemId)` - Relays OpenAI transcripts to backend
   - Called when transcripts are finalized
   - Sends to backend relay endpoint
 
 **Modified Methods:**
+
 - `handleUserTranscript()` - When `backendTranscriptMode` is true, skips local emission (backend broadcasts instead)
 - `handleAssistantTranscript()` - When `backendTranscriptMode` is true, relays to backend instead of emitting locally
 - `cleanup()` - Disconnects WebSocket on voice session stop
 
 **Configuration:**
+
 - `backendTranscriptMode = true` (enabled by default for unified flow)
 - WebSocket initialized after session creation
 
 #### 2. API Client (`frontend/src/shared/api.ts`)
+
 - Added `relayTranscript(sessionId, payload)` method for posting transcript events to backend
 
 ## Data Flow
 
 ### Unified Transcript Flow
-```
+
+``` text
 1. OpenAI Realtime API
    ↓ (WebRTC data channel)
 2. ConversationController receives events
@@ -89,6 +101,7 @@ This caused:
 ```
 
 ### Key Benefits
+
 - **Single Source of Truth**: Backend is authoritative source for all transcripts
 - **Consistency**: Chat bubbles and print transcript page use identical data
 - **Room Isolation**: Multiple sessions can run simultaneously without crosstalk
@@ -98,6 +111,7 @@ This caused:
 ## Bug Fixes Included
 
 ### 1. Empty First Transcription Event
+
 **Problem**: OpenAI sends `conversation.item.input_audio_transcription.completed` with empty transcript before delta events arrive, causing premature finalization.
 
 **Solution** (`ConversationController.ts` lines 1385-1390):
@@ -110,6 +124,7 @@ if (!transcript || transcript.trim().length === 0) {
 ```
 
 ### 2. Dual Emission Prevention
+
 **Problem**: Transcripts were emitted both from `handleUserTranscript` AND from Socket.IO listener, causing duplicate updates.
 
 **Solution**: When `backendTranscriptMode` is true, local handlers skip emission and only relay to backend. Backend broadcasts are the sole source.
@@ -129,11 +144,14 @@ if (!transcript || transcript.trim().length === 0) {
 ## Configuration
 
 ### Environment Variables
+
 No new environment variables required. Existing setup works with defaults:
+
 - Frontend: `VITE_API_BASE_URL` (defaults to `http://localhost:3001`)
 - Backend: `PORT` (defaults to `3001`), `FRONTEND_URL` (defaults to `http://localhost:5173`)
 
 ### Feature Toggle
+
 To disable backend transcript mode (revert to direct OpenAI events):
 ```typescript
 // In ConversationController constructor:
@@ -143,20 +161,24 @@ this.backendTranscriptMode = false
 ## Dependencies Added
 
 ### Backend
+
 - `socket.io@^4.x` - WebSocket server for real-time broadcasting
 
 ### Frontend
+
 - `socket.io-client@^4.x` - WebSocket client for receiving broadcasts
 
 ## Files Modified
 
 ### Backend
+
 - ✅ `backend/src/index.js` - Added Socket.IO server initialization
 - ✅ `backend/src/services/transcript_broadcast.js` - NEW: Broadcast service
 - ✅ `backend/src/routes/voice.js` - Added transcript relay endpoints
 - ✅ `backend/package.json` - Added socket.io dependency
 
 ### Frontend
+
 - ✅ `frontend/src/shared/ConversationController.ts` - Added WebSocket client, relay logic, backend mode
 - ✅ `frontend/src/shared/api.ts` - Added relayTranscript method
 - ✅ `frontend/package.json` - Added socket.io-client dependency
@@ -164,22 +186,26 @@ this.backendTranscriptMode = false
 ## Deployment Notes
 
 1. **Install dependencies**:
+
    ```bash
    cd backend && npm install
    cd ../frontend && npm install
    ```
 
 2. **Build frontend**:
+
    ```bash
    cd frontend && npm run build
    ```
 
 3. **Start backend** (serves both API and WebSocket):
+
    ```bash
    cd backend && npm run dev
    ```
 
 4. **Start frontend** (development):
+
    ```bash
    cd frontend && npm run dev
    ```

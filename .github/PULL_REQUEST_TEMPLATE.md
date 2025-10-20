@@ -1,30 +1,41 @@
 # Pull Request
 
-## Summary
+## Description
+<!-- Provide a brief summary of the changes in this PR -->
 
-- What change does this PR introduce?
-- Why now? Link to issue/plan if relevant.
+## Related Issue
+<!-- Link to the issue this PR addresses -->
+Fixes #[issue_number]
 
-## Change contract
+## Type of Change
+<!-- Check the relevant option(s) -->
+- [ ] Bug fix (non-breaking change that fixes an issue)
+- [ ] New feature (non-breaking change that adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Database migration
+- [ ] Documentation update
+- [ ] Infrastructure change
+- [ ] Performance improvement
 
-- Inputs: files/APIs touched, data shapes, env vars
-- Outputs: behavior change, UI/routes, types
-- Error handling: expected failures + logging
-- Success criteria: typecheck, unit/e2e passing; UX/perf acceptance if relevant
+## Testing Performed
+<!-- Describe the testing done for this change -->
+- [ ] Unit tests added/updated
+- [ ] Integration tests added/updated
+- [ ] E2E tests added/updated
+- [ ] Manual testing performed
 
-## Screenshots / Demos (optional)
+## Checklist
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings or errors
+- [ ] New and existing unit tests pass locally with my changes
+- [ ] Any dependent changes have been merged and published in downstream modules
+- [ ] I have checked my code and corrected any misspellings
 
-## Checklists
+## Screenshots
+<!-- If applicable, add screenshots to help explain your changes -->
 
-- [ ] Typecheck passes (frontend, backend)
-- [ ] Unit tests updated/added and passing
-- [ ] E2E impacted flows covered (or N/A)
-- [ ] Lint + Prettier clean
-- [ ] Env/docs updated
-- [ ] Logging/telemetry is meaningful and not noisy
-
-## Risk & rollout
-
-- Risk level: low | medium | high
-- Rollout plan: toggles, staged release, or immediate
-- Rollback plan: steps to revert safely
+## Deployment Notes
+<!-- Any special notes regarding deployment of this change -->

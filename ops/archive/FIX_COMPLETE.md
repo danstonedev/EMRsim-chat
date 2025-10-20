@@ -3,6 +3,7 @@
 ## Problem Statement
 
 **ALL transcriptions were failing** with these symptoms:
+
 1. User speech showed "[Speech not transcribed]" fallback text instead of actual words
 2. No voice responses from assistant (speech-to-speech not working)
 3. Every single transcription event fired as `conversation.item.input_audio_transcription.failed`
@@ -12,19 +13,20 @@
 After extensive research into OpenAI's official Realtime API implementation, I discovered:
 
 **The Fundamental Issue:**
+
 - Our code had a **synchronous mindset** for an **asynchronous process**
 - We were finalizing user messages IMMEDIATELY when audio stopped
 - But transcription is ASYNCHRONOUS - it completes LATER via a separate event
 
 **The Event Flow (Correct):**
-```
+``` text
 1. speech_stopped → audio capture ends
 2. conversation.item.created → user message created (NO transcript yet!)
 3. conversation.item.input_audio_transcription.completed → TRANSCRIPT ARRIVES HERE
 ```
 
 **What We Were Doing (Wrong):**
-```
+``` text
 1. speech_stopped → IMMEDIATELY finalize with empty payload {}
 2. transcript arrives → TOO LATE, message already finalized
 3. UI shows fallback text "[Speech not transcribed]"
@@ -41,6 +43,7 @@ They handle it by **queuing transcripts** that arrive before items.
 ### 1. Removed Premature Finalization
 
 **DELETED** (from ConversationController.ts):
+
 - Immediate finalization on `input_audio_buffer.committed`
 - Timeout-based finalization with empty payload
 - Code that treated transcription as synchronous
@@ -91,6 +94,7 @@ This ensures audio responses are explicitly enabled and not accidentally overwri
 ### 4. Cleaned Up Dead Code
 
 **REMOVED**:
+
 - `extendedCommitMs` property (unused)
 - `fallbackCommitMs` property (unused)
 - `estimateSpeechCadence()` method (unused)
@@ -103,6 +107,7 @@ These were part of the old timeout-based approach that's no longer needed.
 **File:** `frontend/src/shared/ConversationController.ts`
 
 **Key Sections Modified:**
+
 1. **Lines ~1278-1315**: Transcription event handling (core fix)
 2. **Lines ~1230-1245**: session.update on session.created (added modalities)
 3. **Lines ~1675-1690**: session.update on channel open (added modalities)
@@ -112,7 +117,7 @@ These were part of the old timeout-based approach that's no longer needed.
 
 ### ✅ Successful Transcription Flow
 
-```
+``` text
 User speaks → "Hello, this is a test"
   ↓
 Console: "Audio buffer committed, waiting for transcription..."
@@ -126,7 +131,7 @@ Assistant responds with voice audio
 
 ### ❌ Failure Flow (Only if genuinely fails)
 
-```
+``` text
 User speaks → audio captured
   ↓
 Console: "⚠️ TRANSCRIPTION FAILED EVENT: {...}"
@@ -139,6 +144,7 @@ UI shows: "[Speech not transcribed]" (fallback is appropriate here)
 See `TESTING_GUIDE.md` for detailed testing steps.
 
 **Quick Test (60 seconds):**
+
 1. Start voice session
 2. Say "Hello"
 3. Verify transcript shows "Hello" (not fallback text)
@@ -146,6 +152,7 @@ See `TESTING_GUIDE.md` for detailed testing steps.
 5. Try 1-2 more turns
 
 **Pass Criteria:**
+
 - All transcripts show actual words
 - No "[Speech not transcribed]" fallback
 - Assistant speaks back with audio
@@ -169,6 +176,7 @@ The audio playback code was already correct - WebRTC track handling is solid.
 3. **Multiple Turns**: Test conversation flows naturally
 
 If issues persist, check:
+
 - Browser console for new errors
 - Backend logs for API errors
 - `session.updated` payload to confirm config applied

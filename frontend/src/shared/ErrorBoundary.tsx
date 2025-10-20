@@ -14,7 +14,6 @@ export default class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: any, info: any) {
-    // eslint-disable-next-line no-console
     console.error('App crashed:', error, info)
   }
 

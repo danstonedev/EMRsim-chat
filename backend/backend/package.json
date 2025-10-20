@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@types/redis": "^4.0.10",
     "tsup": "^8.5.0"
   }
 }

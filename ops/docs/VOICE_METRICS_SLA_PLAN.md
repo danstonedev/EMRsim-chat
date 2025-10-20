@@ -3,6 +3,7 @@
 Last updated: 2025-10-02.
 
 ## Purpose
+
 Accelerate modularization by giving the refactor team and reliability owners a shared, instrumented view of voice-session health. The plan documents which KPIs we must capture, where to hook them in the current `ConversationController`, and how we will surface SLAs and alerts once the controller is decomposed into smaller modules.
 
 ## Scope

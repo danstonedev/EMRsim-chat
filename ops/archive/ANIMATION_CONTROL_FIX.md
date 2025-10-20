@@ -2,7 +2,7 @@
 
 ## The Real Problem (From Your Logs)
 
-```
+``` text
 ▶️ Resuming animation: Standing
 ▶️ Resuming animation: Walking
 ▶️ Resuming animation: Jumping
@@ -12,7 +12,7 @@
 **ALL 4 animations were being controlled at once!**
 
 When you clicked Pause:
-```
+``` text
 ⏸️ Pausing animation in place: Standing
 ⏸️ Pausing animation in place: Walking
 ⏸️ Pausing animation in place: Jumping
@@ -22,6 +22,7 @@ When you clicked Pause:
 ## Root Cause
 
 The play/pause logic was checking `action.getEffectiveWeight() > 0` for ALL animations, which meant:
+
 - When page loads, all 4 animations are loaded into memory
 - They all have some initial weight/state
 - The loop tried to resume/pause ALL of them
@@ -36,6 +37,7 @@ const currentAnimationRef = useRef<string | null>(null)
 ```
 
 ### Before (BROKEN)
+
 ```typescript
 // Control ALL animations that have any weight
 Object.entries(actions).forEach(([name, action]) => {
@@ -54,6 +56,7 @@ Object.entries(actions).forEach(([name, action]) => {
 ```
 
 ### After (FIXED)
+
 ```typescript
 // Only control the current animation
 const currentAnim = currentAnimationRef.current
@@ -90,6 +93,7 @@ if (isAnimating && !currentAnimationRef.current) {
 ```
 
 ### When Switching Animations
+
 ```typescript
 // User types "walk" and clicks Apply
 if (matchedAnimation && actions[matchedAnimation]) {
@@ -112,7 +116,7 @@ if (matchedAnimation && actions[matchedAnimation]) {
 ## Expected Console Output (After Fix)
 
 **On page load:**
-```
+``` text
 🎬 HumanFigure: Found animations: ['Standing', 'Walking', 'Jumping', 'Squatting']
 🎮 HumanFigure: Animation state: PLAYING
 ▶️ HumanFigure: Starting default animation: Standing
@@ -120,26 +124,26 @@ if (matchedAnimation && actions[matchedAnimation]) {
 ```
 
 **When you click Pause:**
-```
+``` text
 🎮 HumanFigure: Animation state: PAUSED
 ⏸️ HumanFigure: Pausing animation in place: Standing
 ```
 (ONLY Standing - not all 4!)
 
 **When you click Play:**
-```
+``` text
 🎮 HumanFigure: Animation state: PLAYING
 ▶️ HumanFigure: Resuming animation: Standing
 ```
 (ONLY Standing - not all 4!)
 
 **When you type "walk" and Apply:**
-```
+``` text
 ✅ HumanFigure: Switching to animation: Walking
 ```
 
 **Then pause mid-walk:**
-```
+``` text
 🎮 HumanFigure: Animation state: PAUSED
 ⏸️ HumanFigure: Pausing animation in place: Walking
 ```
@@ -156,11 +160,13 @@ if (matchedAnimation && actions[matchedAnimation]) {
 ## Why This Works
 
 **The Problem with `getEffectiveWeight()`:**
+
 - All loaded animations have some weight > 0 initially
 - Checking weight catches ALL animations
 - Loop tries to control all of them simultaneously
 
 **The Solution with Ref Tracking:**
+
 - Only ONE animation name stored in ref
 - Only that ONE animation gets play/pause commands
 - Others are explicitly stopped when not needed
@@ -188,20 +194,24 @@ After refresh:
 Now students can:
 
 ✅ **Focus on ONE movement at a time**
+
 - No confusing blended animations
 - Clean, isolated movement patterns
 
 ✅ **Pause and study joint positions**
+
 - Freeze walk cycle mid-stride
 - Measure knee flexion angle
 - Examine hip extension
 
 ✅ **Switch between movements**
+
 - Compare standing vs squatting posture
 - Analyze different gait patterns
 - Study range of motion across activities
 
 ✅ **Reliable play/pause behavior**
+
 - Animation stays where you paused it
 - Resume continues from exact position
 - No sudden jumps or resets

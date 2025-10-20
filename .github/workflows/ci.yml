@@ -1,90 +1,153 @@
-name: CI
+name: EMRsim-chat CI
 
 on:
-  pull_request:
-    branches: [ main, develop ]
   push:
-    branches: [ main ]
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
 
 jobs:
-  build-and-test:
+  test:
+    name: Test and Lint
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: emrsim_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 16
+          cache: "npm"
 
-      - name: Install root deps
+      - name: Install dependencies
         run: npm ci
 
-      - name: Install backend deps
-        working-directory: backend
-        run: npm ci
+      - name: Lint
+        run: npm run lint
 
-      - name: Install frontend deps
-        working-directory: frontend
-        run: npm ci
+      - name: Type check
+        run: npm run typecheck
 
-      - name: Typecheck frontend
-        working-directory: frontend
-        run: npm run -s type-check
+      - name: Unit tests
+        run: npm run test:unit
 
-      - name: Build frontend
-        working-directory: frontend
-        run: npm run -s build
-
-      - name: Lint frontend
-        working-directory: frontend
-        continue-on-error: true
-        run: |
-          npx eslint src --ext .ts,.tsx
-          npx prettier --check "src/**/*.{ts,tsx,json,css}"
-
-      - name: Lint backend
-        working-directory: backend
-        continue-on-error: true
-        run: |
-          npx eslint . --ext .ts
-          npx prettier --check "**/*.{ts,js,json,md,yml,yaml}"
-
-      - name: Unit tests - frontend
-        working-directory: frontend
-        run: npx vitest run --silent
-
-      - name: Unit tests - backend
-        working-directory: backend
+      - name: Integration tests
+        run: npm run test:integration
         env:
-          # Provide a dummy OpenAI key to satisfy env schema; backend tests should not call network
-          OPENAI_API_KEY: "test-test-test-test"
-        run: npx vitest run --silent
+          DB_TYPE: postgres
+          PG_HOST: localhost
+          PG_PORT: 5432
+          PG_DATABASE: emrsim_test
+          PG_USER: postgres
+          PG_PASSWORD: postgres
 
-      - name: E2E - Playwright install
-        run: npx playwright install --with-deps chromium
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: E2E - Run tests
+  e2e:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    needs: test
+
+    services:
+      postgres:
+        image: postgres:13
         env:
-          OPENAI_API_KEY: "test-test-test-test"
-        run: npx playwright test --reporter=list
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: emrsim_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-      - name: Upload Playwright report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report
-          if-no-files-found: ignore
+    steps:
+      - uses: actions/checkout@v3
 
-      - name: Upload e2e JSON results
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          name: e2e-results
-          path: e2e-results.json
-          if-no-files-found: ignore
+          node-version: 16
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up test database
+        run: npm run db:setup:test
+        env:
+          DB_TYPE: postgres
+          PG_HOST: localhost
+          PG_PORT: 5432
+          PG_DATABASE: emrsim_test
+          PG_USER: postgres
+          PG_PASSWORD: postgres
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          DB_TYPE: postgres
+          PG_HOST: localhost
+          PG_PORT: 5432
+          PG_DATABASE: emrsim_test
+          PG_USER: postgres
+          PG_PASSWORD: postgres
+
+  build:
+    name: Build and Analyze
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better analysis
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Analyze bundle size
+        run: npm run analyze
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: dist/
+          retention-days: 5

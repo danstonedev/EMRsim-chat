@@ -23,10 +23,12 @@ This extraction creates a clean orchestration layer for state-related operations
 ## Metrics
 
 ### Before Phase 9
+
 - **ConversationController.ts**: 750 lines
 - **Cumulative reduction from original**: -799 lines (-54.2% from 1473 lines)
 
 ### After Phase 9
+
 - **ConversationController.ts**: 683 lines ✅
 - **StateCoordinator.ts**: 84 lines (NEW)
 - **Phase 9 reduction**: -67 lines (-8.9%)
@@ -66,6 +68,7 @@ interface StateCoordinatorDeps {
 ```
 
 **Key Methods**:
+
 - `isOpStale(op)`: Check if operation number is stale
 - `invalidateOps()`: Invalidate all current operations
 - `resetInitialAssistantGuards()`: Reset guards across mic control & session reuse
@@ -76,6 +79,7 @@ interface StateCoordinatorDeps {
 - `applyMicPausedState(source, reason)`: Apply mic paused state to mic stream
 
 **Benefits**:
+
 - ✅ Centralized state coordination logic
 - ✅ Reduced duplication in ConversationController
 - ✅ Clear dependency visualization
@@ -116,16 +120,19 @@ export class StateCoordinator {
 **Changes**:
 
 1. **Added StateCoordinator import**:
+
    ```typescript
    import { StateCoordinator } from './coordinators/StateCoordinator'
    ```
 
 2. **Added StateCoordinator field**:
+
    ```typescript
    private stateCoordinator!: StateCoordinator
    ```
 
 3. **Initialize StateCoordinator in constructor** (after ServiceInitializer):
+
    ```typescript
    this.stateCoordinator = new StateCoordinator({
      connectionOrchestrator: this.connectionOrchestrator,
@@ -168,6 +175,7 @@ export class StateCoordinator {
    ```
 
 5. **Updated operation epoch comments**:
+
    ```typescript
    // Operation epoch management delegated to StateCoordinator
    private isOpStale(op: number): boolean {
@@ -180,12 +188,14 @@ export class StateCoordinator {
 ## Testing & Validation
 
 ### Build Status: ✅ PASS
+
 ```bash
 npm run build --silent
 # Built successfully in 16.94s
 ```
 
 ### TypeScript Compilation: ✅ PASS
+
 ```bash
 npm run type-check
 # All Phase 9 code compiles correctly
@@ -193,6 +203,7 @@ npm run type-check
 ```
 
 ### Test Results: ✅ PASS
+
 ```bash
 npm run test:viewer --silent
 # 2 failed tests (pre-existing mixer test failures)
@@ -200,6 +211,7 @@ npm run test:viewer --silent
 ```
 
 **Validation Summary**:
+
 - ✅ Zero breaking changes to public APIs
 - ✅ All Phase 9 code compiles and builds successfully
 - ✅ No new test failures introduced
@@ -245,7 +257,7 @@ npm run test:viewer --silent
 
 ### Dependency Flow
 
-```
+``` text
 ConversationController
   ├─ ServiceInitializer (factory for all services)
   ├─ ConnectionFlowOrchestrator (builds connection context)
@@ -282,6 +294,7 @@ While Phase 9 is complete and successful, further reduction is possible but subj
 ✅ **Phase 9 is COMPLETE and SUCCESSFUL**
 
 **Achievements**:
+
 - Created StateCoordinator module (84 lines)
 - Reduced ConversationController by 67 lines (-8.9%)
 - **Cumulative reduction: 58.8%** (1473 → 683 lines)
@@ -290,6 +303,7 @@ While Phase 9 is complete and successful, further reduction is possible but subj
 - All builds & tests passing
 
 **Quality Metrics**:
+
 - ✅ 9 modular, testable components created
 - ✅ All modules ≤300 lines
 - ✅ Clean separation of concerns

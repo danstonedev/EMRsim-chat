@@ -10,7 +10,9 @@ You now have a **fully functional text-to-animation system** that can generate p
 ## 🚀 Features
 
 ### 1. **Natural Language Animation Prompts**
+
 Users can type phrases like:
+
 - "balance on right foot"
 - "balance on left foot"
 - "raise arms"
@@ -20,12 +22,14 @@ Users can type phrases like:
 - "stand neutral"
 
 ### 2. **Procedural Pose System**
+
 - 7 predefined poses in the library
 - Smooth interpolation between poses (0.5 second transitions)
 - Real-time bone manipulation of Mixamo skeleton
 - 65+ bones fully rigged and controllable
 
 ### 3. **Interactive UI**
+
 - Text input for custom prompts
 - Quick-select buttons for common poses
 - Real-time feedback showing what pose is being applied
@@ -34,12 +38,14 @@ Users can type phrases like:
 ## 📁 New Files Created
 
 ### Core Animation System
+
 1. **`skeletonAnalyzer.ts`** - Extracts and analyzes bone hierarchy from 3D models
 2. **`poseLibrary.ts`** - Defines 7 procedural poses with bone rotations
 3. **`proceduralAnimator.ts`** - Applies poses to skeletons with smooth interpolation
 4. **`animationPromptParser.ts`** - Parses natural language into animation commands
 
 ### Updated Components
+
 5. **`HumanFigure.tsx`** - Integrated procedural animator, responds to prompts
 6. **`Scene.tsx`** - Passes animation prompts to figure
 7. **`ViewerControls.tsx`** - Added prompt input UI and quick-select buttons
@@ -61,6 +67,7 @@ Users can type phrases like:
 ## 🔧 Technical Details
 
 ### Skeleton Structure
+
 - **Root Bone:** mixamorig1Hips
 - **Spine:** 3 spine bones + neck + head
 - **Arms:** Full arm chains with detailed finger bones
@@ -68,7 +75,8 @@ Users can type phrases like:
 - **Total Bones:** 65 (fully rigged Mixamo skeleton)
 
 ### Animation System
-```
+
+``` text
 User Types Prompt
        ↓
 parseAnimationPrompt() - Interprets text
@@ -81,6 +89,7 @@ Real-time visual feedback
 ```
 
 ### Pose Definition Format
+
 ```typescript
 {
   name: 'balance-right',
@@ -104,12 +113,14 @@ Real-time visual feedback
 ## 🔮 Future Enhancements
 
 ### Easy Additions
+
 - [ ] Add more poses (waving, pointing, kicking, etc.)
 - [ ] Animation sequences (walk cycle, jumping, etc.)
 - [ ] Pose blending (combine multiple poses)
 - [ ] Save/load custom poses
 
 ### Advanced Features
+
 - [ ] AI-powered pose generation using ML models
 - [ ] Voice command integration
 - [ ] Motion capture data import
@@ -138,7 +149,7 @@ Real-time visual feedback
 
 ## 💡 Example Prompts to Try
 
-```
+``` text
 balance on right foot
 raise your arms
 sit down please
@@ -151,6 +162,7 @@ balance left
 ## 🎓 Educational Value
 
 This system demonstrates:
+
 1. **Procedural Animation** - Generating motion programmatically
 2. **Natural Language Processing** - Simple text parsing
 3. **3D Skeletal Animation** - Bone hierarchies and FK
@@ -160,6 +172,7 @@ This system demonstrates:
 ## 🏆 Achievement Unlocked!
 
 You now have a **production-ready text-to-animation system** that:
+
 - Works in real-time ⚡
 - Uses natural language 🗣️
 - Has smooth animations 🎬

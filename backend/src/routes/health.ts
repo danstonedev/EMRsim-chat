@@ -1,9 +1,9 @@
 import { Router, Request, Response } from 'express';
-import dbApi, { migrate, healthCheck, getStorageMode } from '../db.ts';
+import { migrate, healthCheck, getStorageMode } from '../db.ts';
 
 export const router = Router();
 
-let startedAt = Date.now();
+const startedAt = Date.now();
 migrate();
 
 const toBool = (value: string | undefined | null, defaultValue: boolean): boolean => {

@@ -31,6 +31,7 @@ This document summarizes the comprehensive refactoring of the frontend CSS archi
 ```
 
 **After**: Production-ready HTML with comprehensive meta tags
+
 - ✅ SEO optimization (title, description, keywords, author)
 - ✅ Open Graph tags for social media sharing
 - ✅ Twitter Card metadata
@@ -57,6 +58,7 @@ This document summarizes the comprehensive refactoring of the frontend CSS archi
 ### New File Created
 
 Created `frontend/public/manifest.json` with:
+
 - App name and description
 - Icon definitions (16x16 to 512x512)
 - Theme and background colors
@@ -77,6 +79,7 @@ Created `frontend/public/manifest.json` with:
 ### The Problem
 
 **Original State**: Monolithic `App.css` file (700+ lines)
+
 - Mixed concerns (layout, components, features, animations)
 - Hardcoded values throughout
 - Difficult to navigate and maintain
@@ -86,7 +89,7 @@ Created `frontend/public/manifest.json` with:
 
 **New Modular Architecture**: 8 focused CSS modules
 
-```
+``` text
 frontend/src/styles/
 ├── app.css                      # Main index (imports all modules)
 ├── layout.css                   # Application structure
@@ -101,7 +104,9 @@ frontend/src/styles/
 ### Module Breakdown
 
 #### `layout.css` (90 lines)
+
 **Purpose**: Application-level structure
+
 - App container and header
 - Main grid layout (240px sidebar + flex content)
 - Sidebar navigation
@@ -109,7 +114,9 @@ frontend/src/styles/
 - Responsive breakpoints
 
 #### `components.css` (270 lines)
+
 **Purpose**: Reusable UI components
+
 - Input forms and message input
 - Buttons (send, persona selection)
 - Chips and badges
@@ -121,7 +128,9 @@ frontend/src/styles/
 - Connection overlay
 
 #### `voice.css` (230 lines)
+
 **Purpose**: Voice feature UI
+
 - Voice control bar
 - Microphone button (idle, active, disabled states)
 - Voice status indicators
@@ -131,7 +140,9 @@ frontend/src/styles/
 - Mic action popover menu
 
 #### `modals.css` (120 lines)
+
 **Purpose**: Modal and dialog components
+
 - Encounter end modal
 - Modal backdrop with blur effect
 - Modal animations (fadeIn, slideIn)
@@ -139,7 +150,9 @@ frontend/src/styles/
 - Responsive modal sizing
 
 #### `sps.css` (260 lines)
+
 **Purpose**: Simulated Patient System drawer
+
 - Full-height drawer (420px width)
 - Configuration forms
 - State displays
@@ -149,7 +162,9 @@ frontend/src/styles/
 - Instructions accordion
 
 #### `animations.css` (95 lines)
+
 **Purpose**: Animations and transitions
+
 - Fade in/out
 - Slide animations
 - Skeleton loading states
@@ -157,14 +172,18 @@ frontend/src/styles/
 - Reduced motion support
 
 #### `legacy-casebuilder.css` (150 lines)
+
 **Purpose**: Backward compatibility
+
 - Case builder UI (potentially deprecated)
 - AI banner and sources
 - Choice grid layout
 - Marked for future removal
 
 #### `app.css` (45 lines)
+
 **Purpose**: Main index file
+
 - Imports all modules in correct order
 - Global fixes
 - Safari vendor prefixes
@@ -227,6 +246,7 @@ frontend/src/styles/
 ### Enhancements Made
 
 1. **Reduced Motion Support**
+
    ```css
    @media (prefers-reduced-motion: reduce) {
      * {
@@ -341,6 +361,7 @@ user-select: none;
 ### Documentation
 
 Created comprehensive `CSS_ARCHITECTURE.md` including:
+
 - File structure explanation
 - Module descriptions
 - Design token reference
@@ -498,6 +519,7 @@ This refactoring is **100% backward compatible**. All styles have been preserved
 ### Recommended Actions
 
 1. **Delete old App.css**
+
    ```bash
    rm frontend/src/pages/App.css
    ```

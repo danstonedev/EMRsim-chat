@@ -33,6 +33,7 @@ Successfully extracted WebRTC connection state handling logic from ConversationC
 #### 1. `frontend/src/shared/handlers/ConnectionHandlers.ts` (247 lines)
 
 **Responsibilities:**
+
 - Handle ICE connection state changes (connected, disconnected, failed, etc.)
 - Handle peer connection state changes (failed, disconnected, etc.)
 - Log transport events for debugging and monitoring
@@ -40,6 +41,7 @@ Successfully extracted WebRTC connection state handling logic from ConversationC
 - Update conversation state based on connection changes
 
 **Key Features:**
+
 - ✅ **Connection Monitoring:** Tracks ICE and peer connection states
 - ✅ **Error Detection:** Detects connection failures and degradation
 - ✅ **Debug Logging:** Comprehensive debug events for troubleshooting
@@ -56,12 +58,13 @@ export interface ConnectionHandlersDependencies {
 ```
 
 **Public Methods:**
+
 - `handleIceConnectionStateChange(state)` - Handle ICE connection state transitions
 - `handleConnectionStateChange(state)` - Handle peer connection state transitions
 - `logTransport(entry)` - Log transport events from RealtimeTransport
 
 **Connection State Flow:**
-```
+``` text
 ICE Connection States:
   new → checking → connected/completed → (disconnected) → (failed)
 
@@ -122,6 +125,7 @@ handleConnectionStateChange: state => this.connectionHandlers.handleConnectionSt
 ```
 
 **Removed:**
+
 - Line 2: Removed unused `TransportLoggerEntry` import
 - Lines 1011-1020: Removed `logTransport()` method (10 lines)
 - Lines 1137-1173: Removed `handleIceConnectionStateChange()` method (37 lines)
@@ -133,6 +137,7 @@ handleConnectionStateChange: state => this.connectionHandlers.handleConnectionSt
 ## Architecture Benefits
 
 ### Before Phase 4
+
 ```typescript
 class ConversationController {
   // 1260 lines total
@@ -174,6 +179,7 @@ class ConversationController {
 ```
 
 ### After Phase 4
+
 ```typescript
 class ConversationController {
   // 1199 lines total
@@ -246,10 +252,12 @@ class ConnectionHandlers {
 ## Critical Feature: ICE Connection State Monitoring
 
 ### What is ICE?
+
 **ICE (Interactive Connectivity Establishment)** is the protocol WebRTC uses to establish peer-to-peer connections through NATs and firewalls.
 
 ### Connection State Lifecycle
-```
+
+``` text
 1. new → Initial state before ICE gathering
 2. checking → Testing ICE candidate pairs
 3. connected → At least one candidate pair working
@@ -260,6 +268,7 @@ class ConnectionHandlers {
 ```
 
 ### Critical Logic: Data Channel Timeout Check
+
 After ICE connection is established (`connected` or `completed`), we schedule a 2-second timeout to check if the data channel has opened:
 
 ```typescript
@@ -285,6 +294,7 @@ if (state === 'connected' || state === 'completed') {
 ```
 
 **Why this matters:**
+
 - ICE connection ≠ data channel ready
 - Data channel must open for bidirectional messaging
 - 2s timeout catches stuck data channel negotiations
@@ -295,11 +305,13 @@ if (state === 'connected' || state === 'completed') {
 ## Testing Strategy
 
 ### Automated Tests (Passing)
+
 - ✅ **TypeScript Compilation:** `npm run type-check` - No errors
 - ✅ **Unit Tests:** `npm test` - All tests passing
 - ✅ **Zero Regressions:** No breaking changes to public APIs
 
 ### Recommended Unit Tests (Future)
+
 ```typescript
 describe('ConnectionHandlers', () => {
   it('should update state to connected on ICE connected', () => {
@@ -418,6 +430,7 @@ describe('ConnectionHandlers', () => {
 ## Production Verification
 
 ### Validation Steps
+
 1. ✅ TypeScript compilation successful (no type errors)
 2. ✅ Unit tests passing (no regressions)
 3. 🔄 **TODO:** Test in dev environment (voice conversation flow)
@@ -426,6 +439,7 @@ describe('ConnectionHandlers', () => {
 6. 🔄 **TODO:** Test connection recovery on disconnected state
 
 ### Expected Behavior
+
 - ICE connection states logged correctly
 - Peer connection states logged correctly
 - State manager updated on connected/failed states
@@ -437,11 +451,13 @@ describe('ConnectionHandlers', () => {
 ## Next Steps
 
 ### Phase 5: BackendIntegration (Recommended Next)
+
 **Target:** Extract backend socket & relay logic (~150 lines)  
 **Impact:** Remove ~150 lines from ConversationController  
 **Benefit:** Clear backend integration boundary
 
 ### Phase 6: PublicAPI (Planned)
+
 **Target:** Extract public API methods (~280 lines)  
 **Impact:** Remove ~280 lines from ConversationController  
 **Benefit:** Clean public API facade
@@ -467,18 +483,21 @@ describe('ConnectionHandlers', () => {
 ## Lessons Learned
 
 ### What Went Well
+
 1. ✅ **Clean Extraction:** ConnectionHandlers has zero coupling to ConversationController internals
 2. ✅ **Dependency Injection:** All dependencies passed via interface (testable)
 3. ✅ **Zero Breaking Changes:** Public API unchanged, backward compatible
 4. ✅ **Comprehensive Documentation:** JSDoc with connection state flow diagrams
 
 ### Challenges
+
 1. ⚠️ **Initialization Order:** Had to initialize ConnectionHandlers AFTER webrtcManager but BEFORE setting callbacks
    - **Resolution:** Initialize ConnectionHandlers immediately after webrtcManager creation
 2. ⚠️ **Constructor Still Large:** Constructor is still ~400 lines (need more extraction)
    - **Mitigation:** Continue with Phase 5 (BackendIntegration) to extract more logic
 
 ### Recommendations
+
 1. ✅ **Continue Sequential:** Proceed with Phase 5 (BackendIntegration) next
 2. ✅ **Document as We Go:** Keep creating completion docs for each phase
 3. ✅ **Test Incrementally:** Run TypeScript + tests after each phase
@@ -499,6 +518,7 @@ Phase 4 successfully extracted WebRTC connection state handling into a dedicated
 ## Appendix: Code Snippets
 
 ### ConnectionHandlers Usage Example
+
 ```typescript
 // In ConversationController constructor
 this.connectionHandlers = new ConnectionHandlers({
@@ -524,7 +544,8 @@ const context = buildConnectionContext({
 ```
 
 ### Connection State Event Flow
-```
+
+``` text
 WebRTC Connection Established
     ↓
 ICE State Changes: new → checking → connected

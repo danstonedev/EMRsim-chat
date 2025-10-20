@@ -58,36 +58,37 @@ export function useVoiceAutostart({
     if (voiceStatus === 'connected' || voiceStatus === 'connecting') return
 
     // Avoid re-attempting for the same session
-    if (autostartStateRef.current.attemptedFor === sessionId) return
-    autostartStateRef.current.attemptedFor = sessionId
-    autostartStateRef.current.retries = 0
+  const localAuto = autostartStateRef.current
+  if (localAuto.attemptedFor === sessionId) return
+  localAuto.attemptedFor = sessionId
+  localAuto.retries = 0
 
     // Configuration from environment or defaults
     const delay = Number((import.meta as any)?.env?.VITE_VOICE_AUTOSTART_DELAY_MS) || 250
     const retryMs = Number((import.meta as any)?.env?.VITE_VOICE_AUTOSTART_RETRY_MS) || 500
     const maxRetries = Number((import.meta as any)?.env?.VITE_VOICE_AUTOSTART_MAX_RETRIES) || 2
 
-    const tryStart = async () => {
+    const tryStart = async (): Promise<void> => {
       try {
         await startVoiceSession()
       } catch {
         // Retry on failure up to maxRetries
-        if (autostartStateRef.current.retries < maxRetries) {
-          autostartStateRef.current.retries += 1
-          autostartStateRef.current.timer = window.setTimeout(() => void tryStart(), retryMs) as unknown as number
+        if (localAuto.retries < maxRetries) {
+          localAuto.retries += 1
+          localAuto.timer = window.setTimeout(() => { void tryStart() }, retryMs) as unknown as number
         }
       }
     }
 
     // Initial delayed start
-    autostartStateRef.current.timer = window.setTimeout(() => void tryStart(), delay) as unknown as number
+  localAuto.timer = window.setTimeout(() => { void tryStart() }, delay) as unknown as number
 
     // Cleanup on unmount or dependency change
     return () => {
-      const timerId = autostartStateRef.current.timer
+      const timerId = localAuto.timer
       if (timerId != null) {
         window.clearTimeout(timerId)
-        autostartStateRef.current.timer = null
+        localAuto.timer = null
       }
     }
   }, [voiceEnabled, spsEnabled, sessionId, isComposing, voiceStatus, startVoiceSession, autostartSetting])

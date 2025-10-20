@@ -23,6 +23,7 @@ Comprehensive documentation organization completed. The project now has a clear,
 **Moved to:** `ops/archive/` (now contains 69 files)
 
 **Categories archived:**
+
 - **Phase completion summaries:** PHASE1_*, PHASE2_*, PHASE3_*, etc.
 - **Fix reports:** *_FIX.md files (animations, voice, console warnings, etc.)
 - **Completion reports:** *_COMPLETE.md files (refactoring, modernization, integrations)
@@ -31,7 +32,7 @@ Comprehensive documentation organization completed. The project now has a clear,
 - **Legacy plans:** LEGACY_ANIMATION_PATHS_CLEANUP, STARTUP_LOADING_REFACTOR, APP_TX_EFFECT_CONSOLIDATION, V2_HOOKS_CONSOLIDATION
 
 **Specific files moved:**
-```
+``` text
 PHASE1_CLEANUP_COMPLETE.md
 PHASE1_LOGGING_CLEANUP_COMPLETE.md
 PHASE1_2_SUMMARY.md
@@ -72,6 +73,7 @@ V2_HOOKS_CONSOLIDATION.md
 ### 3. ✅ Consolidated Documentation
 
 **3D Viewer & Animations:**
+
 - Kept: `3D_VIEWER_START_HERE.md` (comprehensive index)
 - Kept: `3D_VIEWER_IMPLEMENTATION.md` (technical details)
 - Kept: `3D_VIEWER_ROADMAP.md` (future plans)
@@ -84,6 +86,7 @@ V2_HOOKS_CONSOLIDATION.md
 ### 4. ✅ Cross-Referenced Ops Docs
 
 **Enhanced SPS documentation:**
+
 - Added cross-reference from `SPS_CONTENT_AUTHORING.md` → `LLM_CASE_GENERATION_PROMPT_KIT.md`
 - Added cross-reference from `LLM_CASE_GENERATION_PROMPT_KIT.md` → `SPS_CONTENT_AUTHORING.md`
 - Both docs now clearly explain their complementary roles
@@ -93,6 +96,7 @@ V2_HOOKS_CONSOLIDATION.md
 ### 5. ✅ Updated Main Navigation
 
 **README.md improvements:**
+
 - Added prominent link to `DOCS_INDEX.md` as primary entry point
 - Expanded quick links section
 - Added testing and production readiness links
@@ -102,7 +106,8 @@ V2_HOOKS_CONSOLIDATION.md
 ## Current Documentation Structure
 
 ### Root Level (High-Value Docs)
-```
+
+``` text
 README.md                              # Quick start
 DOCS_INDEX.md                          # 📚 DOCUMENTATION HUB
 CHANGELOG.md                           # Version history
@@ -127,7 +132,8 @@ YOUTUBE_EMBED_GUIDE.md                 # YouTube embeds
 ```
 
 ### docs/ (Architecture)
-```
+
+``` text
 README.md                              # Architecture index
 current-architecture.md                # System design
 proposed-architecture.md               # Future design
@@ -135,7 +141,8 @@ migration-plan.md                      # Migration strategy
 ```
 
 ### ops/docs/ (Operations & Content)
-```
+
+``` text
 README.md                              # Ops landing page
 BUILD_GUIDE.md                         # Build/deploy guide
 API_CONTRACTS.md                       # API specs
@@ -153,13 +160,15 @@ PHASE4_TASK4_COMPLETE.md
 ```
 
 ### ops/archive/ (69 historical docs)
-```
+
+``` text
 # Phase completions, fix reports, debug sessions
 # All superseded by current documentation
 ```
 
 ### frontend/docs/ (Frontend Deep Dives)
-```
+
+``` text
 conversation-controller-map.md
 conversation-controller-refactor-continuation.md
 MIXAMO_ASSET_GUIDE.md
@@ -176,21 +185,25 @@ PHASE3.4_COMPLETE.md
 ## Benefits
 
 ### For New Team Members
+
 - ✅ Clear entry point (`DOCS_INDEX.md`)
 - ✅ No confusion from obsolete docs
 - ✅ Easy to find what you need
 
 ### For Current Developers
+
 - ✅ Reduced noise in file explorer
 - ✅ Clear separation of current vs. historical
 - ✅ Better cross-references between related docs
 
 ### For Content Authors
+
 - ✅ Clear path: Manual authoring OR AI-assisted generation
 - ✅ Complementary guides properly linked
 - ✅ Workflow documentation up-to-date
 
 ### For Documentation Maintenance
+
 - ✅ Standards documented in DOCS_INDEX.md
 - ✅ Clear archival policy
 - ✅ Single index to maintain
@@ -200,6 +213,7 @@ PHASE3.4_COMPLETE.md
 ## Documentation Standards (Now Documented)
 
 ### Placement Rules
+
 - Root: Cross-cutting concerns, major features
 - `docs/`: Architecture, system design
 - `ops/docs/`: Operations, deployment, authoring
@@ -207,12 +221,14 @@ PHASE3.4_COMPLETE.md
 - `backend/docs/`: Backend-specific details
 
 ### Naming Conventions
+
 - SCREAMING_SNAKE_CASE for visibility
 - Context prefix (3D_VIEWER_, ANIMATION_, TESTING_)
 - Completion docs: `*_COMPLETE.md` → archive after 30 days
 - Fix docs: `*_FIX.md` → archive after validation
 
 ### Maintenance Policy
+
 - Review quarterly
 - Archive obsolete docs to `ops/archive/`
 - Update DOCS_INDEX.md for changes
@@ -223,17 +239,20 @@ PHASE3.4_COMPLETE.md
 ## Next Steps
 
 ### Immediate (Done)
+
 - ✅ Archive obsolete documentation
 - ✅ Create central index
 - ✅ Update main README
 - ✅ Cross-reference ops docs
 
 ### Short-term (Recommended)
+
 - 📝 Update CHANGELOG.md with this cleanup
 - 📝 Review `frontend/docs/` for consolidation opportunities
 - 📝 Consider moving PHASE* docs from `frontend/docs/` to archive
 
 ### Long-term (Policy)
+
 - 📝 Archive `*_COMPLETE.md` docs 30 days after completion
 - 📝 Archive `*_FIX.md` docs immediately after validation
 - 📝 Review DOCS_INDEX.md quarterly
@@ -244,6 +263,7 @@ PHASE3.4_COMPLETE.md
 ## Impact Summary
 
 **Before:**
+
 - 80+ markdown files at root level
 - Mix of current and obsolete docs
 - No clear entry point
@@ -251,6 +271,7 @@ PHASE3.4_COMPLETE.md
 - Hard to navigate
 
 **After:**
+
 - ~25 current docs at root (focused, relevant)
 - 69 historical docs properly archived
 - Clear entry point (DOCS_INDEX.md)
@@ -266,6 +287,7 @@ PHASE3.4_COMPLETE.md
 These files remain active because they contain current information:
 
 ### Still Relevant
+
 - `REFACTORING_OPPORTUNITIES.md` - Active tracking of refactoring work
 - `PRODUCTION_READINESS.md` - Current production checklist
 - `TESTING_GUIDE.md` - Current testing standards

@@ -1,40 +1,48 @@
 # Media Display System - Implementation Complete
 
 ## Overview
+
 The media display system allows scenarios to include visual media (images/videos) that are displayed in response to appropriate clinical prompts during the objective examination phase.
 
 ## Status
+
 ✅ **Implementation Complete** - All core features implemented and ready for testing.
 
 ## Architecture
 
 ### 1. Backend Schema Extension
+
 - `MediaAsset` type added to `backend/src/sps/core/types.ts`
 - `media_library` field added to `ClinicalScenario` interface
 - Zod validation schema `zMediaAsset` added for type safety
 
 ### 2. Frontend Types
+
 - `ScenarioMediaAsset` interface added to frontend scenario types
 - `MediaReference` interface added to message types
 - Media field added to `Message` and `ConversationEvent` types
 
 ### 3. AI Instructions
+
 - `buildMediaGuidance()` function generates AI instructions when media is available
 - AI receives list of available media with IDs and context
 - Instructions guide AI to use `[MEDIA:media_id]` markers
 
 ### 4. Media Parsing
+
 - `ConversationController.parseMediaMarker()` extracts media from AI responses
 - Removes `[MEDIA:id]` markers from text before display
 - Resolves media reference from scenario library
 
 ### 5. UI Components
+
 - `MediaModal` component for displaying images/videos
 - Fullscreen overlay with ESC/click-to-close
 - Accessibility features (keyboard navigation, ARIA labels)
 - Responsive styling with Safari compatibility
 
 ### 6. Message Integration
+
 - `MessageItem` displays media thumbnail with overlay badge
 - Click/keyboard interaction opens modal
 - Automatic video playback when modal opens
@@ -96,6 +104,7 @@ The media display system allows scenarios to include visual media (images/videos
 **AI Response** (with marker): "Sure, let me bend my knee for you. [MEDIA:knee_flexion_active]"
 
 **User Sees**:
+
 - Text: "Sure, let me bend my knee for you."
 - Video thumbnail appears below message
 - Click thumbnail → Modal opens with video playing
@@ -139,11 +148,13 @@ return (
 ## File Changes
 
 ### Backend
+
 - `backend/src/sps/core/types.ts` - MediaAsset interface
 - `backend/src/sps/core/schemas.ts` - zMediaAsset validation
 - `backend/src/sps/runtime/sps.service.ts` - Media guidance & resolution
 
 ### Frontend
+
 - `frontend/src/shared/types/scenario.ts` - ScenarioMediaAsset interface
 - `frontend/src/shared/ConversationController.ts` - Media parsing logic
 - `frontend/src/pages/chatShared.ts` - MediaReference, Message types
@@ -193,18 +204,21 @@ return (
 ## Benefits
 
 ### Educational
+
 - **Bridges Realism Gap**: Students see what they'd observe in person
 - **Visual Learning**: ROM, gait, postures can only be seen, not described
 - **Pattern Recognition**: Build visual assessment skills
 - **Standardization**: All students see same presentation
 
 ### Technical
+
 - **Maintainable**: Media defined declaratively in scenarios
 - **Scalable**: Add media without code changes
 - **Backward Compatible**: Scenarios without media work unchanged
 - **User-Friendly**: Simple click interaction, familiar modal pattern
 
 ### Future Expansion
+
 - **Interactive Media**: Hotspots, annotations, zoom regions
 - **Progressive Disclosure**: Multiple views (anterior, lateral, etc.)
 - **Comparison Views**: Normal vs. abnormal side-by-side
@@ -226,6 +240,7 @@ return (
 ## Questions / Issues
 
 If you encounter issues:
+
 1. Check browser console for media loading errors
 2. Verify media URLs are accessible
 3. Confirm scenario has `media_library` array

@@ -6,7 +6,7 @@
 
 ### Event Sequence (BROKEN):
 
-```
+``` text
 1. User speaks: "Alone, this is a test"
 2. ✅ TRANSCRIPTION COMPLETED: { transcript: "" } ← EMPTY STRING!
 3. 🔥 Calls finalizeUser with EMPTY transcript
@@ -18,7 +18,7 @@
 
 ### Event Sequence (FIXED):
 
-```
+``` text
 1. User speaks: "Alone, this is a test"
 2. ✅ TRANSCRIPTION COMPLETED: { transcript: "" }
 3. ⚠️ Ignores empty completion - waits for deltas
@@ -45,6 +45,7 @@ if (!transcript || transcript.trim().length === 0) {
 ```
 
 **Why this works:**
+
 - OpenAI sometimes sends `conversation.item.input_audio_transcription.completed` with empty `transcript: ""`
 - This was prematurely finalizing the user message
 - Now we wait for delta events or a non-empty completion
@@ -62,6 +63,7 @@ if (!this.userFinalized && this.userHasDelta) {
 ```
 
 **Why this works:**
+
 - When assistant response starts, we know user is done speaking
 - TranscriptEngine has buffered the delta text
 - Calling `finalizeUser({})` uses the buffered text
@@ -71,12 +73,14 @@ if (!this.userFinalized && this.userHasDelta) {
 ### Test Case 1: User Says "Hello"
 
 **Before fix:**
+
 - Completion event with `transcript: ""` finalizes user
 - Delta with "Hello" arrives but is ignored
 - Chat bubble stays empty
 - Print transcript shows "Hello" ✅ (different code path)
 
 **After fix:**
+
 - Completion event with `transcript: ""` is ignored
 - Delta with "Hello" updates partial transcript
 - Assistant response starts → force finalize
@@ -86,9 +90,11 @@ if (!this.userFinalized && this.userHasDelta) {
 ### Test Case 2: User Says "I'm a physical therapist"
 
 **Before fix:**
+
 - Same issue as above
 
 **After fix:**
+
 - Deltas arrive: "I'm a physical therapist"
 - Shows as partial in chat bubble (streaming effect)
 - Assistant starts → finalize
@@ -97,6 +103,7 @@ if (!this.userFinalized && this.userHasDelta) {
 ## Why Print Transcript Worked But Chat Bubbles Didn't
 
 The "Print Transcript" page listens to the **same events**, but likely:
+
 1. Shows partial transcripts (from deltas)
 2. Doesn't require finalization to display
 
@@ -114,7 +121,7 @@ The chat bubbles require **final** transcripts with `isFinal: true` to display a
 
 ### Console Logs to Expect
 
-```
+``` text
 ✅ TRANSCRIPTION COMPLETED: { transcriptLength: 0, preview: '' }
 ⚠️ Ignoring empty transcription completion - waiting for deltas
 📝 TRANSCRIPTION DELTA: { delta: 'This is a test' }

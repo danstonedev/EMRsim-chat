@@ -7,6 +7,7 @@ This document summarizes all Phase 3 production readiness improvements completed
 ### What Was Added
 
 **Logger Utility** (`backend/src/utils/logger.ts`):
+
 - Centralized Pino logger with structured logging
 - Pretty printing in development for readability
 - JSON output in production for log aggregation
@@ -14,11 +15,13 @@ This document summarizes all Phase 3 production readiness improvements completed
 - Child logger support for contextual logging
 
 **Request Logging Middleware**:
+
 - Automatic request/response logging
 - Tracks: method, URL, status code, duration, IP, user agent
 - Color-coded log levels based on response status
 
 **Integration**:
+
 - Added to `app.ts` as middleware
 - Integrated in `index.ts` for boot diagnostics
 - Available throughout backend via `import { logger } from './utils/logger.ts'`
@@ -55,17 +58,20 @@ sessionLogger.info('Processing request'); // Automatically includes sessionId
 ### What Was Added
 
 **Swagger Configuration** (`backend/src/config/swagger.ts`):
+
 - OpenAPI 3.0 specification
 - API metadata (title, version, description)
 - Common schemas (Error, Session, Persona, etc.)
 - Reusable response definitions
 
 **Swagger UI Integration**:
+
 - Interactive API documentation at `/api-docs`
 - Auto-generated from JSDoc annotations
 - Try-it-out functionality for testing endpoints
 
 **Documented Endpoints**:
+
 - `/api/health` - Health check with full parameter documentation
 - `/api/personas` - List all personas
 - `/api/personas/{id}` - Get persona by ID
@@ -74,7 +80,7 @@ sessionLogger.info('Processing request'); // Automatically includes sessionId
 ### Usage
 
 **Access Documentation**:
-```
+``` text
 http://localhost:3002/api-docs
 ```
 
@@ -123,6 +129,7 @@ router.post('/', async (req, res) => {
 ### What Was Added
 
 **Playwright Configuration** (`playwright.config.ts`):
+
 - Test runner configuration
 - Chromium browser setup
 - Automatic dev server startup
@@ -131,6 +138,7 @@ router.post('/', async (req, res) => {
 - Retry on CI
 
 **E2E Test Suite** (`e2e/critical-flows.spec.ts`):
+
 - Home page loading test
 - Case selection navigation
 - Personas list display
@@ -141,6 +149,7 @@ router.post('/', async (req, res) => {
 - Session management tests
 
 **NPM Scripts** (in root `package.json`):
+
 - `npm run test:e2e` - Run all E2E tests
 - `npm run test:e2e:ui` - Run with UI mode (interactive)
 - `npm run test:e2e:headed` - Run with visible browser
@@ -195,6 +204,7 @@ test('my feature test', async ({ page }) => {
 ### What Was Added
 
 **Performance Middleware** (`backend/src/middleware/performance.ts`):
+
 - Real-time request tracking
 - Response time metrics (min, max, avg, p50, p95, p99)
 - Requests by method, status, and route
@@ -202,10 +212,12 @@ test('my feature test', async ({ page }) => {
 - Prometheus-compatible metrics export
 
 **Metrics Endpoints**:
+
 - `/api/metrics` - JSON format for dashboards
 - `/metrics` - Prometheus format for monitoring systems
 
 **Metrics Tracked**:
+
 - Total request count
 - Requests by HTTP method (GET, POST, etc.)
 - Requests by status code (200, 404, 500, etc.)
@@ -264,6 +276,7 @@ curl http://localhost:3002/metrics
 **Integrate with Monitoring**:
 
 1. **Prometheus**: Add scrape config
+
    ```yaml
    scrape_configs:
      - job_name: 'emrsim-backend'
@@ -320,17 +333,20 @@ ENABLE_METRICS=true               # Optional flag if you want conditional metric
 ### Testing
 
 1. **Run E2E Tests**:
+
    ```bash
    npm run test:e2e
    ```
 
 2. **Load Testing**:
+
    ```bash
    # Example using autocannon
    npx autocannon -c 10 -d 30 http://localhost:3002/api/health
    ```
 
 3. **Monitor Metrics During Load Test**:
+
    ```bash
    watch -n 1 curl -s http://localhost:3002/api/metrics | jq .responseTime
    ```
@@ -338,12 +354,15 @@ ENABLE_METRICS=true               # Optional flag if you want conditional metric
 ### API Documentation
 
 1. **Review Documentation**:
+
    Visit `http://localhost:3002/api-docs`
 
 2. **Test Endpoints**:
+
    Use Swagger UI "Try it out" feature
 
 3. **Share with Team**:
+
    Deploy `/api-docs` to production for team reference
 
 ---
@@ -351,12 +370,14 @@ ENABLE_METRICS=true               # Optional flag if you want conditional metric
 ## Next Steps
 
 ### Immediate (Week 1)
+
 - [ ] Review and test all new features locally
 - [ ] Add JSDoc annotations to remaining routes
 - [ ] Write additional E2E tests for voice features
 - [ ] Set up Prometheus/Grafana locally
 
 ### Short-term (Week 2-3)
+
 - [ ] Integrate metrics with production monitoring
 - [ ] Set up log aggregation in production
 - [ ] Create Grafana dashboards
@@ -364,6 +385,7 @@ ENABLE_METRICS=true               # Optional flag if you want conditional metric
 - [ ] Run E2E tests in CI/CD pipeline
 
 ### Long-term (Month 1-2)
+
 - [ ] Replace remaining console.log statements with structured logging
 - [ ] Add trace IDs for request correlation
 - [ ] Set up distributed tracing (OpenTelemetry)
@@ -375,7 +397,8 @@ ENABLE_METRICS=true               # Optional flag if you want conditional metric
 ## Architecture Impact
 
 ### Before Phase 3
-```
+
+``` text
 ┌─────────────┐
 │   Express   │  console.log everywhere
 │   Backend   │  No API docs
@@ -384,7 +407,8 @@ ENABLE_METRICS=true               # Optional flag if you want conditional metric
 ```
 
 ### After Phase 3
-```
+
+``` text
 ┌──────────────────────────┐
 │   Express Backend        │
 │  ├─ Structured Logging   │ → Datadog/CloudWatch
@@ -408,6 +432,7 @@ ENABLE_METRICS=true               # Optional flag if you want conditional metric
 **Symptom**: `/api-docs` shows blank page
 
 **Solution**:
+
 1. Check TypeScript compilation: `cd backend && npx tsc --noEmit`
 2. Verify import in `app.ts`
 3. Check browser console for CSP errors
@@ -417,6 +442,7 @@ ENABLE_METRICS=true               # Optional flag if you want conditional metric
 **Symptom**: `/metrics` always shows 0 or old data
 
 **Solution**:
+
 1. Verify middleware order in `app.ts` (performance middleware should be early)
 2. Check that routes are being hit
 3. Restart backend to clear old state
@@ -426,6 +452,7 @@ ENABLE_METRICS=true               # Optional flag if you want conditional metric
 **Symptom**: Tests timeout or fail to find elements
 
 **Solution**:
+
 1. Ensure backend and frontend are running: `npm run test:e2e:headed`
 2. Update selectors in test files to match your UI
 3. Increase timeout in `playwright.config.ts`
@@ -436,6 +463,7 @@ ENABLE_METRICS=true               # Optional flag if you want conditional metric
 **Symptom**: Logs are JSON in development
 
 **Solution**:
+
 1. Verify `NODE_ENV !== 'production'`
 2. Check that `pino-pretty` is installed
 3. Restart backend after env changes
@@ -452,6 +480,7 @@ All 4 Phase 3 production readiness tasks completed:
 ✅ **Performance Monitoring** - Metrics middleware with Prometheus export  
 
 **Total Files Created/Modified**: 12 files
+
 - 4 new utility/middleware files
 - 3 new test/config files
 - 5 modified existing files

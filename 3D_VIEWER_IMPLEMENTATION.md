@@ -27,7 +27,7 @@ frontend/src/pages/components/viewer/utils/mixerController.ts # Play, loop polic
 ## Animation Manifest
 
 Located at `animations/manifest.ts` — each entry defines:
- 
+
 ```ts
 export type AnimationSpec = {
   id: string            // filename (unique id)

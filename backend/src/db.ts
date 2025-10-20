@@ -8,8 +8,8 @@ interface Database {
 
 interface Statement {
   run(...params: unknown[]): { changes: number; lastInsertRowid: number };
-  get(...params: unknown[]): any;
-  all(...params: unknown[]): any[];
+  get<T = unknown>(...params: unknown[]): T | undefined;
+  all<T = unknown>(...params: unknown[]): T[];
 }
 
 // Database table types
@@ -113,19 +113,22 @@ export async function migrate(pathOrDb?: string | Database): Promise<void> {
   }
 
   try {
-    // @ts-ignore - better-sqlite3 is an optional dependency
-    const Database = (await import('better-sqlite3')).default;
-    
+    // Optional dependency: better-sqlite3
+    const mod = (await import('better-sqlite3')) as unknown as { default: new (p: string) => Database };
+    const SqliteCtor = mod.default;
+
     if (typeof pathOrDb === 'string') {
-      sqliteDb = new Database(pathOrDb) as Database;
+      sqliteDb = new SqliteCtor(pathOrDb) as unknown as Database;
     } else {
       sqliteDb = pathOrDb;
     }
-    
+
     usingSqlite = true;
     sqliteDb.pragma('journal_mode = WAL');
 
-    sqliteDb.prepare(`
+    sqliteDb
+      .prepare(
+        `
       CREATE TABLE IF NOT EXISTS personas (
         id TEXT PRIMARY KEY,
         display_name TEXT NOT NULL,
@@ -136,9 +139,13 @@ export async function migrate(pathOrDb?: string | Database): Promise<void> {
         tone TEXT,
         response_template TEXT
       )
-    `).run();
+    `
+      )
+      .run();
 
-    sqliteDb.prepare(`
+    sqliteDb
+      .prepare(
+        `
       CREATE TABLE IF NOT EXISTS sessions (
         id TEXT PRIMARY KEY,
         persona_id TEXT NOT NULL,
@@ -150,9 +157,13 @@ export async function migrate(pathOrDb?: string | Database): Promise<void> {
         sps_phase TEXT,
         sps_gate_json TEXT
       )
-    `).run();
+    `
+      )
+      .run();
 
-    sqliteDb.prepare(`
+    sqliteDb
+      .prepare(
+        `
       CREATE TABLE IF NOT EXISTS turns (
         id TEXT PRIMARY KEY,
         session_id TEXT NOT NULL,
@@ -165,11 +176,15 @@ export async function migrate(pathOrDb?: string | Database): Promise<void> {
         timings_json TEXT,
         fingerprint TEXT
       )
-    `).run();
+    `
+      )
+      .run();
 
     sqliteDb.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_turns_fingerprint ON turns(fingerprint)`).run();
 
-    sqliteDb.prepare(`
+    sqliteDb
+      .prepare(
+        `
       CREATE TABLE IF NOT EXISTS scenarios (
         scenario_id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
@@ -181,7 +196,9 @@ export async function migrate(pathOrDb?: string | Database): Promise<void> {
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP
       )
-    `).run();
+    `
+      )
+      .run();
 
     console.log('[DB] SQLite schema ready.');
   } catch (e) {
@@ -198,7 +215,7 @@ export function healthCheck(): 'ok' | 'err' {
       sqliteDb.prepare('SELECT 1').get();
     }
     return 'ok';
-  } catch (e) {
+  } catch {
     return 'err';
   }
 }
@@ -211,8 +228,19 @@ export function createSession(persona_id: string, mode: string, spsData: SpsSess
   const id = nanoid();
   if (usingSqlite && sqliteDb) {
     if (spsData) {
-      sqliteDb.prepare('INSERT INTO sessions (id, persona_id, mode, sps_session_id, sps_scenario_id, sps_phase, sps_gate_json) VALUES (?, ?, ?, ?, ?, ?, ?)')
-        .run(id, persona_id, mode, spsData.sps_session_id, spsData.scenario_id, spsData.phase, JSON.stringify(spsData.gate));
+      sqliteDb
+        .prepare(
+          'INSERT INTO sessions (id, persona_id, mode, sps_session_id, sps_scenario_id, sps_phase, sps_gate_json) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        )
+        .run(
+          id,
+          persona_id,
+          mode,
+          spsData.sps_session_id,
+          spsData.scenario_id,
+          spsData.phase,
+          JSON.stringify(spsData.gate)
+        );
     } else {
       sqliteDb.prepare('INSERT INTO sessions (id, persona_id, mode) VALUES (?, ?, ?)').run(id, persona_id, mode);
     }
@@ -231,12 +259,18 @@ export function createSession(persona_id: string, mode: string, spsData: SpsSess
 
 export function getSessionById(id: string): SessionRow | null {
   if (usingSqlite && sqliteDb) {
-    return sqliteDb.prepare('SELECT * FROM sessions WHERE id = ?').get(id) || null;
+    const row = sqliteDb.prepare('SELECT * FROM sessions WHERE id = ?').get<SessionRow>(id);
+    return row || null;
   }
   return mem.sessions.find(s => s.id === id) || null;
 }
 
-export function insertTurn(session_id: string, role: string, text: string, extras: Record<string, unknown> = {}): TurnResult {
+export function insertTurn(
+  session_id: string,
+  role: string,
+  text: string,
+  extras: Record<string, unknown> = {}
+): TurnResult {
   const id = nanoid();
   const fingerprint = (extras.fingerprint as string | undefined) || null;
   const payload = { ...extras };
@@ -256,16 +290,16 @@ export function insertTurn(session_id: string, role: string, text: string, extra
     return Number.isFinite(num) && num > 0 ? Math.round(num) : null;
   };
 
-  const startedMs = coerceMs((payload as any).started_timestamp_ms);
-  delete (payload as any).started_timestamp_ms;
+  const startedMs = coerceMs((payload as Record<string, unknown>).started_timestamp_ms);
+  delete (payload as Record<string, unknown>).started_timestamp_ms;
 
-  const finalizedMs = coerceMs((payload as any).finalized_timestamp_ms);
-  delete (payload as any).finalized_timestamp_ms;
+  const finalizedMs = coerceMs((payload as Record<string, unknown>).finalized_timestamp_ms);
+  delete (payload as Record<string, unknown>).finalized_timestamp_ms;
 
-  const emittedMs = coerceMs((payload as any).emitted_timestamp_ms);
-  delete (payload as any).emitted_timestamp_ms;
+  const emittedMs = coerceMs((payload as Record<string, unknown>).emitted_timestamp_ms);
+  delete (payload as Record<string, unknown>).emitted_timestamp_ms;
 
-  const legacyTimestampMs = coerceMs((payload as any).timestamp_ms);
+  const legacyTimestampMs = coerceMs((payload as Record<string, unknown>).timestamp_ms);
   delete payload.timestamp_ms;
 
   const finalTimestampMs = finalizedMs ?? legacyTimestampMs ?? emittedMs;
@@ -283,7 +317,8 @@ export function insertTurn(session_id: string, role: string, text: string, extra
   if (rawTimings) {
     if (typeof rawTimings === 'string') {
       try {
-        timingsData = JSON.parse(rawTimings);
+        const parsed: unknown = JSON.parse(rawTimings);
+        timingsData = typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, unknown>) : {};
       } catch {
         timingsData = {};
       }
@@ -300,19 +335,46 @@ export function insertTurn(session_id: string, role: string, text: string, extra
 
   if (usingSqlite && sqliteDb) {
     try {
-      const columns = ['id', 'session_id', 'role', 'text', 'audio_ms', 'tokens_in', 'tokens_out', 'timings_json', 'fingerprint'];
-      const values: (string | number | null)[] = [id, session_id, role, text, audio_ms, tokens_in, tokens_out, timings_json, fingerprint];
+      const columns = [
+        'id',
+        'session_id',
+        'role',
+        'text',
+        'audio_ms',
+        'tokens_in',
+        'tokens_out',
+        'timings_json',
+        'fingerprint',
+      ];
+      const values: (string | number | null)[] = [
+        id,
+        session_id,
+        role,
+        text,
+        audio_ms,
+        tokens_in,
+        tokens_out,
+        timings_json,
+        fingerprint,
+      ];
       if (createdAt) {
         columns.push('created_at');
         values.push(createdAt);
       }
       const placeholders = columns.map(() => '?').join(', ');
-      sqliteDb.prepare(`INSERT INTO turns (${columns.join(', ')}) VALUES (${placeholders})`)
-        .run(...values);
+      sqliteDb.prepare(`INSERT INTO turns (${columns.join(', ')}) VALUES (${placeholders})`).run(...values);
       return { id, created: true };
-    } catch (e: any) {
-      if (fingerprint && e?.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-        const existing = sqliteDb.prepare('SELECT id FROM turns WHERE fingerprint = ? LIMIT 1').get(fingerprint) as { id: string } | undefined;
+    } catch (e: unknown) {
+      if (
+        fingerprint &&
+        typeof e === 'object' &&
+        e !== null &&
+        'code' in e &&
+        (e as { code?: unknown }).code === 'SQLITE_CONSTRAINT_UNIQUE'
+      ) {
+        const existing = sqliteDb
+          .prepare('SELECT id FROM turns WHERE fingerprint = ? LIMIT 1')
+          .get<{ id: string }>(fingerprint);
         return { id: existing?.id || '', created: false };
       }
       throw e;
@@ -320,7 +382,7 @@ export function insertTurn(session_id: string, role: string, text: string, extra
   }
 
   if (fingerprint) {
-    const existing = mem.turns.find((t) => t.fingerprint === fingerprint);
+    const existing = mem.turns.find(t => t.fingerprint === fingerprint);
     if (existing) return { id: existing.id, created: false };
   }
 
@@ -341,19 +403,25 @@ export function insertTurn(session_id: string, role: string, text: string, extra
   return { id, created: true };
 }
 
-export function getSessionTurns(sessionId: string): Array<{ id: string; role: string; text: string; created_at: string }> {
+export function getSessionTurns(
+  sessionId: string
+): Array<{ id: string; role: string; text: string; created_at: string }> {
   if (usingSqlite && sqliteDb) {
-    const rows = sqliteDb.prepare(`
+    const rows = sqliteDb
+      .prepare(
+        `
       SELECT id, role, text, created_at 
       FROM turns 
       WHERE session_id = ? 
       ORDER BY 
         CAST(COALESCE(strftime('%s', created_at), '0') AS INTEGER) ASC,
         rowid ASC
-    `).all(sessionId);
+    `
+      )
+      .all<{ id: string; role: string; text: string; created_at: string }>(sessionId);
     return rows;
   }
-  
+
   return mem.turns
     .filter(t => t.session_id === sessionId)
     .sort((a, b) => {
@@ -369,7 +437,8 @@ export function getSessionTurns(sessionId: string): Array<{ id: string; role: st
 
 export function updateSpsSessionData(sessionId: string, spsData: SpsSessionData): void {
   if (usingSqlite && sqliteDb) {
-    sqliteDb.prepare('UPDATE sessions SET sps_phase = ?, sps_gate_json = ? WHERE id = ?')
+    sqliteDb
+      .prepare('UPDATE sessions SET sps_phase = ?, sps_gate_json = ? WHERE id = ?')
       .run(spsData.phase, JSON.stringify(spsData.gate), sessionId);
   } else {
     const s = mem.sessions.find(x => x.id === sessionId);
@@ -398,17 +467,23 @@ export function upsertScenario(scenario: ClinicalScenario): string {
     setting: scenario.setting || null,
     tags: Array.isArray(scenario.tags) ? scenario.tags : [],
   };
-  
+
   if (usingSqlite && sqliteDb) {
     const now = new Date().toISOString();
     const tagsJson = JSON.stringify(lite.tags || []);
     const scenJson = JSON.stringify(scenario);
     const old = sqliteDb.prepare('SELECT scenario_id FROM scenarios WHERE scenario_id = ?').get(lite.scenario_id);
     if (old) {
-      sqliteDb.prepare('UPDATE scenarios SET title = ?, region = ?, difficulty = ?, setting = ?, tags_json = ?, scenario_json = ?, updated_at = ? WHERE scenario_id = ?')
+      sqliteDb
+        .prepare(
+          'UPDATE scenarios SET title = ?, region = ?, difficulty = ?, setting = ?, tags_json = ?, scenario_json = ?, updated_at = ? WHERE scenario_id = ?'
+        )
         .run(lite.title, lite.region, lite.difficulty, lite.setting, tagsJson, scenJson, now, lite.scenario_id);
     } else {
-      sqliteDb.prepare('INSERT INTO scenarios (scenario_id, title, region, difficulty, setting, tags_json, scenario_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      sqliteDb
+        .prepare(
+          'INSERT INTO scenarios (scenario_id, title, region, difficulty, setting, tags_json, scenario_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        )
         .run(lite.scenario_id, lite.title, lite.region, lite.difficulty, lite.setting, tagsJson, scenJson, now, now);
     }
   } else {
@@ -421,9 +496,16 @@ export function upsertScenario(scenario: ClinicalScenario): string {
 
 export function getScenarioByIdFull(scenarioId: string): ClinicalScenario | null {
   if (usingSqlite && sqliteDb) {
-    const row = sqliteDb.prepare('SELECT scenario_json FROM scenarios WHERE scenario_id = ?').get(scenarioId) as { scenario_json: string } | undefined;
+    const row = sqliteDb
+      .prepare('SELECT scenario_json FROM scenarios WHERE scenario_id = ?')
+      .get<{ scenario_json: string }>(scenarioId);
     if (!row) return null;
-    try { return JSON.parse(row.scenario_json); } catch { return null; }
+    try {
+      const parsed: unknown = JSON.parse(row.scenario_json);
+      return parsed as ClinicalScenario;
+    } catch {
+      return null;
+    }
   }
   const row = mem.scenarios.find(s => s.scenario_id === scenarioId);
   return row ? row.scenario_json : null;
@@ -445,58 +527,78 @@ export function listScenariosLite(): ScenarioLite[] {
       region: row.region,
       difficulty: row.difficulty,
       setting: row.setting,
-      tags: (() => { 
-        try { 
-          return Array.isArray(row.tags_json) ? row.tags_json as string[] : JSON.parse(row.tags_json || '[]'); 
-        } catch { 
-          return []; 
-        } 
+      tags: (() => {
+        try {
+          return Array.isArray(row.tags_json)
+            ? (row.tags_json as string[])
+            : (JSON.parse(row.tags_json || '[]') as string[]);
+        } catch {
+          return [];
+        }
       })(),
       ...personaMeta,
     };
   };
 
   if (usingSqlite && sqliteDb) {
-    const rows = sqliteDb.prepare('SELECT scenario_id, title, region, difficulty, setting, tags_json, scenario_json FROM scenarios ORDER BY title').all() as ScenarioRow[];
+    const rows = sqliteDb
+      .prepare(
+        'SELECT scenario_id, title, region, difficulty, setting, tags_json, scenario_json FROM scenarios ORDER BY title'
+      )
+      .all<ScenarioRow>();
     return rows.map(r => {
       let scenarioJson: ClinicalScenario | null = null;
-      try { scenarioJson = JSON.parse(r.scenario_json || '{}'); } catch { scenarioJson = null; }
+      try {
+        scenarioJson = JSON.parse(r.scenario_json || '{}') as ClinicalScenario;
+      } catch {
+        scenarioJson = null;
+      }
       return transform(r, scenarioJson);
     });
   }
 
-  return mem.scenarios.map(s => transform(
-    {
-      scenario_id: s.scenario_id,
-      title: s.title,
-      region: s.region,
-      difficulty: s.difficulty,
-      setting: s.setting,
-      tags_json: JSON.stringify(s.tags),
-    },
-    s.scenario_json,
-  ));
+  return mem.scenarios.map(s =>
+    transform(
+      {
+        scenario_id: s.scenario_id,
+        title: s.title,
+        region: s.region,
+        difficulty: s.difficulty,
+        setting: s.setting,
+        tags_json: JSON.stringify(s.tags),
+      },
+      s.scenario_json
+    )
+  );
 }
 
 export function getAllScenariosFull(): ClinicalScenario[] {
   if (usingSqlite && sqliteDb) {
-    const rows = sqliteDb.prepare('SELECT scenario_json FROM scenarios').all() as Array<{ scenario_json: string }>;
-    return rows.map(r => { try { return JSON.parse(r.scenario_json); } catch { return null; } }).filter((s): s is ClinicalScenario => s !== null);
+    const rows = sqliteDb.prepare('SELECT scenario_json FROM scenarios').all<{ scenario_json: string }>();
+    return rows
+      .map(r => {
+        try {
+          return JSON.parse(r.scenario_json) as ClinicalScenario;
+        } catch {
+          return null;
+        }
+      })
+      .filter((s): s is ClinicalScenario => s !== null);
   }
   return mem.scenarios.map(s => s.scenario_json);
 }
 
-export default { 
-  migrate, 
-  healthCheck, 
-  createSession, 
-  getSessionById, 
-  insertTurn, 
-  getSessionTurns, 
-  endSession, 
-  updateSpsSessionData, 
-  upsertScenario, 
-  getScenarioByIdFull, 
-  listScenariosLite, 
-  getAllScenariosFull 
+export default {
+  migrate,
+  healthCheck,
+  createSession,
+  getSessionById,
+  insertTurn,
+  getSessionTurns,
+  endSession,
+  updateSpsSessionData,
+  upsertScenario,
+  getScenarioByIdFull,
+  listScenariosLite,
+  getAllScenariosFull,
 };

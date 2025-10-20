@@ -45,13 +45,6 @@ export default function VoiceControls({
         onClick={() => {
           if (voiceLocked) return
           if (status === 'connected') {
-            if (!micPaused) {
-              try {
-                pause()
-              } catch {
-                // no-op
-              }
-            }
             openMicActions()
           } else {
             // Start voice session

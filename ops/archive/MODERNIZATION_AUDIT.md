@@ -9,6 +9,7 @@
 This audit identifies modernization opportunities across the codebase to improve maintainability, developer experience, type safety, security, and deployment readiness.
 
 **Priority Levels**:
+
 - 🔴 **HIGH**: Significant impact on maintainability/security
 - 🟡 **MEDIUM**: Moderate impact on developer experience
 - 🟢 **LOW**: Nice-to-have improvements
@@ -20,6 +21,7 @@ This audit identifies modernization opportunities across the codebase to improve
 ### 🔴 HIGH: Mixed JavaScript/TypeScript Architecture
 
 **Current State**:
+
 - Backend uses both `.js` (routes, controllers, services) and `.ts` (SPS engine) files
 - Creates maintenance confusion and reduces type safety benefits
 - Multiple `require()` statements mixed with ESM imports in routes/sps.js
@@ -30,11 +32,13 @@ This audit identifies modernization opportunities across the codebase to improve
 const fs = require('fs');
 const path = require('path');
 ```
+
 - Mixing CommonJS `require()` with ESM module system (package.json has `"type": "module"`)
 - No type checking on JavaScript files
 - Inconsistent module patterns across codebase
 
 **Recommendation**:
+
 1. **Migrate all `.js` files to `.ts`** (priority: routes → controllers → services)
 2. Replace inline `require()` with top-level ESM imports
 3. Add proper type definitions for Express handlers
@@ -42,6 +46,7 @@ const path = require('path');
 
 **Estimated Effort**: 2-3 days  
 **Benefits**: 
+
 - Full type safety across backend
 - Better IDE support and autocomplete
 - Catch errors at compile time
@@ -52,6 +57,7 @@ const path = require('path');
 ### 🟡 MEDIUM: Missing Express Type Definitions
 
 **Current State**:
+
 - Backend has `@types/node` but no `@types/express`
 - Express handlers lack type safety
 - Parameters, requests, and responses are untyped
@@ -81,12 +87,14 @@ router.get('/catalogs/tests/special', (_req, res) => {
 ```
 
 **Issues**:
+
 - Synchronous file reads in request handlers block the event loop
 - Repeated require() statements (should be at module level)
 - No caching—files read on every request
 - Error handling is minimal
 
 **Recommendation**:
+
 1. Load catalog files at startup and cache in memory
 2. Or use a catalog loader service with lazy initialization
 3. Use async file operations if dynamic loading needed
@@ -124,6 +132,7 @@ export const catalogService = new CatalogService();
 ### 🔴 HIGH: Missing Linting & Formatting Tools
 
 **Current State**:
+
 - No ESLint configuration
 - No Prettier configuration
 - Inconsistent code style
@@ -144,12 +153,14 @@ npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslin
 ```
 
 **Configuration Files Needed**:
+
 - `.eslintrc.json` (both frontend/backend)
 - `.prettierrc.json` (root or both)
 - `.prettierignore`
 - Add `lint` and `format` scripts to package.json
 
 **Benefits**:
+
 - Consistent code style
 - Catch common errors
 - Automated formatting on save
@@ -189,6 +200,7 @@ Align backend config with frontend's stricter settings.
 ### 🟢 LOW: Markdown Linting
 
 **Current State**:
+
 - Many documentation files have markdown linting errors (see error output)
 - Missing blank lines around headings, lists, code blocks
 
@@ -206,6 +218,7 @@ Add `.markdownlint.json` config and fix existing issues.
 ### 🟡 MEDIUM: Missing Test Coverage Reporting
 
 **Current State**:
+
 - Tests exist (Vitest) but no coverage metrics
 - Unknown which code paths are tested
 
@@ -230,11 +243,13 @@ Add to CI/CD pipeline to track coverage trends.
 ### 🟢 LOW: E2E Testing
 
 **Current State**:
+
 - Only unit/integration tests
 - No end-to-end browser automation
 
 **Recommendation**:
 Consider Playwright or Cypress for E2E testing of critical user flows:
+
 - Voice conversation initiation
 - Transcript display
 - Session management
@@ -246,6 +261,7 @@ Consider Playwright or Cypress for E2E testing of critical user flows:
 ### 🟡 MEDIUM: Inline Styles Overuse
 
 **Current State**:
+
 - `CaseBuilder.tsx` has 20+ inline style violations
 - Reduces reusability and makes theming harder
 
@@ -255,6 +271,7 @@ Consider Playwright or Cypress for E2E testing of critical user flows:
 ```
 
 **Recommendation**:
+
 1. Extract to CSS modules or styled-components
 2. Use Material-UI's `sx` prop for component-level styles
 3. Create reusable layout components
@@ -264,6 +281,7 @@ Consider Playwright or Cypress for E2E testing of critical user flows:
 ### 🟡 MEDIUM: Type Safety Improvements
 
 **Current State**:
+
 - Some `any` types in ConversationController.ts (line 52, 61, etc.)
 - Could be more specific
 
@@ -288,11 +306,13 @@ Create a `vite-env.d.ts` with proper environment variable types.
 ### 🟢 LOW: React Component Patterns
 
 **Current State**:
+
 - Mix of function components and class components
 - Only `ErrorBoundary.tsx` uses class component (correct use case)
 - Some places use `React.FC` (deprecated pattern)
 
 **Recommendation**:
+
 - Remove `React.FC` typing (it's being phased out)
 - Use plain function declarations with typed props
 
@@ -311,6 +331,7 @@ function MyComponent(props: Props) { ... }
 ### 🟡 MEDIUM: Missing Node.js Version Specification
 
 **Current State**:
+
 - No `engines` field in package.json files
 - Team members might use incompatible Node versions
 
@@ -326,7 +347,7 @@ Add to both `package.json` files:
 ```
 
 Consider adding `.nvmrc` or `.node-version` file:
-```
+``` text
 20.11.0
 ```
 
@@ -335,6 +356,7 @@ Consider adding `.nvmrc` or `.node-version` file:
 ### 🟡 MEDIUM: Security Audit
 
 **Current State**:
+
 - No regular dependency vulnerability scanning
 
 **Recommendation**:
@@ -355,6 +377,7 @@ Add Dependabot or Renovate bot for automated dependency updates.
 ### 🟡 MEDIUM: Git Hooks Enhancement
 
 **Current State**:
+
 - `.husky/pre-commit` only validates SPS data
 - No automatic linting or formatting
 
@@ -389,6 +412,7 @@ Add `lint-staged` config to package.json:
 ### 🟢 LOW: VS Code Workspace Settings
 
 **Current State**:
+
 - Basic `.vscode` folder exists
 - Could add recommended extensions and settings
 
@@ -423,6 +447,7 @@ Create `.vscode/settings.json`:
 ### 🔴 HIGH: Missing Docker Configuration
 
 **Current State**:
+
 - No Dockerfile or docker-compose.yml
 - Manual deployment process
 - Inconsistent environments
@@ -454,6 +479,7 @@ Similar for frontend with nginx serving static build.
 ### 🟡 MEDIUM: Environment Variable Management
 
 **Current State**:
+
 - `.env.example` exists but documentation could be better
 - No validation of required environment variables at startup
 
@@ -479,11 +505,13 @@ Fail fast on startup if required variables are missing.
 ### 🟡 MEDIUM: CI/CD Pipeline
 
 **Current State**:
+
 - GitHub Actions only for SPS validation
 - No build/test/deploy automation
 
 **Recommendation**:
 Expand `.github/workflows/`:
+
 - `ci.yml` - Run tests on all PRs
 - `build.yml` - Build frontend/backend on push
 - `deploy.yml` - Deploy to staging/production
@@ -495,6 +523,7 @@ Expand `.github/workflows/`:
 ### 🟢 LOW: Structured Logging
 
 **Current State**:
+
 - Console.log statements throughout
 - No log levels or structured format
 
@@ -520,10 +549,12 @@ logger.error({ err, sessionId }, 'Failed to create session');
 ### 🟢 LOW: Performance Monitoring
 
 **Current State**:
+
 - Basic TTFT metric in frontend
 - No backend performance tracking
 
 **Recommendation**:
+
 - Add response time middleware
 - Track WebRTC connection times
 - Monitor AI response latency
@@ -535,6 +566,7 @@ logger.error({ err, sessionId }, 'Failed to create session');
 ### 🟡 MEDIUM: Security Headers
 
 **Current State**:
+
 - Basic CORS configuration
 - No security headers (helmet)
 
@@ -554,6 +586,7 @@ app.use(helmet());
 ### 🟡 MEDIUM: Rate Limiting
 
 **Current State**:
+
 - No rate limiting on API endpoints
 - Vulnerable to abuse
 
@@ -580,11 +613,13 @@ app.use('/api/', limiter);
 ### 🟡 MEDIUM: API Documentation
 
 **Current State**:
+
 - `ops/docs/API_CONTRACTS.md` exists
 - Could be auto-generated from types
 
 **Recommendation**:
 Consider OpenAPI/Swagger for API documentation:
+
 - Install `swagger-jsdoc` and `swagger-ui-express`
 - Generate docs from JSDoc comments or Zod schemas
 - Serve at `/api-docs` endpoint
@@ -594,6 +629,7 @@ Consider OpenAPI/Swagger for API documentation:
 ## Implementation Priority
 
 ### Phase 1 (Week 1-2) - Foundation
+
 1. ✅ Add ESLint + Prettier to both projects
 2. ✅ Migrate backend JS files to TypeScript
 3. ✅ Add `@types/express` and fix type issues
@@ -601,6 +637,7 @@ Consider OpenAPI/Swagger for API documentation:
 5. ✅ Fix catalog loading (remove inline requires, add caching)
 
 ### Phase 2 (Week 3-4) - Quality
+
 1. ✅ Add test coverage reporting
 2. ✅ Fix inline styles in CaseBuilder
 3. ✅ Add environment variable validation
@@ -608,6 +645,7 @@ Consider OpenAPI/Swagger for API documentation:
 5. ✅ Add security headers and rate limiting
 
 ### Phase 3 (Week 5-6) - Production Readiness
+
 1. ✅ Create Docker configurations
 2. ✅ Add structured logging
 3. ✅ Set up monitoring/observability
@@ -643,16 +681,19 @@ Consider OpenAPI/Swagger for API documentation:
 ## Recommendations for Immediate Action
 
 **This week**:
+
 1. Install ESLint + Prettier (2 hours)
 2. Add `@types/express` (30 min)
 3. Add Node.js version to package.json (5 min)
 
 **Next week**:
+
 1. Start backend JS → TS migration (start with routes)
 2. Fix catalog loading pattern
 3. Add test coverage reporting
 
 **Ongoing**:
+
 - Keep dependencies updated
 - Run security audits monthly
 - Review and update this document quarterly
@@ -662,6 +703,7 @@ Consider OpenAPI/Swagger for API documentation:
 ## Conclusion
 
 The codebase is well-structured and functional, but modernization will significantly improve:
+
 - **Maintainability**: Full TypeScript, consistent patterns
 - **Security**: Headers, rate limiting, auditing
 - **Developer Experience**: Linting, formatting, better tooling

@@ -13,7 +13,8 @@
 ## Technical Details
 
 ### Component Hierarchy
-```
+
+``` text
 App.tsx
 └── ChatView.tsx (has selectedMedia state)
     └── MessagesList.tsx
@@ -28,6 +29,7 @@ App.tsx (parallel)
 ### The Conflict
 
 Both components render the same 3D scene:
+
 - **ChatAnimationInlinePreview**: Small preview in chat message bubble
 - **ChatAnimationPlayer**: Large viewer in modal overlay
 
@@ -52,6 +54,7 @@ When the modal is open with an animation, **hide/unmount the inline preview** fo
 ### Changes Made
 
 #### 1. **MessageItem.tsx** - Added conditional rendering
+
 ```tsx
 type MessageItemProps = {
   message: Message
@@ -74,6 +77,7 @@ type MessageItemProps = {
 ```
 
 #### 2. **MessagesList.tsx** - Added media matching logic
+
 ```tsx
 type MessagesListProps = {
   messages: Message[]
@@ -109,6 +113,7 @@ export function MessagesList({ messages, selectedMedia, ...props }) {
 ```
 
 #### 3. **ChatView.tsx** - Prop drilling
+
 ```tsx
 export interface ChatViewProps {
   // ...existing props
@@ -126,6 +131,7 @@ export function ChatView({ selectedMedia, ...props }: ChatViewProps) {
 ```
 
 #### 4. **App.tsx** - Connect to state
+
 ```tsx
 <ChatView
   // ...existing props
@@ -138,7 +144,8 @@ export function ChatView({ selectedMedia, ...props }: ChatViewProps) {
 ## How It Works
 
 ### Before Fix
-```
+
+``` text
 User clicks "Expand" button
   ↓
 Modal opens with ChatAnimationPlayer
@@ -149,7 +156,8 @@ Both viewers try to render simultaneously
 ```
 
 ### After Fix
-```
+
+``` text
 User clicks "Expand" button
   ↓
 Modal opens (selectedMedia = animation media)
@@ -183,6 +191,7 @@ MessageItem remounts ChatAnimationInlinePreview
 ## Testing
 
 ### Manual Testing Checklist
+
 - [x] Open inline animation preview in chat → renders correctly
 - [x] Click "Expand" button → modal opens with animation
 - [x] Verify inline preview disappears (space remains in chat)
@@ -192,6 +201,7 @@ MessageItem remounts ChatAnimationInlinePreview
 - [x] Other media types (images, YouTube) → work as before
 
 ### Automated Testing
+
 ```bash
 ✅ TypeScript compilation: PASS
 ✅ Frontend build: PASS
@@ -203,18 +213,22 @@ MessageItem remounts ChatAnimationInlinePreview
 ## Alternative Solutions Considered
 
 ### 1. ❌ Clone the GLTF Scene
+
 **Idea**: Clone the scene object for each viewer
 **Issue**: Three.js scene cloning is complex and may not clone all resources (textures, materials) correctly
 
 ### 2. ❌ Single Shared Canvas
+
 **Idea**: Use one Canvas and swap the camera/scene
 **Issue**: Requires major architectural changes, breaks component isolation
 
 ### 3. ❌ Pause/Hide with CSS
+
 **Idea**: Keep both mounted but hide with `display: none`
 **Issue**: WebGL contexts still active, model conflict persists
 
 ### 4. ✅ Conditional Mounting (CHOSEN)
+
 **Idea**: Unmount inline preview when modal opens
 **Benefits**: Clean, simple, performant, no conflicts
 
@@ -223,12 +237,14 @@ MessageItem remounts ChatAnimationInlinePreview
 ## Related Files
 
 ### Modified Files
+
 - `frontend/src/pages/components/chat/MessageItem.tsx` - Conditional rendering
 - `frontend/src/pages/components/chat/MessagesList.tsx` - Media matching logic
 - `frontend/src/pages/components/ChatView.tsx` - Prop passing
 - `frontend/src/pages/App.tsx` - State connection
 
 ### Related Components (Unchanged)
+
 - `frontend/src/pages/components/chat/MediaModal.tsx` - Modal container
 - `frontend/src/pages/components/viewer/ChatAnimationInlinePreview.tsx` - Inline viewer
 - `frontend/src/pages/components/viewer/ChatAnimationPlayer.tsx` - Modal viewer
@@ -240,12 +256,14 @@ MessageItem remounts ChatAnimationInlinePreview
 ## Future Enhancements
 
 ### Potential Improvements
+
 1. **Smooth Transition**: Add fade-out/fade-in animation when toggling
 2. **Placeholder**: Show a static thumbnail when inline preview is hidden
 3. **Preloading**: Keep model loaded but pause rendering in hidden viewer
 4. **Multiple Modals**: Handle edge case of multiple animations open (unlikely but possible)
 
 ### Related Improvements
+
 - Consider applying same pattern to other media types if conflicts arise
 - Investigate WebGL context sharing for better performance
 - Add analytics to track animation expansion interactions
@@ -255,12 +273,14 @@ MessageItem remounts ChatAnimationInlinePreview
 ## Debugging Tips
 
 ### If inline preview still disappears:
+
 1. Check browser console for Three.js warnings
 2. Verify `selectedMedia` state updates correctly (DevTools)
 3. Ensure `isMediaOpenInModal` logic matches media correctly
 4. Check for multiple Canvas components rendering same scene
 
 ### If modal animation doesn't appear:
+
 1. Check lazy loading (Suspense boundary)
 2. Verify animation ID resolution in ChatAnimationPlayer
 3. Check WebGL context creation (GPU limits)
@@ -275,6 +295,7 @@ MessageItem remounts ChatAnimationInlinePreview
 **Why**: Prevents Three.js/React Three Fiber model conflicts when the same GLTF scene is used in multiple Canvas components simultaneously.
 
 **Impact**: 
+
 - ✅ Modal animations now display correctly
 - ✅ Inline previews gracefully hide/show
 - ✅ Performance improved (one fewer WebGL context)

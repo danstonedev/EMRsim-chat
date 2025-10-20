@@ -1,11 +1,36 @@
-/* eslint-disable */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { api } from './api';
 import { ConversationController } from './ConversationController';
 import type { ConversationEvent, VoiceDebugEvent } from './types';
+import type { BackendSocketClient } from './types/backendSocket';
 
 const invokeControllerMessage = (controller: ConversationController, payload: Record<string, any>) => {
   (controller as any).handleMessage(JSON.stringify(payload));
+};
+
+// Mock socket factory for tests
+const createMockSocketFactory = () => {
+  return () => {
+    const mockSocket: BackendSocketClient = {
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+      isEnabled: vi.fn(() => true),
+      setEnabled: vi.fn(),
+      joinSession: vi.fn(),
+      requestCatchup: vi.fn(),
+      resetFailureCount: vi.fn(),
+      updateLastReceivedTimestamp: vi.fn(),
+      getSnapshot: vi.fn(() => ({
+        isConnected: false,
+        isEnabled: true,
+        failureCount: 0,
+        lastReceivedTimestamp: 0,
+        hasSocket: false,
+        currentSessionId: null,
+      })),
+    };
+    return mockSocket;
+  };
 };
 
 describe('ConversationController', () => {
@@ -17,7 +42,12 @@ describe('ConversationController', () => {
   it('finalizes user transcript when fallback timer expires without an explicit completion', async () => {
     vi.useFakeTimers();
 
-    const controller = new ConversationController({ sttFallbackMs: 25, sttExtendedMs: 25, debugEnabled: false });
+    const controller = new ConversationController({ 
+      sttFallbackMs: 25, 
+      sttExtendedMs: 25, 
+      debugEnabled: false,
+      socketFactory: createMockSocketFactory(),
+    });
     const transcripts: Array<Extract<ConversationEvent, { type: 'transcript' }>> = [];
     const partials: Array<Extract<ConversationEvent, { type: 'partial' }>> = [];
 

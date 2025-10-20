@@ -1,3 +1,4 @@
+@layer features.voice {
 /**
  * Voice Ready Toast
  * Toast notification for voice readiness state
@@ -5,27 +6,24 @@
 
 .voice-ready-toast {
   position: fixed;
-  bottom: 200px;
-  left: 50%;
+  inset-block-end: 200px;
+  inset-inline-start: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: linear-gradient(
-    135deg,
-    rgba(0, 154, 68, 0.96) 0%,
-    rgba(6, 64, 38, 0.96) 100%
-  );
-  color: var(--color-white, #ffffff);
-  padding: var(--space-lg) var(--space-xl);
-  border-radius: calc(var(--radius-lg, 12px) + 2px);
+  background: linear-gradient(135deg, rgba(0, 154, 68, 0.96) 0%, rgba(6, 64, 38, 0.96) 100%);
+  color: var(--color-white);
+  padding-block: var(--space-lg);
+  padding-inline: var(--space-xl);
+  border-radius: calc(var(--radius-lg) + 2px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 154, 68, 0.4);
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  z-index: 9999;
+  z-index: 1200;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
-  max-width: 90%;
+  max-inline-size: min(420px, 90vw);
   font-family: inherit;
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
@@ -41,12 +39,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  inline-size: 36px;
+  block-size: 36px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.16);
-  color: var(--color-white, #ffffff);
-  font-size: 22px;
+  color: var(--color-white);
+  font-size: 1.375rem;
   line-height: 1;
   flex-shrink: 0;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
@@ -59,37 +57,39 @@
 }
 
 .voice-ready-toast__message strong {
-  font-size: 15px;
+  font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--color-white, #ffffff);
+  color: var(--color-white);
 }
 
 .voice-ready-toast__message span {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* Responsive adjustments */
 @media (max-width: 640px) {
   .voice-ready-toast {
-    bottom: 160px;
-  padding: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-lg);
+    inset-block-end: 160px;
+    padding-block: var(--space-md);
+    padding-inline: var(--space-lg);
+    border-radius: var(--radius-lg);
   }
-  
+
   .voice-ready-toast__icon {
-    width: 30px;
-    height: 30px;
-    font-size: 18px;
+    inline-size: 30px;
+    block-size: 30px;
+    font-size: 1.125rem;
   }
-  
+
   .voice-ready-toast__message strong {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
-  
+
   .voice-ready-toast__message span {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
+}
+
 }

@@ -13,6 +13,7 @@
 #### ✅ What React.dev Recommends (2025)
 
 **Core Principles:**
+
 - Hooks must be called at the top level (not in loops/conditions)
 - Extract new component if conditional hooks needed
 - Custom hooks for reusable logic composition
@@ -44,6 +45,7 @@ function useWindowSize() {
 ```
 
 **React's Official Hook Rules:**
+
 1. **Components and Hooks must be pure** - Same inputs = same outputs
 2. **React calls Components and Hooks** - Don't call them yourself
 3. **Hooks can only be called at top level** - No conditions, loops, nested functions
@@ -279,6 +281,7 @@ function Component() {
 ```
 
 **Recommendation for EMRsim-chat:**
+
 - Split `SettingsContext` into `ViewerSettingsContext`, `AudioSettingsContext`, `DebugSettingsContext`
 - OR: Use `use-context-selector` library for fine-grained updates
 
@@ -289,6 +292,7 @@ function Component() {
 #### Why Migrate Classes to Hooks?
 
 **Benefits:**
+
 - ✅ Less boilerplate (no constructor, bind, etc.)
 - ✅ Easier to extract/reuse logic (custom hooks)
 - ✅ Better tree-shaking (no class instances)
@@ -323,6 +327,7 @@ function useBackendSocket(config) {
 ```
 
 **For EMRsim-chat:**
+
 - `BackendSocketManager` → `useBackendSocket` (HIGH priority)
 - Eliminates polling, provides reactive state
 - Follows React patterns
@@ -365,6 +370,7 @@ test('useAuth provides token', () => {
 ### Priority 1: State Management Modernization
 
 **Current Issues:**
+
 1. `useVoiceSession`: 15 separate `useState` (state sprawl)
 2. `BackendSocketManager`: Class-based (not React-friendly)
 3. Multiple effects for same concerns (cascades)
@@ -372,6 +378,7 @@ test('useAuth provides token', () => {
 **Recommended Solutions:**
 
 #### A. useState → useReducer Migration
+
 ```typescript
 // For useVoiceSession (15 useState → 1 useReducer)
 type State = {
@@ -397,12 +404,14 @@ function useVoiceSession(options) {
 ```
 
 **Benefits:**
+
 - ✅ Atomic state updates (all-or-nothing)
 - ✅ Easier debugging (action logs)
 - ✅ Testable reducer (pure function)
 - ✅ Better performance (fewer re-renders)
 
 #### B. Class → Hook Migration
+
 ```typescript
 // BackendSocketManager → useBackendSocket
 function useBackendSocket(config) {
@@ -422,6 +431,7 @@ function useBackendSocket(config) {
 ```
 
 **Benefits:**
+
 - ✅ No polling needed (reactive state)
 - ✅ Automatic cleanup (useEffect)
 - ✅ Fresh handlers (refs)
@@ -432,6 +442,7 @@ function useBackendSocket(config) {
 ### Priority 2: Context Optimization
 
 **Current Issue:**
+
 - `SettingsContext` causes full re-renders for all consumers
 
 **Solution Options:**
@@ -487,6 +498,7 @@ useEffect(() => {
 ```
 
 **Apply to:**
+
 - App.tsx remaining 6 effects
 - v2/hooks.ts usePlayback (4 effects → 2)
 - Any component with 3+ related effects
@@ -509,6 +521,7 @@ useEffect(() => {
 ## 🚀 Implementation Roadmap
 
 ### Phase 1: Quick Wins (1 week)
+
 1. ✅ Effect consolidations (App.tsx, v2/hooks)
 2. ✅ Extract RAF hook (PlaybackModal)
 3. ✅ Scene.tsx use existing hooks
@@ -516,6 +529,7 @@ useEffect(() => {
 **Rationale:** Low risk, immediate improvement, builds momentum
 
 ### Phase 2: Strategic Improvements (2 weeks)
+
 4. 🔥 BackendSocketManager → useBackendSocket
 5. 🔥 useVoiceSession → useReducer pattern
 6. 🔥 App.tsx remaining effects consolidation
@@ -523,6 +537,7 @@ useEffect(() => {
 **Rationale:** High impact, proven patterns, moderate risk
 
 ### Phase 3: Optimization (1 week)
+
 7. 🟡 SettingsContext split or selector
 8. 🟡 Performance profiling & targeted memo
 9. 🟡 Testing coverage for new hooks
@@ -534,6 +549,7 @@ useEffect(() => {
 ## 📚 Additional Resources
 
 ### Official React Docs (react.dev)
+
 - [Rules of React](https://react.dev/reference/rules)
 - [Rules of Hooks](https://react.dev/reference/rules/rules-of-hooks)
 - [Managing State](https://react.dev/learn/managing-state)
@@ -542,12 +558,14 @@ useEffect(() => {
 - [useContext](https://react.dev/reference/react/useContext)
 
 ### Modern Libraries to Consider
+
 - **use-context-selector** - Fine-grained context subscriptions
 - **TanStack Query** - Server state management
 - **Zustand** - Lightweight global state
 - **Jotai** - Atomic state management
 
 ### Testing Resources
+
 - **@testing-library/react** - Component testing
 - **@testing-library/react-hooks** - Hook testing
 - **Vitest** - Fast unit test runner (already in use)

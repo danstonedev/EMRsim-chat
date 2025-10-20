@@ -15,17 +15,23 @@ export interface ModuleReference {
 export interface ModuleRegistry {
   schema_version: string;
   generated_at: string;
-  modules: Record<string, {
-    versions: Record<string, {
-      file: string;
-      checksum: string;
-      description: string;
-      clinical_domains: string[];
-      created_at: string;
-      status: string;
-    }>;
-    latest: string;
-  }>;
+  modules: Record<
+    string,
+    {
+      versions: Record<
+        string,
+        {
+          file: string;
+          checksum: string;
+          description: string;
+          clinical_domains: string[];
+          created_at: string;
+          status: string;
+        }
+      >;
+      latest: string;
+    }
+  >;
 }
 
 let cachedModuleRegistry: ModuleRegistry | null = null;

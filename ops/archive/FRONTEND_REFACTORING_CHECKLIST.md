@@ -22,7 +22,6 @@ The manifest.json references several icon files that need to be created:
 - Use an online tool like <https://realfavicongenerator.net/>
 - Or use ImageMagick: `convert favicon.svg -resize 192x192 icon-192x192.png`
 
-
 ### 2. Delete Old App.css
 
 Once testing is complete, remove the old monolithic file:
@@ -34,7 +33,6 @@ rm frontend/src/pages/App.css
 **Before deleting**: Verify the app works correctly with the new modular CSS.
 
 > ✅ Completed Oct 7, 2025 — file removed after verifying the modular styles.
-
 
 ### 3. Update Production Meta Tags
 

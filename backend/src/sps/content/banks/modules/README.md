@@ -14,6 +14,7 @@ The module library provides reusable clinical context data that can be reference
 ## Module Structure
 
 ### Module File Format
+
 Each module is a JSON file with the following structure:
 
 ```json
@@ -24,9 +25,11 @@ Each module is a JSON file with the following structure:
 ```
 
 ### Module Naming Convention
+
 Files are named: `<module_id>.v<version>.json`
 
 Examples:
+
 - `acute_care_total_joint.v1.json`
 - `primary_care_low_back_pain.v1.json`
 - `sports_pt_generic.v1.json`
@@ -36,12 +39,14 @@ Examples:
 ## Module Registry
 
 The `index.json` file serves as the module registry, providing:
+
 - Module metadata (description, clinical domains)
 - Version information (latest version, all available versions)
 - Checksums for integrity verification
 - Creation/update timestamps
 
 ### Registry Schema
+
 ```json
 {
   "schema_version": "1.0.0",
@@ -69,6 +74,7 @@ The `index.json` file serves as the module registry, providing:
 ## Usage in Scenarios
 
 ### Referencing Modules
+
 Scenarios reference modules by ID and version in their `scenario.header.json`:
 
 ```json
@@ -85,7 +91,9 @@ Scenarios reference modules by ID and version in their `scenario.header.json`:
 ```
 
 ### Module Resolution
+
 The scenario loader resolves module references by:
+
 1. Reading `index.json` to find module file path
 2. Loading the module file from `banks/modules/`
 3. Verifying checksum against registry
@@ -96,11 +104,13 @@ The scenario loader resolves module references by:
 ## Available Modules
 
 ### 1. Acute Care Total Joint (`acute_care_total_joint`)
+
 **Latest Version:** v1  
 **Clinical Domains:** Acute care, post-surgical rehabilitation, discharge planning  
 **Use Cases:** Post-operative THA/TKA scenarios (POD0-POD3)
 
 **Key Data:**
+
 - Post-op day, procedure type, surgical approach
 - Weight-bearing status, joint precautions
 - Lines/tubes/drains inventory
@@ -111,11 +121,13 @@ The scenario loader resolves module references by:
 ---
 
 ### 2. Primary Care Low Back Pain (`primary_care_low_back_pain`)
+
 **Latest Version:** v1  
 **Clinical Domains:** Primary care musculoskeletal, pain science, imaging guidelines  
 **Use Cases:** Outpatient low back pain evaluation and management
 
 **Key Data:**
+
 - LBP classification (specific vs nonspecific)
 - Psychosocial screening scores (STarT Back, FABQ, PCS)
 - Directional preference and centralization
@@ -127,11 +139,13 @@ The scenario loader resolves module references by:
 ---
 
 ### 3. Sports PT Generic (`sports_pt_generic`)
+
 **Latest Version:** v1  
 **Clinical Domains:** Sports physical therapy, return-to-play, load management  
 **Use Cases:** Return-to-sport assessment and clearance
 
 **Key Data:**
+
 - Sport type, position, competition level
 - Season phase (in-season, off-season, pre-season)
 - Workload metrics (acute/chronic load ratios)
@@ -144,6 +158,7 @@ The scenario loader resolves module references by:
 ## Versioning
 
 ### Version Format
+
 Versions use semantic versioning: `v<major>.<minor>.<patch>` (simplified to `v<major>` for now)
 
 - **v1**: Initial stable version
@@ -152,7 +167,9 @@ Versions use semantic versioning: `v<major>.<minor>.<patch>` (simplified to `v<m
 - **v1.0.1**: Bug fixes (typo corrections, no schema change)
 
 ### Upgrade Path
+
 Scenarios pin to specific versions for stability. When modules are updated:
+
 1. New version created (e.g., v2)
 2. Old version remains available (v1)
 3. Scenarios can upgrade at their own pace
@@ -163,6 +180,7 @@ Scenarios pin to specific versions for stability. When modules are updated:
 ## Adding New Modules
 
 ### Step 1: Create Module File
+
 Create `<module_id>.v1.json` with your module data:
 
 ```json
@@ -173,11 +191,13 @@ Create `<module_id>.v1.json` with your module data:
 ```
 
 ### Step 2: Calculate Checksum
+
 ```powershell
 Get-FileHash -Path "your_module_id.v1.json" -Algorithm SHA256
 ```
 
 ### Step 3: Update Registry
+
 Add entry to `index.json`:
 
 ```json
@@ -199,6 +219,7 @@ Add entry to `index.json`:
 ```
 
 ### Step 4: Reference in Scenario
+
 Update scenario header to reference your module:
 
 ```json
@@ -219,6 +240,7 @@ Update scenario header to reference your module:
 ## Module Types (Future)
 
 Potential future module categories:
+
 - **Acute Care:** ICU weaning, stroke acute care, cardiac rehab
 - **Primary Care:** Shoulder evaluation, knee OA, headache
 - **Sports PT:** Throwing athletes, running analysis, concussion RTP
@@ -231,6 +253,7 @@ Potential future module categories:
 ## Validation
 
 Modules are validated for:
+
 - ✅ Valid JSON syntax
 - ✅ Required `module_id` field
 - ✅ Checksum matches registry
@@ -246,12 +269,14 @@ npm run sps:validate
 ## Maintenance
 
 ### Regular Tasks
+
 - Review module usage (identify unused modules)
 - Update checksums after module edits
 - Deprecate old versions after migration complete
 - Document breaking changes in changelog
 
 ### Deprecation Process
+
 1. Mark version as `deprecated` in registry
 2. Add deprecation notice with migration guide
 3. Update all scenarios to use new version
@@ -262,6 +287,7 @@ npm run sps:validate
 ## Questions?
 
 For questions about module library design, see:
+
 - `ops/docs/PHASE4_TASK2_ANALYSIS.md` - Detailed analysis
 - `ops/docs/PHASE4_IMPLEMENTATION.md` - Implementation plan
 - `ops/docs/SPS_CONTENT_REFACTOR_PLAN.md` - Overall refactor strategy

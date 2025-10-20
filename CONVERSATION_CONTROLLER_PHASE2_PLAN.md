@@ -1,4 +1,5 @@
 # ConversationController Phase 2 Modularization Plan
+
 **Target: Break 1341-line file into modules ≤300 lines each**
 
 ## Executive Summary
@@ -13,7 +14,8 @@
 ## Architecture Vision
 
 ### Before (Current):
-```
+
+``` text
 ConversationController.ts (1341 lines)
 ├── Imports & Types (100 lines)
 ├── Field Declarations (80 lines)
@@ -26,7 +28,8 @@ ConversationController.ts (1341 lines)
 ```
 
 ### After (Target):
-```
+
+``` text
 ConversationController.ts (~280 lines)  ← Core orchestrator only
 ├── EventDispatcher.ts (~250 lines)     ← Message routing, event classification
 ├── ServiceRegistry.ts (~200 lines)     ← Service initialization & dependency injection
@@ -40,17 +43,20 @@ ConversationController.ts (~280 lines)  ← Core orchestrator only
 ---
 
 ## Phase 2: Extract EventDispatcher & Message Router
+
 **Lines Extracted:** ~250 lines
 **Target File:** `frontend/src/shared/dispatchers/EventDispatcher.ts`
 **Time:** 2 hours
 
 ### Responsibilities
+
 1. **Event Classification:** Delegate to `classifyEvent()` (already modular)
 2. **Message Routing:** Route events to handler families (session, speech, transcription, assistant, conversation-item)
 3. **Error Handling:** Catch JSON parse failures, log unhandled events
 4. **Debug Logging:** Emit debug events for all incoming messages
 
 ### Current Code Location
+
 - Lines 1145-1228: `handleMessage()` method (83 lines)
 - Lines 1176-1225: Event routing switch statement (49 lines)
 - Additional routing logic scattered in constructor (event handler initialization)
@@ -58,6 +64,7 @@ ConversationController.ts (~280 lines)  ← Core orchestrator only
 ### Extraction Strategy
 
 #### 1. Create EventDispatcher.ts
+
 ```typescript
 import type { VoiceDebugEvent } from '../types'
 import { classifyEvent } from '../../features/voice/conversation/events/eventClassifier'
@@ -169,6 +176,7 @@ export class EventDispatcher {
 ```
 
 #### 2. Update ConversationController.ts
+
 ```typescript
 // Add import
 import { EventDispatcher } from './dispatchers/EventDispatcher'
@@ -203,6 +211,7 @@ private handleMessage(raw: string): void {
 ```
 
 ### Benefits
+
 - ✅ Isolates message parsing and routing logic
 - ✅ Easier to test event classification
 - ✅ Clear separation of concerns (routing vs handling)
@@ -211,23 +220,27 @@ private handleMessage(raw: string): void {
 ---
 
 ## Phase 3: Extract ServiceRegistry & Dependency Injection
+
 **Lines Extracted:** ~500 lines
 **Target File:** `frontend/src/shared/registry/ServiceRegistry.ts`
 **Time:** 2.5 hours
 
 ### Responsibilities
+
 1. **Service Initialization:** Create all service instances (EventEmitter, StateManager, AudioManager, etc.)
 2. **Event Handler Creation:** Initialize speech, transcription, assistant, conversation-item handlers
 3. **Dependency Injection:** Wire up all inter-service dependencies
 4. **Configuration Management:** Apply config to services
 
 ### Current Code Location
+
 - Lines 187-596: Constructor service initialization (409 lines)
 - Lines 270-596: Service instances & event handler setup
 
 ### Extraction Strategy
 
 #### 1. Create ServiceRegistry.ts
+
 ```typescript
 export interface ServiceRegistryConfig {
   // Core config
@@ -318,6 +331,7 @@ export function createServiceRegistry(
 ```
 
 #### 2. Update ConversationController.ts
+
 ```typescript
 // Constructor becomes tiny
 constructor(config: ConversationControllerConfig = {}) {
@@ -356,6 +370,7 @@ constructor(config: ConversationControllerConfig = {}) {
 ```
 
 ### Benefits
+
 - ✅ Removes 400+ lines from constructor
 - ✅ Testable in isolation (can inject mock services)
 - ✅ Clear service lifecycle (initialization order visible)
@@ -364,17 +379,20 @@ constructor(config: ConversationControllerConfig = {}) {
 ---
 
 ## Phase 4: Extract ConnectionHandlers
+
 **Lines Extracted:** ~180 lines
 **Target File:** `frontend/src/shared/handlers/ConnectionHandlers.ts`
 **Time:** 1.5 hours
 
 ### Responsibilities
+
 1. **ICE Connection State:** Handle WebRTC ICE connection state changes
 2. **Peer Connection State:** Handle RTCPeerConnection state changes
 3. **Data Channel Events:** Attachment, error handling, close events
 4. **Transport Logging:** Centralized logging for transport events
 
 ### Current Code Location
+
 - Lines 1230-1250: `handleIceConnectionStateChange()` (20 lines)
 - Lines 1252-1263: `handleConnectionStateChange()` (11 lines)
 - Lines 1285-1295: `attachDataChannelHandlers()` (10 lines)
@@ -384,6 +402,7 @@ constructor(config: ConversationControllerConfig = {}) {
 ### Extraction Strategy
 
 #### 1. Create ConnectionHandlers.ts
+
 ```typescript
 export interface ConnectionHandlersDependencies {
   stateManager: ConversationStateManager
@@ -472,6 +491,7 @@ export class ConnectionHandlers {
 ```
 
 #### 2. Update ConversationController.ts
+
 ```typescript
 // Add field
 private connectionHandlers: ConnectionHandlers
@@ -502,6 +522,7 @@ private attachDataChannelHandlers(channel: RTCDataChannel): void {
 ```
 
 ### Benefits
+
 - ✅ Removes ~150 lines from ConversationController
 - ✅ Isolates WebRTC connection logic
 - ✅ Easier to test connection state transitions
@@ -510,17 +531,20 @@ private attachDataChannelHandlers(channel: RTCDataChannel): void {
 ---
 
 ## Phase 5: Extract BackendIntegration
+
 **Lines Extracted:** ~150 lines
 **Target File:** `frontend/src/shared/integration/BackendIntegration.ts`
 **Time:** 1.5 hours
 
 ### Responsibilities
+
 1. **Backend Socket Initialization:** WebSocket connection for unified transcript broadcast
 2. **Transcript Relay:** Send transcripts to backend for persistence & broadcast
 3. **Socket Event Handling:** Connect, disconnect, catchup, errors
 4. **Logging:** Debug logging for backend integration
 
 ### Current Code Location
+
 - Lines 762-779: `initializeBackendSocket()` (17 lines)
 - Lines 781-838: `relayTranscriptToBackend()` (57 lines)
 - Lines 307-380: Socket event handlers in constructor (73 lines)
@@ -528,6 +552,7 @@ private attachDataChannelHandlers(channel: RTCDataChannel): void {
 ### Extraction Strategy
 
 #### 1. Create BackendIntegration.ts
+
 ```typescript
 export interface BackendIntegrationDependencies {
   socketManager: BackendSocketManager
@@ -607,6 +632,7 @@ export class BackendIntegration {
 ```
 
 #### 2. Update ConversationController.ts
+
 ```typescript
 // Add field
 private backendIntegration: BackendIntegration
@@ -630,6 +656,7 @@ private async relayTranscriptToBackend(...args): Promise<void> {
 ```
 
 ### Benefits
+
 - ✅ Removes ~150 lines from ConversationController
 - ✅ Isolates backend-specific logic
 - ✅ Easier to test relay failures
@@ -638,17 +665,20 @@ private async relayTranscriptToBackend(...args): Promise<void> {
 ---
 
 ## Phase 6: Extract PublicAPI Facade
+
 **Lines Extracted:** ~280 lines
 **Target File:** `frontend/src/shared/facades/PublicAPI.ts`
 **Time:** 1.5 hours
 
 ### Responsibilities
+
 1. **Public Methods:** All public API methods (startVoice, stopVoice, sendText, etc.)
 2. **Settings Setters:** Voice override, language, model settings
 3. **Getters:** Session ID, status, mic stream, peer connection
 4. **Lifecycle:** Dispose, cleanup delegation
 
 ### Current Code Location
+
 - Lines 598-682: Public API methods (getSnapshot, setDebugEnabled, listeners, etc.) (~84 lines)
 - Lines 684-708: Persona/Scenario/ExternalSession setters (~24 lines)
 - Lines 710-717: EncounterState methods (~7 lines)
@@ -664,6 +694,7 @@ private async relayTranscriptToBackend(...args): Promise<void> {
 ### Extraction Strategy
 
 #### 1. Create PublicAPI.ts
+
 ```typescript
 export class PublicAPI {
   constructor(private readonly controller: ConversationController) {}
@@ -747,6 +778,7 @@ export class PublicAPI {
 ```
 
 #### 2. Update ConversationController.ts
+
 **Option A: Inherit from PublicAPI (cleaner)**
 ```typescript
 export class ConversationController extends PublicAPI {
@@ -777,6 +809,7 @@ export class ConversationController {
 **Recommendation:** Use Option B (delegation) to keep clear separation
 
 ### Benefits
+
 - ✅ Removes ~280 lines from ConversationController
 - ✅ Clear public API surface
 - ✅ Easier to version/deprecate methods
@@ -787,6 +820,7 @@ export class ConversationController {
 ## Final Architecture
 
 ### ConversationController.ts (~280 lines)
+
 ```typescript
 export class ConversationController {
   // Field declarations (~80 lines)
@@ -831,6 +865,7 @@ export class ConversationController {
 ## Migration Checklist
 
 ### Phase 2: EventDispatcher
+
 - [ ] Create `frontend/src/shared/dispatchers/EventDispatcher.ts`
 - [ ] Move `handleMessage()` logic to EventDispatcher
 - [ ] Update ConversationController to delegate message handling
@@ -841,6 +876,7 @@ export class ConversationController {
 - [ ] Document changes in PHASE2_COMPLETE.md
 
 ### Phase 3: ServiceRegistry
+
 - [ ] Create `frontend/src/shared/registry/ServiceRegistry.ts`
 - [ ] Move service initialization from constructor
 - [ ] Update ConversationController to use registry
@@ -851,6 +887,7 @@ export class ConversationController {
 - [ ] Document changes in PHASE3_COMPLETE.md
 
 ### Phase 4: ConnectionHandlers
+
 - [ ] Create `frontend/src/shared/handlers/ConnectionHandlers.ts`
 - [ ] Move WebRTC handler methods
 - [ ] Update ConversationController to delegate
@@ -861,6 +898,7 @@ export class ConversationController {
 - [ ] Document changes in PHASE4_COMPLETE.md
 
 ### Phase 5: BackendIntegration
+
 - [ ] Create `frontend/src/shared/integration/BackendIntegration.ts`
 - [ ] Move backend socket & relay logic
 - [ ] Update ConversationController to delegate
@@ -871,6 +909,7 @@ export class ConversationController {
 - [ ] Document changes in PHASE5_COMPLETE.md
 
 ### Phase 6: PublicAPI
+
 - [ ] Create `frontend/src/shared/facades/PublicAPI.ts`
 - [ ] Move all public methods to facade
 - [ ] Update ConversationController to delegate
@@ -885,6 +924,7 @@ export class ConversationController {
 ## Success Metrics
 
 ### Line Count Targets
+
 | File | Current | Target | Reduction |
 |------|---------|--------|-----------|
 | ConversationController.ts | 1341 | 280 | -79% |
@@ -896,6 +936,7 @@ export class ConversationController {
 | **TOTAL** | **1341** | **1340** | **0%** |
 
 ### Code Quality Metrics
+
 - ✅ **All modules ≤300 lines** (target met)
 - ✅ **Single Responsibility Principle** (each module has one job)
 - ✅ **Dependency Injection** (testable in isolation)
@@ -903,6 +944,7 @@ export class ConversationController {
 - ✅ **Zero Breaking Changes** (backward compatible)
 
 ### Testing Strategy
+
 - **Unit Tests:** Each extracted module gets dedicated test file
 - **Integration Tests:** Verify modules work together correctly
 - **E2E Tests:** Existing viewer smoke tests must pass
@@ -928,11 +970,13 @@ export class ConversationController {
 ## Next Steps
 
 **Immediate Action:**
+
 1. Review this plan with team/stakeholders
 2. Choose phases to implement (can do incrementally)
 3. Start with Phase 2 (EventDispatcher) as it's standalone
 
 **Questions for User:**
+
 1. Do you want to proceed with **all 5 phases** or start with Phase 2 only?
 2. Prefer **sequential** (one phase at a time) or **parallel** (multiple phases simultaneously)?
 3. Any concerns about specific extractions?
@@ -945,16 +989,19 @@ Start with **Phase 2 (EventDispatcher)** as a proof-of-concept. If successful, p
 ## Appendix: Alternative Strategies
 
 ### Strategy A: Functional Decomposition (Current Plan)
+
 - ✅ Extract by responsibility (routing, services, handlers, etc.)
 - ✅ Clear module boundaries
 - ✅ Easier to test
 - ⚠️ More files to navigate
 
 ### Strategy B: Layer-Based Decomposition
+
 - Extract by layer (presentation, business logic, data access)
 - ❌ Less clear for this use case (not a traditional layered architecture)
 
 ### Strategy C: Feature-Based Decomposition
+
 - Extract by feature (voice, transcripts, connection, etc.)
 - ⚠️ Leads to circular dependencies (features interact heavily)
 

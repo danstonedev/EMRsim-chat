@@ -3,13 +3,15 @@
 ## Test Scenario 1: Force Finalization Path (Empty Completion Event)
 
 ### Event Sequence:
+
 1. User speaks → Transcription delta events arrive
 2. `response.created` fires → Force finalize user
 3. Transcription completion arrives with EMPTY transcript
 4. Next turn: `conversation.item.created` (user)
 
 ### Flag State Timeline:
-```
+
+``` text
 Initial: userFinalized=false, userTranscriptRelayed=false
 
 Delta arrives:
@@ -42,13 +44,15 @@ conversation.item.created (user):
 ## Test Scenario 2: Completion Event Path (Non-Empty Completion)
 
 ### Event Sequence:
+
 1. User speaks → Transcription delta events arrive
 2. `response.created` fires → Force finalize user
 3. Transcription completion arrives with NON-EMPTY transcript
 4. Next turn: `conversation.item.created` (user)
 
 ### Flag State Timeline:
-```
+
+``` text
 Initial: userFinalized=false, userTranscriptRelayed=false
 
 Delta arrives:
@@ -88,15 +92,18 @@ The issue is that `conversation.item.created` can arrive **BETWEEN** force final
 ## Solution Options
 
 ### Option A: Don't reset flags on item.created if in backend mode
+
 - Keep flags set until completion event processes
 - Risk: If completion never arrives, flags stay set forever
 
 ### Option B: Use item_id tracking instead of boolean flag
+
 - Track the item_id of the last relayed transcript
 - Only relay if item_id is different
 - More robust
 
 ### Option C: Don't relay from handleUserTranscript during force finalization
+
 - Only relay from completion event handler
 - Set a flag to indicate "force finalized, waiting for completion"
 - Completion event always does the relay
@@ -106,6 +113,7 @@ The issue is that `conversation.item.created` can arrive **BETWEEN** force final
 Replace `userTranscriptRelayed: boolean` with `lastRelayedItemId: string | null`
 
 Benefits:
+
 - ✅ Handles out-of-order events correctly
 - ✅ No risk of stale flags
 - ✅ Clear intent: "Don't relay same item twice"

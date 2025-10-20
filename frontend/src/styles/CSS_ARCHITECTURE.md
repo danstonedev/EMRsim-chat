@@ -6,60 +6,77 @@ The EMRsim Chat application uses a modular CSS architecture that separates conce
 
 ## File Structure
 
-```
+``` text
 frontend/src/styles/
-├── index.css                    # Entry point (imports brand, chat, and app)
-├── brand.css                    # Brand tokens and design system
-├── chat.css                     # Chat interface specific styles
-├── app.css                      # Main index file (imports feature modules)
+├── index.css                    # Cascade-layered entry point
+├── base.css                     # Global reset and base primitives
+├── brand.css                    # Design tokens and theme palettes
+├── fonts.css                    # Typography tokens and utilities
 ├── layout.css                   # Application layout and structure
 ├── components.css               # Reusable UI components
+├── chat.css                     # Chat feature glue styles
+├── chat/                        # Chat submodules (shell, header, etc.)
 ├── voice.css                    # Voice feature styles
+├── voice-ready-toast.css        # Voice toast micro-component
 ├── modals.css                   # Modal and dialog components
 ├── sps.css                      # Simulated Patient System drawer
-├── animations.css               # Keyframe animations and transitions
-└── legacy-casebuilder.css       # Deprecated Case Builder styles
+├── viewer3d.css                 # 3D viewer overrides
+└── animations.css               # Keyframe animations and transitions
 ```
 
 ## Module Descriptions
 
 ### `brand.css`
-**Purpose**: Core design tokens and brand variables.
+
+**Purpose**: Root design tokens and theme palettes exposed through cascade layers.
 
 Contains:
-- UND brand colors (`--color-und-green`, etc.)
-- Text and surface colors
-- Focus and accessibility variables
-- High contrast mode overrides
-- Global accessibility rules
 
-**When to use**: Reference these variables in all other CSS files. Do not modify unless updating the core design system.
+- UND brand palette (`--color-und-green`, accents, semantic states)
+- Surface, text, and border tokens for light/dark/high-contrast themes
+- Font stacks (`--font-sans`, `--font-heading`, `--font-mono`)
+- Radius, spacing, and shadow scales
+- Focus ring defaults
+
+**When to use**: Reference these variables from every other stylesheet. Update only when adjusting the core design system or theming requirements.
+
+### `fonts.css`
+
+**Purpose**: Typography token definitions and helper utilities.
+
+Contains:
+
+- Root font families (`--font-sans`, `--font-heading`, `--font-mono`)
+- Root font-size scale helpers (`--font-size-root`, `--font-size-sm`, etc.)
+- `.bruno-ace-regular` utility used by the header branding
+
+**When to modify**: When adding new typography tokens or updating the brand headline font.
 
 ### `layout.css`
-**Purpose**: Application-level layout and structure.
+
+**Purpose**: Application-level structure scoped to the `layout` cascade layer.
 
 Contains:
-- App container and header
-- Main grid layout
-- Sidebar navigation
-- Responsive breakpoints
 
-**When to modify**: When changing the overall application structure, grid layout, or adding new major sections.
+- App root container, sticky header, and main grid
+- Sidebar and chat surface scaffolding
+- Responsive breakpoints
+- Logical property usage to support RTL/localization in the future
+
+**When to modify**: When adjusting shell structure, responsive grid behavior, or adding new top-level sections.
 
 ### `components.css`
-**Purpose**: Reusable UI components used throughout the app.
+
+**Purpose**: Reusable UI components used throughout the app, scoped to the `components` layer.
 
 Contains:
-- Buttons (send-button, persona-button)
-- Input forms
-- Chips and badges
-- Banners (error, warning)
-- Event log
-- Dropdown menus
-- Toast notifications
-- Connection overlay
 
-**When to modify**: When adding new shared components or updating existing component styles.
+- Form controls and message composer wiring
+- Persona buttons, chips, banners, toasts, and overlays
+- Event log styling with monospace defaults
+- Shared dropdown and popover primitives
+
+**When to modify**: When adding new shared UI primitives or refreshing existing component patterns.
 
 ### `voice.css`
 
@@ -116,23 +133,12 @@ Contains:
 
 **When to modify**: When adding new animations or loading states.
 
-### `legacy-casebuilder.css`
-
-**Purpose**: Deprecated Case Builder feature styles.
-
-Contains:
-
-- Case builder UI components
-- AI banner styles
-- Choice grid layout
-
-**When to modify**: These styles are maintained for backward compatibility. Consider removing if the Case Builder feature is fully deprecated.
-
 ## Design Tokens
 
 ### Spacing Scale
 
 ```css
+--space-2xs: 0.125rem; /* 2px */
 --space-xs: 0.25rem;   /* 4px */
 --space-sm: 0.5rem;    /* 8px */
 --space-md: 0.75rem;   /* 12px */
@@ -144,17 +150,19 @@ Contains:
 ### Border Radius
 
 ```css
+--radius-xs: 0.25rem;  /* 4px */
 --radius-sm: 0.375rem; /* 6px */
 --radius-md: 0.5rem;   /* 8px */
 --radius-lg: 0.75rem;  /* 12px */
+--radius-xl: 1rem;     /* 16px */
 ```
 
 ### Shadows
 
 ```css
---shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
---shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
---shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+--shadow-sm: 0 1px 2px rgba(17, 17, 17, 0.06);
+--shadow-md: 0 4px 12px rgba(17, 17, 17, 0.08);
+--shadow-lg: 0 20px 40px rgba(17, 17, 17, 0.12);
 ```
 
 ## Best Practices
@@ -207,60 +215,50 @@ Always use design tokens instead of hardcoded values:
 - Include responsive breakpoints where needed
 - Test on various screen sizes
 
-## Import Order
+## Cascade Layers & Import Order
 
-The `index.css` entry point is imported by `main.tsx` and ensures the global token files load before application-specific modules. It loads `brand.css`, followed by `chat.css`, and finally `app.css`.
+`index.css` is imported once in `main.tsx` and declares the global cascade layer order:
 
-Within `app.css`, feature modules are imported in this specific order:
+```css
+@layer reset, tokens, typography, layout, components, features, utilities, animations;
+```
 
-1. **Layout** - Foundation structure
-2. **Components** - Reusable UI elements
-3. **Voice** - Feature-specific styles
-4. **Modals** - Overlay components
-5. **SPS** - Advanced control panel
-6. **Animations** - Visual effects
-7. **Legacy** - Deprecated styles
+Each subsequent `@import` attaches a stylesheet to the appropriate layer so that foundational rules always win over feature-specific ones. The current structure:
 
-This order prevents specificity conflicts and ensures proper style inheritance.
+- `base.css` → `reset`
+- `brand.css` → `tokens`
+- `fonts.css` → `typography`
+- `layout.css` → `layout`
+- `components.css` → `components`
+- Chat/voice/modals/SPS/viewer styles → `features`
+- `animations.css` → `animations`
+
+Adding a new feature file? Import it inside `index.css` with the correct `layer(...)` qualifier to maintain order.
 
 ## Adding New Styles
 
-### For a New Feature
+### For a New Feature Module
 
-1. Create a new CSS file in `src/styles/`
-2. Import it in `app.css` at the appropriate position
-3. Update this documentation
+1. Create a CSS file in `src/styles/` (or within `src/styles/<feature>/`).
+2. Use design tokens from `brand.css` and existing utility patterns.
+3. Import it in `index.css` with `@import './path.css' layer(features);` (or another suitable layer).
+4. Update this document if the structure changes.
 
-### For Existing Features
+### For Existing Modules
 
-1. Identify the appropriate module
-2. Add styles following existing patterns
-3. Use design tokens from `brand.css`
-4. Test across browsers
+1. Modify the relevant stylesheet, leaning on tokens and existing class patterns.
+2. Prefer logical properties (`margin-inline`) where feasible.
+3. Test across breakpoints, high-contrast mode, and reduced-motion preferences.
 
 ## Browser Compatibility
 
-All styles include necessary vendor prefixes for:
+We target modern evergreen browsers. When using advanced properties (e.g., `backdrop-filter`) always provide sensible fallbacks and vendor-prefixed variants where required (`-webkit-backdrop-filter`).
 
-- Safari/WebKit (`-webkit-`)
-- Firefox (`-moz-`)
-- Legacy IE (`-ms-`)
+## Migration Notes
 
-Critical features with fallbacks:
-
-- `backdrop-filter` (modals)
-- `user-select` (interactive elements)
-
-## Migration from App.css
-
-The original monolithic `App.css` has been refactored into this modular structure and removed from the codebase. Legacy backup files have also been deleted; continue all styling work inside the modular files.
-
-### What Changed
-
-- ✅ Split into modular feature files
-- ✅ Introduced `index.css` as the central entry point
-- ✅ Replaced hardcoded values with CSS variables
-- ✅ Added vendor prefixes for Safari
+- The legacy `app.css` aggregator and `chat/_index.css` have been removed.
+- All feature modules now import through `index.css` with cascade layers.
+- Shared banners, voice warnings, and other primitives live in `components.css` to avoid duplication.
 - ✅ Improved naming consistency
 - ✅ Added responsive design improvements
 - ✅ Enhanced accessibility support

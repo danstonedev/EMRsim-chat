@@ -4,7 +4,11 @@
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-import { ScenarioValidationService, type ValidationIssue, type ValidationSummary } from '../runtime/validation/scenarioValidationService.ts';
+import {
+  ScenarioValidationService,
+  type ValidationIssue,
+  type ValidationSummary,
+} from '../runtime/validation/scenarioValidationService.ts';
 
 interface CLIOptions {
   scenarioFilter: Set<string> | null;
@@ -59,17 +63,19 @@ function parseArgs(): CLIOptions {
 }
 
 function printUsage(): void {
-  console.log(`SPS Scenario Validation\n\n` +
-    `Usage: npx tsx src/sps/tools/validate-content.ts [options]\n\n` +
-    `Options:\n` +
-    `  --scenario <id>      Validate only the specified scenario (can repeat)\n` +
-    `  --json               Output machine-readable JSON summary\n` +
-    `  -h, --help           Show this help message`);
+  console.log(
+    `SPS Scenario Validation\n\n` +
+      `Usage: npx tsx src/sps/tools/validate-content.ts [options]\n\n` +
+      `Options:\n` +
+      `  --scenario <id>      Validate only the specified scenario (can repeat)\n` +
+      `  --json               Output machine-readable JSON summary\n` +
+      `  -h, --help           Show this help message`
+  );
 }
 
 function collectIssues(summary: ValidationSummary, scenarioId?: string): ValidationIssue[] {
   if (!scenarioId) return summary.issues;
-  return summary.issues.map(issue => issue.scenarioId ? issue : { ...issue, scenarioId });
+  return summary.issues.map(issue => (issue.scenarioId ? issue : { ...issue, scenarioId }));
 }
 
 function colorize(level: ValidationIssue['level'], message: string): string {
@@ -139,9 +145,10 @@ function run(): void {
 
   const compiledSummary = service.validateCompiledAssets(options.scenarioFilter);
 
-  const scenarioIds = options.scenarioFilter && options.scenarioFilter.size
-    ? Array.from(options.scenarioFilter)
-    : Array.from(new Set([...service.getScenarioIds(), ...service.getCompiledScenarioIds()])).sort();
+  const scenarioIds =
+    options.scenarioFilter && options.scenarioFilter.size
+      ? Array.from(options.scenarioFilter)
+      : Array.from(new Set([...service.getScenarioIds(), ...service.getCompiledScenarioIds()])).sort();
 
   const scenarioReports: ScenarioReport[] = [];
   const aggregatedIssues: ValidationIssue[] = [...compiledSummary.issues];
@@ -175,7 +182,7 @@ function run(): void {
   if (options.outputJson) {
     console.log(JSON.stringify(output, null, 2));
   } else {
-  printHumanReadable(output);
+    printHumanReadable(output);
   }
 
   if (totals.errors > 0) {

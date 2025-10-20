@@ -15,15 +15,25 @@ function MessageItemComponent({ message, onMediaClick, onImageLoad, isMediaOpenI
   const isUser = role === 'user'
   const isPending = Boolean(pending)
 
+  // Optional diagnostics: allow rendering pending messages when enabled
+  const showPending = (() => {
+    try {
+      const env = (import.meta as any)?.env?.VITE_DEBUG_SHOW_PENDING
+      const ls = typeof window !== 'undefined' ? window.localStorage?.getItem('DEBUG_SHOW_PENDING') : null
+      return Boolean((env && String(env).toLowerCase() !== 'false') || ls === '1' || ls === 'true')
+    } catch { return false }
+  })()
+
   // Simplified: only show finalized messages, no intermediate states
-  if (isPending) {
+  if (isPending && !showPending) {
     return null
   }
 
   const messageClass = [
     'message',
     isUser ? 'message--user' : 'message--assistant',
-  ].join(' ')
+    isPending ? 'message--pending' : '',
+  ].filter(Boolean).join(' ')
 
   const displayText = text || ''
   const hasText = displayText.trim().length > 0

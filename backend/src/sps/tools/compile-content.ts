@@ -83,12 +83,14 @@ function parseArgs(): CLIOptions {
 }
 
 function printUsage(): void {
-  console.log(`SPS Content Compiler\n\n` +
-    `Usage: npx tsx src/sps/tools/compile-content.ts [options]\n\n` +
-    `Options:\n` +
-    `  --scenario <id>      Compile only the specified scenario (can repeat)\n` +
-    `  --skip-manifests     Use existing manifest files instead of regenerating\n` +
-    `  -h, --help           Show this help message`);
+  console.log(
+    `SPS Content Compiler\n\n` +
+      `Usage: npx tsx src/sps/tools/compile-content.ts [options]\n\n` +
+      `Options:\n` +
+      `  --scenario <id>      Compile only the specified scenario (can repeat)\n` +
+      `  --skip-manifests     Use existing manifest files instead of regenerating\n` +
+      `  -h, --help           Show this help message`
+  );
 }
 
 function readJsonOrThrow(filePath: string, description: string): any {
@@ -149,7 +151,8 @@ function getScenarioDirectories(): string[] {
   if (!fs.existsSync(SCENARIO_SOURCE_ROOT)) {
     return [];
   }
-  return fs.readdirSync(SCENARIO_SOURCE_ROOT, { withFileTypes: true })
+  return fs
+    .readdirSync(SCENARIO_SOURCE_ROOT, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name)
     .sort();
@@ -178,7 +181,7 @@ function compileScenario(
   manifest: ContentManifest,
   dependencies: DependencyManifest,
   personaBundles: Map<string, PersonaBundle>,
-  generatedAt: string,
+  generatedAt: string
 ): { artifact: CompiledScenarioArtifact; checksum: string } {
   const bundleDir = path.join(SCENARIO_SOURCE_ROOT, scenarioId);
   if (!fs.existsSync(bundleDir)) {
@@ -203,9 +206,8 @@ function compileScenario(
     throw new Error(`[compile] Scenario ${scenarioId} missing from dependency manifest. Regenerate manifests first.`);
   }
 
-  const personaId = typeof linkage.persona_id === 'string' && linkage.persona_id.trim()
-    ? linkage.persona_id.trim()
-    : null;
+  const personaId =
+    typeof linkage.persona_id === 'string' && linkage.persona_id.trim() ? linkage.persona_id.trim() : null;
 
   let personaArtifact: CompiledPersonaArtifact | null = null;
   let personaObj: PatientPersona | null = null;
@@ -304,7 +306,7 @@ function compileScenario(
     objective,
     assessment,
     plan,
-    contextModules,
+    contextModules
   );
 
   if (!scenario) {
@@ -342,7 +344,7 @@ function compileScenario(
 function buildIndex(
   existingIndex: CompiledScenarioIndex | null,
   scenarioEntries: Record<string, CompiledScenarioIndexEntry>,
-  generatedAt: string,
+  generatedAt: string
 ): CompiledScenarioIndex {
   const scenarios = { ...(existingIndex?.scenarios ?? {}), ...scenarioEntries };
   const entries = Object.values(scenarios);
@@ -400,7 +402,9 @@ async function main() {
 
   if (!targetScenarios.length) {
     if (options.scenarioFilter && options.scenarioFilter.size) {
-      throw new Error(`[compile] No matching scenarios found for filter: ${Array.from(options.scenarioFilter).join(', ')}`);
+      throw new Error(
+        `[compile] No matching scenarios found for filter: ${Array.from(options.scenarioFilter).join(', ')}`
+      );
     }
     console.warn('[compile] No scenarios found to compile.');
     return;
@@ -441,7 +445,8 @@ async function main() {
 
   if (!options.scenarioFilter) {
     // Clean up stale compiled files not present in index
-    const existingFiles = fs.readdirSync(SCENARIO_COMPILED_ROOT, { withFileTypes: true })
+    const existingFiles = fs
+      .readdirSync(SCENARIO_COMPILED_ROOT, { withFileTypes: true })
       .filter(entry => entry.isFile() && entry.name.endsWith('.json') && entry.name !== 'index.json')
       .map(entry => entry.name);
 

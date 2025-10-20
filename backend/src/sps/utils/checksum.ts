@@ -16,15 +16,16 @@ export function generateFileChecksum(filePath: string): string {
  * Generate composite checksum for directory bundle
  * Calculates individual checksums for all JSON files in the directory,
  * then creates a composite hash from the sorted checksums.
- * 
+ *
  * @param bundleDir - Absolute path to the bundle directory
  * @returns Composite SHA-256 checksum (hex string)
  */
 export function generateBundleChecksum(bundleDir: string): string {
-  const files = fs.readdirSync(bundleDir)
+  const files = fs
+    .readdirSync(bundleDir)
     .filter(f => f.endsWith('.json'))
     .sort(); // Consistent ordering for deterministic hashing
-  
+
   if (files.length === 0) {
     throw new Error(`No JSON files found in bundle directory: ${bundleDir}`);
   }
@@ -34,7 +35,7 @@ export function generateBundleChecksum(bundleDir: string): string {
     const filePath = path.join(bundleDir, f);
     return generateFileChecksum(filePath);
   });
-  
+
   // Create composite checksum from all file checksums
   const composite = checksums.join('');
   return crypto.createHash('sha256').update(composite).digest('hex');
@@ -43,12 +44,19 @@ export function generateBundleChecksum(bundleDir: string): string {
 /**
  * Generate SHA-256 checksum for JavaScript object
  * Serializes object to JSON (compact format) and hashes it.
- * 
+ *
  * @param obj - Any serializable JavaScript object
  * @returns SHA-256 checksum (hex string)
  */
-export function generateObjectChecksum(obj: any): string {
-  const json = JSON.stringify(obj, null, 0); // Compact format (no whitespace)
+export function generateObjectChecksum(obj: unknown): string {
+  // Ensure stable serialization; if not serializable, fall back to String()
+  const json = (() => {
+    try {
+      return JSON.stringify(obj, null, 0);
+    } catch {
+      return String(obj);
+    }
+  })(); // Compact format (no whitespace)
   return crypto.createHash('sha256').update(json).digest('hex');
 }
 

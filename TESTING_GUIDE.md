@@ -3,6 +3,7 @@
 ## What Was Fixed
 
 We fixed the **root cause** of transcription failures and no voice responses:
+
 - Previously: Finalized user messages BEFORE transcription completed
 - Now: Wait for `conversation.item.input_audio_transcription.completed` event
 - Added: Explicit audio modalities to session config
@@ -18,7 +19,8 @@ Frontend and backend should both be running (tasks should already be active).
 1. Click the microphone button to start voice
 2. Wait for connection to complete
 3. Check console for these logs:
-   ```
+
+``` text
    [ConversationController] 🎯 session.created received, enabling transcription
    [ConversationController] ✅ session.update sent successfully
    [ConversationController] 🎉 session.updated received from server
@@ -31,18 +33,20 @@ Say something clear like: **"Hello, this is a test of the speech transcription s
 ### 4. Verify Transcription
 
 **In Console**, look for:
-```
+``` text
 [ConversationController] Audio buffer committed, waiting for transcription...
 [ConversationController] ✅ TRANSCRIPTION COMPLETED: {transcript: "Hello, this is a test of the speech transcription system."}
 ```
 
 **In UI**, verify:
+
 - Your message appears with your ACTUAL WORDS
 - NOT the fallback text "[Speech not transcribed]"
 
 ### 5. Verify Voice Response
 
 **Check that**:
+
 - Assistant responds to your message
 - You HEAR the assistant speaking (audio playback works)
 - Assistant's transcript appears in the UI
@@ -65,7 +69,8 @@ Say something clear like: **"Hello, this is a test of the speech transcription s
 ## Console Logs Reference
 
 ### Successful Transcription
-```
+
+``` text
 [ConversationController] 🎯 session.created received, enabling transcription
 [ConversationController] 📤 Sending session.update: {...}
 [ConversationController] ✅ session.update sent successfully
@@ -75,7 +80,8 @@ Say something clear like: **"Hello, this is a test of the speech transcription s
 ```
 
 ### If Transcription Fails (Rare)
-```
+
+``` text
 [ConversationController] ⚠️ TRANSCRIPTION FAILED EVENT: {...}
 ```
 (In this case, fallback text IS expected)
@@ -83,6 +89,7 @@ Say something clear like: **"Hello, this is a test of the speech transcription s
 ## Quick Smoke Test
 
 **60 Second Test:**
+
 1. Start voice (15 sec)
 2. Say "Hello" (5 sec)
 3. Verify transcript shows "Hello" (5 sec)
@@ -96,6 +103,7 @@ Say something clear like: **"Hello, this is a test of the speech transcription s
 ## Troubleshooting
 
 **If transcription still fails:**
+
 - Check browser console for errors
 - Check backend logs for issues
 - Verify microphone permissions granted
@@ -103,6 +111,7 @@ Say something clear like: **"Hello, this is a test of the speech transcription s
 - Check `session.updated` payload contains `input_audio_transcription: {model: 'whisper-1'}`
 
 **If no audio response:**
+
 - Check browser console for audio element errors
 - Verify WebRTC track events in console
 - Check if audio element is muted
@@ -113,16 +122,19 @@ Say something clear like: **"Hello, this is a test of the speech transcription s
 **File Modified:** `frontend/src/shared/ConversationController.ts`
 
 **Key Changes:**
+
 1. Line ~1280-1315: Refactored transcription event handling
 2. Line ~1230-1245: Added modalities to session.update (session.created)
 3. Line ~1675-1690: Added modalities to session.update (channel.open)
 
 **What Was Removed:**
+
 - Premature finalization on `input_audio_buffer.committed`
 - Timeout-based finalization with empty payload
 - `estimateSpeechCadence()` method (dead code)
 
 **What Was Added:**
+
 - Wait for `conversation.item.input_audio_transcription.completed`
 - Extract transcript from event payload: `payload.transcript || payload.text`
 - Explicit `modalities: ['text', 'audio']` in session config

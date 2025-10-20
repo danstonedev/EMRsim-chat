@@ -64,6 +64,14 @@ export function useVoiceTranscripts({
     timestamp: number,
     media?: MediaReference
   ) => {
+    voiceDebug('[useVoiceTranscripts] updateVoiceMessage invoked', {
+      role,
+      isFinal,
+      textLength: text?.length ?? 0,
+      timestamp,
+      voiceUserId: voiceUserIdRef.current,
+      voiceAssistantId: voiceAssistantIdRef.current,
+    })
     const ref = role === 'user' ? voiceUserIdRef : voiceAssistantIdRef
     const lastFinalRef = role === 'user' ? lastVoiceFinalUserRef : lastVoiceFinalAssistantRef
     const lastFinalTsRef = role === 'user' ? lastVoiceFinalUserTsRef : lastVoiceFinalAssistantTsRef
@@ -71,9 +79,18 @@ export function useVoiceTranscripts({
 
     // Track if we actually processed this message (to avoid setting lastFinalRef on skipped duplicates)
     let messageProcessed = false
+    // Helper to apply state update either synchronously (finals) or via queue (partials)
+    const applyUpdate = (updateFn: (prev: Message[]) => Message[]) => {
+      if (isFinal) {
+        setMessages(prev => updateFn(prev))
+      } else {
+        queueMessageUpdate(() => {
+          setMessages(prev => updateFn(prev))
+        })
+      }
+    }
 
-    queueMessageUpdate(() => {
-      setMessages(prev => {
+    applyUpdate((prev) => {
         const id = ref.current
 
         // If we don't have an active voice bubble for this role, create one
@@ -86,6 +103,11 @@ export function useVoiceTranscripts({
                 Math.abs(m.timestamp - safeTimestamp) < 2000
             )
             if (nearTyped) {
+              voiceDebug('[useVoiceTranscripts] skipped voice bubble - recent typed message nearby', {
+                role,
+                safeTimestamp,
+                nearTypedId: nearTyped.id,
+              })
               // Update the typed bubble instead of creating a competing voice bubble
               return sortMessages(
                 prev.map(m =>
@@ -97,8 +119,15 @@ export function useVoiceTranscripts({
             }
           }
 
+          // CRITICAL: Defer user bubble creation until final BEFORE duplicate checks
+          // Otherwise the final message gets caught by duplicate detection before the bubble is created!
+          if (role === 'user' && !isFinal) {
+            // For user turns, defer bubble creation until final to avoid flicker
+            voiceDebug('[useVoiceTranscripts] deferred user bubble until final', { role, safeTimestamp })
+            return sortMessages(prev)
+          }
+
           // Check if this exact message already exists in the array (backend mode double-delivery)
-          // This check must come FIRST before lastFinalRef check
           if (isFinal) {
             const existingMessage = prev.find(
               m => m.role === role &&
@@ -109,6 +138,11 @@ export function useVoiceTranscripts({
             )
             if (existingMessage) {
               // Skip duplicate - message already exists
+              voiceDebug('[useVoiceTranscripts] skipped final voice bubble - identical message already persisted', {
+                role,
+                safeTimestamp,
+                existingMessageId: existingMessage.id,
+              })
               messageProcessed = false
               return sortMessages(prev)
             }
@@ -119,6 +153,11 @@ export function useVoiceTranscripts({
             const lastTs = lastFinalTsRef.current
             if (typeof lastTs === 'number' && Math.abs(safeTimestamp - lastTs) <= VOICE_DUPLICATE_WINDOW_MS) {
               // Skip duplicate - already processed this text recently
+              voiceDebug('[useVoiceTranscripts] skipped final voice bubble - duplicate within window', {
+                role,
+                safeTimestamp,
+                lastTimestamp: lastTs,
+              })
               messageProcessed = false
               return sortMessages(prev)
             }
@@ -140,11 +179,6 @@ export function useVoiceTranscripts({
             }
           }
 
-          if (role === 'user' && !isFinal) {
-            // For user turns, defer bubble creation until final to avoid flicker
-            return sortMessages(prev)
-          }
-
           // Create new voice message - backend will handle ordering via created_at timestamp
           const newMessage = createMessage(role, text, 'voice', {
             pending: !isFinal,
@@ -154,6 +188,13 @@ export function useVoiceTranscripts({
 
           // Set ref for streaming updates, but clear immediately if final (don't reuse for next turn)
           ref.current = isFinal ? null : newMessage.id
+          voiceDebug('[useVoiceTranscripts] created new voice message', {
+            role,
+            messageId: newMessage.id,
+            isFinal,
+            pending: !isFinal,
+            safeTimestamp,
+          })
           messageProcessed = true
           return sortMessages([...prev, newMessage])
         }
@@ -163,17 +204,34 @@ export function useVoiceTranscripts({
           if (msg.id !== id) return msg
           // Guard: ignore empty, non-final updates that would overwrite visible text
           if (!isFinal && text === '' && msg.text && msg.text.length > 0) {
+            voiceDebug('[useVoiceTranscripts] ignored empty non-final update for existing bubble', {
+              role,
+              messageId: msg.id,
+            })
             return msg
           }
           if (role === 'assistant') {
             const nextMedia = media !== undefined ? (media ?? msg.media) : msg.media
+            voiceDebug('[useVoiceTranscripts] updated assistant bubble text/media', {
+              messageId: msg.id,
+              isFinal,
+              nextMediaPresent: Boolean(nextMedia),
+            })
             return { ...msg, text, pending: !isFinal, media: nextMedia }
           }
+          voiceDebug('[useVoiceTranscripts] updated user bubble text', {
+            messageId: msg.id,
+            isFinal,
+          })
           return { ...msg, text, pending: !isFinal }
         })
 
         // Clear ref if finalizing (so next turn creates new bubble)
         if (isFinal) {
+          voiceDebug('[useVoiceTranscripts] clearing streaming ref after final', {
+            role,
+            messageId: id,
+          })
           ref.current = null
         }
 
@@ -181,21 +239,30 @@ export function useVoiceTranscripts({
         return sortMessages(updated)
       })
 
-      // Only set lastFinalRef if we actually processed the message (not skipped as duplicate)
-      if (isFinal) {
-        // Remember the last finalized line and clear the active id
-        if (role === 'user') {
-          lastVoiceFinalUserRef.current = text
-          lastVoiceFinalUserTsRef.current = safeTimestamp
-        } else {
-          lastVoiceFinalAssistantRef.current = text
-          lastVoiceFinalAssistantTsRef.current = safeTimestamp
-        }
-        if (messageProcessed) {
-          ref.current = null
-        }
+    // CRITICAL: Only set lastFinalRef if we actually processed the message (not skipped as duplicate)
+    // Setting it before processing causes the first final to be skipped by its own duplicate check!
+    if (isFinal && messageProcessed) {
+      // Remember the last finalized line and clear the active id
+      if (role === 'user') {
+        lastVoiceFinalUserRef.current = text
+        lastVoiceFinalUserTsRef.current = safeTimestamp
+      } else {
+        lastVoiceFinalAssistantRef.current = text
+        lastVoiceFinalAssistantTsRef.current = safeTimestamp
       }
-    })
+      voiceDebug('[useVoiceTranscripts] finalized voice message processed', {
+        role,
+        safeTimestamp,
+        messageProcessed,
+      })
+      ref.current = null
+    } else if (isFinal && !messageProcessed) {
+      voiceDebug('[useVoiceTranscripts] finalized voice message skipped', {
+        role,
+        safeTimestamp,
+        reason: 'duplicate-or-filtered',
+      })
+    }
 
     // Persist finalized voice turns to backend
     if (isFinal && text && text.trim() && sessionId) {

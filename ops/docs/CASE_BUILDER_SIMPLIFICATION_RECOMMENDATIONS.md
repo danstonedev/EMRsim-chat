@@ -10,6 +10,7 @@
 The Case Builder has a solid foundation but contains numerous fields and options that add cognitive load without proportional value for creating standardized patient cases. This document identifies areas of unnecessary complexity, especially in the **Objective section**, and provides actionable recommendations to streamline the authoring experience.
 
 **Key Finding:** The system is over-engineered for the typical use case. Most faculty users need to:
+
 1. Define the case basics (region, title, diagnosis)
 2. Describe the presenting problem
 3. Select objective tests and define expected findings
@@ -24,6 +25,7 @@ The current implementation exposes too many technical details, redundant fields,
 ### 1. Overview (Setup) Step
 
 #### Current State:
+
 - **Scenario ID** (manual entry, can auto-generate)
 - **Title** (essential)
 - **Region** (essential)
@@ -32,6 +34,7 @@ The current implementation exposes too many technical details, redundant fields,
 - **Tags** (optional, in advanced mode)
 
 #### Issues:
+
 - **Scenario ID** requires users to understand naming conventions and ensure uniqueness
 - **Difficulty** and **Setting** are rarely critical to the teaching scenario
 - **Tags** are unclear in purpose—do they affect matching, search, or just organization?
@@ -39,17 +42,20 @@ The current implementation exposes too many technical details, redundant fields,
 #### Recommendations:
 
 ✅ **Auto-generate Scenario ID completely**
+
 - Remove manual ID entry entirely
 - Generate unique IDs server-side using: `sc_[region]_[timestamp]_[random]`
 - Display read-only ID only after first save
 - **Impact:** Eliminates validation errors, duplicate checks, and user confusion
 
 ✅ **Simplify to 3 core fields only (default view)**
+
 - Title
 - Region
 - Diagnosis (move from Subjective to Overview)
 
 ✅ **Move optional metadata to an expandable "Advanced" section**
+
 - Difficulty, Setting, Tags only visible if explicitly expanded
 - Most users won't need these
 
@@ -58,6 +64,7 @@ The current implementation exposes too many technical details, redundant fields,
 ### 2. Subjective (History) Step
 
 #### Current State:
+
 - **Presenting Problem** (10+ fields)
   - Primary Dx, Onset, Onset Detail, Duration, Symptoms, Pain NRS x2, Aggravators, Easers, 24h Pattern, Red Flags checkbox
 - **ICF Framing** (6 multi-field sections) - advanced only
@@ -66,6 +73,7 @@ The current implementation exposes too many technical details, redundant fields,
   - Manual item authoring with ID, label, patterns, response scripts (qualitative, numeric, binary flags), notes
 
 #### Issues:
+
 - **Too many pain/symptom fields** — Pain NRS at rest vs. activity is granular; 24h pattern rarely needed
 - **ICF framework** is academically rigorous but cumbersome for rapid case authoring
 - **Onset Detail** is redundant with the main onset dropdown
@@ -75,6 +83,7 @@ The current implementation exposes too many technical details, redundant fields,
 #### Recommendations:
 
 ✅ **Consolidate Presenting Problem to 6 fields**
+
 1. **Primary Diagnosis** (text)
 2. **Onset** (dropdown: acute / gradual / insidious)
 3. **Duration** (weeks)
@@ -83,17 +92,20 @@ The current implementation exposes too many technical details, redundant fields,
 6. **What makes it better?** (free text, replaces "easers")
 
 **Remove entirely:**
+
 - Onset detail (redundant)
 - Pain NRS rest/activity (can be inferred or optional advanced)
 - 24h pattern (rarely used)
 - Red flags checkbox (not relevant to authoring)
 
 ✅ **Move ICF to optional "Advanced Clinical Framing" section**
+
 - Hidden by default
 - Pre-fill intelligent defaults based on diagnosis/region when expanded
 - Most users won't need this
 
 ✅ **Hide Subjective Catalog by default**
+
 - Too technical for 95% of use cases
 - Only expose for advanced users building complex scenarios
 - Consider deprecating or replacing with simpler "Patient Will Say" section:
@@ -105,13 +117,16 @@ The current implementation exposes too many technical details, redundant fields,
 ### 3. Objective (Exam) Step — **PRIMARY FOCUS**
 
 #### Current State:
+
 This section has the most complexity:
 
 **Quick Add Buttons** (good concept, cluttered execution)
+
 - 9 category buttons + "Add all" button
 - Categories: observations, palpation, AROM, PROM, strength, neuro dermatomes, neuro myotomes, neuro reflexes, functional
 
 **Batch Fill Outputs** (confusing utility)
+
 - Apply to: dropdown (all or specific category)
 - Mode: merge vs overwrite radio buttons
 - 3 text areas: qualitative lines, numeric k:v, flags k:v
@@ -119,6 +134,7 @@ This section has the most complexity:
 
 **Objective Catalog** (over-detailed)
 Each test has:
+
 - Test ID (manual entry)
 - Label
 - Region (dropdown)
@@ -130,27 +146,33 @@ Each test has:
 #### Issues:
 
 ❌ **Test ID is too technical**
+
 - Users shouldn't need to know `obj_hip_palp_gt` conventions
 - Auto-generate from region + label
 
 ❌ **Region dropdown per test is redundant**
+
 - Already selected at scenario level
 - Creates inconsistency risk
 
 ❌ **Batch Fill is powerful but non-intuitive**
+
 - Users don't understand "merge vs overwrite"
 - k:v syntax is programmer-speak
 - Purpose/benefit unclear
 
 ❌ **Qualitative vs Numeric vs Binary Flags distinction is over-engineered**
+
 - Users don't think in these terms
 - They think: "What should the patient's test result be?"
 
 ❌ **9 category buttons feel like a quiz**
+
 - Users may not know what "neuro myotomes" means
 - Creates pressure to add everything
 
 ❌ **Instructions field is vague**
+
 - Unclear if this is for the student or the SP
 - Often redundant with test label
 
@@ -163,17 +185,20 @@ Each test has:
 ✅ **Replace Quick Add Categories with Smart Presets**
 
 Instead of 9 confusing categories, offer:
+
 - **Add Essential Tests** (5-8 most common for that region)
 - **Add Full Examination** (comprehensive battery)
 - **Add Manual Test** (one at a time, for customization)
 
 Each region has a curated "Essential" list:
+
 - **Hip:** ROM, FADIR, FABER, Trendelenburg, Palpation GT, Strength MMT, Gait
 - **Knee:** ROM, Lachman, McMurray, Patellar grind, Palpation, Gait
 - **Ankle:** ROM, Anterior drawer, Talar tilt, Balance, Palpation
 - etc.
 
 ✅ **Simplify Each Test to 3 Fields**
+
 1. **Test Name** (dropdown of common tests OR free text for custom)
 2. **Expected Finding** (single textarea: natural language description)
    - Example: "FADIR painful at end-range, 6/10 groin pain"
@@ -181,17 +206,20 @@ Each region has a curated "Essential" list:
 3. **Remove Button**
 
 **Auto-generate behind the scenes:**
+
 - Test ID: `obj_[region]_[sanitized_test_name]`
 - Region: inherit from scenario
 - Parse "Expected Finding" text into structured data using AI/NLP (or store as-is)
 
 ✅ **Remove Batch Fill entirely**
+
 - Adds complexity without clear use case
 - If users need to apply common findings, they can:
   - Use Essential presets (pre-filled appropriately)
   - Copy/paste in "Expected Finding" field
 
 ✅ **Remove Advanced Fields (hidden entirely)**
+
 - Preconditions, contraindications, guardrails are implementation details
 - Faculty don't need to manage these
 - Set sensible defaults server-side
@@ -215,6 +243,7 @@ The current schema forces users to think like programmers:
 ```
 
 Benefits:
+
 - Users write what they mean
 - AI can parse if structured data is needed for logic
 - More maintainable and human-readable
@@ -225,11 +254,13 @@ Benefits:
 ### 4. Review & Publish Step
 
 #### Current State:
+
 - **Generate with AI** section (prompt + research toggle)
 - **JSON preview** toggle
 - Save/Update button in sidebar
 
 #### Issues:
+
 - AI generation feels like an afterthought—should be more prominent
 - JSON preview is technical; most users don't need it
 - No validation feedback before save
@@ -237,12 +268,14 @@ Benefits:
 #### Recommendations:
 
 ✅ **Promote AI Generation to Step 1**
+
 - Offer "Start from AI" vs "Start from template" at the beginning
 - Users describe the case in natural language first
 - AI generates draft → user refines
 - **Much faster** for 80% of use cases
 
 ✅ **Replace JSON preview with "Case Summary"**
+
 - Human-readable summary card:
   - Title, Region, Diagnosis
   - 3-5 key symptoms
@@ -251,6 +284,7 @@ Benefits:
 - Reduce technical exposure
 
 ✅ **Add Pre-Save Validation**
+
 - Show errors/warnings BEFORE attempting save:
   - "Missing: At least 3 objective tests"
   - "Warning: No duration specified"
@@ -261,12 +295,15 @@ Benefits:
 ## Workflow Simplification
 
 ### Current: 4-Step Linear Process
+
 1. Overview → 2. Subjective → 3. Objective → 4. Review
 
 ### Recommended: 2 Modes
 
 #### **Quick Mode** (default for most users)
+
 Single-page form:
+
 - Case basics (title, region, diagnosis)
 - Presenting problem (6 simplified fields)
 - Objective tests (preset + add custom)
@@ -275,7 +312,9 @@ Single-page form:
 **Estimated time:** 5-10 minutes
 
 #### **Advanced Mode** (opt-in)
+
 Multi-step with all current fields available:
+
 - Full ICF framework
 - Subjective catalog scripting
 - Granular objective test configuration
@@ -364,22 +403,26 @@ Before implementing, validate these assumptions:
 ## Migration Plan
 
 ### Phase 1: Non-Breaking Additions (Week 1-2)
+
 - Add `expected_finding` field to schema (optional)
 - Auto-generate IDs server-side if not provided
 - Add Quick/Advanced mode toggle (no functional change yet)
 
 ### Phase 2: UI Simplification (Week 3-4)
+
 - Implement Quick Mode UI
 - Update default form to simplified fields
 - Hide advanced sections behind toggle
 - Remove batch fill UI
 
 ### Phase 3: Deprecation (Week 5-6)
+
 - Mark old fields as deprecated in schema
 - Update existing scenarios to populate `expected_finding` from structured data
 - Add migration script
 
 ### Phase 4: Cleanup (Week 7+)
+
 - Remove deprecated fields from schema
 - Remove old UI code
 - Update documentation
@@ -412,6 +455,7 @@ How to measure if simplification worked:
 ## Conclusion
 
 The Case Builder is feature-rich but over-complicated for the core use case. By:
+
 - **Removing** technical jargon and redundant fields
 - **Simplifying** the objective test workflow
 - **Automating** ID generation and defaults

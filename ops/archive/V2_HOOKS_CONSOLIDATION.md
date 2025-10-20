@@ -18,6 +18,7 @@
 ## 🔍 Effect Breakdown
 
 ### Effect 1: Default Selection (Lines 91-105)
+
 ```typescript
 useEffect(() => {
   if (!actions || names.length === 0 || currentRef.current) return
@@ -40,6 +41,7 @@ useEffect(() => {
 **Guards:** Only runs if currentRef.current is null (one-time initialization)
 
 **Key Behaviors:**
+
 - Picks default animation ID from names
 - Applies rest pose if needed
 - Plays animation
@@ -50,6 +52,7 @@ useEffect(() => {
 ---
 
 ### Effect 2: Play/Pause Control (Lines 107-111)
+
 ```typescript
 useEffect(() => {
   const id = currentRef.current
@@ -64,6 +67,7 @@ useEffect(() => {
 **Guards:** Requires currentRef.current to be set
 
 **Key Behaviors:**
+
 - Gets current animation ID from ref
 - Sets paused state based on isAnimating flag
 - Simple toggle behavior
@@ -71,6 +75,7 @@ useEffect(() => {
 ---
 
 ### Effect 3: Finished Event Handler (Lines 113-127)
+
 ```typescript
 useEffect(() => {
   if (!mixer || !actions) return
@@ -97,6 +102,7 @@ useEffect(() => {
 **Guards:** Requires mixer and actions
 
 **Key Behaviors:**
+
 - Registers 'finished' event listener on mixer
 - When animation finishes, finds first repeating animation
 - Applies rest pose and switches to fallback animation
@@ -110,21 +116,25 @@ useEffect(() => {
 ### Challenges
 
 **1. Different Lifecycle Concerns**
+
 - **Effect 1:** Initialization (one-time, runs when actions first available)
 - **Effect 2:** Reactive control (runs on every isAnimating change)
 - **Effect 3:** Event subscription (runs when mixer/actions change, persistent listener)
 
 **2. Different Trigger Patterns**
+
 - Effect 1: Complex dependencies including isAnimating (for initial pause state)
 - Effect 2: Simple dependencies (isAnimating, actions)
 - Effect 3: Event handler with cleanup (mixer lifecycle)
 
 **3. Guard Conditions**
+
 - Effect 1 has explicit guard: `currentRef.current` must be null
 - Effect 2 has simple guard: needs current ID
 - Effect 3 has no guard beyond null checks
 
 **4. Cleanup Requirements**
+
 - Effect 1: No cleanup
 - Effect 2: No cleanup
 - Effect 3: **Critical cleanup** - must remove event listener
@@ -138,6 +148,7 @@ useEffect(() => {
 - Effect 3: Event subscription with cleanup
 
 These are fundamentally different concerns:
+
 1. **Initialization** - runs once to set up
 2. **State synchronization** - runs on every toggle
 3. **Event handling** - persistent subscription
@@ -149,6 +160,7 @@ These are fundamentally different concerns:
 ### Option A: Keep Separate (Recommended ✅)
 
 **Rationale:**
+
 - Each effect serves a distinct purpose with different lifecycles
 - Effect 2 needs to run frequently (on every play/pause)
 - Effect 3 needs cleanup (event listener management)
@@ -156,6 +168,7 @@ These are fundamentally different concerns:
 - Consolidating would create a complex mega-effect with multiple responsibilities
 
 **Benefits:**
+
 - ✅ Clear separation of concerns
 - ✅ Easy to understand each effect's purpose
 - ✅ Proper cleanup handling (Effect 3)
@@ -170,6 +183,7 @@ These are fundamentally different concerns:
 
 **Rationale:**
 Effects 1 and 3 both:
+
 - Share dependencies: mixer, actions, names, onActiveChange, log, applyRestPoseFor
 - Handle animation transitions (start vs. fallback)
 - Update currentRef and call onActiveChange
@@ -210,6 +224,7 @@ useEffect(() => {
 ```
 
 **Issues:**
+
 - ❌ Adds `isAnimating` to dependencies → event listener re-registers on every play/pause
 - ❌ Initialization code runs on every effect re-run (must rely on guard)
 - ❌ Mixed concerns (initialization + event handling)
@@ -222,6 +237,7 @@ useEffect(() => {
 ### Option C: All Three Effects (Anti-pattern ⛔)
 
 Consolidating all three would result in:
+
 - Massive dependency array
 - Mixed initialization, reactive state, and event handling
 - Inefficient re-runs
@@ -286,6 +302,7 @@ Consolidating all three would result in:
 The `usePlayback` hook is **already well-structured** and follows React best practices. The three effects serve distinct purposes with different lifecycles, dependencies, and cleanup requirements. 
 
 Consolidating these effects would:
+
 - Reduce code clarity
 - Create inefficient re-runs
 - Mix unrelated concerns

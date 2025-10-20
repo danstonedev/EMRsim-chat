@@ -17,10 +17,12 @@ Successfully implemented content versioning system with semantic versioning, SHA
 ### 1. Content Versioning Schema
 
 **Added `content_version` field to all content files:**
+
 - ✅ 4 personas (`linda.json`, `chloe.json`, `irene.json`, `rafa.json`)
 - ✅ 3 scenarios (`sc_hip_tha_anterior_pod0_v1`, `sc_lumbar_clbp_ext_pref_flare_v1`, `sc_knee_acl_preop_direct_access_v1`)
 
 **Version Format:** Semantic versioning (`MAJOR.MINOR.PATCH`)
+
 - Initial version: `1.0.0` for all existing content
 - MAJOR: Breaking changes (schema changes, removed fields)
 - MINOR: New features (added objectives, new SOAP sections)
@@ -29,6 +31,7 @@ Successfully implemented content versioning system with semantic versioning, SHA
 ### 2. Checksum Generation Utilities
 
 **Created `src/sps/utils/checksum.ts`:**
+
 - `generateFileChecksum()` - SHA-256 for single files
 - `generateBundleChecksum()` - Composite hash for directory bundles
 - `generateObjectChecksum()` - Hash for JavaScript objects
@@ -41,6 +44,7 @@ Successfully implemented content versioning system with semantic versioning, SHA
 ### 3. Manifest Generator
 
 **Created `src/sps/utils/manifestGenerator.ts`:**
+
 - `generateContentManifest()` - Scans all content and generates manifest
 - `saveManifest()` - Saves manifest to JSON file
 - `loadManifest()` - Loads manifest from disk
@@ -70,6 +74,7 @@ Successfully implemented content versioning system with semantic versioning, SHA
 ### 4. API Version Headers
 
 **Modified `src/routes/sps.ts`:**
+
 - Added `X-Content-Version` header to persona endpoint
 - Added `X-Content-Version` header to scenario endpoint
 - Added `ETag` header for cache validation
@@ -85,6 +90,7 @@ Cache-Control: private, max-age=3600, must-revalidate
 ### 5. Manifest Generation Script
 
 **Created `scripts/generateManifest.ts`:**
+
 - CLI script to generate content manifest
 - Scans all personas, scenarios, and modules
 - Calculates checksums for all content
@@ -100,6 +106,7 @@ npx tsx scripts/generateManifest.ts
 ## Files Modified
 
 ### Added Version Fields (7 files)
+
 1. `src/sps/content/personas/base/linda.json` - Added `content_version: "1.0.0"`
 2. `src/sps/content/personas/base/chloe.json` - Added `content_version: "1.0.0"`
 3. `src/sps/content/personas/base/irene.json` - Added `content_version: "1.0.0"`
@@ -109,12 +116,14 @@ npx tsx scripts/generateManifest.ts
 7. `src/sps/content/scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1/scenario.header.json` - Added `content_version: "1.0.0"`
 
 ### New Files Created (4 files)
+
 1. `src/sps/utils/checksum.ts` - 96 lines - Checksum generation utilities
 2. `src/sps/utils/manifestGenerator.ts` - 234 lines - Manifest generation logic
 3. `scripts/generateManifest.ts` - 35 lines - CLI manifest generator
 4. `src/sps/content/manifest.json` - 95 lines - Generated content manifest (tracked 10 files)
 
 ### Modified Files (2 files)
+
 1. `src/routes/sps.ts` - Added version headers to persona and scenario endpoints (+8 lines)
 2. `ops/docs/PHASE4_TASK4_ANALYSIS.md` - Comprehensive analysis and design document (430+ lines)
 
@@ -123,19 +132,22 @@ npx tsx scripts/generateManifest.ts
 ## Metrics
 
 ### Code Statistics
+
 - **Total Lines Added:** 863 lines
 - **Files Modified:** 9 files
 - **Files Created:** 4 files
 - **Content Files Updated:** 7 files (4 personas, 3 scenarios)
 
 ### Content Tracking
+
 - **Personas Tracked:** 4
 - **Scenarios Tracked:** 3
 - **Modules Tracked:** 3
 - **Total Files Tracked:** 10
 
 ### Checksum Examples
-```
+
+``` text
 linda.json:      sha256:17b9b10efa54fe24b1f18a2196d7c261683e2ac88b949c4a55e1d929939b79d7
 chloe.json:      sha256:f5e76c625ce08a2f00f65edc0425777ee4570df98e0e818d43a4ae2d32b1278e
 sc_hip..._v1:    sha256:43eff75d871b3f97c7cf0cea51870cf94966bf58a64ed83f2f10fdcca884853a
@@ -143,6 +155,7 @@ acute_care..v1:  sha256:3eb3d82553526de8e0a07d34265fcb65c2bb7e9d2c7db7fbdeabfecf
 ```
 
 ### Performance
+
 - **Manifest Generation Time:** <100ms (target met ✅)
 - **Tests Passing:** 32/33 (1 pre-existing failure unrelated to versioning)
 - **Validation Errors:** 0
@@ -154,6 +167,7 @@ acute_care..v1:  sha256:3eb3d82553526de8e0a07d34265fcb65c2bb7e9d2c7db7fbdeabfecf
 ### Generating the Manifest
 
 **When to generate:**
+
 - After modifying any persona, scenario, or module content
 - Before deploying to production
 - As part of CI/CD build process
@@ -165,7 +179,7 @@ npx tsx scripts/generateManifest.ts
 ```
 
 **Output:**
-```
+``` text
 [manifest] Starting content manifest generation...
 [manifest] Content root: C:\Users\...\backend\src\sps\content
 [manifest] Saved to C:\Users\...\backend\src\sps\content\manifest.json
@@ -176,11 +190,13 @@ npx tsx scripts/generateManifest.ts
 ### Version Bump Workflow
 
 **When to bump versions:**
+
 1. **PATCH** (1.0.0 → 1.0.1): Typo fixes, minor content updates
 2. **MINOR** (1.0.0 → 1.1.0): New learning objectives, added SOAP sections
 3. **MAJOR** (1.0.0 → 2.0.0): Schema changes, removed fields, breaking changes
 
 **Steps:**
+
 1. Edit content file (persona or scenario)
 2. Update `content_version` field in the file
 3. Run manifest generator: `npx tsx scripts/generateManifest.ts`
@@ -234,22 +250,26 @@ console.log(isValid ? '✅ Content unchanged' : '⚠️ Content modified');
 ## Cache Invalidation Strategy
 
 ### Browser Caching
+
 - **Header:** `Cache-Control: private, max-age=3600, must-revalidate`
 - **TTL:** 1 hour
 - **Behavior:** Browser must revalidate with server after 1 hour
 - **Private:** Content specific to user session
 
 ### ETag-Based Validation
+
 - **Header:** `ETag: "<content_id>-<content_version>"`
 - **Mechanism:** Client sends `If-None-Match` header with cached ETag
 - **Response:** 304 Not Modified if content unchanged, 200 with new data if changed
 
 ### Version Header
+
 - **Header:** `X-Content-Version: 1.0.0`
 - **Purpose:** Client can track version explicitly
 - **Use Case:** Display "content updated" notification, force cache refresh
 
 ### Recommended Client Implementation
+
 1. **On first load:** Fetch content, store version + data in localStorage
 2. **On subsequent loads:** Send `If-None-Match` with cached ETag
 3. **If 304:** Use cached data
@@ -261,7 +281,8 @@ console.log(isValid ? '✅ Content unchanged' : '⚠️ Content modified');
 ## Testing Validation
 
 ### Test Results
-```
+
+``` text
 Test Files  1 failed | 11 passed (12)
 Tests  1 failed | 32 passed (33)
 Duration  1.39s
@@ -270,10 +291,12 @@ Duration  1.39s
 ```
 
 ### Pre-Existing Failure
+
 - `transcriptRelayController.test.ts` - Unrelated to versioning system
 - All versioning-related functionality passes tests
 
 ### Validation Checks
+
 - ✅ All personas have `content_version` field
 - ✅ All scenarios have `content_version` field
 - ✅ Manifest contains all content entries
@@ -287,7 +310,9 @@ Duration  1.39s
 ## Next Steps
 
 ### Immediate Tasks (Optional)
+
 1. **Add manifest generation to build process:**
+
    ```json
    // package.json
    "scripts": {
@@ -297,7 +322,8 @@ Duration  1.39s
    ```
 
 2. **Add `.gitignore` entry for manifest (if regenerated on build):**
-   ```
+
+``` text
    # Auto-generated manifest
    src/sps/content/manifest.json
    ```
@@ -308,13 +334,16 @@ Duration  1.39s
    - Test schema version compatibility
 
 ### Phase 4 Task 5: Compilation Pipeline
+
 From `PHASE4_IMPLEMENTATION.md`:
+
 - Design compilation target format (single JSON bundles)
 - Implement compiler to merge scenario + persona + modules
 - Pre-calculate checksums during compilation
 - Optimize for fast loading and minimal runtime overhead
 
 ### Future Enhancements
+
 1. **Checksum verification on load:** Verify content integrity before use
 2. **Content migration tooling:** Automated version bumping scripts
 3. **Manifest diff tool:** Compare manifests between deployments
@@ -326,6 +355,7 @@ From `PHASE4_IMPLEMENTATION.md`:
 ## Lessons Learned
 
 ### What Worked Well
+
 1. **Semantic versioning** - Clear, industry-standard approach
 2. **SHA-256 checksums** - Reliable integrity verification
 3. **Composite bundle checksums** - Handles directory-based scenarios elegantly
@@ -334,6 +364,7 @@ From `PHASE4_IMPLEMENTATION.md`:
 6. **Additive changes** - No breaking changes to existing code
 
 ### Technical Decisions
+
 1. **Checksum algorithm:** SHA-256 chosen for security and reliability
 2. **Version format:** Semantic versioning for clear change communication
 3. **Manifest location:** `content/manifest.json` for easy access
@@ -341,6 +372,7 @@ From `PHASE4_IMPLEMENTATION.md`:
 5. **Generator pattern:** Separate CLI script for manifest generation
 
 ### Performance Considerations
+
 1. **Manifest caching:** Load manifest once, reuse in memory
 2. **Lazy generation:** Manifest generated on-demand or in build process
 3. **Bundle checksums:** Sorted file list for deterministic hashing

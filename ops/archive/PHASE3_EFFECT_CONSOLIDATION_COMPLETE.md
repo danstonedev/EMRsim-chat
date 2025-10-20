@@ -130,11 +130,13 @@ useEffect(() => {
 ## Benefits
 
 ### 1. **Single Configuration Update** ✅
+
 - All related settings updated in one atomic operation
 - Guaranteed execution order
 - No intermediate states
 
 ### 2. **Centralized Logging** ✅
+
 ```typescript
 // Before: Only media logged
 [useVoiceSession] Scenario media updated: {count: 2, ids: [...]}
@@ -152,16 +154,19 @@ useEffect(() => {
 ```
 
 ### 3. **Better Performance** ✅
+
 - **Before:** 7 effect executions when all deps change
 - **After:** 1 effect execution
 - **Improvement:** 85% reduction in effect overhead
 
 ### 4. **Easier Debugging** ✅
+
 - Single location to inspect configuration flow
 - Complete state snapshot in one log
 - Clear documentation of what's being configured
 
 ### 5. **Maintainability** ✅
+
 - Add new config options in one place
 - Clear dependency tracking
 - Self-documenting code structure
@@ -171,6 +176,7 @@ useEffect(() => {
 ## Technical Details
 
 ### Dependency Array:
+
 ```typescript
 [
   controller,           // Controller instance
@@ -187,6 +193,7 @@ useEffect(() => {
 **Behavior:** Effect runs when ANY of these dependencies change, ensuring the controller stays in sync with the options.
 
 ### Config Object Pattern:
+
 ```typescript
 const config = {
   personaId: options.personaId ?? null,
@@ -196,6 +203,7 @@ const config = {
 ```
 
 **Benefits:**
+
 - Clear data structure
 - Easy to extend
 - Ready for logging
@@ -228,18 +236,21 @@ const config = {
 ## Testing
 
 ### Type Check: ✅ PASSED
+
 ```bash
 cd frontend; npm run type-check
 ```
 Result: No type errors
 
 ### Unit Tests: ✅ PASSED
+
 ```bash
 cd frontend; npm run test:viewer --silent
 ```
 Result: All tests passing
 
 ### Build: ✅ PASSED
+
 ```bash
 cd frontend; npm run build
 ```
@@ -252,12 +263,14 @@ Result: Successful production build
 ### Code Organization:
 
 **Before:** 
+
 - 7 scattered effects
 - Difficult to see complete configuration
 - Logging only on media updates
 - Hard to add new config options
 
 **After:**
+
 - 1 consolidated effect
 - Complete configuration visible in one place
 - Comprehensive logging of all settings
@@ -268,6 +281,7 @@ Result: Successful production build
 ## Debug Output Example
 
 ### Development Mode:
+
 ```typescript
 [useVoiceSession] Configuration updated: {
   personaId: 'dr-smith',
@@ -287,12 +301,14 @@ This single log provides complete visibility into the voice session configuratio
 ## Edge Cases Handled
 
 ### 1. **Partial Configuration Updates**
+
 ```typescript
 // User changes only voice setting
 Effect fires once with complete config snapshot
 ```
 
 ### 2. **Null/Undefined Values**
+
 ```typescript
 // Proper defaults applied
 personaId: options.personaId ?? null
@@ -300,12 +316,14 @@ inputLanguage: options.inputLanguage ?? 'en-US'
 ```
 
 ### 3. **Media Array Changes**
+
 ```typescript
 // Handled same as before, now with context
 scenarioMedia: options.scenarioMedia ?? []
 ```
 
 ### 4. **Controller Instance Changes**
+
 ```typescript
 // Effect re-runs with complete config
 // Ensures controller stays in sync
@@ -316,12 +334,15 @@ scenarioMedia: options.scenarioMedia ?? []
 ## Migration Notes
 
 ### Breaking Changes:
+
 **None** - This is a pure refactoring. The API and behavior remain identical.
 
 ### Behavioral Changes:
+
 **None** - All controller methods are called in the same order with the same values.
 
 ### Performance Changes:
+
 **Better** - Fewer effect executions when multiple props change simultaneously.
 
 ---
@@ -329,6 +350,7 @@ scenarioMedia: options.scenarioMedia ?? []
 ## Future Enhancements
 
 ### Optional Config Validation:
+
 ```typescript
 if (import.meta.env.DEV) {
   if (config.personaId && !config.scenarioId) {
@@ -338,6 +360,7 @@ if (import.meta.env.DEV) {
 ```
 
 ### Config Diffing:
+
 ```typescript
 const prevConfigRef = useRef(config)
 const changes = getConfigDiff(prevConfigRef.current, config)
@@ -346,6 +369,7 @@ prevConfigRef.current = config
 ```
 
 ### Performance Monitoring:
+
 ```typescript
 const startTime = performance.now()
 // ... controller updates ...
@@ -387,6 +411,7 @@ console.debug('[useVoiceSession] Config update took:', duration, 'ms')
 **Phase 3:** Effect consolidation (85% fewer effect runs)
 
 **Overall Result:**
+
 - Cleaner console
 - Faster initialization  
 - Better performance
@@ -412,6 +437,7 @@ Changes are isolated to a single file and can be reverted quickly.
 ## Documentation
 
 ### Inline Comments Added:
+
 ```typescript
 // Phase 3: Consolidated configuration effect
 // Batches all related controller updates into a single effect to reduce overhead
@@ -419,6 +445,7 @@ Changes are isolated to a single file and can be reverted quickly.
 ```
 
 ### Why This Matters:
+
 - Future developers understand the optimization
 - Clear intent documented
 - Phase tracking for reference
@@ -428,6 +455,7 @@ Changes are isolated to a single file and can be reverted quickly.
 ## Recommendations
 
 ### Deploy Strategy:
+
 1. ✅ Deploy Phase 1 (logging - lowest risk)
 2. ✅ Deploy Phase 2 (media optimization - low risk)
 3. ✅ Deploy Phase 3 (effect consolidation - low risk)
@@ -435,6 +463,7 @@ Changes are isolated to a single file and can be reverted quickly.
 5. Celebrate clean, optimized code! 🎉
 
 ### Monitoring:
+
 - Watch for any voice session initialization issues
 - Check that configuration updates work correctly
 - Verify media loading still functions

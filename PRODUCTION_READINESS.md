@@ -2,24 +2,107 @@
 
 This document outlines recommended improvements for production deployment of the EMRsim application.
 
-## 1. Redis Migration for Horizontal Scalability
+## 1. ✅ Redis Migration for Horizontal Scalability - COMPLETE
 
-### Current State
-The backend uses an **in-memory Map** for storing RTC tokens in `backend/src/routes/voice.ts`:
+**Status:** ✅ **IMPLEMENTED** (Oct 18, 2025)
 
-```typescript
-const rtcTokenStore = new Map<string, string>();
+### Implementation Summary
+
+The backend now uses Redis for RTC token storage, enabling horizontal scaling with multiple backend instances.
+
+**What Was Done:**
+
+1. ✅ Added Redis client service (`backend/src/services/redisClient.ts`)
+   - Automatic reconnection with exponential backoff
+   - Graceful fallback to in-memory storage when Redis unavailable
+   - Comprehensive error handling and logging
+
+2. ✅ Updated voice route (`backend/src/routes/voice.ts`)
+   - Tokens stored in Redis with 60-second TTL: `rtc:token:${sessionId}`
+   - Automatic fallback to in-memory Map if Redis unavailable
+   - Both storage and retrieval support fallback
+
+3. ✅ Environment Configuration
+   - Added `REDIS_URL` to backend/.env.example
+   - Documented connection string formats
+
+4. ✅ Server Startup Integration
+   - Redis connection initialized in backend/src/index.ts
+   - Graceful shutdown on SIGINT/SIGTERM
+   - Health status logging
+
+5. ✅ Docker Compose Support
+   - Added Redis service to docker-compose.dev.yml (development)
+   - Added Redis service to docker-compose.yml (production)
+   - Health checks configured
+   - Persistent volumes for data
+
+### Usage
+
+**Local Development (without Docker):**
+
+```bash
+# Start Redis locally
+docker run -d -p 6379:6379 redis:7-alpine
+
+# Or install Redis and run
+redis-server
+
+# Update backend/.env
+REDIS_URL=redis://localhost:6379
+
+# Start backend
+cd backend
+npm run dev
 ```
 
-### Problem
-- Tokens are lost on server restart
-- Multiple backend instances don't share token state
-- No failover capability
+**Docker Compose Development:**
 
-### Solution: Migrate to Redis
+```bash
+# Redis included automatically
+docker-compose -f docker-compose.dev.yml up
+```
 
-#### Step 1: Add Redis Client
-Create `backend/src/services/redisClient.ts`:
+**Production Deployment:**
+
+```bash
+# Redis included in production compose
+docker-compose up -d
+
+# Or use managed Redis (Azure Cache for Redis, AWS ElastiCache)
+# Set REDIS_URL in production environment
+REDIS_URL=redis://:password@your-redis-host:6379
+```
+
+### Benefits Achieved
+
+- ✅ Horizontal scaling with multiple backend replicas
+- ✅ Tokens persist across restarts
+- ✅ Automatic expiration with TTL (60 seconds)
+- ✅ Centralized session state
+- ✅ Graceful fallback to in-memory when Redis unavailable
+- ✅ Zero breaking changes (all tests passing)
+
+### Testing
+
+```bash
+# Run backend tests (all passing)
+cd backend
+npm test
+# Result: 28 passed | 4 skipped (32)
+
+# Build verification
+npm run build
+# Result: Build success ✅
+```
+
+### Migration Details
+
+See `CHANGELOG.md` (Oct 18, 2025 entry) for complete implementation details.
+
+---
+
+## 2. Contract Tests (API Schema Validation)
 
 ```typescript
 import { createClient } from 'redis';
@@ -50,6 +133,7 @@ export async function disconnectRedis() {
 ```
 
 #### Step 2: Update Voice Route
+
 In `backend/src/routes/voice.ts`, replace:
 
 ```typescript
@@ -71,6 +155,7 @@ const storedToken = await redisClient.get(`rtc:token:${sessionId}`);
 ```
 
 #### Step 3: Update Environment
+
 Add to `backend/.env.example`:
 
 ```bash
@@ -79,12 +164,14 @@ REDIS_URL=redis://localhost:6379
 ```
 
 #### Step 4: Install Dependency
+
 ```bash
 npm install --save redis
 npm install --save-dev @types/node
 ```
 
 #### Step 5: Connect on Startup
+
 In `backend/src/index.ts`:
 
 ```typescript
@@ -103,6 +190,7 @@ process.on('SIGTERM', async () => {
 ```
 
 ### Benefits
+
 - ✅ Horizontal scaling with multiple backend replicas
 - ✅ Tokens persist across restarts
 - ✅ Automatic expiration with TTL
@@ -113,9 +201,11 @@ process.on('SIGTERM', async () => {
 ## 2. Contract Tests (API Schema Validation)
 
 ### Goal
+
 Validate that API responses match OpenAPI/Swagger schema definitions.
 
 ### Implementation
+
 Add `backend/tests/contract.test.ts`:
 
 ```typescript
@@ -154,6 +244,7 @@ describe('Contract Tests', () => {
 ```
 
 ### Tools
+
 - **ajv**: JSON schema validator
 - **openapi-validator-middleware**: Validates req/res against OpenAPI spec
 
@@ -162,9 +253,11 @@ describe('Contract Tests', () => {
 ## 3. Soak Tests (Long-Running Stability)
 
 ### Goal
+
 Verify the application handles long-duration voice sessions without memory leaks or degradation.
 
 ### Implementation
+
 Add `backend/tests/soak.test.ts`:
 
 ```typescript
@@ -227,6 +320,7 @@ describe('Soak Test - 15 Minute Voice Session', () => {
 ```
 
 ### Run Soak Tests
+
 ```bash
 npm run test:soak
 ```
@@ -245,11 +339,13 @@ Add to `package.json`:
 ## 4. Additional Production Recommendations
 
 ### Logging
+
 - Replace `console.log` with structured logging (pino, winston)
 - Add correlation IDs for request tracing
 - Ship logs to centralized service (CloudWatch, DataDog)
 
 ### Monitoring
+
 - Add Prometheus metrics (already scaffolded in `/metrics`)
 - Set up alerts for:
   - Response time > 500ms
@@ -257,11 +353,13 @@ Add to `package.json`:
   - Memory usage > 80%
 
 ### Database
+
 - Migrate from SQLite to PostgreSQL for production
 - Add connection pooling
 - Implement database backups
 
 ### CI/CD Enhancements
+
 - Add security scanning (npm audit, Snyk)
 - Run soak tests in staging environment
 - Blue-green or canary deployments

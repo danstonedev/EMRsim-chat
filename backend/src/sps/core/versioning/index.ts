@@ -5,13 +5,13 @@ import { fileURLToPath } from 'node:url';
 import type {
   ContentManifest,
   DependencyManifest,
-  ScenarioDependencyManifestEntry
+  ScenarioDependencyManifestEntry,
 } from '../../utils/manifestGenerator.ts';
 import {
   getContentChecksum,
   getContentVersion,
   loadManifest,
-  loadDependencyManifest
+  loadDependencyManifest,
 } from '../../utils/manifestGenerator.ts';
 
 export type ContentKind = 'persona' | 'scenario' | 'module';
@@ -84,7 +84,12 @@ export function refreshDependencyCache(): void {
   readDependenciesFromDisk();
 }
 
-function resolveUpdatedAt(manifest: ContentManifest, kind: ContentKind, id: string, moduleVersion?: string): string | null {
+function resolveUpdatedAt(
+  manifest: ContentManifest,
+  kind: ContentKind,
+  id: string,
+  moduleVersion?: string
+): string | null {
   switch (kind) {
     case 'persona':
       return manifest.content.personas[id]?.updated_at ?? null;
@@ -100,8 +105,16 @@ function resolveUpdatedAt(manifest: ContentManifest, kind: ContentKind, id: stri
 
 export function resolveContentDescriptor(kind: 'persona', id: string): ContentVersionDescriptor | null;
 export function resolveContentDescriptor(kind: 'scenario', id: string): ContentVersionDescriptor | null;
-export function resolveContentDescriptor(kind: 'module', id: string, moduleVersion: string): ContentVersionDescriptor | null;
-export function resolveContentDescriptor(kind: ContentKind, id: string, moduleVersion?: string): ContentVersionDescriptor | null {
+export function resolveContentDescriptor(
+  kind: 'module',
+  id: string,
+  moduleVersion: string
+): ContentVersionDescriptor | null;
+export function resolveContentDescriptor(
+  kind: ContentKind,
+  id: string,
+  moduleVersion?: string
+): ContentVersionDescriptor | null {
   const manifest = ensureManifest();
   const contentVersion = getContentVersion(manifest, kind, id, moduleVersion);
   if (!contentVersion) {
@@ -145,7 +158,7 @@ export function getScenarioDependencies(scenarioId: string): ScenarioDependencyM
 export function assertScenarioDependenciesUpToDate(
   scenarioId: string,
   expectedPersonaId: string | null,
-  expectedModules: Array<{ module_id: string; version: string }>,
+  expectedModules: Array<{ module_id: string; version: string }>
 ): void {
   const manifest = ensureManifest();
   const manifestScenario = manifest.content.scenarios[scenarioId];
@@ -154,13 +167,15 @@ export function assertScenarioDependenciesUpToDate(
   }
 
   if (expectedPersonaId && manifestScenario.persona_id !== expectedPersonaId) {
-    throw new Error(`Scenario ${scenarioId} references persona ${expectedPersonaId} but manifest has ${manifestScenario.persona_id}`);
+    throw new Error(
+      `Scenario ${scenarioId} references persona ${expectedPersonaId} but manifest has ${manifestScenario.persona_id}`
+    );
   }
 
   const manifestModules = new Set(
     Array.isArray(manifestScenario.modules)
       ? manifestScenario.modules.map((mod: { module_id: string; version: string }) => `${mod.module_id}@${mod.version}`)
-      : [],
+      : []
   );
 
   for (const ref of expectedModules) {

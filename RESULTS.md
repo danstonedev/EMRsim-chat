@@ -16,34 +16,41 @@ Successfully streamlined the EMRsim-chat repository by removing all build artifa
 The following directories and files were cleaned from the workspace:
 
 ### Dependencies
+
 - `node_modules/` (root, frontend, backend)
 - `package-lock.json` files
 
 ### Build Outputs
+
 - `frontend/dist/`
 
 ### Test & Reports
+
 - `test-results/`
 - `playwright-report/`
 - `e2e-results.json`
 
 ### Environment Files
+
 - `backend/.env` (backed up to `backend/.env.local.backup`)
 - `frontend/.env.local`
 
 ## Security Improvements
 
 ✅ **Secrets removed from version control:**
+
 - Real OpenAI API key from `backend/.env` was backed up locally and excluded from Git
 - Created `.env.example` with safe placeholder values
 - Enhanced `.gitignore` to prevent future accidental commits of secrets
 
 ✅ **Backup created:**
+
 - Original `backend/.env` saved to `backend/.env.local.backup` (untracked)
 
 ## Files Added/Updated
 
 ### `.gitignore` (root, frontend, backend)
+
 - Added comprehensive exclusions for:
   - All `node_modules/` directories
   - Build artifacts (`dist/`, `build/`, `out/`, `.next/`, `.turbo/`, `.cache/`)
@@ -53,6 +60,7 @@ The following directories and files were cleaned from the workspace:
   - OS/editor temporary files
 
 ### `.env.example` (root)
+
 - Safe placeholder template for all environment variables
 - Includes documentation for each setting
 - No secrets or sensitive data
@@ -62,12 +70,14 @@ The following directories and files were cleaned from the workspace:
 The repository is fully reproducible:
 
 1. **Clone the repo:**
+
    ```powershell
    git clone <repo-url>
    cd EMRsim-chat
    ```
 
 2. **Set up environment:**
+
    ```powershell
    # Copy and configure backend environment
    Copy-Item .env.example backend\.env
@@ -78,6 +88,7 @@ The repository is fully reproducible:
    ```
 
 3. **Install dependencies:**
+
    ```powershell
    # Install root dependencies
    npm install
@@ -94,6 +105,7 @@ The repository is fully reproducible:
    ```
 
 4. **Build and run:**
+
    ```powershell
    # Run backend
    cd backend
@@ -109,6 +121,7 @@ The repository is fully reproducible:
 The `emrsim-source.zip` file (480 KB) contains:
 
 ✅ **Included:**
+
 - All TypeScript source code
 - Configuration files (`tsconfig.json`, `vite.config.ts`, etc.)
 - Package manifests (`package.json`)
@@ -119,6 +132,7 @@ The `emrsim-source.zip` file (480 KB) contains:
 - VS Code workspace settings
 
 ❌ **Excluded:**
+
 - `node_modules/` (vendor dependencies)
 - `dist/`, `build/` (compiled outputs)
 - `coverage/`, `test-results/` (test artifacts)
@@ -156,16 +170,19 @@ git archive --format=zip --output .\emrsim-source.zip HEAD
 ## Next Steps
 
 ### For Development
+
 1. Copy `backend/.env.local.backup` back to `backend/.env` (or use `.env.example` as template)
 2. Run `npm install` in root, backend, and frontend directories
 3. Run `npm run dev` to start development servers
 
 ### For Distribution
+
 - Use `emrsim-source.zip` for code reviews, transfers, or archival
 - Share `.env.example` with collaborators for environment setup
 - Lock files will be regenerated on first `npm install`
 
 ### Optional: History Cleanup
+
 If the repository had previously committed large artifacts or secrets in Git history, consider running `git-filter-repo` to purge them:
 
 ```powershell
@@ -183,6 +200,7 @@ git filter-repo --force --path .env --invert-paths
 ## Status: ✅ COMPLETE
 
 All objectives achieved:
+
 - ✅ Comprehensive `.gitignore` in place
 - ✅ Secrets removed from version control
 - ✅ `.env.example` template created

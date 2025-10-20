@@ -1,6 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { spsRegistry } from '../sps/core/registry.ts';
-import { getGoldInstructions, formatPersonaSection as fmtPersona, formatScenarioSection as fmtScenario } from '../sps/runtime/sps.service.ts';
+import {
+  getGoldInstructions,
+  formatPersonaSection as fmtPersona,
+  formatScenarioSection as fmtScenario,
+} from '../sps/runtime/sps.service.ts';
 import { upsertScenario, getScenarioByIdFull, listScenariosLite, getStorageMode } from '../db.ts';
 import { zClinicalScenario } from '../sps/core/schemas.ts';
 import { generateScenarioWithAI } from '../services/ai_generate.ts';
@@ -40,7 +44,8 @@ function ensureTestIds(scenario: any): void {
   scenario.objective_catalog.forEach((test: any, idx: number) => {
     if (!test.test_id || test.test_id === 'new_test') {
       const label = test.label || `test_${idx}`;
-      const sanitized = label.toLowerCase()
+      const sanitized = label
+        .toLowerCase()
         .replace(/[^a-z0-9\s]/g, '')
         .replace(/\s+/g, '_')
         .slice(0, 40);
@@ -66,7 +71,7 @@ router.get('/debug', (_req: Request, res: Response) => {
 
     // Unique merged IDs to reflect catalog endpoint behavior
     const mergedIds = new Set<string>();
-    Object.keys(spsRegistry.scenarios).forEach((id) => mergedIds.add(id));
+    Object.keys(spsRegistry.scenarios).forEach(id => mergedIds.add(id));
     (dbScenarios || []).forEach((s: any) => {
       if (s?.scenario_id) mergedIds.add(String(s.scenario_id));
     });
@@ -87,7 +92,7 @@ router.get('/debug', (_req: Request, res: Response) => {
       },
       notes: [
         'Catalog merges registry (disk) and DB (authoring) entries; DB wins on conflicts.',
-        'Prefer /api/sps/*; /api/sessions/sps/* is maintained for compatibility and will be deprecated.'
+        'Prefer /api/sps/*; /api/sessions/sps/* is maintained for compatibility and will be deprecated.',
       ],
     });
   } catch (e) {
@@ -126,7 +131,8 @@ router.get('/scenarios', (_req: Request, res: Response) => {
 router.post('/generate', async (req: Request, res: Response) => {
   try {
     const { prompt, options, save } = req.body || {};
-    if (!prompt || typeof prompt !== 'string') return res.status(400).json({ error: 'bad_request', detail: 'prompt required' });
+    if (!prompt || typeof prompt !== 'string')
+      return res.status(400).json({ error: 'bad_request', detail: 'prompt required' });
     if (!process.env.OPENAI_API_KEY) return res.status(503).json({ error: 'no_openai_key' });
 
     const { scenario, sources } = await generateScenarioWithAI({ prompt, options }, req);
@@ -277,15 +283,15 @@ router.get('/catalogs/protocols', async (_req: Request, res: Response) => {
 router.post('/scenarios', (req: Request, res: Response) => {
   try {
     const body = req.body || {};
-    
+
     // Auto-generate scenario_id if missing or placeholder
     if (!body.scenario_id || body.scenario_id === 'new_scenario_id' || body.scenario_id.trim() === '') {
       body.scenario_id = generateScenarioId(body);
     }
-    
+
     // Auto-generate test IDs and ensure regions match
     ensureTestIds(body);
-    
+
     const scenario = zClinicalScenario.parse(body);
     // Persist to DB
     upsertScenario(scenario);
@@ -307,10 +313,10 @@ router.put('/scenarios/:id', (req: Request, res: Response) => {
     const id = String(req.params.id || '');
     const body = req.body || {};
     if (!id) return res.status(400).json({ error: 'bad_request' });
-    
+
     // Auto-generate test IDs and ensure regions match
     ensureTestIds(body);
-    
+
     const scenario = zClinicalScenario.parse(body);
     if (scenario.scenario_id !== id) return res.status(400).json({ error: 'id_mismatch' });
     upsertScenario(scenario);
@@ -332,13 +338,13 @@ router.get('/scenarios/:id', (req: Request, res: Response) => {
     const fromDb = getScenarioByIdFull(id);
     const scenario = fromDb || spsRegistry.scenarios[id] || null;
     if (!scenario) return res.status(404).json({ error: 'not_found' });
-    
+
     // Add version headers for cache invalidation
     const contentVersion = (scenario as any).content_version || '1.0.0';
     res.setHeader('X-Content-Version', contentVersion);
     res.setHeader('ETag', `"${id}-${contentVersion}"`);
     res.setHeader('Cache-Control', 'private, max-age=3600, must-revalidate');
-    
+
     res.json({ scenario });
   } catch (e) {
     console.error('[sps][scenarios][get][error]', e);
@@ -366,7 +372,8 @@ exportRouter.get('/export', (req: Request, res: Response) => {
     const objectives: ObjectiveFinding[] = scenario.objective_catalog ?? [];
     const objectiveGuardrails: ObjectiveGuardrails = scenario.objective_guardrails ?? {};
 
-    const escapeHtml = (s: string) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c as '&' | '<' | '>'] || c));
+    const escapeHtml = (s: string) =>
+      String(s ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c as '&' | '<' | '>'] || c);
     const safeText = (value: any): string => {
       if (value === undefined || value === null) return '';
       if (typeof value === 'boolean') return value ? 'Yes' : 'No';
@@ -391,8 +398,10 @@ exportRouter.get('/export', (req: Request, res: Response) => {
       return entries.length ? `<dl class="detail-grid">${entries.join('')}</dl>` : '';
     };
     const renderList = (items: any): string => {
-      const arr = Array.isArray(items) ? items.map((item) => safeText(item)).filter(Boolean) : [];
-      return arr.length ? `<ul class="plain-list">${arr.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : '';
+      const arr = Array.isArray(items) ? items.map(item => safeText(item)).filter(Boolean) : [];
+      return arr.length
+        ? `<ul class="plain-list">${arr.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
+        : '';
     };
     const renderKeyValue = (obj: any): string => {
       if (!obj || typeof obj !== 'object') return '';
@@ -406,8 +415,10 @@ exportRouter.get('/export', (req: Request, res: Response) => {
       return entries.length ? `<ul class="plain-list">${entries.join('')}</ul>` : '';
     };
     const renderChips = (items: any): string => {
-      const arr = Array.isArray(items) ? items.map((item) => safeText(item)).filter(Boolean) : [];
-      return arr.length ? `<div class="chip-row">${arr.map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join('')}</div>` : '';
+      const arr = Array.isArray(items) ? items.map(item => safeText(item)).filter(Boolean) : [];
+      return arr.length
+        ? `<div class="chip-row">${arr.map(item => `<span class="chip">${escapeHtml(item)}</span>`).join('')}</div>`
+        : '';
     };
 
     const personaBlock = escapeHtml(fmtPersona(persona)).replace(/\n/g, '<br/>');
@@ -434,14 +445,16 @@ exportRouter.get('/export', (req: Request, res: Response) => {
       .map((lo: any) => {
         const metaParts = [];
         if (lo.bloom_level) metaParts.push(`Bloom: ${safeText(lo.bloom_level)}`);
-        if (Array.isArray(lo.capte_refs) && lo.capte_refs.length) metaParts.push(`CAPTE: ${lo.capte_refs.map((ref: any) => safeText(ref)).join(', ')}`);
+        if (Array.isArray(lo.capte_refs) && lo.capte_refs.length)
+          metaParts.push(`CAPTE: ${lo.capte_refs.map((ref: any) => safeText(ref)).join(', ')}`);
         if (lo.npte_map) {
           const npteParts = [lo.npte_map.system, lo.npte_map.domain, lo.npte_map.nonsystem]
             .map((part: any) => safeText(part))
             .filter(Boolean);
           if (npteParts.length) metaParts.push(`NPTE: ${npteParts.join(' / ')}`);
         }
-        if (Array.isArray(lo.assessment_focus) && lo.assessment_focus.length) metaParts.push(`Focus: ${lo.assessment_focus.map((ref: any) => safeText(ref)).join(', ')}`);
+        if (Array.isArray(lo.assessment_focus) && lo.assessment_focus.length)
+          metaParts.push(`Focus: ${lo.assessment_focus.map((ref: any) => safeText(ref)).join(', ')}`);
         if (lo.evidence_req) metaParts.push(`Evidence: ${safeText(lo.evidence_req)}`);
         const metaLine = metaParts.length ? `<div class="small muted">${escapeHtml(metaParts.join(' · '))}</div>` : '';
         const idLine = lo.id ? `<div class="small muted">ID: ${escapeHtml(safeText(lo.id))}</div>` : '';
@@ -493,10 +506,14 @@ exportRouter.get('/export', (req: Request, res: Response) => {
     const presentingDetails = renderDefinitionList(presentingRows);
     const presentingListCards: string[] = [];
     if (Array.isArray(presenting.dominant_symptoms) && presenting.dominant_symptoms.length) {
-      presentingListCards.push(`<div class="card card--border"><h3>Dominant symptoms</h3>${renderList(presenting.dominant_symptoms)}</div>`);
+      presentingListCards.push(
+        `<div class="card card--border"><h3>Dominant symptoms</h3>${renderList(presenting.dominant_symptoms)}</div>`
+      );
     }
     if (Array.isArray(presenting.aggravators) && presenting.aggravators.length) {
-      presentingListCards.push(`<div class="card card--border"><h3>Aggravators</h3>${renderList(presenting.aggravators)}</div>`);
+      presentingListCards.push(
+        `<div class="card card--border"><h3>Aggravators</h3>${renderList(presenting.aggravators)}</div>`
+      );
     }
     if (Array.isArray(presenting.easers) && presenting.easers.length) {
       presentingListCards.push(`<div class="card card--border"><h3>Easers</h3>${renderList(presenting.easers)}</div>`);
@@ -511,10 +528,14 @@ exportRouter.get('/export', (req: Request, res: Response) => {
     const icf: ICF = scenario.icf ?? {};
     const icfCards: string[] = [];
     if (icf.health_condition) {
-      icfCards.push(`<div class="card card--border"><h3>Health condition</h3><p>${escapeHtml(safeText(icf.health_condition))}</p></div>`);
+      icfCards.push(
+        `<div class="card card--border"><h3>Health condition</h3><p>${escapeHtml(safeText(icf.health_condition))}</p></div>`
+      );
     }
     if (Array.isArray(icf.body_functions_structures) && icf.body_functions_structures.length) {
-      icfCards.push(`<div class="card card--border"><h3>Body functions &amp; structures</h3>${renderList(icf.body_functions_structures)}</div>`);
+      icfCards.push(
+        `<div class="card card--border"><h3>Body functions &amp; structures</h3>${renderList(icf.body_functions_structures)}</div>`
+      );
     }
     if (Array.isArray(icf.activities) && icf.activities.length) {
       icfCards.push(`<div class="card card--border"><h3>Activities</h3>${renderList(icf.activities)}</div>`);
@@ -523,10 +544,14 @@ exportRouter.get('/export', (req: Request, res: Response) => {
       icfCards.push(`<div class="card card--border"><h3>Participation</h3>${renderList(icf.participation)}</div>`);
     }
     if (Array.isArray(icf.environmental_factors) && icf.environmental_factors.length) {
-      icfCards.push(`<div class="card card--border"><h3>Environmental factors</h3>${renderList(icf.environmental_factors)}</div>`);
+      icfCards.push(
+        `<div class="card card--border"><h3>Environmental factors</h3>${renderList(icf.environmental_factors)}</div>`
+      );
     }
     if (Array.isArray(icf.personal_factors) && icf.personal_factors.length) {
-      icfCards.push(`<div class="card card--border"><h3>Personal factors</h3>${renderList(icf.personal_factors)}</div>`);
+      icfCards.push(
+        `<div class="card card--border"><h3>Personal factors</h3>${renderList(icf.personal_factors)}</div>`
+      );
     }
     const icfContent = icfCards.length ? `<div class="card-grid">${icfCards.join('')}</div>` : '';
 
@@ -536,53 +561,79 @@ exportRouter.get('/export', (req: Request, res: Response) => {
       contextCards.push(`<div class="card card--border"><h3>Patient goals</h3>${renderList(context.goals)}</div>`);
     }
     if (Array.isArray(context.role_impacts) && context.role_impacts.length) {
-      contextCards.push(`<div class="card card--border"><h3>Role impacts</h3>${renderList(context.role_impacts)}</div>`);
+      contextCards.push(
+        `<div class="card card--border"><h3>Role impacts</h3>${renderList(context.role_impacts)}</div>`
+      );
     }
     if (context.environment) {
-      contextCards.push(`<div class="card card--border"><h3>Environment</h3><p>${escapeHtml(safeText(context.environment))}</p></div>`);
+      contextCards.push(
+        `<div class="card card--border"><h3>Environment</h3><p>${escapeHtml(safeText(context.environment))}</p></div>`
+      );
     }
     if (context.instructor_notes) {
-      contextCards.push(`<div class="card card--border"><h3>Instructor notes</h3><p>${escapeHtml(safeText(context.instructor_notes))}</p></div>`);
+      contextCards.push(
+        `<div class="card card--border"><h3>Instructor notes</h3><p>${escapeHtml(safeText(context.instructor_notes))}</p></div>`
+      );
     }
     const contextContent = contextCards.length ? `<div class="card-grid">${contextCards.join('')}</div>` : '';
 
     const fluctuation: SymptomFluctuation = scenario.symptom_fluctuation ?? {};
     const fluctuationCards: string[] = [];
     if (fluctuation.with_time) {
-      fluctuationCards.push(`<div class="card card--border"><h3>Changes over time</h3><p>${escapeHtml(safeText(fluctuation.with_time))}</p></div>`);
+      fluctuationCards.push(
+        `<div class="card card--border"><h3>Changes over time</h3><p>${escapeHtml(safeText(fluctuation.with_time))}</p></div>`
+      );
     }
     if (fluctuation.with_activity) {
-      fluctuationCards.push(`<div class="card card--border"><h3>Changes with activity</h3><p>${escapeHtml(safeText(fluctuation.with_activity))}</p></div>`);
+      fluctuationCards.push(
+        `<div class="card card--border"><h3>Changes with activity</h3><p>${escapeHtml(safeText(fluctuation.with_activity))}</p></div>`
+      );
     }
     if (Array.isArray(fluctuation.during_session_examples) && fluctuation.during_session_examples.length) {
-      fluctuationCards.push(`<div class="card card--border"><h3>During session cues</h3>${renderList(fluctuation.during_session_examples)}</div>`);
+      fluctuationCards.push(
+        `<div class="card card--border"><h3>During session cues</h3>${renderList(fluctuation.during_session_examples)}</div>`
+      );
     }
-    const fluctuationContent = fluctuationCards.length ? `<div class="card-grid">${fluctuationCards.join('')}</div>` : '';
+    const fluctuationContent = fluctuationCards.length
+      ? `<div class="card-grid">${fluctuationCards.join('')}</div>`
+      : '';
 
     const scenarioGuardrails: ScenarioGuardrails = scenario.guardrails ?? {};
     const scenarioGuardItems: string[] = [];
-    if (typeof scenarioGuardrails.min_age === 'number') scenarioGuardItems.push(`Minimum age: ${scenarioGuardrails.min_age}`);
-    if (typeof scenarioGuardrails.max_age === 'number') scenarioGuardItems.push(`Maximum age: ${scenarioGuardrails.max_age}`);
-    if (scenarioGuardrails.sex_required) scenarioGuardItems.push(`Required sex: ${safeText(scenarioGuardrails.sex_required)}`);
+    if (typeof scenarioGuardrails.min_age === 'number')
+      scenarioGuardItems.push(`Minimum age: ${scenarioGuardrails.min_age}`);
+    if (typeof scenarioGuardrails.max_age === 'number')
+      scenarioGuardItems.push(`Maximum age: ${scenarioGuardrails.max_age}`);
+    if (scenarioGuardrails.sex_required)
+      scenarioGuardItems.push(`Required sex: ${safeText(scenarioGuardrails.sex_required)}`);
     if (scenarioGuardrails.impact_testing_unsafe) scenarioGuardItems.push('Avoid impact testing unless cleared');
     const guardrailCards: string[] = [];
     if (scenarioGuardItems.length) {
-      guardrailCards.push(`<div class="card card--border"><h3>Scenario guardrails</h3>${renderList(scenarioGuardItems)}</div>`);
+      guardrailCards.push(
+        `<div class="card card--border"><h3>Scenario guardrails</h3>${renderList(scenarioGuardItems)}</div>`
+      );
     }
     if (Array.isArray(scenarioGuardrails.disallow_medications) && scenarioGuardrails.disallow_medications.length) {
-      guardrailCards.push(`<div class="card card--border"><h3>Disallowed medications</h3>${renderList(scenarioGuardrails.disallow_medications)}</div>`);
+      guardrailCards.push(
+        `<div class="card card--border"><h3>Disallowed medications</h3>${renderList(scenarioGuardrails.disallow_medications)}</div>`
+      );
     }
     const objectiveGuardItems: string[] = [];
-    if (objectiveGuardrails.require_explicit_physical_consent) objectiveGuardItems.push('Requires explicit physical consent before physical testing');
+    if (objectiveGuardrails.require_explicit_physical_consent)
+      objectiveGuardItems.push('Requires explicit physical consent before physical testing');
     if (objectiveGuardrails.never_volunteer_data) objectiveGuardItems.push('Never volunteer data unprompted');
     if (typeof objectiveGuardrails.fatigue_prompt_threshold === 'number') {
       objectiveGuardItems.push(`Fatigue prompt threshold: ${objectiveGuardrails.fatigue_prompt_threshold}/10`);
     }
     if (objectiveGuardItems.length) {
-      guardrailCards.push(`<div class="card card--border"><h3>Objective guardrails</h3>${renderList(objectiveGuardItems)}</div>`);
+      guardrailCards.push(
+        `<div class="card card--border"><h3>Objective guardrails</h3>${renderList(objectiveGuardItems)}</div>`
+      );
     }
     if (Array.isArray(objectiveGuardrails.deflection_lines) && objectiveGuardrails.deflection_lines.length) {
-      guardrailCards.push(`<div class="card card--border"><h3>Deflection lines</h3>${renderList(objectiveGuardrails.deflection_lines)}</div>`);
+      guardrailCards.push(
+        `<div class="card card--border"><h3>Deflection lines</h3>${renderList(objectiveGuardrails.deflection_lines)}</div>`
+      );
     }
     const guardrailContent = guardrailCards.length ? `<div class="card-grid">${guardrailCards.join('')}</div>` : '';
 
@@ -592,9 +643,10 @@ exportRouter.get('/export', (req: Request, res: Response) => {
       { label: 'Affect', value: spInstructions.affect },
       { label: 'Pain behavior', value: spInstructions.pain_behavior },
     ]);
-    const spCueing = Array.isArray(spInstructions.cueing_rules) && spInstructions.cueing_rules.length
-      ? `<div><strong>Cueing rules</strong>${renderList(spInstructions.cueing_rules)}</div>`
-      : '';
+    const spCueing =
+      Array.isArray(spInstructions.cueing_rules) && spInstructions.cueing_rules.length
+        ? `<div><strong>Cueing rules</strong>${renderList(spInstructions.cueing_rules)}</div>`
+        : '';
     const llmHooks = instructions.llm_prompt_hooks ?? {};
     const hookBlocks: string[] = [];
     if (Array.isArray(llmHooks.coaching_cues) && llmHooks.coaching_cues.length) {
@@ -605,20 +657,26 @@ exportRouter.get('/export', (req: Request, res: Response) => {
     }
     const instructionsCards: string[] = [];
     if (spInstructionRows || spCueing) {
-      instructionsCards.push(`<div class="card card--border"><h3>SP instructions</h3>${[spInstructionRows, spCueing].filter(Boolean).join('')}</div>`);
+      instructionsCards.push(
+        `<div class="card card--border"><h3>SP instructions</h3>${[spInstructionRows, spCueing].filter(Boolean).join('')}</div>`
+      );
     }
     if (hookBlocks.length) {
       instructionsCards.push(`<div class="card card--border"><h3>LLM prompt hooks</h3>${hookBlocks.join('')}</div>`);
     }
     if (instructions.authoring_notes) {
-      instructionsCards.push(`<div class="card card--border"><h3>Authoring notes</h3><p>${escapeHtml(safeText(instructions.authoring_notes))}</p></div>`);
+      instructionsCards.push(
+        `<div class="card card--border"><h3>Authoring notes</h3><p>${escapeHtml(safeText(instructions.authoring_notes))}</p></div>`
+      );
     }
-    const instructionsContent = instructionsCards.length ? `<div class="card-grid">${instructionsCards.join('')}</div>` : '';
+    const instructionsContent = instructionsCards.length
+      ? `<div class="card-grid">${instructionsCards.join('')}</div>`
+      : '';
 
     const subjectiveCatalog: SubjectiveItem[] = scenario.subjective_catalog ?? [];
     const subjectiveItems = subjectiveCatalog
-      .map((item) => {
-  const script = item.patient_response_script;
+      .map(item => {
+        const script = item.patient_response_script;
         const scriptParts: string[] = [];
         if (Array.isArray(script.qualitative) && script.qualitative.length) {
           scriptParts.push(`<div><strong>Qualitative</strong>${renderList(script.qualitative)}</div>`);
@@ -629,7 +687,10 @@ exportRouter.get('/export', (req: Request, res: Response) => {
         if (script.binary_flags && Object.keys(script.binary_flags).length) {
           scriptParts.push(`<div><strong>Flags</strong>${renderKeyValue(script.binary_flags)}</div>`);
         }
-        const patterns = Array.isArray(item.patterns) && item.patterns.length ? `<div class="chip-wrap">${renderChips(item.patterns)}</div>` : '';
+        const patterns =
+          Array.isArray(item.patterns) && item.patterns.length
+            ? `<div class="chip-wrap">${renderChips(item.patterns)}</div>`
+            : '';
         const notes = item.notes ? `<div class="small muted">${escapeHtml(safeText(item.notes))}</div>` : '';
         return `<li><div class="card card--border"><div class="card-title">${escapeHtml(safeText(item.label))} <span class="muted">(${escapeHtml(safeText(item.id))})</span></div>${[patterns, ...scriptParts, notes].filter(Boolean).join('')}</div></li>`;
       })
@@ -657,27 +718,39 @@ exportRouter.get('/export', (req: Request, res: Response) => {
           scriptBlocks.push(`<div><strong>Flags</strong>${renderKeyValue(script.binary_flags)}</div>`);
         }
         const testGuard = o.guardrails ?? {};
-        const scriptWithDeflection = Array.isArray(testGuard.deflection_lines) && testGuard.deflection_lines.length
-          ? `<div><strong>Deflection lines</strong>${renderList(testGuard.deflection_lines)}</div>`
-          : '';
+        const scriptWithDeflection =
+          Array.isArray(testGuard.deflection_lines) && testGuard.deflection_lines.length
+            ? `<div><strong>Deflection lines</strong>${renderList(testGuard.deflection_lines)}</div>`
+            : '';
         const testGuardList: string[] = [];
         if (testGuard.data_only) testGuardList.push('Provide data-only responses');
         if (testGuard.refuse_if_contraindicated) testGuardList.push('Refuse if contraindicated');
-        const guardBlock = testGuardList.length ? `<div><strong>Guardrails</strong>${renderList(testGuardList)}</div>` : '';
+        const guardBlock = testGuardList.length
+          ? `<div><strong>Guardrails</strong>${renderList(testGuardList)}</div>`
+          : '';
         return `<li><div class="card card--border"><div class="card-title">${escapeHtml(safeText(o.label))} <span class="muted">(${escapeHtml(safeText(o.test_id))})</span></div>${[detailList, ...scriptBlocks, scriptWithDeflection, guardBlock].filter(Boolean).join('')}</div></li>`;
       })
       .join('');
-    const objectivesContent = objectives.length ? `<ol class="card-stack">${objectiveItems}</ol>` : '<div class="muted">No objective findings defined.</div>';
+    const objectivesContent = objectives.length
+      ? `<ol class="card-stack">${objectiveItems}</ol>`
+      : '<div class="muted">No objective findings defined.</div>';
 
     const specialsContent = specials.length
       ? `<ol class="card-stack">${specials
           .map((sq: SpecialQuestion) => {
             const blocks: string[] = [];
-            if (sq.patient_cue_intent) blocks.push(`<div><strong>Intent</strong>: ${escapeHtml(safeText(sq.patient_cue_intent))}</div>`);
-            if (Array.isArray(sq.example_phrases) && sq.example_phrases.length) blocks.push(`<div><strong>Example phrases</strong>${renderList(sq.example_phrases)}</div>`);
-            if (Array.isArray(sq.delivery_guidelines) && sq.delivery_guidelines.length) blocks.push(`<div><strong>Delivery guidelines</strong>${renderList(sq.delivery_guidelines)}</div>`);
-            if (sq.instructor_imaging_note) blocks.push(`<div><strong>Imaging note</strong>: ${escapeHtml(safeText(sq.instructor_imaging_note))}</div>`);
-            if (Array.isArray(sq.refs) && sq.refs.length) blocks.push(`<div><strong>References</strong>${renderList(sq.refs)}</div>`);
+            if (sq.patient_cue_intent)
+              blocks.push(`<div><strong>Intent</strong>: ${escapeHtml(safeText(sq.patient_cue_intent))}</div>`);
+            if (Array.isArray(sq.example_phrases) && sq.example_phrases.length)
+              blocks.push(`<div><strong>Example phrases</strong>${renderList(sq.example_phrases)}</div>`);
+            if (Array.isArray(sq.delivery_guidelines) && sq.delivery_guidelines.length)
+              blocks.push(`<div><strong>Delivery guidelines</strong>${renderList(sq.delivery_guidelines)}</div>`);
+            if (sq.instructor_imaging_note)
+              blocks.push(
+                `<div><strong>Imaging note</strong>: ${escapeHtml(safeText(sq.instructor_imaging_note))}</div>`
+              );
+            if (Array.isArray(sq.refs) && sq.refs.length)
+              blocks.push(`<div><strong>References</strong>${renderList(sq.refs)}</div>`);
             return `<li><div class="card card--border"><div class="card-title">${escapeHtml(safeText(sq.id))} <span class="muted">(${escapeHtml(safeText(sq.region))})</span></div>${blocks.join('')}</div></li>`;
           })
           .join('')}</ol>`
@@ -687,11 +760,16 @@ exportRouter.get('/export', (req: Request, res: Response) => {
       ? `<ol class="card-stack">${challenges
           .map((ch: ScreeningChallenge) => {
             const blocks: string[] = [`<div><strong>Flag</strong>: ${escapeHtml(safeText(ch.flag))}</div>`];
-            if (ch.cue_intent) blocks.push(`<div><strong>Intent</strong>: ${escapeHtml(safeText(ch.cue_intent))}</div>`);
-            if (Array.isArray(ch.example_phrases) && ch.example_phrases.length) blocks.push(`<div><strong>Example phrases</strong>${renderList(ch.example_phrases)}</div>`);
-            if (Array.isArray(ch.reveal_triggers) && ch.reveal_triggers.length) blocks.push(`<div><strong>Reveal triggers</strong>${renderList(ch.reveal_triggers)}</div>`);
-            if (Array.isArray(ch.delivery_guidelines) && ch.delivery_guidelines.length) blocks.push(`<div><strong>Delivery guidelines</strong>${renderList(ch.delivery_guidelines)}</div>`);
-            if (Array.isArray(ch.learning_objectives) && ch.learning_objectives.length) blocks.push(`<div><strong>Objectives</strong>${renderList(ch.learning_objectives)}</div>`);
+            if (ch.cue_intent)
+              blocks.push(`<div><strong>Intent</strong>: ${escapeHtml(safeText(ch.cue_intent))}</div>`);
+            if (Array.isArray(ch.example_phrases) && ch.example_phrases.length)
+              blocks.push(`<div><strong>Example phrases</strong>${renderList(ch.example_phrases)}</div>`);
+            if (Array.isArray(ch.reveal_triggers) && ch.reveal_triggers.length)
+              blocks.push(`<div><strong>Reveal triggers</strong>${renderList(ch.reveal_triggers)}</div>`);
+            if (Array.isArray(ch.delivery_guidelines) && ch.delivery_guidelines.length)
+              blocks.push(`<div><strong>Delivery guidelines</strong>${renderList(ch.delivery_guidelines)}</div>`);
+            if (Array.isArray(ch.learning_objectives) && ch.learning_objectives.length)
+              blocks.push(`<div><strong>Objectives</strong>${renderList(ch.learning_objectives)}</div>`);
             return `<li><div class="card card--border"><div class="card-title">${escapeHtml(safeText(ch.id))}</div>${blocks.join('')}</div></li>`;
           })
           .join('')}</ol>`
@@ -706,16 +784,24 @@ exportRouter.get('/export', (req: Request, res: Response) => {
       provenanceBlocks.push(`<div><strong>Reviewers</strong>${renderList(provenance.reviewers)}</div>`);
     }
     if (provenance.last_reviewed) {
-      provenanceBlocks.push(`<div><strong>Last reviewed</strong>: ${escapeHtml(formatDate(provenance.last_reviewed))}</div>`);
+      provenanceBlocks.push(
+        `<div><strong>Last reviewed</strong>: ${escapeHtml(formatDate(provenance.last_reviewed))}</div>`
+      );
     }
     const provenanceContent = provenanceBlocks.length ? provenanceBlocks.join('') : '';
 
     const soap: ScenarioSOAP = scenario.soap ?? {};
     const soapKeys: ScenarioSOAPKey[] = ['subjective', 'objective', 'assessment', 'plan'];
     const soapBlocks = soapKeys
-      .map((key) => {
+      .map(key => {
         const data = soap[key];
-        if (!data || typeof data !== 'object' || Array.isArray(data) || !Object.keys(data as Record<string, unknown>).length) return '';
+        if (
+          !data ||
+          typeof data !== 'object' ||
+          Array.isArray(data) ||
+          !Object.keys(data as Record<string, unknown>).length
+        )
+          return '';
         const title = key.charAt(0).toUpperCase() + key.slice(1);
         return `<details open><summary>${title}</summary><pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre></details>`;
       })
@@ -724,19 +810,30 @@ exportRouter.get('/export', (req: Request, res: Response) => {
 
     const sections: string[] = [];
     if (metaContent) sections.push(`<div class="section"><h2>Scenario Snapshot</h2>${metaContent}</div>`);
-    if (pedagogyContent) sections.push(`<div class="section"><h2>Pedagogy &amp; Learning Objectives</h2>${pedagogyContent}</div>`);
+    if (pedagogyContent)
+      sections.push(`<div class="section"><h2>Pedagogy &amp; Learning Objectives</h2>${pedagogyContent}</div>`);
     if (presentingContent) sections.push(`<div class="section"><h2>Presenting Problem</h2>${presentingContent}</div>`);
     if (icfContent) sections.push(`<div class="section"><h2>ICF Summary</h2>${icfContent}</div>`);
     if (contextContent) sections.push(`<div class="section"><h2>Scenario Context</h2>${contextContent}</div>`);
-    if (fluctuationContent) sections.push(`<div class="section"><h2>Symptom fluctuation</h2>${fluctuationContent}</div>`);
-    if (guardrailContent) sections.push(`<div class="section"><h2>Guardrails &amp; Safety</h2>${guardrailContent}</div>`);
-    if (instructionsContent) sections.push(`<div class="section"><h2>SP Instructions &amp; Hooks</h2>${instructionsContent}</div>`);
-    if (subjectiveContent) sections.push(`<div class="section"><h2>Subjective Catalog (${subjectiveCatalog.length})</h2>${subjectiveContent}</div>`);
+    if (fluctuationContent)
+      sections.push(`<div class="section"><h2>Symptom fluctuation</h2>${fluctuationContent}</div>`);
+    if (guardrailContent)
+      sections.push(`<div class="section"><h2>Guardrails &amp; Safety</h2>${guardrailContent}</div>`);
+    if (instructionsContent)
+      sections.push(`<div class="section"><h2>SP Instructions &amp; Hooks</h2>${instructionsContent}</div>`);
+    if (subjectiveContent)
+      sections.push(
+        `<div class="section"><h2>Subjective Catalog (${subjectiveCatalog.length})</h2>${subjectiveContent}</div>`
+      );
     sections.push(`<div class="section"><h2>Objective Catalog (${objectives.length})</h2>${objectivesContent}</div>`);
     sections.push(`<div class="section"><h2>Special Questions (${specials.length})</h2>${specialsContent}</div>`);
-    sections.push(`<div class="section"><h2>Screening Challenges (${challenges.length})</h2>${challengesContent}</div>`);
+    sections.push(
+      `<div class="section"><h2>Screening Challenges (${challenges.length})</h2>${challengesContent}</div>`
+    );
     if (gold) {
-      sections.push(`<div class="section"><h2>Gold-standard Instructions</h2><div class="small">Injected into the model for both text and voice modes.</div><pre>${escapeHtml(gold)}</pre></div>`);
+      sections.push(
+        `<div class="section"><h2>Gold-standard Instructions</h2><div class="small">Injected into the model for both text and voice modes.</div><pre>${escapeHtml(gold)}</pre></div>`
+      );
     }
     if (provenanceContent) sections.push(`<div class="section"><h2>Provenance</h2>${provenanceContent}</div>`);
     if (soapContent) sections.push(`<div class="section"><h2>SOAP Payload</h2>${soapContent}</div>`);

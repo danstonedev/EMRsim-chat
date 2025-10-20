@@ -3,6 +3,7 @@
 ## Changes Made
 
 ### 1. Simplified Model Loading
+
 **File:** `HumanFigure.tsx`
 
 **Problem:** Component was using both `useLoader` with `GLTFLoader` AND `useGLTF.preload`, which could cause conflicts.
@@ -26,10 +27,12 @@ const gltf = useGLTF(MODEL_URL)
 ### 2. Added Comprehensive Debug Logging
 
 **Scene.tsx:**
+
 - Log when Scene renders with props
 - Log when metrics are received from HumanFigure
 
 **HumanFigure.tsx:**
+
 - Log model URL being loaded
 - Log when model successfully loads
 - Log when model normalization starts/completes
@@ -40,7 +43,8 @@ const gltf = useGLTF(MODEL_URL)
 Open http://localhost:5173/3d-viewer and look for these logs in order:
 
 ### Expected Flow:
-```
+
+``` text
 🎬 Scene: Rendering with props: { isAnimating: true, animationPrompt: "" }
 🔄 HumanFigure: Loading model from: /models/human-figure.glb
 ✅ HumanFigure: Model loaded, scene: Object { ... }
@@ -74,6 +78,7 @@ Open http://localhost:5173/3d-viewer and look for these logs in order:
 ## Quick Tests
 
 ### Test 1: Model File Exists
+
 In browser console or terminal:
 ```powershell
 cd frontend/public/models
@@ -81,12 +86,16 @@ dir human-figure.glb
 ```
 
 ### Test 2: Model Accessible
+
 Navigate to: http://localhost:5173/models/human-figure.glb
+
 - Should download or show the file
 - If 404, model isn't in the right place
 
 ### Test 3: Three.js Rendering
+
 Check if the placeholder capsule appears while loading:
+
 - Should see a gray capsule at center if model is loading
 
 ## Next Steps Based on Console

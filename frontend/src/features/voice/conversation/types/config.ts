@@ -1,5 +1,5 @@
 import type { MediaReference } from '../../../../shared/types'
-import type { BackendSocketFactory } from '../../../../shared/services/BackendSocketManager'
+import type { BackendSocketFactory } from '../../../../shared/types/backendSocket'
 
 export type PreferredString<T extends string> = T | (string & { __preferred?: never })
 

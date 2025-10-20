@@ -10,6 +10,7 @@
 ## 📊 Scan Summary
 
 ### Files Scanned
+
 - **Total useEffect blocks:** 100+ instances
 - **Total useState blocks:** 50+ instances
 - **Context providers:** 1 (SettingsContext)
@@ -17,6 +18,7 @@
 - **Custom hooks:** 20+ existing
 
 ### Pattern Categories Identified
+
 1. ✅ **useReducer Candidates** - Components with 10+ useState
 2. ✅ **Effect Consolidation** - Components with 5+ related useEffect
 3. ✅ **Custom Hook Extraction** - Repeated patterns across files
@@ -55,6 +57,7 @@ const [encounterPhase, setEncounterPhase] = useState<string | null>(...)
 ```
 
 **Issues:**
+
 - 11 separate state setters = complex state management
 - Multiple effects subscribing to controller events
 - State sprawl makes reasoning difficult
@@ -122,6 +125,7 @@ useEffect(() => {
 ```
 
 **Benefits:**
+
 - ✅ 11 useState → 1 useReducer (90% reduction)
 - ✅ Atomic state updates (no intermediate states)
 - ✅ Clear state transitions (action types)
@@ -157,6 +161,7 @@ export class BackendSocketManager {
 ```
 
 **Issues:**
+
 - Class-based pattern in React hooks ecosystem
 - Consumers must poll for state (`isConnected()`, `getSessionId()`)
 - Not reactive (requires `useState` + `useEffect` polling)
@@ -223,6 +228,7 @@ export function useBackendSocket(config: SocketConfig, handlers: SocketEventHand
 ```
 
 **Benefits:**
+
 - ✅ Fully reactive (no polling needed)
 - ✅ Automatic cleanup (useEffect return)
 - ✅ Fresh handlers (refs)
@@ -353,6 +359,7 @@ function useSearchableDropdown() {
 **Status:** Legacy file, `HumanFigure.fixed.tsx` is the new version
 
 **Recommendation:** 
+
 - Option A: Deprecate completely (remove file)
 - Option B: Apply modularization (if keeping for fallback)
 
@@ -361,6 +368,7 @@ function useSearchableDropdown() {
 ## 📈 Pattern Analysis
 
 ### Effect Distribution by File
+
 | File | useEffect Count | Priority | Status |
 |------|----------------|----------|--------|
 | useVoiceSession.ts | 7 | HIGH | Needs reducer |
@@ -373,6 +381,7 @@ function useSearchableDropdown() {
 | v2/hooks.ts | 3 | ✅ SKIPPED | Already optimal |
 
 ### useState Distribution by File
+
 | File | useState Count | Priority | Status |
 |------|---------------|----------|--------|
 | useVoiceSession.ts | 11 | HIGH | **Reducer candidate!** |
@@ -393,6 +402,7 @@ function useSearchableDropdown() {
 **ROI:** ⭐⭐⭐⭐⭐
 
 **Task:**
+
 1. Design VoiceState type and VoiceAction discriminated union
 2. Implement voiceReducer with all state transitions
 3. Replace 11 useState with single useReducer
@@ -410,6 +420,7 @@ function useSearchableDropdown() {
 **ROI:** ⭐⭐⭐⭐⭐
 
 **Task:**
+
 1. Create `useBackendSocket.ts` hook
 2. Implement reactive state (isConnected, sessionId)
 3. Add automatic cleanup
@@ -427,6 +438,7 @@ function useSearchableDropdown() {
 **ROI:** ⭐⭐⭐
 
 **Task:**
+
 1. Extract to `frontend/src/shared/hooks/useSearchableDropdown.ts`
 2. Replace duplicate patterns in CaseSelectors.tsx
 3. Add tests
@@ -441,6 +453,7 @@ function useSearchableDropdown() {
 **ROI:** ⭐⭐⭐
 
 **Task:**
+
 1. Analyze 7 useEffect blocks
 2. Identify consolidation candidates
 3. Extract `useRecordingState` hook if warranted
@@ -457,6 +470,7 @@ function useSearchableDropdown() {
 **ROI:** ⭐⭐⭐
 
 **Task:**
+
 1. Group form-related state (genPrompt, genResearch, generating, saving)
 2. Consider useReducer for form state machine
 3. Extract to `useCaseBuilderForm` hook
@@ -469,6 +483,7 @@ function useSearchableDropdown() {
 ### Current Structure
 
 **11 useState Calls:**
+
 1. `status` - VoiceStatus enum
 2. `error` - string | null
 3. `sessionId` - string | null
@@ -485,6 +500,7 @@ function useSearchableDropdown() {
 14. `adaptive` - AdaptiveSnapshot
 
 **7 useEffect Blocks:**
+
 - Lines 104, 108: Update callback refs
 - Line 115: Consolidated configuration effect (Phase 3)
 - Line 161: Subscribe to controller snapshot
@@ -624,6 +640,7 @@ function voiceReducer(state: VoiceState, action: VoiceAction): VoiceState {
 ## 📊 Success Metrics
 
 ### Target Improvements
+
 - ✅ Reduce useState in useVoiceSession: 14 → 1 (93%)
 - ✅ Convert BackendSocketManager to hook (reactive state)
 - ✅ Extract useSearchableDropdown (eliminate duplication)
@@ -631,6 +648,7 @@ function voiceReducer(state: VoiceState, action: VoiceAction): VoiceState {
 - ✅ Document 5+ new refactoring opportunities
 
 ### Current Progress
+
 - **Opportunities Identified:** 7 new opportunities
 - **Priority Distribution:** 2 HIGH, 2 MEDIUM, 3 LOW
 - **Estimated Total Effort:** 19-24 hours
@@ -641,26 +659,29 @@ function voiceReducer(state: VoiceState, action: VoiceAction): VoiceState {
 ## 🎯 Recommended Implementation Order
 
 ### Phase 1: High-Impact Wins (12-13 hours)
+
 1. **BackendSocketManager → useBackendSocket** (4-5 hours)
    - Clear interface, well-documented
    - Immediate reactive state benefits
    - Low risk
-   
+
 2. **useVoiceSession Reducer Migration** (6-8 hours)
    - Highest useState reduction
    - Critical path, needs careful testing
    - Significant maintainability win
 
 ### Phase 2: Medium Wins (5-7 hours)
+
 3. **RecordingPill Consolidation** (3-4 hours)
    - Effect consolidation pattern
    - Proven approach from Phase 3
-   
+
 4. **CaseBuilder State Grouping** (2-3 hours)
    - Form state management
    - Lower priority (admin feature)
 
 ### Phase 3: Quick Wins (1-2 hours)
+
 5. **useSearchableDropdown Extraction** (1 hour)
    - Simple duplication elimination
    - Quick win
@@ -673,6 +694,7 @@ function voiceReducer(state: VoiceState, action: VoiceAction): VoiceState {
 ## ✅ Completion Checklist
 
 ### Discovery Phase ✅
+
 - [x] Scan for useEffect patterns (100+ found)
 - [x] Scan for useState patterns (50+ found)
 - [x] Identify useReducer candidates (useVoiceSession)
@@ -682,6 +704,7 @@ function voiceReducer(state: VoiceState, action: VoiceAction): VoiceState {
 - [x] Document all findings
 
 ### Next Steps
+
 - [ ] Update REFACTORING_OPPORTUNITIES.md with new discoveries
 - [ ] Create detailed implementation plans for top 2 priorities
 - [ ] Get stakeholder approval for migration approach

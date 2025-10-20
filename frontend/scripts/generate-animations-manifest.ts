@@ -33,7 +33,7 @@ export type AnimationSpec = {
 }
 
 const BASE = (import.meta as any).env?.BASE_URL || '/'
-const p = (file: string) => `${BASE}models/animations/${file}`
+const p = (file: string) => BASE + 'models/animations/' + file
 
 export const ANIMATIONS: AnimationSpec[] = [
 ${files.map(toSpec).join(',\n')}

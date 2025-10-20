@@ -81,11 +81,40 @@ export type BackendSocketFactory = (options: {
 /**
  * Manages WebSocket connection to backend for unified transcript broadcast.
  * Handles connection lifecycle, event routing, reconnection logic, and failure tracking.
- */
-/**
- * @deprecated For React surfaces, prefer using the `useBackendSocket` hook and inject a
- * BackendSocketClient via a `socketFactory` (see useVoiceSession). Directly instantiating
- * BackendSocketManager from components can complicate lifecycle and testing.
+ * 
+ * @deprecated **THIS CLASS IS DEPRECATED** - Do NOT use in new code!
+ * 
+ * **For React components:** Use the `useBackendSocket` hook instead:
+ * ```typescript
+ * import { useBackendSocket } from '../hooks/useBackendSocket';
+ * 
+ * const backendSocket = useBackendSocket({
+ *   sessionId: currentSessionId,
+ *   config: { apiBaseUrl: 'http://localhost:3002', maxFailures: 3 },
+ *   handlers: {
+ *     onTranscript: handleTranscript,
+ *     onConnect: handleConnect,
+ *     onDisconnect: handleDisconnect,
+ *   },
+ * });
+ * 
+ * // State is reactive - no polling needed!
+ * if (backendSocket.isConnected) {
+ *   backendSocket.joinSession(newSessionId);
+ * }
+ * ```
+ * 
+ * **Why migrate?**
+ * - ✅ **Reactive state**: No polling with `useState` + `useEffect`
+ * - ✅ **Automatic cleanup**: Hook handles lifecycle
+ * - ✅ **Fresh handlers**: No stale closures
+ * - ✅ **Easier testing**: Mock hooks instead of classes
+ * - ✅ **Better integration**: Follows React patterns
+ * 
+ * **Migration guide:** See `REFACTORING_OPPORTUNITIES.md` for detailed migration steps
+ * 
+ * This class remains ONLY for backward compatibility with existing code (e.g., ConversationController's ServiceInitializer).
+ * New code should use `useBackendSocket` hook.
  */
 export class BackendSocketManager implements BackendSocketClient {
   private socket: Socket | null = null
@@ -171,11 +200,36 @@ export class BackendSocketManager implements BackendSocketClient {
     const fallback = { origin: 'http://localhost:3002', path: '/socket.io/' }
     try {
       const url = new URL(this.config.apiBaseUrl)
-      const trimmedPath = url.pathname.replace(/\/+$/, '')
-      const basePath = trimmedPath && trimmedPath !== '/' ? trimmedPath : ''
-      let socketPath = `${basePath}/socket.io/`.replace(/\/{2,}/g, '/').replace(/\/+$/, '/')
-      if (!socketPath.startsWith('/')) socketPath = `/${socketPath}`
-      return { origin: `${url.protocol}//${url.host}`, path: socketPath }
+      const origin = `${url.protocol}//${url.host}`
+
+      // 1) Explicit override via env
+      const socketPathEnv = (import.meta as any)?.env?.VITE_SOCKET_PATH as string | undefined
+      if (socketPathEnv && typeof socketPathEnv === 'string') {
+        let path = socketPathEnv.startsWith('/') ? socketPathEnv : `/${socketPathEnv}`
+        if (!path.endsWith('/')) path = `${path}/`
+        return { origin, path }
+      }
+
+      const trimmedPath = url.pathname.replace(/\/+$|^\/+/, '')
+      // 2) If API base ends with /api, use root socket path
+      if (trimmedPath && /(^|\/)api$/i.test(trimmedPath)) {
+        if (import.meta.env.DEV) {
+          voiceWarn("[BackendSocketManager] API base includes /api; using socket path '/socket.io/'. Set VITE_SOCKET_PATH to override if needed.", { apiBaseUrl: this.config.apiBaseUrl })
+        }
+        return { origin, path: '/socket.io/' }
+      }
+
+      // 3) Allow opting into nesting under base path
+      const assumeUnderBase = String((import.meta as any)?.env?.VITE_ASSUME_SOCKET_UNDER_BASEPATH || '').toLowerCase()
+      if (trimmedPath && (assumeUnderBase === '1' || assumeUnderBase === 'true' || assumeUnderBase === 'yes' || assumeUnderBase === 'on')) {
+        const basePath = `/${trimmedPath}`
+        let socketPath = `${basePath}/socket.io/`.replace(/\/{2,}/g, '/').replace(/\/+$/, '/')
+        if (!socketPath.startsWith('/')) socketPath = `/${socketPath}`
+        return { origin, path: socketPath }
+      }
+
+      // Default
+      return { origin, path: '/socket.io/' }
     } catch (error) {
       voiceWarn('[BackendSocketManager] ⚠️ Failed to parse API_BASE_URL:', error)
       return fallback

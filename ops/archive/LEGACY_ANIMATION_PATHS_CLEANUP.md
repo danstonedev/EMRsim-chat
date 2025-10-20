@@ -10,6 +10,7 @@ Comprehensive cleanup of hardcoded animation paths and legacy references through
 ## Problem Statement
 
 The codebase contained several hardcoded references to legacy animation files that don't exist:
+
 - `Jump.glb` 
 - `Sitting.glb`
 - `Standing.glb` (should be `Stand.glb`)
@@ -21,7 +22,7 @@ These legacy names were causing confusion and potentially breaking functionality
 ## Actual Animation Files Available
 
 Located in `frontend/public/models/animations/`:
-```
+``` text
 ✅ Kick_pass.glb
 ✅ Limp.glb
 ✅ LongSit.glb
@@ -36,7 +37,7 @@ Located in `frontend/public/models/animations/`:
 ```
 
 Base model file:
-```
+``` text
 ✅ frontend/public/models/human-figure.glb
 ```
 
@@ -69,6 +70,7 @@ if (!DEMO_LOOP && isOneShot && actions[DEFAULT_ANIMATION_ID]) {
 ```
 
 **Benefits:**
+
 - ✅ No hardcoded animation names
 - ✅ Uses manifest loop policy (`'once'` vs `'repeat'`)
 - ✅ Automatically adapts to any animation marked as one-shot
@@ -149,6 +151,7 @@ it('plays Stand.glb by default, supports multiple pause/resume toggles, and swit
 ```
 
 **Test assertions updated:**
+
 - `'Standing.glb'` → `'Stand.glb'`
 - `'Jump.glb'` → `'Walk.glb'`
 - `'Sitting.glb'` → `'Sit.glb'`
@@ -159,6 +162,7 @@ it('plays Stand.glb by default, supports multiple pause/resume toggles, and swit
 ## Verification
 
 ### TypeScript Compilation
+
 ```bash
 npm run type-check
 npm run build
@@ -166,12 +170,14 @@ npm run build
 **Result:** ✅ No errors
 
 ### Unit Tests
+
 ```bash
 npm run test:viewer
 ```
 **Result:** ✅ All tests passing
 
 ### Files Modified
+
 1. ✅ `frontend/src/pages/components/viewer/HumanFigure.fixed.tsx`
 2. ✅ `frontend/src/pages/v2/manifest.ts`
 3. ✅ `frontend/src/pages/components/viewer/hooks/useAnimationClips.ts`
@@ -230,21 +236,25 @@ const OVERRIDES: Record<string, Partial<AnimationSpec>> = {
 ## Benefits
 
 ### 1. Single Source of Truth
+
 - ✅ All animation paths come from the manifest
 - ✅ Manifest auto-generated from actual files
 - ✅ No hardcoded paths anywhere
 
 ### 2. Maintainability
+
 - ✅ Adding new animations: just drop `.glb` file and regenerate manifest
 - ✅ Changing loop behavior: edit manifest, not component code
 - ✅ Clear separation of data (manifest) and logic (components)
 
 ### 3. Type Safety
+
 - ✅ TypeScript ensures animation IDs match manifest
 - ✅ Tests use real animation names
 - ✅ Compile-time checks prevent typos
 
 ### 4. Flexibility
+
 - ✅ Easy to add new one-shot animations without code changes
 - ✅ Per-animation speed, clip selection, and loop policy
 - ✅ Extensible for future animation metadata
@@ -254,6 +264,7 @@ const OVERRIDES: Record<string, Partial<AnimationSpec>> = {
 ## Remaining Legacy References (Documentation Only)
 
 These are safe - they're in documentation files explaining the old system:
+
 - ❌ `3D_VIEWER_MODERNIZATION_COMPLETE.md` (historical reference)
 - ❌ `TEAM_QUICK_START_MIXAMO.md` (example names)
 - ❌ `MIXAMO_INTEGRATION_COMPLETE.md` (historical)
@@ -266,6 +277,7 @@ These are safe - they're in documentation files explaining the old system:
 ## Future Recommendations
 
 ### 1. Automated Manifest Regeneration
+
 Consider adding a pre-commit hook or CI check:
 ```json
 {
@@ -277,6 +289,7 @@ Consider adding a pre-commit hook or CI check:
 ```
 
 ### 2. Animation Validation
+
 Add a test to verify all manifest entries have corresponding files:
 ```typescript
 it('all manifest animations have corresponding .glb files', async () => {
@@ -288,6 +301,7 @@ it('all manifest animations have corresponding .glb files', async () => {
 ```
 
 ### 3. Deprecation Warning
+
 If you need to support legacy names temporarily:
 ```typescript
 const LEGACY_NAMES: Record<string, string> = {
@@ -309,6 +323,7 @@ function normalizeAnimationId(id: string): string {
 ## Summary
 
 All hardcoded animation paths have been removed and replaced with manifest-driven lookups. The system now exclusively uses:
+
 - ✅ `human-figure.glb` for the base model
 - ✅ Animation files from `public/models/animations/` only
 - ✅ Manifest loop policies instead of hardcoded filename checks

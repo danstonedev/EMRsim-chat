@@ -1,6 +1,7 @@
 # Proposed Clean Architecture for Voice/Realtime System
 
 ## Design Principles
+
 1. **Single Responsibility**: Each module has one clear purpose
 2. **Clear State Machine**: Explicit states and transitions
 3. **Unified Event Bus**: Single event system with typed events
@@ -66,6 +67,7 @@ graph TB
 ## Clean State Machines
 
 ### Connection State Machine
+
 ```mermaid
 stateDiagram-v2
     [*] --> Idle
@@ -86,6 +88,7 @@ stateDiagram-v2
 ```
 
 ### Transcript State Machine
+
 ```mermaid
 stateDiagram-v2
     [*] --> Idle
@@ -161,6 +164,7 @@ sequenceDiagram
 ## Implementation Modules
 
 ### 1. VoiceSessionManager
+
 **Responsibility**: High-level session orchestration
 ```typescript
 class VoiceSessionManager {
@@ -176,6 +180,7 @@ class VoiceSessionManager {
 ```
 
 ### 2. SessionCoordinator
+
 **Responsibility**: Coordinate between different state machines
 ```typescript
 class SessionCoordinator {
@@ -191,6 +196,7 @@ class SessionCoordinator {
 ```
 
 ### 3. ConnectionStateMachine
+
 **Responsibility**: Manage connection lifecycle
 ```typescript
 class ConnectionStateMachine {
@@ -203,6 +209,7 @@ class ConnectionStateMachine {
 ```
 
 ### 4. TranscriptStateMachine
+
 **Responsibility**: Manage transcript flow and deduplication
 ```typescript
 class TranscriptStateMachine {
@@ -215,6 +222,7 @@ class TranscriptStateMachine {
 ```
 
 ### 5. EventBus
+
 **Responsibility**: Central event distribution
 ```typescript
 class EventBus {
@@ -229,12 +237,14 @@ class EventBus {
 ## Migration Strategy
 
 ### Phase 1: Preparation (Week 1)
+
 1. Create new module structure alongside existing code
 2. Implement EventBus
 3. Implement State Machines
 4. Write comprehensive tests
 
 ### Phase 2: Gradual Migration (Week 2-3)
+
 1. **Day 1-2**: Migrate session management to SessionCoordinator
 2. **Day 3-4**: Replace event handling with EventBus
 3. **Day 5-6**: Migrate connection flow to ConnectionStateMachine
@@ -242,6 +252,7 @@ class EventBus {
 5. **Day 9-10**: Update UI to use new VoiceSessionManager
 
 ### Phase 3: Cleanup (Week 4)
+
 1. Remove old ConversationController
 2. Remove duplicate retry logic
 3. Consolidate duplicate detection
@@ -249,6 +260,7 @@ class EventBus {
 5. Update documentation
 
 ### Phase 4: Testing & Refinement (Week 5)
+
 1. Comprehensive integration testing
 2. Performance testing
 3. Error recovery testing
@@ -267,6 +279,7 @@ class EventBus {
 ## Key Improvements
 
 ### Before
+
 - Multiple session types managed independently
 - Events processed in multiple places
 - Duplicate detection scattered
@@ -274,6 +287,7 @@ class EventBus {
 - Monolithic controller
 
 ### After
+
 - Single session coordinator
 - Unified event bus
 - Centralized deduplication

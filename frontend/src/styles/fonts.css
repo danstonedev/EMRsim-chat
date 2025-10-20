@@ -1,11 +1,19 @@
-/**
- * Custom Font Definitions
- * Google Fonts and custom typography classes
- */
+@layer typography {
+  :root {
+    --font-sans: "Inter", "Segoe UI", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+    --font-brand: "Bruno Ace", var(--font-sans);
+    --font-mono: "Roboto Mono", "SFMono-Regular", Consolas, ui-monospace, monospace;
+    --font-size-root: 16px;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  }
 
-.bruno-ace-regular {
-  font-family: "Bruno Ace", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 150%; /* 50% larger than base */
+  .bruno-ace-regular {
+    font-family: var(--font-brand);
+    font-weight: 400;
+    font-style: normal;
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    letter-spacing: 0.04em;
+  }
 }

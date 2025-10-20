@@ -1,6 +1,7 @@
 # 3D Model Integration Framework
 
 ## Overview
+
 This document provides a complete framework for integrating professional 3D models and animations into your EMRsim-chat 3D viewer. Multiple approaches are outlined from easiest to most advanced.
 
 ---
@@ -21,6 +22,7 @@ This document provides a complete framework for integrating professional 3D mode
 ## 📋 Method 1: Mixamo (RECOMMENDED FOR QUICK START)
 
 ### Why Mixamo?
+
 - ✅ Free Adobe service
 - ✅ Professional rigged characters
 - ✅ 2000+ pre-made animations
@@ -73,7 +75,8 @@ This document provides a complete framework for integrating professional 3D mode
 #### Phase 2: Prepare Assets (10 minutes)
 
 1. **Create models directory**:
-   ```
+
+``` text
    frontend/public/models/
    ├── human-figure.glb        ← Character with skin
    ├── animations/
@@ -85,6 +88,7 @@ This document provides a complete framework for integrating professional 3D mode
    ```
 
 2. **Optimize files** (optional but recommended):
+
    ```bash
    npm install -g gltf-pipeline
    gltf-pipeline -i human-figure.glb -o human-figure-optimized.glb -d
@@ -503,6 +507,7 @@ Add these styles at the end:
 ## 📋 Method 2: Ready Player Me (For Custom Avatars)
 
 ### Why Ready Player Me?
+
 - Customizable avatars (hair, skin, clothing)
 - API integration possible
 - Good for personalized patient avatars
@@ -538,6 +543,7 @@ function AvatarSelector() {
 ## 📋 Method 3: Custom Blender Models (Advanced Medical Accuracy)
 
 ### When to Use
+
 - Need anatomically accurate models
 - Specific medical scenarios
 - Custom branding/styling
@@ -551,7 +557,8 @@ function AvatarSelector() {
    - Medical models: 3D4Medical, Zygote
 
 2. **Rig in Blender**:
-   ```
+
+``` text
    Open Blender → Import model → Add Armature → 
    Auto-rig with Rigify addon → Weight paint
    ```
@@ -562,7 +569,8 @@ function AvatarSelector() {
    - Or retarget from Mixamo
 
 4. **Export to GLTF**:
-   ```
+
+``` text
    File → Export → glTF 2.0 (.glb)
    ✅ Include: Selected Objects
    ✅ Remember Animation
@@ -578,16 +586,19 @@ function AvatarSelector() {
 ### Recommended Marketplaces
 
 **Medical-Specific:**
+
 - **Zygote**: https://www.zygote.com/ ($$ professional medical)
 - **TurboSquid Medical**: https://www.turbosquid.com/Search/3D-Models/medical
 - **CGTrader Medical**: https://www.cgtrader.com/3d-models/medical
 
 **General High-Quality:**
+
 - **Sketchfab Store**: https://sketchfab.com/store
 - **Unity Asset Store**: https://assetstore.unity.com/
 - **Unreal Marketplace**: https://www.unrealengine.com/marketplace
 
 ### What to Look For
+
 - ✅ GLTF/GLB or FBX format
 - ✅ Rigged character
 - ✅ Includes animations OR rigged for custom animation
@@ -758,17 +769,20 @@ const HumanFigure = lazy(() => import('./HumanFigure'))
 ### Your Team Can Focus On:
 
 **Designer/Artist:**
+
 - Select and customize models from Mixamo
 - Adjust colors/materials in Blender
 - Create branded clothing/accessories
 
 **Junior Developer:**
+
 - Handle file organization
 - Implement loading states
 - Style UI controls
 - Test on different devices
 
 **Senior Developer:**
+
 - Set up animation system
 - Implement interactive features
 - Optimize performance
@@ -779,6 +793,7 @@ const HumanFigure = lazy(() => import('./HumanFigure'))
 ## ✅ Next Action Items
 
 ### Immediate (1-2 hours):
+
 1. ☐ Go to Mixamo and download Malcolm character + 3 animations
 2. ☐ Convert to GLTF if needed
 3. ☐ Place files in `frontend/public/models/`
@@ -786,12 +801,14 @@ const HumanFigure = lazy(() => import('./HumanFigure'))
 5. ☐ Test in browser
 
 ### Short-term (1-2 days):
+
 1. ☐ Add all desired animations from Mixamo
 2. ☐ Implement animation selector UI
 3. ☐ Add loading indicators
 4. ☐ Test and refine
 
 ### Long-term (1-2 weeks):
+
 1. ☐ Evaluate need for custom medical models
 2. ☐ Add interactive features (annotations, clickable parts)
 3. ☐ Implement camera presets

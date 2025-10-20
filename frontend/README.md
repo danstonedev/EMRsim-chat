@@ -50,7 +50,7 @@ You can enable a lightweight on-screen HUD for the 3D viewer to help diagnose an
 
 - Where: open the viewer at `/3d-viewer`
 - Enable via URL: append `?viewerDebug=1` (or `?debug=1`)
-	- Example: `http://localhost:5173/3d-viewer?viewerDebug=1`
+  - Example: `http://localhost:5173/3d-viewer?viewerDebug=1`
 - Enable via env: set `VITE_VIEWER_DEBUG=true` in `frontend/.env.local` and restart the dev server
 
 What it shows:
@@ -63,3 +63,31 @@ Notes:
 - The HUD is off by default and only appears when the flag is set.
 - If the HUD shows time stuck at `0.00` for a selected clip, that animation likely didn’t bind to the rig. Try a different clip, or check the browser console for retargeting/remap logs.
 - The animation selector filters out clips that don’t report a valid duration on the current rig to avoid T‑pose selections.
+
+## 3D Viewer performance toggles
+
+These flags let you trade visuals for FPS on integrated GPUs or high‑DPI displays. Defaults are conservative and safe; enable case‑by‑case when profiling or demoing.
+
+Add to `frontend/.env.local`:
+
+| Variable | Default | Effect |
+|----------|---------|--------|
+| `VITE_VIEWER_PERF_MODE` | `false` | Simplifies lights (ambient + key only), reduces grid complexity, defers secondary lights by one frame to reduce time‑to‑first‑pixel. |
+| `VITE_VIEWER_AA` | `false` | Enables antialiasing. Leave off for best FPS on iGPU. |
+| `VITE_VIEWER_SHADOWS` | `false` | Enables shadows. Leave off for best FPS; enable for demos. |
+| `VITE_RENDER_METRICS` | `false` | Turns on React Profiler summaries (commit counts, durations) in the console via `RenderProfiler`. |
+
+Runtime hints the app also uses:
+
+- Device pixel ratio clamped to `[1, 1.75]` to control fill‑rate costs on high‑DPI displays.
+- WebGL `powerPreference: 'high-performance'` when creating the context.
+
+Try it quickly:
+
+```powershell
+cd frontend
+echo "VITE_VIEWER_PERF_MODE=true`nVITE_RENDER_METRICS=true" >> .env.local
+npm run dev
+```
+
+Open the 3D viewer and watch the console for `[render-metrics]` tables while interacting.

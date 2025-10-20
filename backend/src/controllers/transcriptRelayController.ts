@@ -1,8 +1,5 @@
 import { Request, Response } from 'express';
-import {
-  broadcastAssistantTranscript,
-  broadcastUserTranscript,
-} from '../services/transcript_broadcast.ts';
+import { broadcastAssistantTranscript, broadcastUserTranscript } from '../services/transcript_broadcast.ts';
 
 interface TranscriptRelayBody {
   role?: string;
@@ -29,9 +26,24 @@ function toSafeMillis(value: unknown): number | null {
  * broadcast path to populate chat bubbles while `backendTranscriptMode`
  * suppresses local emission, so skipping the broadcast results in an empty UI.
  */
-export function relayTranscript(req: Request<{ sessionId: string }, any, TranscriptRelayBody>, res: Response): Response {
+export function relayTranscript(
+  req: Request<{ sessionId: string }, any, TranscriptRelayBody>,
+  res: Response
+): Response {
   const { sessionId } = req.params;
-  const { role, text, isFinal, timestamp, itemId, startedAt, started_at_ms, finalizedAt, finalized_at_ms, emittedAt, emitted_at_ms } = req.body ?? {};
+  const {
+    role,
+    text,
+    isFinal,
+    timestamp,
+    itemId,
+    startedAt,
+    started_at_ms,
+    finalizedAt,
+    finalized_at_ms,
+    emittedAt,
+    emitted_at_ms,
+  } = req.body ?? {};
 
   console.log('[TranscriptRelay] 📥 Received relay request:', {
     sessionId: sessionId?.slice(-6),

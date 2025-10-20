@@ -1,82 +1,87 @@
+@layer features.sps {
 /**
  * SPS (Simulated Patient System) Drawer Styles
  * Advanced scenario control panel
  */
 
-/* SPS Drawer */
 .sps-drawer {
-  --sps-bg: #111111;
-  --sps-surface: #181818;
-  --sps-border: #222222;
-  --sps-border-strong: #333333;
-  --sps-text: #eeeeee;
-  --sps-muted: #cccccc;
-  --sps-control-bg: #222222;
-  --sps-input-border: #444444;
-  --sps-accent: #2dd55b;
-  --sps-accent-hover: #3ae86a;
-  --sps-badge-bg: #2a6544;
-  --sps-badge-text: #ffffff;
+  --sps-surface: rgba(14, 20, 17, 0.96);
+  --sps-border: rgba(255, 255, 255, 0.08);
+  --sps-border-strong: rgba(255, 255, 255, 0.18);
+  --sps-text: rgba(240, 248, 244, 0.96);
+  --sps-muted: rgba(203, 213, 210, 0.82);
+  --sps-control-bg: rgba(20, 29, 25, 0.92);
+  --sps-input-border: rgba(255, 255, 255, 0.12);
+  --sps-accent: var(--accent);
+  --sps-accent-contrast: rgba(255, 255, 255, 0.92);
+  --sps-accent-muted: rgba(22, 179, 106, 0.16);
+  --sps-badge-bg: rgba(0, 154, 68, 0.24);
+  --sps-badge-text: rgba(203, 255, 225, 0.96);
   position: fixed;
-  top: 0;
-  right: 0;
-  width: 420px;
-  max-width: 100%;
-  height: 100%;
-  background: var(--sps-bg);
+  inset-block: 0;
+  inset-inline-end: 0;
+  inline-size: min(420px, 100vw);
+  block-size: 100%;
+  background: var(--sps-surface);
   color: var(--sps-text);
-  border-left: 2px solid var(--sps-border-strong);
+  border-inline-start: 2px solid var(--sps-border-strong);
   display: flex;
   flex-direction: column;
-  font-size: 14px;
-  z-index: 20;
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
+  font: 0.875rem/1.5 var(--font-sans);
+  z-index: 40;
+  box-shadow: -4px 0 18px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(18px);
 }
 
-/* SPS Header */
 .sps-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-sm) var(--space-md);
-  background: var(--sps-surface);
-  border-bottom: 1px solid var(--sps-border);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-lg);
+  background: var(--sps-control-bg);
+  border-block-end: 1px solid var(--sps-border);
 }
 
 .sps-header h2 {
-  font-size: 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
   margin: 0;
+  letter-spacing: 0.01em;
 }
 
 .sps-header button {
-  background: var(--sps-control-bg);
+  background: transparent;
   color: var(--sps-text);
   border: 1px solid var(--sps-input-border);
-  padding: var(--space-xs) var(--space-sm);
+  padding-block: 0.35rem;
+  padding-inline: 0.75rem;
   cursor: pointer;
-  border-radius: var(--radius-xs, 4px);
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  border-radius: var(--radius-sm);
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
 
 .sps-header button:hover {
-  background: var(--sps-control-bg);
-  background: color-mix(in srgb, var(--sps-control-bg) 70%, #ffffff 30%);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 /* SPS Configuration */
 .sps-config {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  flex-wrap: wrap;
+  padding-block: var(--space-md);
+  padding-inline: var(--space-lg);
 }
 
 .sps-config label {
   display: flex;
   flex-direction: column;
-  font-size: 12px;
-  gap: 2px;
+  font-size: 0.75rem;
+  gap: 4px;
   color: var(--sps-muted);
+  letter-spacing: 0.01em;
 }
 
 .sps-config select,
@@ -84,78 +89,94 @@
   background: var(--sps-control-bg);
   border: 1px solid var(--sps-input-border);
   color: var(--sps-text);
-  padding: var(--space-xs);
-  border-radius: var(--radius-xs, 4px);
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.sps-config select:focus-visible,
+.sps-input input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0, 154, 68, 0.38);
 }
 
 .sps-config button,
 .sps-input button,
 .phase-controls button {
   background: var(--sps-accent);
-  color: #000000;
+  color: var(--sps-accent-contrast);
   border: none;
-  padding: 6px 10px;
+  padding-block: 0.5rem;
+  padding-inline: 0.75rem;
   cursor: pointer;
   font-weight: 600;
-  border-radius: var(--radius-xs, 4px);
-  transition: background 0.15s ease, transform 0.15s ease;
+  border-radius: var(--radius-sm);
+  transition: background 0.18s ease, transform 0.18s ease;
   outline: none;
 }
 
 .sps-config button:hover,
 .sps-input button:hover,
 .phase-controls button:hover {
-  background: var(--sps-accent-hover);
+  background: rgba(0, 154, 68, 0.88);
   transform: translateY(-1px);
 }
 
 .sps-config button:focus-visible,
 .sps-input button:focus-visible,
 .phase-controls button:focus-visible {
-  outline: var(--focus-ring-width, 2px) solid var(--focus-ring, var(--color-und-green));
-  outline-offset: 3px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .sps-config button:disabled,
 .phase-controls button:disabled {
   opacity: 0.35;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* SPS State */
 .sps-state {
-  padding: 6px var(--space-md);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-lg);
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-  border-top: 1px solid var(--sps-border);
-  border-bottom: 1px solid var(--sps-border);
-  background: var(--sps-bg);
-  background: color-mix(in srgb, var(--sps-bg) 85%, #000000 15%);
+  border-block: 1px solid var(--sps-border);
+  background: rgba(0, 0, 0, 0.16);
 }
 
 /* SPS Panel */
 .sps-panel {
-  border-top: 1px solid var(--sps-border-strong);
-  padding-top: 1rem;
+  border-block-start: 1px solid var(--sps-border-strong);
+  padding: var(--space-lg);
   font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
 .sps-panel select,
 .sps-panel input {
-  width: 100%;
+  inline-size: 100%;
 }
 
 .sps-panel .stack {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-bottom: 0.5rem;
+  gap: 4px;
 }
 
 .sps-panel .sps-state {
   font-size: 0.75rem;
-  line-height: 1.2;
+  line-height: 1.4;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  background: rgba(17, 25, 21, 0.75);
 }
 
 .sps-panel .sps-state .kv {
@@ -167,16 +188,18 @@
 .gate-flags,
 .sps-panel .gate-flags-wrap {
   display: flex;
-  gap: var(--space-xs);
+  gap: var(--space-2xs);
   flex-wrap: wrap;
 }
 
 .gate-flags span,
 .sps-panel .flag {
-  background: var(--sps-control-bg);
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-size: 11px;
+  background: rgba(255, 255, 255, 0.08);
+  padding-block: 2px;
+  padding-inline: 6px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -187,24 +210,25 @@
 }
 
 .sps-panel .gate-flags-wrap {
-  margin-top: 4px;
+  margin-top: var(--space-2xs);
 }
 
 /* Phase Controls */
 .phase-controls,
 .sps-panel .phase-adv {
   display: flex;
-  gap: 6px;
-  margin-top: 4px;
+  gap: var(--space-xs);
+  margin-top: var(--space-2xs);
 }
 
 /* SPS Input */
 .sps-input,
 .sps-panel .sps-input-inline {
   display: flex;
-  gap: 6px;
-  padding: var(--space-sm) var(--space-md);
-  border-top: 1px solid var(--sps-border);
+  gap: var(--space-xs);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-lg);
+  border-block-start: 1px solid var(--sps-border);
 }
 
 .sps-input input {
@@ -212,47 +236,54 @@
 }
 
 .sps-panel .sps-input-inline {
-  margin-top: 4px;
+  margin-top: var(--space-2xs);
   padding: 0;
 }
 
 /* SPS Messages */
 .sps-msgs {
-  max-height: 160px;
+  max-block-size: 180px;
   overflow: auto;
-  border: 1px solid var(--border-muted, #dddddd);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: var(--space-xs);
-  background: var(--surface, #fafafa);
+  background: rgba(0, 0, 0, 0.18);
   font-size: 0.75rem;
-  color: var(--text-primary, #111111);
+  color: var(--color-white);
+  border-radius: var(--radius-sm);
 }
 
 .sps-msg {
-  margin: 2px 0;
-  padding: 2px 4px;
-  border-radius: 3px;
+  margin-block: 2px;
+  margin-inline: 0;
+  padding-block: 2px;
+  padding-inline: 6px;
+  border-radius: var(--radius-xs);
 }
 
 .sps-msg.student {
-  background: #d1ecff;
-  background: color-mix(in srgb, #d1ecff 85%, #ffffff 15%);
+  background: rgba(81, 148, 255, 0.18);
+  color: rgba(200, 222, 255, 0.96);
 }
 
 .sps-msg.patient {
-  background: #e7ffe2;
-  background: color-mix(in srgb, #e7ffe2 85%, #ffffff 15%);
+  background: rgba(0, 154, 68, 0.18);
+  color: rgba(203, 255, 225, 0.96);
 }
 
 /* SPS Error */
 .sps-error {
-  color: var(--danger, #ff5555);
-  padding: var(--space-xs) var(--space-md);
-  font-size: 12px;
+  color: var(--danger);
+  padding-block: var(--space-xs);
+  padding-inline: var(--space-lg);
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 /* SPS Instructions */
 .sps-instructions {
-  padding: var(--space-xs) var(--space-md) var(--space-md);
+  padding-block-start: var(--space-sm);
+  padding-block-end: var(--space-lg);
+  padding-inline: var(--space-lg);
   overflow: auto;
 }
 
@@ -261,16 +292,45 @@
   color: var(--sps-muted);
   -webkit-user-select: none;
   user-select: none;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .sps-instructions pre {
   white-space: pre-wrap;
-  font-size: 11px;
-  background: var(--sps-bg);
-  background: color-mix(in srgb, var(--sps-bg) 80%, #000000 20%);
-  padding: 6px;
-  border: 1px solid var(--sps-border);
-  border-radius: var(--radius-xs, 4px);
-  max-height: 180px;
+  font-size: 0.7rem;
+  background: rgba(0, 0, 0, 0.28);
+  padding: var(--space-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  max-block-size: 200px;
   overflow: auto;
+}
+
+@media (max-width: 768px) {
+  .sps-drawer {
+    inline-size: min(360px, 100vw);
+  }
+}
+
+@media (max-width: 640px) {
+  .sps-drawer {
+    inline-size: min(320px, 100vw);
+  }
+
+  .sps-header {
+    padding-block: var(--space-sm);
+    padding-inline: var(--space-md);
+  }
+
+  .sps-config {
+    padding: var(--space-md);
+  }
+
+  .sps-input,
+  .sps-panel {
+    padding-inline: var(--space-md);
+  }
+}
+
 }

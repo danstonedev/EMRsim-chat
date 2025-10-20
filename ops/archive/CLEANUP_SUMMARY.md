@@ -3,7 +3,9 @@
 **Date:** October 3, 2025
 
 ## Overview
+
 Performed comprehensive cleanup of the EMRsim-chat codebase to remove:
+
 - Diagnostic/fix documentation files
 - Unused feature flags
 - Moved test files to proper locations
@@ -13,6 +15,7 @@ Performed comprehensive cleanup of the EMRsim-chat codebase to remove:
 ## 1. Documentation Cleanup ✅
 
 ### Archived to `ops/archive/`:
+
 - **31 diagnostic/fix markdown files** documenting historical bugs and audits
 - Files included:
   - `CHAT_BUBBLE_FIX.md`
@@ -48,6 +51,7 @@ Performed comprehensive cleanup of the EMRsim-chat codebase to remove:
   - `VAD_SETTINGS_REFERENCE.md`
 
 ### Retained:
+
 - `README.md`
 - `CHANGELOG.md`
 - `DOCKER.md`
@@ -62,6 +66,7 @@ Performed comprehensive cleanup of the EMRsim-chat codebase to remove:
 ## 2. Removed Unused Feature Flags ✅
 
 ### Backend Changes:
+
 - **Removed from `backend/src/config.ts`:**
   - `NEGOTIATOR_ENABLED`
   - `GRADING_ENABLED`
@@ -76,6 +81,7 @@ Performed comprehensive cleanup of the EMRsim-chat codebase to remove:
   - `GRADING_ENABLED=false`
 
 ### Frontend Changes:
+
 - **Removed from `frontend/src/shared/flags.ts`:**
   - `negotiatorEnabled` and `gradingEnabled` from `FeatureFlagConfig` type
   - Switch cases for these flags in sanitization logic
@@ -96,6 +102,7 @@ Performed comprehensive cleanup of the EMRsim-chat codebase to remove:
 ## 3. Test File Organization ✅
 
 ### Moved:
+
 - `test-sps-integration.mjs` → `backend/tests/sps-integration.test.mjs`
 
 **Impact:** Proper test organization
@@ -105,16 +112,19 @@ Performed comprehensive cleanup of the EMRsim-chat codebase to remove:
 ## 4. Case Builder Status 📝
 
 **Current State:**
+
 - Component exists at `frontend/src/pages/CaseBuilder.tsx` (244 lines)
 - Uses **only inline styles** (no CSS classes)
 - Marked as "transitional state - ready for new schema"
 - **62 unused CSS rules** remain in `frontend/src/styles/chat.css` and `frontend/src/pages/App.css`
 
 **CSS Rules Not Used:**
+
 - `.casebuilder-*` classes (44 in chat.css, 18 in App.css)
 - Includes: shell, hero, layout, sidebar, step, card, grid, fieldset, etc.
 
 **Recommendation for Future:**
+
 - Consider removing unused CSS rules once Case Builder direction is decided
 - Or implement the component to use the existing CSS classes
 
@@ -132,16 +142,19 @@ Performed comprehensive cleanup of the EMRsim-chat codebase to remove:
 ## Files Modified
 
 ### Backend:
+
 1. `src/config.ts` - Removed feature flags
 2. `src/env.ts` - Removed flag definitions and logging
 3. `.env.example` - Removed flag examples
 
 ### Frontend:
+
 4. `src/shared/flags.ts` - Removed flag types and logic
 5. `src/vite-env.d.ts` - Removed environment type definitions
 6. `.env.local.example` - Removed flag examples
 
 ### Organization:
+
 7. Moved 31 markdown files to `ops/archive/`
 8. Moved `test-sps-integration.mjs` to `backend/tests/`
 

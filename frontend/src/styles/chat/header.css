@@ -1,0 +1,178 @@
+@layer features.chat {
+  /* Chat header and navigation */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: calc(var(--space-lg) + 4px);
+    padding-inline: var(--space-xl);
+    background: linear-gradient(120deg, rgba(0, 154, 68, 0.92), rgba(8, 64, 40, 0.85));
+    color: var(--color-white);
+    border-block-end: 1px solid rgba(255, 255, 255, 0.18);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 12;
+    box-shadow: 0 20px 40px -26px rgba(0, 0, 0, 0.45);
+    font-family: var(--font-sans);
+  }
+
+  .app-nav {
+    gap: var(--space-xl);
+  }
+
+  .app-nav--dark {
+    background:
+      radial-gradient(120% 200% at 10% -40%, rgba(255, 255, 255, 0.04), transparent),
+      linear-gradient(120deg, #111 0%, #0f1a15 50%, #0b1511 100%);
+    color: rgba(243, 244, 246, 0.96);
+    border-block-end: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-inner {
+    max-inline-size: 1280px;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-xl);
+    inline-size: 100%;
+  }
+
+  .nav-brand { justify-self: start; }
+  .header-nav { justify-self: center; }
+  .nav-spacer { justify-self: end; }
+
+  .nav-tabs {
+    list-style: none;
+    display: flex;
+    gap: clamp(0.75rem, 2vw, 2rem);
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-pill {
+    display: inline-flex;
+    align-items: center;
+    block-size: 40px;
+    padding-inline: 18px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(229, 231, 235, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.012em;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+    transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    font-family: inherit;
+  }
+
+  .nav-pill:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-pill:active {
+    transform: translateY(0.5px);
+  }
+
+  .nav-pill[data-active="true"],
+  .nav-pill[aria-current="page"] {
+    background: rgba(0, 154, 68, 0.08);
+    box-shadow:
+      inset 0 -2px 0 rgba(0, 154, 68, 0.6),
+      0 0 0 1px rgba(0, 0, 0, 0.08),
+      0 8px 24px -18px rgba(0, 0, 0, 0.65);
+  }
+
+  .nav-pill:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline-offset: 2px;
+  }
+
+  .header__brand {
+    font-size: clamp(1rem, 1.2rem + 0.2vw, 1.25rem);
+    font-weight: 700;
+    letter-spacing: 0.012em;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .header__brand.bruno-ace-regular {
+    font-family: var(--font-brand);
+    font-size: clamp(1.5rem, 1.8rem + 0.3vw, 1.875rem);
+  }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .nav-btn {
+    position: relative;
+    background: rgba(255, 255, 255, 0.98);
+    color: #0b2e1f;
+    border-color: rgba(255, 255, 255, 0.5);
+    text-transform: none;
+    letter-spacing: 0.012em;
+  }
+
+  .nav-btn:hover {
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 6px 18px -14px rgba(0, 0, 0, 0.35);
+  }
+
+  .nav-btn:active {
+    transform: translateY(0);
+  }
+
+  .nav-btn:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline-offset: 2px;
+  }
+
+  .nav-btn::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 10%;
+    inset-inline-end: 10%;
+    inset-block-end: 6px;
+    block-size: 2px;
+    background: linear-gradient(90deg, rgba(0, 154, 68, 0), rgba(0, 154, 68, 0.6), rgba(0, 154, 68, 0));
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 180ms ease-in-out;
+  }
+
+  .nav-btn:hover::after {
+    transform: scaleX(1);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+  }
+
+  .header .btn {
+    background: var(--color-white);
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.4);
+    font-family: var(--font-sans);
+    text-transform: none;
+  }
+
+  .header .btn:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .status-chip,
+  .ttft-pill,
+  .health-pill,
+  .drawer-title {
+    font-family: var(--font-sans);
+    text-transform: none;
+  }
+}

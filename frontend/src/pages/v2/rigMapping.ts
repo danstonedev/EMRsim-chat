@@ -58,18 +58,22 @@ export function remapTracksByName(
   scene: THREE.Object3D,
   srcClip: THREE.AnimationClip,
 ): THREE.AnimationClip {
+  // Compute target name set once for this scene; traversal can be expensive on large rigs
   const targetNames = collectTargetNames(scene)
-  const remappedTracks = srcClip.tracks.map((t) => {
+  const remappedTracks = new Array(srcClip.tracks.length)
+  for (let i = 0; i < srcClip.tracks.length; i++) {
+    const t = srcClip.tracks[i]
     const head = splitHead(t.name)
     const suffix = t.name.slice(head.length)
     const mapped = findBestTarget(head, targetNames)
     if (mapped && mapped !== head) {
       const nt = t.clone()
       ;(nt as any).name = `${mapped}${suffix}`
-      return nt
+      remappedTracks[i] = nt
+    } else {
+      remappedTracks[i] = t
     }
-    return t
-  })
+  }
   const remapClip = srcClip.clone()
   ;(remapClip as any).tracks = remappedTracks
   return remapClip

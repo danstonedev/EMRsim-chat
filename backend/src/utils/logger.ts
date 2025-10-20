@@ -5,7 +5,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 
 /**
  * Centralized logger using Pino for structured logging.
- * 
+ *
  * Usage:
  *   logger.info('Simple message');
  *   logger.info({ userId: 123 }, 'User logged in');
@@ -34,9 +34,10 @@ export const logger = pino({
  * Express middleware for request logging.
  * Logs all incoming requests with method, URL, and response time.
  */
-export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
+export const requestLogger = (req: Request & { log?: pino.Logger }, res: Response, next: NextFunction) => {
   const startTime = Date.now();
   const { method, url, ip } = req;
+  const reqLog: pino.Logger = req.log ?? logger;
 
   // Log when response finishes
   res.on('finish', () => {
@@ -54,11 +55,11 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
 
     // Log level based on status code
     if (statusCode >= 500) {
-      logger.error(logData, 'Request failed');
+      reqLog.error(logData, 'Request failed');
     } else if (statusCode >= 400) {
-      logger.warn(logData, 'Request error');
+      reqLog.warn(logData, 'Request error');
     } else {
-      logger.info(logData, 'Request completed');
+      reqLog.info(logData, 'Request completed');
     }
   });
 

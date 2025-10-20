@@ -50,6 +50,7 @@ if (!this.userFinalized) {
 ```
 
 **Supervisor Assessment:**
+
 - ✅ **Single Relay Point:** Only relays from completion event
 - ✅ **Deduplication:** item_id check prevents duplicates
 - ✅ **Error Handling:** Logs error if item_id missing (should never happen)
@@ -57,6 +58,7 @@ if (!this.userFinalized) {
 - ✅ **Order Independent:** Relay happens first, then finalization
 
 **Edge Cases Covered:**
+
 1. ✅ Missing item_id → Error logged, finalization continues
 2. ✅ Duplicate completion → Skipped via item_id check
 3. ✅ Already finalized → Skipped via userFinalized check
@@ -67,6 +69,7 @@ if (!this.userFinalized) {
 ## Assistant Transcript Deduplication
 
 **Implementation:**
+
 - Assistant transcripts relay from `handleAssistantTranscript` (line 1924)
 - No item_id tracking (assistant events don't have item_id in same format)
 - Protected by `lastAssistantFinal` check in TranscriptEngine (line 485)
@@ -87,17 +90,21 @@ if (finalText && (finalText !== this.lastAssistantFinal || hasActiveTranscript))
 ## Complete Deduplication Strategy
 
 ### User Transcripts
+
 **Guard:** `lastRelayedItemId !== itemId`  
 **Level:** Controller level (before relay)  
 **Effectiveness:** 100% - item_id is unique per conversation item
 
 ### Assistant Transcripts
+
 **Guard:** `finalText !== lastAssistantFinal`  
 **Level:** TranscriptEngine level (before emission)  
 **Effectiveness:** 100% - text comparison prevents duplicate emission
 
 ### Dual Protection
+
 Both user and assistant have **TWO layers** of protection:
+
 1. **Primary:** Controller-level checks (item_id or relay timing)
 2. **Secondary:** TranscriptEngine checks (text comparison)
 
@@ -106,7 +113,8 @@ Both user and assistant have **TWO layers** of protection:
 ## Event Flow Verification
 
 ### Trace 1: Normal Flow
-```
+
+``` text
 Delta → Force Finalize → Completion → Relay → Next Turn
   ↓         ↓              ↓          ↓        ↓
  Buffer   Finalize      Check ID   Send    Reset
@@ -117,7 +125,8 @@ Delta → Force Finalize → Completion → Relay → Next Turn
 ✅ **Result:** One relay, one finalization
 
 ### Trace 2: Race Condition
-```
+
+``` text
 Delta → Force Finalize → item.created → Completion → Relay
   ↓         ↓               ↓             ↓          ↓
  Buffer   Finalize        Reset        Check ID   Send
@@ -132,21 +141,25 @@ Delta → Force Finalize → item.created → Completion → Relay
 ## Code Quality Metrics
 
 ### Complexity: LOW ✅
+
 - Single relay point per role
 - Clear conditional flow
 - No nested callbacks or promises chains
 
 ### Maintainability: HIGH ✅
+
 - Self-documenting variable names
 - Comprehensive logging at each decision point
 - Clear comments explaining intent
 
 ### Testability: HIGH ✅
+
 - Pure logic (no side effects in checks)
 - Observable via console logs
 - Deterministic behavior
 
 ### Performance: OPTIMAL ✅
+
 - O(1) deduplication check
 - No loops or recursion
 - Minimal memory overhead (stores one string per role)
@@ -156,16 +169,19 @@ Delta → Force Finalize → item.created → Completion → Relay
 ## Security Review
 
 ### Input Validation ✅
+
 - `transcript` checked for emptiness
 - `itemId` checked for existence
 - `payload` structure validated implicitly
 
 ### Error Handling ✅
+
 - Try-catch in relay method
 - Errors logged but don't crash app
 - Graceful degradation (missing item_id)
 
 ### Data Integrity ✅
+
 - Transcripts relayed exactly once
 - No data loss scenarios
 - Consistent state across events
@@ -174,7 +190,7 @@ Delta → Force Finalize → item.created → Completion → Relay
 
 ## Build Verification
 
-```
+``` text
 ✓ 11590 modules transformed
 ✓ dist/index.html         0.46 kB  │ gzip: 0.30 kB
 ✓ dist/assets/index.css  49.51 kB  │ gzip: 10.25 kB
@@ -192,10 +208,11 @@ Delta → Force Finalize → item.created → Completion → Relay
 ## Testing Requirements
 
 ### Must Test Before Production
+
 1. **Normal conversation** (3+ turns)
    - Verify no duplicate transcripts in UI
    - Verify no duplicate transcripts in backend logs
-   
+
 2. **Console verification**
    - Confirm "📡 Relaying user transcript from completion event" appears once per turn
    - Confirm item_id logged with each relay
@@ -206,7 +223,8 @@ Delta → Force Finalize → item.created → Completion → Relay
    - Verify speaker attribution correct (user vs assistant)
 
 ### Expected Behavior
-```
+
+``` text
 [ConversationController] 📝 TRANSCRIPTION DELTA: {item_id: 'item_xxx', ...}
 [ConversationController] Assistant response starting
 [ConversationController] Force finalizing pending user transcript
@@ -226,6 +244,7 @@ Delta → Force Finalize → item.created → Completion → Relay
 ### Deployment Risk: **LOW** ✅
 
 **Mitigating Factors:**
+
 - Simple, linear logic flow
 - Comprehensive error handling
 - Multiple layers of protection
@@ -233,12 +252,13 @@ Delta → Force Finalize → item.created → Completion → Relay
 - Graceful degradation
 
 **Potential Issues:**
+
 - ⚠️ If OpenAI changes event format (missing item_id)
   - **Mitigation:** Error logged, app continues, finalization still works
-  
+
 - ⚠️ If network fails during relay
   - **Mitigation:** Error caught and logged, doesn't crash app
-  
+
 - ⚠️ If WebSocket disconnects
   - **Mitigation:** Socket.io auto-reconnects, transcripts in DB persist
 
@@ -249,6 +269,7 @@ Delta → Force Finalize → item.created → Completion → Relay
 ### ✅ APPROVED FOR PRODUCTION
 
 **Justification:**
+
 1. Code meets all quality standards
 2. Deduplication strategy is sound and tested
 3. Error handling is comprehensive
@@ -257,6 +278,7 @@ Delta → Force Finalize → item.created → Completion → Relay
 6. Logging enables easy debugging if issues arise
 
 **Conditions:**
+
 - User must perform manual testing per checklist above
 - Monitor console logs during first production test
 - If any "❌ Missing item_id" errors appear, report immediately
@@ -269,6 +291,7 @@ Delta → Force Finalize → item.created → Completion → Relay
 ## Final Notes
 
 This code represents a **significant improvement** over previous iterations:
+
 - Reduced complexity (removed multi-point relay logic)
 - Improved reliability (item_id tracking)
 - Better observability (enhanced logging)

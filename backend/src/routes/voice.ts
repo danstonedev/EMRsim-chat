@@ -5,10 +5,15 @@ import { getSessionById } from '../db.ts';
 import { spsRegistry } from '../sps/core/registry.ts';
 import { sessions as spsSessions } from '../sps/runtime/store.ts';
 import { composeRealtimeInstructions, normalizeGate, computeOutstandingGate } from '../sps/runtime/sps.service.ts';
-import { broadcastUserTranscript, broadcastAssistantTranscript, broadcastTranscriptError } from '../services/transcript_broadcast.ts';
+import {
+  broadcastUserTranscript,
+  broadcastAssistantTranscript,
+  broadcastTranscriptError,
+} from '../services/transcript_broadcast.ts';
 import { relayTranscript } from './transcript_relay.ts';
+import { setWithTTL, get as getRedis } from '../services/redisClient.ts';
 
-// In-memory store for realtime RTC tokens keyed by session id (dev/demo only)
+// In-memory fallback store for realtime RTC tokens (used when Redis unavailable)
 const rtcTokenStore = new Map<string, string>();
 
 // Rate limiter for voice token requests
@@ -53,29 +58,50 @@ export const router = Router();
 router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => {
   if (!config.VOICE_ENABLED) return res.status(403).json({ error: 'voice_disabled' });
   if (!process.env.OPENAI_API_KEY) return res.status(503).json({ error: 'no_openai_key' });
-  const { session_id: sessionId, voice: voiceOverride, input_language: inputLanguage, model: modelOverride, transcription_model: transcriptionModelOverride, reply_language: replyLanguage } = req.body || {};
+  const {
+    session_id: sessionId,
+    voice: voiceOverride,
+    input_language: inputLanguage,
+    model: modelOverride,
+    transcription_model: transcriptionModelOverride,
+    reply_language: replyLanguage,
+  } = req.body || {};
   if (!sessionId) return res.status(400).json({ error: 'missing_session_id' });
   const session = getSessionById(sessionId);
   if (!session) return res.status(404).json({ error: 'session_not_found' });
   // SPS-only: only allow realtime tokens for SPS sessions
   if (session.mode !== 'sps') return res.status(409).json({ error: 'sps_only' });
-  const model = (modelOverride && typeof modelOverride === 'string' && modelOverride.trim()) || process.env.OPENAI_REALTIME_MODEL || 'gpt-realtime-2025-08-28';
-  const allowedVoices = new Set(['alloy', 'ash', 'ballad', 'coral', 'echo', 'sage', 'shimmer', 'verse', 'marin', 'cedar']);
-  let instructions: string | undefined;
-  let personaPayload: any;
-  let voiceContext: any;
-
+  const model =
+    (modelOverride && typeof modelOverride === 'string' && modelOverride.trim()) ||
+    process.env.OPENAI_REALTIME_MODEL ||
+    'gpt-realtime-2025-08-28';
+  const allowedVoices = new Set([
+    'alloy',
+    'ash',
+    'ballad',
+    'coral',
+    'echo',
+    'sage',
+    'shimmer',
+    'verse',
+    'marin',
+    'cedar',
+  ]);
   // SPS-only mode: resolve context from SPS registry
   const spsContext = resolveSpsRealtimeContext(session);
   if (!spsContext) return res.status(404).json({ error: 'sps_context_unavailable' });
-  instructions = composeRealtimeInstructions(spsContext);
-  personaPayload = buildSpsPersonaPayload(spsContext.activeCase?.persona, session.persona_id);
-  voiceContext = { phase: spsContext.phase };
+  const instructions = composeRealtimeInstructions(spsContext);
+  const personaPayload = buildSpsPersonaPayload(spsContext.activeCase?.persona, session.persona_id);
+  const voiceContext = { phase: spsContext.phase };
+
+  // SPS-only mode: resolve context from SPS registry
+  // instructions/persona/context already computed above
 
   const configuredVoice = (process.env.OPENAI_TTS_VOICE || '').toLowerCase();
   const preferredVoice = (personaPayload?.voice_id || '').toLowerCase();
   const override = (voiceOverride || '').toLowerCase();
-  const voice = override && allowedVoices.has(override) ? override : chooseVoice(allowedVoices, configuredVoice, preferredVoice);
+  const voice =
+    override && allowedVoices.has(override) ? override : chooseVoice(allowedVoices, configuredVoice, preferredVoice);
   // Helpers to coerce env overrides for VAD / STT tuning
   const toNum = (v: any, def: number): number => {
     const n = typeof v === 'string' ? Number(v) : typeof v === 'number' ? v : NaN;
@@ -84,25 +110,37 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
   const vadThreshold = Math.min(1, Math.max(0, toNum(process.env.REALTIME_VAD_THRESHOLD, 0.35)));
   const vadPrefixMs = Math.max(0, Math.floor(toNum(process.env.REALTIME_VAD_PREFIX_MS, 120)));
   const vadSilenceMs = Math.max(0, Math.floor(toNum(process.env.REALTIME_VAD_SILENCE_MS, 250)));
-  const transcriptionModel = (transcriptionModelOverride && typeof transcriptionModelOverride === 'string' && transcriptionModelOverride.trim()) || process.env.OPENAI_TRANSCRIPTION_MODEL;
-  
+  const transcriptionModel =
+    (transcriptionModelOverride &&
+      typeof transcriptionModelOverride === 'string' &&
+      transcriptionModelOverride.trim()) ||
+    process.env.OPENAI_TRANSCRIPTION_MODEL;
+
   // Fail loudly if transcription model is not configured
   if (!transcriptionModel || !transcriptionModel.trim()) {
     console.error('[voice] ❌ OPENAI_TRANSCRIPTION_MODEL is not configured in .env');
-    return res.status(500).json({ error: 'transcription_model_not_configured', message: 'OPENAI_TRANSCRIPTION_MODEL must be set in backend/.env' });
+    return res.status(500).json({
+      error: 'transcription_model_not_configured',
+      message: 'OPENAI_TRANSCRIPTION_MODEL must be set in backend/.env',
+    });
   }
 
   try {
     const t0 = Date.now();
-    console.log('[voice] Requesting token with config:', { model, voice, transcriptionModel, inputLanguage: inputLanguage || 'auto' });
+    console.log('[voice] Requesting token with config:', {
+      model,
+      voice,
+      transcriptionModel,
+      inputLanguage: inputLanguage || 'auto',
+    });
     const headers: Record<string, string> = {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-        'OpenAI-Beta': 'realtime=v1',
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      'Content-Type': 'application/json',
+      'OpenAI-Beta': 'realtime=v1',
     };
-    
+
     // Project API keys don't need Organization ID
-    
+
     const r = await fetch('https://api.openai.com/v1/realtime/sessions', {
       method: 'POST',
       headers,
@@ -129,17 +167,32 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
     const t1 = Date.now();
     if (!r.ok) {
       const txt = await r.text().catch(() => '');
-      console.error('[voice] OpenAI Realtime API error:', { status: r.status, body: txt, model, transcriptionModel, ms: (t1 - t0) });
+      console.error('[voice] OpenAI Realtime API error:', {
+        status: r.status,
+        body: txt,
+        model,
+        transcriptionModel,
+        ms: t1 - t0,
+      });
       return res.status(502).json({ error: 'upstream_error', status: r.status, body: txt });
     }
     const json = await r.json();
     const rtcToken = json?.client_secret?.value;
     const expiresAt = json?.client_secret?.expires_at;
     if (!rtcToken) return res.status(502).json({ error: 'no_token' });
-    // Save token so server can relay SDP without exposing CORS issues
-    rtcTokenStore.set(sessionId, rtcToken);
+    
+    // Save token with 60-second TTL (tokens are short-lived for WebRTC handshake)
+    // Try Redis first, fall back to in-memory if Redis unavailable
+    const storedInRedis = await setWithTTL(`rtc:token:${sessionId}`, rtcToken, 60);
+    if (!storedInRedis) {
+      console.log('[voice] ⚠️  Redis unavailable, using in-memory token storage');
+      rtcTokenStore.set(sessionId, rtcToken);
+    } else {
+      console.log('[voice] ✅ Token stored in Redis');
+    }
+    
     const t2 = Date.now();
-    console.log('[voice] Token acquired', { model, ms: (t1 - t0), parse_ms: (t2 - t1) });
+    console.log('[voice] Token acquired', { model, ms: t1 - t0, parse_ms: t2 - t1 });
     return res.json({
       rtc_token: rtcToken,
       model,
@@ -164,13 +217,12 @@ router.post('/instructions', (req: Request, res: Response) => {
     const spsContext = resolveSpsRealtimeContext(session);
     if (!spsContext) return res.status(404).json({ error: 'sps_context_unavailable' });
 
-    const gate = gateOverride && typeof gateOverride === 'object'
-      ? normalizeGate({ ...spsContext.gate, ...gateOverride })
-      : spsContext.gate;
+    const gate =
+      gateOverride && typeof gateOverride === 'object'
+        ? normalizeGate({ ...spsContext.gate, ...gateOverride })
+        : spsContext.gate;
 
-    const phase = typeof phaseOverride === 'string' && phaseOverride.length
-      ? phaseOverride
-      : spsContext.phase;
+    const phase = typeof phaseOverride === 'string' && phaseOverride.length ? phaseOverride : spsContext.phase;
 
     const outstanding = computeOutstandingGate(gate);
     const instructions = composeRealtimeInstructions({
@@ -196,16 +248,23 @@ router.post('/sdp', async (req: Request, res: Response) => {
   if (!session) return res.status(404).json({ error: 'session_not_found' });
   // SPS-only: only allow SDP relay for SPS sessions
   if (session.mode !== 'sps') return res.status(409).json({ error: 'sps_only' });
-  const rtcToken = rtcTokenStore.get(sessionId);
+  
+  // Retrieve token from Redis first, fall back to in-memory
+  let rtcToken = await getRedis(`rtc:token:${sessionId}`);
+  if (!rtcToken) {
+    console.log('[voice] Token not in Redis, checking in-memory store');
+    rtcToken = rtcTokenStore.get(sessionId) || null;
+  }
+  
   if (!rtcToken) return res.status(412).json({ error: 'no_rtc_token' });
   const model = process.env.OPENAI_REALTIME_MODEL || 'gpt-realtime-2025-08-28';
   try {
     const t0 = Date.now();
-    console.log('[voice] SDP relay start', { sessionId: String(sessionId).slice(-6), offerBytes: (sdp?.length || 0) });
+    console.log('[voice] SDP relay start', { sessionId: String(sessionId).slice(-6), offerBytes: sdp?.length || 0 });
     const r = await fetch(`https://api.openai.com/v1/realtime?model=${encodeURIComponent(model)}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${rtcToken}`,
+        Authorization: `Bearer ${rtcToken}`,
         'Content-Type': 'application/sdp',
         'OpenAI-Beta': 'realtime=v1',
       },
@@ -214,7 +273,12 @@ router.post('/sdp', async (req: Request, res: Response) => {
     const t1 = Date.now();
     const answer = await r.text().catch(() => '');
     const t2 = Date.now();
-    console.log('[voice] SDP relay upstream', { status: r.status, answerBytes: (answer?.length || 0), ms: (t1 - t0), read_ms: (t2 - t1) });
+    console.log('[voice] SDP relay upstream', {
+      status: r.status,
+      answerBytes: answer?.length || 0,
+      ms: t1 - t0,
+      read_ms: t2 - t1,
+    });
     if (!r.ok) return res.status(502).json({ error: 'upstream_error', status: r.status, body: answer });
     // Return plain text SDP answer
     res.setHeader('Content-Type', 'application/sdp');
@@ -227,7 +291,7 @@ router.post('/sdp', async (req: Request, res: Response) => {
 
 // Public list of supported voices (kept in sync with allowed set above)
 router.get('/voices', (_req: Request, res: Response) => {
-  const voices = ['alloy','ash','ballad','coral','echo','sage','shimmer','verse','marin','cedar'];
+  const voices = ['alloy', 'ash', 'ballad', 'coral', 'echo', 'sage', 'shimmer', 'verse', 'marin', 'cedar'];
   return res.json({ voices });
 });
 
@@ -249,15 +313,17 @@ function resolveLanguageLabel(code: string): string | null {
     return LANGUAGE_OVERRIDES[normalized];
   }
 
-  try {
-    if (!languageDisplayNames && typeof Intl?.DisplayNames === 'function') {
+  if (!languageDisplayNames && typeof (Intl as any)?.DisplayNames === 'function') {
+    try {
       languageDisplayNames = new Intl.DisplayNames(['en'], { type: 'language', fallback: 'code' });
+    } catch {
+      // noop: fall back to simple code formatting below
     }
-    const label = languageDisplayNames?.of(normalized);
-    if (label && label !== normalized) {
-      return label.charAt(0).toUpperCase() + label.slice(1);
-    }
-  } catch {}
+  }
+  const label = languageDisplayNames?.of(normalized);
+  if (label && label !== normalized) {
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  }
 
   if (normalized.length === 2) return normalized.toUpperCase();
   return normalized;
@@ -342,7 +408,7 @@ function buildSpsPersonaPayload(persona: any, fallbackId: string): any {
 router.post('/transcript', transcriptRelayLimiter, (req: Request, res: Response) => {
   try {
     const { session_id, role, text, is_final, timestamp, item_id } = req.body || {};
-    
+
     // Validate required fields
     if (!session_id) {
       return res.status(400).json({ error: 'missing_session_id' });
@@ -353,21 +419,21 @@ router.post('/transcript', transcriptRelayLimiter, (req: Request, res: Response)
     if (typeof text !== 'string') {
       return res.status(400).json({ error: 'invalid_text' });
     }
-    
+
     const payload = {
       text,
       isFinal: Boolean(is_final),
       timestamp: timestamp || Date.now(),
-      itemId: item_id
+      itemId: item_id,
     };
-    
+
     // Broadcast to all clients in this session
     if (role === 'user') {
       broadcastUserTranscript(session_id, payload);
     } else {
       broadcastAssistantTranscript(session_id, payload);
     }
-    
+
     return res.json({ success: true });
   } catch (error) {
     console.error('[voice] transcript relay error:', error);
@@ -381,14 +447,14 @@ router.post('/transcript', transcriptRelayLimiter, (req: Request, res: Response)
 router.post('/transcript-error', transcriptRelayLimiter, (req: Request, res: Response) => {
   try {
     const { session_id, error } = req.body || {};
-    
+
     if (!session_id) {
       return res.status(400).json({ error: 'missing_session_id' });
     }
-    
+
     const errorMessage = error || 'Unknown transcription error';
     broadcastTranscriptError(session_id, new Error(String(errorMessage)));
-    
+
     return res.json({ success: true });
   } catch (err) {
     console.error('[voice] transcript error relay failed:', err);

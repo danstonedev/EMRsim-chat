@@ -19,7 +19,7 @@ import { type InstructionSyncManager } from '../features/voice/conversation/inst
 import { ConversationEventEmitter } from './services/ConversationEventEmitter'
 import { ConversationStateManager } from './services/ConversationStateManager'
 import { AudioStreamManager } from './services/AudioStreamManager'
-import type { BackendSocketClient } from './services/BackendSocketManager'
+import type { BackendSocketClient } from './types/backendSocket'
 import { TranscriptCoordinator } from './services/TranscriptCoordinator'
 
 // Handler imports

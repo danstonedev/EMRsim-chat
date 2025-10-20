@@ -1,0 +1,52 @@
+# Line ending normalization and binary detection
+# Text files use LF across platforms; common binaries are marked to avoid EOL conversions.
+
+# Core source files
+*.ts      text eol=lf
+*.tsx     text eol=lf
+*.js      text eol=lf
+*.mjs     text eol=lf
+*.cjs     text eol=lf
+*.json    text eol=lf
+*.jsonc   text eol=lf
+*.md      text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.css     text eol=lf
+*.scss    text eol=lf
+*.html    text eol=lf
+*.svg     text eol=lf
+
+# Shell scripts (keep LF)
+*.sh      text eol=lf
+
+# PowerShell scripts (Windows-friendly CRLF)
+*.ps1     text eol=crlf
+
+# Git attributes for common binary assets
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.webp    binary
+*.ico     binary
+*.mp4     binary
+*.mov     binary
+*.mp3     binary
+*.wav     binary
+*.zip     binary
+*.7z      binary
+*.gz      binary
+*.bz2     binary
+*.xz      binary
+
+# 3D assets
+*.glb     binary
+*.bin     binary
+# glTF is JSON text; normalize to LF
+*.gltf    text eol=lf
+
+# Notes:
+# - After adding this file, you can renormalize your working tree if needed:
+#   git add --renormalize .
+#   git commit -m "chore: normalize line endings via .gitattributes"

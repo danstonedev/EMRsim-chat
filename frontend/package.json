@@ -21,8 +21,10 @@
   "test:viewer:watch": "vitest src/pages/components/viewer/__tests__/mixerController.resume.spec.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+  "lint": "eslint src --ext .ts,.tsx",
+  "lint:report": "eslint src --ext .ts,.tsx -f json -o eslint-report.json",
+  "lint:fix": "eslint src --ext .ts,.tsx --fix",
+  "lint:all": "eslint . --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,css}\"",
     "perf:baseline": "node scripts/render-metrics-baseline.mjs"

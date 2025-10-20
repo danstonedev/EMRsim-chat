@@ -9,7 +9,9 @@
 ## Current Architecture Analysis
 
 ### ConversationController.ts (1,428 lines)
+
 **Already Using Services:**
+
 - ✅ `ConversationEventEmitter` - Event coordination
 - ✅ `ConversationStateManager` - Status/state management
 - ✅ `AudioStreamManager` - Audio handling
@@ -18,6 +20,7 @@
 - ✅ `TranscriptCoordinator` - Transcript processing
 
 **Still Mixed Responsibilities in ConversationController:**
+
 1. **Session Lifecycle** - Session creation, configuration, state tracking
 2. **Connection Orchestration** - Coordinating all the managers during connect/disconnect
 3. **Event Handling** - Complex event routing between transport, managers, and UI
@@ -33,6 +36,7 @@
 ## Public API Surface (Must Preserve)
 
 ### Core Methods
+
 ```typescript
 // Lifecycle
 async startVoice(): Promise<void>
@@ -90,6 +94,7 @@ Given the complexity and 1,428 lines, we **CANNOT** do a big-bang rewrite. Inste
 ### Phase 3 will be broken into Sub-Phases:
 
 #### **Phase 3.1: Session Lifecycle Extraction** (Day 1-2)
+
 **Goal:** Extract session configuration and lifecycle management
 
 **Create:** `SessionLifecycleManager.ts`
@@ -116,6 +121,7 @@ class SessionLifecycleManager {
 ```
 
 **Steps:**
+
 1. Create SessionLifecycleManager class
 2. Move session-related properties
 3. Move session creation logic from `startVoice()`
@@ -125,6 +131,7 @@ class SessionLifecycleManager {
 ---
 
 #### **Phase 3.2: Configuration Management** (Day 2-3)
+
 **Goal:** Centralize all voice/model configuration
 
 **Create:** `VoiceConfigurationManager.ts`
@@ -148,6 +155,7 @@ class VoiceConfigurationManager {
 ```
 
 **Steps:**
+
 1. Create VoiceConfigurationManager
 2. Move all configuration properties
 3. Move configuration setters
@@ -157,6 +165,7 @@ class VoiceConfigurationManager {
 ---
 
 #### **Phase 3.3: Microphone Control Extraction** (Day 3-4)
+
 **Goal:** Separate microphone pause logic
 
 **Create:** `MicrophoneControlManager.ts`
@@ -176,6 +185,7 @@ class MicrophoneControlManager {
 ```
 
 **Steps:**
+
 1. Create MicrophoneControlManager
 2. Move mic pause state and logic
 3. Move auto-pause reason tracking
@@ -184,6 +194,7 @@ class MicrophoneControlManager {
 ---
 
 #### **Phase 3.4: Connection Orchestration** (Day 4-6)
+
 **Goal:** Simplify the massive `startVoice()` and `stopVoice()` methods
 
 **Create:** `ConnectionOrchestrator.ts`
@@ -210,6 +221,7 @@ class ConnectionOrchestrator {
 ```
 
 **Steps:**
+
 1. Create ConnectionOrchestrator
 2. Move connection flow logic from `startVoice()`
 3. Move disconnection logic from `stopVoice()`
@@ -219,6 +231,7 @@ class ConnectionOrchestrator {
 ---
 
 #### **Phase 3.5: Create Thin VoiceSessionOrchestrator** (Day 6-7)
+
 **Goal:** Replace ConversationController with a thin facade
 
 **Create:** `VoiceSessionOrchestrator.ts`
@@ -255,6 +268,7 @@ export class VoiceSessionOrchestrator {
 ```
 
 **Steps:**
+
 1. Create VoiceSessionOrchestrator skeleton
 2. Wire all managers together
 3. Delegate all public methods
@@ -263,14 +277,17 @@ export class VoiceSessionOrchestrator {
 ---
 
 #### **Phase 3.6: Update Consumers** (Day 7-8)
+
 **Goal:** Update all usages to use new architecture
 
 **Files to Update:**
+
 - `frontend/src/shared/hooks/useVoiceSession.ts` (main consumer)
 - `frontend/src/shared/__tests__/ConversationController.*.test.ts` (tests)
 - Any direct imports of ConversationController
 
 **Steps:**
+
 1. Update useVoiceSession to import VoiceSessionOrchestrator
 2. Ensure all method calls still work
 3. Update test files to use VoiceSessionOrchestrator
@@ -279,9 +296,11 @@ export class VoiceSessionOrchestrator {
 ---
 
 #### **Phase 3.7: Test & Verify** (Day 8-10)
+
 **Goal:** Comprehensive testing
 
 **Steps:**
+
 1. Run full frontend test suite
 2. Run frontend build
 3. Manual testing of voice session flow
@@ -292,7 +311,7 @@ export class VoiceSessionOrchestrator {
 
 ## File Structure After Refactor
 
-```
+``` text
 frontend/src/shared/
 ├── VoiceSessionOrchestrator.ts (NEW - thin facade, <200 lines)
 ├── ConversationController.ts (DEPRECATED - re-export for compatibility)
@@ -327,15 +346,19 @@ frontend/src/shared/
 ## Risks & Mitigations
 
 ### Risk 1: Breaking Complex Event Flows
+
 **Mitigation:** Extract one manager at a time, test after each extraction
 
 ### Risk 2: Missing Edge Cases
+
 **Mitigation:** Comprehensive test coverage, manual testing checklist
 
 ### Risk 3: Performance Regression
+
 **Mitigation:** Keep existing managers as-is, only orchestrate differently
 
 ### Risk 4: Too Much Complexity
+
 **Mitigation:** Stop if extraction creates more problems than it solves
 
 ---
@@ -345,6 +368,7 @@ frontend/src/shared/
 **Recommendation:** Proceed with **Phase 3.1 (Session Lifecycle) ONLY** for now.
 
 **Rationale:**
+
 - This is the safest extraction with minimal risk
 - If it goes well, proceed to Phase 3.2
 - If it's too complex, we can stop and document learnings

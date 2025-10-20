@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "postinstall": "playwright install chromium",
+    "docs:fix:md022": "node ./scripts/fix-md022.mjs",
+    "docs:fix:md024": "node ./scripts/fix-md024-rename.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
@@ -12,7 +14,18 @@
     "sps:compile": "tsx ./src/sps/tools/compile-content.ts",
     "sps:compile:tmp": "tsx ./src/sps/tools/compile-content.ts --tmp",
     "sps:validate-compiled": "tsx ./src/sps/tools/validate-compiled.ts",
-    "sps:bump-version": "tsx ./src/sps/tools/bump-version.ts"
+    "sps:bump-version": "tsx ./src/sps/tools/bump-version.ts",
+    "start": "vite",
+    "start:backend": "cd backend && node src/server.js",
+    "dev": "concurrently \"npm run start\" \"npm run start:backend\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "analyze": "node scripts/analyze-bundle.js",
+    "build": "webpack --mode production",
+    "build:analyze": "npm run analyze"
   },
   "lint-staged": {
     "backend/src/**/*.{ts,js}": [

@@ -93,11 +93,13 @@ constructor(config: ConversationControllerConfig = {}) {
 ## 🎓 Key Patterns
 
 ### Factory Pattern
+
 ```typescript
 const services = ServiceInitializer.initialize(config, callbacks)
 ```
 
 ### Dependency Injection
+
 ```typescript
 interface ServiceInitializerCallbacks {
   attemptConnection: (op: number) => Promise<void>
@@ -108,6 +110,7 @@ interface ServiceInitializerCallbacks {
 ```
 
 ### Definite Assignment Assertion
+
 ```typescript
 private eventEmitter!: ConversationEventEmitter
 private stateManager!: ConversationStateManager

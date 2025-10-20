@@ -1,9 +1,9 @@
 {
   "BaselineDemo": {
     "commits": 3,
-    "totalActual": 0.32340000000112923,
-    "totalBase": 0.15229999999974098,
-    "maxActual": 0.2569000000003143,
-    "maxBase": 0.10939999999754946
+    "totalActual": 0.6511000000045897,
+    "totalBase": 0.14600000000064028,
+    "maxActual": 0.4019000000007509,
+    "maxBase": 0.10309999999844877
   }
 }

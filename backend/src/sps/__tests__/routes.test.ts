@@ -1,12 +1,10 @@
-// @ts-nocheck
 import { describe, it, expect, beforeAll } from 'vitest';
 import request from 'supertest';
+import type { Application } from 'express';
 import { createApp } from '../../app.ts';
 import { loadSPSContent } from '../../sps/runtime/session.ts';
 
-/** @type {import('express').Express} */
-/** @type {import('express').Express | undefined} */
-let app;
+let app: Application;
 
 beforeAll(() => {
   loadSPSContent();

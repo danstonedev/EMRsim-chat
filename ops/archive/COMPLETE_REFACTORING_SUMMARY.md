@@ -9,14 +9,18 @@
 ## 🎯 Mission: Fix Startup Loading Inconsistencies
 
 ### Original Problem:
+
 Your chat startup logs showed multiple inconsistencies with loading:
+
 - 4x "Setting scenario media" logs (3 empty, 1 with data)
 - Verbose console output masking real issues
 - Race conditions in media loading
 - Scattered effect executions
 
 ### Solution Delivered:
+
 3-phase modular refactoring focusing on:
+
 1. Console clarity (Phase 1)
 2. Performance optimization (Phase 2)
 3. Code quality (Phase 3)
@@ -26,7 +30,8 @@ Your chat startup logs showed multiple inconsistencies with loading:
 ## 📊 Overall Impact
 
 ### Before Refactoring:
-```
+
+``` text
 Startup console logs: 23+
 Media state updates: 4 (3 empty + 1 data)
 Effect executions: 7 separate for config
@@ -36,7 +41,8 @@ Code maintainability: 3/10
 ```
 
 ### After All 3 Phases:
-```
+
+``` text
 Startup console logs: 3-5
 Media state updates: 1 (data only)
 Effect executions: 1 consolidated
@@ -46,6 +52,7 @@ Code maintainability: 9/10
 ```
 
 ### Quantified Improvements:
+
 - 🎯 **80% reduction** in console logs
 - 🎯 **75% reduction** in media updates
 - 🎯 **85% reduction** in effect executions
@@ -61,16 +68,19 @@ Code maintainability: 9/10
 **Objective:** Reduce verbose console output without touching business logic
 
 **Changes:**
+
 - 9 files modified
 - Converted `console.log` → `console.debug` with dev checks
 - Conditional logging (only when there's data)
 
 **Impact:**
+
 - ~80% fewer startup logs
 - All logs still available via debug filter
 - Production builds silent by default
 
 **Files Modified:**
+
 1. `frontend/src/shared/useVoiceSession.ts`
 2. `frontend/src/shared/hooks/useVoiceTranscripts.ts`
 3. `frontend/src/pages/components/MicControl.tsx`
@@ -91,17 +101,20 @@ Code maintainability: 9/10
 **Objective:** Eliminate race condition causing multiple media loads
 
 **Changes:**
+
 - Implemented scenario caching with `hasLoadedRef`
 - Deferred state resets (only when necessary)
 - Added `isLoading` state infrastructure
 
 **Impact:**
+
 - Eliminated 3 empty state updates
 - 75% reduction in media loads
 - Smart caching prevents duplicate API calls
 - Infrastructure ready for loading UI
 
 **Files Modified:**
+
 1. `frontend/src/shared/hooks/useScenarioMedia.ts` (major refactor)
 2. `frontend/src/pages/App.tsx` (hook usage update)
 
@@ -115,17 +128,20 @@ Code maintainability: 9/10
 **Objective:** Consolidate scattered effects for better performance and maintainability
 
 **Changes:**
+
 - Consolidated 7 separate effects into 1
 - Batched controller configuration updates
 - Centralized debug logging
 
 **Impact:**
+
 - 85% reduction in effect executions
 - Single configuration update
 - Complete config visibility in one log
 - Easier to maintain and extend
 
 **Files Modified:**
+
 1. `frontend/src/shared/useVoiceSession.ts` (effect consolidation)
 
 **Risk:** Low (pure refactoring, same behavior)  
@@ -136,16 +152,19 @@ Code maintainability: 9/10
 ## Testing Results
 
 ### Phase 1:
+
 - ✅ Type Check: PASSED
 - ✅ Tests: N/A (logging only)
 - ✅ Build: PASSED
 
 ### Phase 2:
+
 - ✅ Type Check: PASSED
 - ✅ Viewer Tests: PASSED
 - ✅ Build: PASSED
 
 ### Phase 3:
+
 - ✅ Type Check: PASSED
 - ✅ Viewer Tests: PASSED
 - ✅ Build: PASSED
@@ -157,7 +176,8 @@ Code maintainability: 9/10
 ## Before & After Console Output
 
 ### Before (Original Logs):
-```
+
+``` text
 [vite] connected.
 [useVoiceSession] Setting scenario media: {mediaCount: 0, mediaIds: []}
 [useVoiceSession] Setting scenario media: {mediaCount: 0, mediaIds: []}
@@ -185,7 +205,8 @@ Code maintainability: 9/10
 ---
 
 ### After (All Phases):
-```
+
+``` text
 [vite] connected.
 React DevTools message
 ⚠️ React Router Future Flag Warnings (2)
@@ -194,7 +215,7 @@ React DevTools message
 **Total:** 3-5 focused logs
 
 **With Debug Filter Enabled:**
-```
+``` text
 [vite] connected.
 [voice] feature flag VOICE_ENABLED = true
 [voice] feature flag SPS_ENABLED = true
@@ -212,7 +233,7 @@ React DevTools message
 ### 1. Media Loading Flow
 
 **Before:**
-```
+``` text
 useScenarioMedia Effect
   └─> Immediate setScenarioMedia([]) → Empty Update #1
   └─> Re-render → setScenarioMedia([]) → Empty Update #2
@@ -221,7 +242,7 @@ useScenarioMedia Effect
 ```
 
 **After:**
-```
+``` text
 useScenarioMedia Effect
   └─> Check cache → Hit? Return early
   └─> Miss? Set isLoading(true)
@@ -234,7 +255,7 @@ useScenarioMedia Effect
 ### 2. Voice Session Configuration
 
 **Before:**
-```
+``` text
 7 Separate Effects:
   useEffect → setPersonaId
   useEffect → setScenarioId
@@ -246,7 +267,7 @@ useScenarioMedia Effect
 ```
 
 **After:**
-```
+``` text
 1 Consolidated Effect:
   useEffect → {
     Batch all updates
@@ -260,14 +281,14 @@ useScenarioMedia Effect
 ### 3. Logging Strategy
 
 **Before:**
-```
+``` text
 Production: console.log everywhere
 Development: console.log everywhere
 Debug: console.log everywhere
 ```
 
 **After:**
-```
+``` text
 Production: Errors/warnings only
 Development: Important info only (console.debug)
 Debug Filter: All diagnostics available
@@ -299,18 +320,22 @@ Debug Filter: All diagnostics available
 ## Code Quality Improvements
 
 ### Maintainability:
+
 - **Before:** Scattered logic across 7 effects, unclear data flow
 - **After:** Consolidated, documented, easy to understand
 
 ### Debugging:
+
 - **Before:** Multiple logs, no complete picture
 - **After:** Single comprehensive config log
 
 ### Extensibility:
+
 - **Before:** Add new config = new effect
 - **After:** Add to consolidated effect = one place to change
 
 ### Documentation:
+
 - **Before:** Minimal inline comments
 - **After:** Phase-labeled, purpose-documented
 
@@ -321,11 +346,13 @@ Debug Filter: All diagnostics available
 **Total Files Modified:** 11 unique files
 
 **By Phase:**
+
 - Phase 1: 9 files (logging changes)
 - Phase 2: 2 files (media optimization)
 - Phase 3: 1 file (effect consolidation)
 
 **Risk Profile:**
+
 - 9 files: Very Low Risk (logging only)
 - 2 files: Low Risk (isolated optimization)
 - 1 file: Low Risk (pure refactoring)
@@ -350,12 +377,14 @@ Debug Filter: All diagnostics available
 ## Developer Experience
 
 ### Before:
+
 - Noisy console makes debugging hard
 - Multiple logs for single operations
 - Unclear where issues originate
 - Difficult to add new features
 
 ### After:
+
 - Clean console by default
 - Opt-in verbose logging
 - Clear configuration snapshots
@@ -383,6 +412,7 @@ Debug Filter: All diagnostics available
 ## Deployment Recommendations
 
 ### Strategy:
+
 1. Deploy all 3 phases together (they're designed to work as a unit)
 2. Monitor console output in dev mode
 3. Verify scenario switching works correctly
@@ -390,12 +420,14 @@ Debug Filter: All diagnostics available
 5. Confirm media loading behaves properly
 
 ### Monitoring Points:
+
 - Console logs (should be minimal)
 - Scenario media loading
 - Voice session configuration
 - Performance metrics
 
 ### Rollback:
+
 ```bash
 # All phases are in separate commits
 git revert HEAD~3..HEAD  # Revert all 3 phases
@@ -443,6 +475,7 @@ git revert <phase-1-commit>
    - TTL for cached scenarios
 
 ### None Required:
+
 The refactoring is complete and production-ready as-is! 🎉
 
 ---
@@ -460,12 +493,14 @@ The refactoring is complete and production-ready as-is! 🎉
 ## Team Impact
 
 ### For Developers:
+
 - ✅ Cleaner debugging experience
 - ✅ Easier to understand code flow
 - ✅ Faster to add new features
 - ✅ Better performance insights
 
 ### For Users:
+
 - ✅ Faster app initialization
 - ✅ Smoother scenario switching
 - ✅ More responsive UI

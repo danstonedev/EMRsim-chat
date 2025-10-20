@@ -1,66 +1,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { io, type Socket } from 'socket.io-client'
-import type { MediaReference } from '../types'
+import type {
+  TranscriptData,
+  TranscriptErrorData,
+  CatchupData,
+  SocketEventHandlers,
+  SocketConfig,
+  BackendSocketSnapshot,
+} from '../types/backendSocket'
 import { voiceDebug, voiceWarn } from '../utils/voiceLogging'
 
-export interface TranscriptData {
-  role: 'user' | 'assistant'
-  text: string
-  isFinal: boolean
-  timestamp: number
-  source?: string
-  startedAtMs?: number | null
-  finalizedAtMs?: number | null
-  emittedAtMs?: number | null
-  media?: MediaReference
-}
-
-export interface TranscriptErrorData {
-  error: string
-  timestamp: number
-}
-
-export interface CatchupData {
-  transcripts: Array<{
-    role: 'user' | 'assistant'
-    text: string
-    isFinal: boolean
-    timestamp: number
-    startedAtMs?: number | null
-    finalizedAtMs?: number | null
-    emittedAtMs?: number | null
-  }>
-}
-
-export interface SocketEventHandlers {
-  onConnect?: (sessionId: string) => void
-  onDisconnect?: (reason: string) => void
-  onTranscript?: (data: TranscriptData) => void
-  onTranscriptError?: (data: TranscriptErrorData) => void
-  onReconnect?: (lastTimestamp: number) => void
-  onCatchup?: (data: CatchupData) => void
-  onFailure?: (label: string, error: unknown, failureCount: number) => void
-  onMaxFailures?: (failureCount: number) => void
-}
-
-export interface SocketConfig {
-  apiBaseUrl: string
-  maxFailures?: number
-  enabled?: boolean
-  transports?: ('websocket' | 'polling')[]
-  reconnectionAttempts?: number
-  reconnectionDelay?: number
-  timeout?: number
-  withCredentials?: boolean
-}
-
-export interface BackendSocketSnapshot {
-  isConnected: boolean
-  isEnabled: boolean
-  failureCount: number
-  lastReceivedTimestamp: number
-  hasSocket: boolean
-  currentSessionId: string | null
+export type {
+  TranscriptData,
+  TranscriptErrorData,
+  CatchupData,
+  SocketEventHandlers,
+  SocketConfig,
+  BackendSocketSnapshot,
 }
 
 export interface UseBackendSocketOptions {
@@ -112,17 +68,39 @@ function resolveEndpoint(apiBaseUrl: string): ResolvedEndpoint {
   const fallback: ResolvedEndpoint = { origin: 'http://localhost:3002', path: '/socket.io/' }
   try {
     const url = new URL(apiBaseUrl)
-    const trimmedPath = url.pathname.replace(/\/+$|^\/+/, '')
-    const basePath = trimmedPath ? `/${trimmedPath}` : ''
-    let socketPath = `${basePath}/socket.io/`
-      .replace(/\/{2,}/g, '/')
-      .replace(/\/+$/, '/')
-    if (!socketPath.startsWith('/')) {
-      socketPath = `/${socketPath}`
+    const origin = `${url.protocol}//${url.host}`
+
+    // 1) Allow explicit override via env (best for proxies/custom paths)
+    const socketPathEnv = (import.meta as any)?.env?.VITE_SOCKET_PATH as string | undefined
+    if (socketPathEnv && typeof socketPathEnv === 'string') {
+      let path = socketPathEnv.startsWith('/') ? socketPathEnv : `/${socketPathEnv}`
+      if (!path.endsWith('/')) path = `${path}/`
+      return { origin, path }
     }
-    return { origin: `${url.protocol}//${url.host}`, path: socketPath }
+
+    // 2) Smart default: use root '/socket.io/' to match backend default
+    // Avoid nesting under '/api' when API base is 'http://host:port/api'
+    const trimmedPath = url.pathname.replace(/\/+$|^\/+/, '')
+    if (trimmedPath && /(^|\/)api$/i.test(trimmedPath)) {
+      if (import.meta.env.DEV) {
+        voiceWarn("[useBackendSocket] API base includes /api; using socket path '/socket.io/'. Set VITE_SOCKET_PATH to override if needed.", { apiBaseUrl })
+      }
+      return { origin, path: '/socket.io/' }
+    }
+
+    // 3) Optional: allow nesting under base path when explicitly requested
+    const assumeUnderBase = String((import.meta as any)?.env?.VITE_ASSUME_SOCKET_UNDER_BASEPATH || '').toLowerCase()
+    if (trimmedPath && (assumeUnderBase === '1' || assumeUnderBase === 'true' || assumeUnderBase === 'yes' || assumeUnderBase === 'on')) {
+      const basePath = `/${trimmedPath}`
+      let socketPath = `${basePath}/socket.io/`.replace(/\/{2,}/g, '/').replace(/\/+$/, '/')
+      if (!socketPath.startsWith('/')) socketPath = `/${socketPath}`
+      return { origin, path: socketPath }
+    }
+
+    // Default
+    return { origin, path: '/socket.io/' }
   } catch (error) {
-  voiceWarn('[useBackendSocket] Failed to parse apiBaseUrl', { apiBaseUrl, error })
+    voiceWarn('[useBackendSocket] Failed to parse apiBaseUrl', { apiBaseUrl, error })
     return fallback
   }
 }

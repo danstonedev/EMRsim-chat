@@ -66,7 +66,8 @@
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius-xs, 4px);
-  margin: 6px 0;
+  margin-block: 6px;
+  margin-inline: 0;
 }
 
 .skeleton-line--80 {

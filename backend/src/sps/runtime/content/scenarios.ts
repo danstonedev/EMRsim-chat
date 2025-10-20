@@ -3,7 +3,9 @@ import type { ClinicalScenario, ObjectiveFinding, PatientPersona, Region } from 
 
 function buildObjectiveFinding(testId: string, label: string, region: string, findings: any): ObjectiveFinding {
   const numeric = findings && typeof findings.numeric === 'object' ? findings.numeric : undefined;
-  const qualitative = Array.isArray(findings?.qualitative) ? findings.qualitative.map((s: any) => String(s)) : undefined;
+  const qualitative = Array.isArray(findings?.qualitative)
+    ? findings.qualitative.map((s: any) => String(s))
+    : undefined;
   const binary = findings && typeof findings.binary_flags === 'object' ? findings.binary_flags : undefined;
   return {
     test_id: testId,
@@ -42,7 +44,7 @@ export function buildScenarioContext(
   subjective: any,
   personaRaw: any,
   plan: any,
-  contextModules: any[] = [],
+  contextModules: any[] = []
 ): ClinicalScenario['scenario_context'] | undefined {
   const context: ClinicalScenario['scenario_context'] = {};
 
@@ -54,9 +56,12 @@ export function buildScenarioContext(
 
   const goals: string[] = [];
   const planGoals = plan?.goals;
-  if (Array.isArray(planGoals?.ltg_6_12_weeks)) goals.push(...planGoals.ltg_6_12_weeks.map((s: any) => String(s)).filter(Boolean));
-  if (Array.isArray(planGoals?.stg_2_4_weeks)) goals.push(...planGoals.stg_2_4_weeks.map((s: any) => String(s)).filter(Boolean));
-  if (!goals.length && Array.isArray(personaRaw?.goals_patient_voice)) goals.push(...personaRaw.goals_patient_voice.map((s: any) => String(s)).filter(Boolean));
+  if (Array.isArray(planGoals?.ltg_6_12_weeks))
+    goals.push(...planGoals.ltg_6_12_weeks.map((s: any) => String(s)).filter(Boolean));
+  if (Array.isArray(planGoals?.stg_2_4_weeks))
+    goals.push(...planGoals.stg_2_4_weeks.map((s: any) => String(s)).filter(Boolean));
+  if (!goals.length && Array.isArray(personaRaw?.goals_patient_voice))
+    goals.push(...personaRaw.goals_patient_voice.map((s: any) => String(s)).filter(Boolean));
   if (goals.length) context.goals = goals;
 
   const environment = subjective?.sdoh?.home_environment ? String(subjective.sdoh.home_environment) : undefined;
@@ -81,7 +86,7 @@ export function convertScenarioBundle(
   objective: any,
   assessment: any,
   plan: any,
-  contextModules: any[] = [],
+  contextModules: any[] = []
 ): ClinicalScenario | null {
   if (!header || typeof header !== 'object') return null;
   const scenarioId = String(header.scenario_id || bundleName);
@@ -120,9 +125,10 @@ export function convertScenarioBundle(
         display_name: persona.demographics?.name || persona.patient_id,
         age: persona.demographics?.age ?? null,
         sex: persona.demographics?.sex ?? null,
-        headline: Array.isArray(personaRaw?.goals_patient_voice) && personaRaw.goals_patient_voice.length
-          ? String(personaRaw.goals_patient_voice[0])
-          : persona.function_context?.goals?.[0] || null,
+        headline:
+          Array.isArray(personaRaw?.goals_patient_voice) && personaRaw.goals_patient_voice.length
+            ? String(personaRaw.goals_patient_voice[0])
+            : persona.function_context?.goals?.[0] || null,
       }
     : undefined;
 
@@ -147,7 +153,10 @@ export function convertScenarioBundle(
     subjective_catalog: Array.isArray(header.subjective_catalog) ? header.subjective_catalog : undefined,
     media_library: Array.isArray(header.media_library) ? header.media_library : undefined,
     objective_catalog,
-    objective_guardrails: objective_guardrails.deflection_lines || objective_guardrails.require_explicit_physical_consent ? objective_guardrails : undefined,
+    objective_guardrails:
+      objective_guardrails.deflection_lines || objective_guardrails.require_explicit_physical_consent
+        ? objective_guardrails
+        : undefined,
     guardrails: Object.keys(guardrails).length ? guardrails : undefined,
     instructions,
     soap: { subjective, objective, assessment, plan },

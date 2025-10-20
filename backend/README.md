@@ -71,6 +71,17 @@ Key SPS test files:
 
 If additional cue variants are introduced (e.g., multiple detail fragments), replicate the pattern in `randomness_distribution.test.ts` to assert each variant appears at least once over N samples (choose N roughly 10× the variant count).
 
+## Request correlation IDs
+
+Each request is assigned a correlation ID and echoed in `X-Request-Id`.
+
+- Provide your own:
+
+```powershell
+curl -i http://localhost:3001/api/health -H "X-Request-Id: demo-123"
+```
+
+- Or let the server generate one and inspect the header in the response. All logs for the request include the same `requestId` for easy traceability. Socket.IO logs include a `socketId`, and session events include a `sessionId` where applicable.
 
 ## Scripts
 
@@ -104,4 +115,3 @@ This repo includes a Husky pre-commit hook that runs the SPS validator when SPS 
 2. Commit as usual. When changes touch `backend/src/sps/**` or `backend/package*.json`, the hook will run `npm run sps:validate` and block the commit on errors.
 
 If you prefer not to use local hooks, rely on the CI workflow which validates on pull requests.
-

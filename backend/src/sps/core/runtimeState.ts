@@ -8,18 +8,18 @@ export interface SPSRuntimeState {
   rapport: RapportLevel;
   personaVerbosity: VerbosityLevel;
   lastClarifications: string[]; // rotating window (size 3)
-  lastBoundaries: string[];     // rotating window (size 3)
-  lastOpeners: string[];        // rotating window (size 3) of starting bigrams
-  agendaRevealed: Set<string>;  // hidden agenda item ids already surfaced
+  lastBoundaries: string[]; // rotating window (size 3)
+  lastOpeners: string[]; // rotating window (size 3) of starting bigrams
+  agendaRevealed: Set<string>; // hidden agenda item ids already surfaced
   identityVerified: boolean;
   dobChallengeUsed: boolean;
   turnsSinceHesitation: number;
-  rngSeed: number;              // xorshift32 internal state
-  turnIndex: number;            // increments each patient turn
+  rngSeed: number; // xorshift32 internal state
+  turnIndex: number; // increments each patient turn
   // rapport cooldown tracking
   lastRapportShiftTurn: number | null;
   empathyCueBuffer: Set<string>; // distinct empathy cues since last shift
-  dismissiveCueCount: number;    // consecutive dismissive cues
+  dismissiveCueCount: number; // consecutive dismissive cues
 }
 
 export interface ElaborateDecisionContext {
@@ -49,9 +49,11 @@ export function initRuntimeState(personaVerbosity: VerbosityLevel, seed: number)
 // xorshift32 RNG
 export function nextRng(state: SPSRuntimeState): number {
   let x = state.rngSeed | 0;
-  x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
+  x ^= x << 13;
+  x ^= x >>> 17;
+  x ^= x << 5;
   state.rngSeed = x >>> 0;
-  return state.rngSeed / 0xFFFFFFFF;
+  return state.rngSeed / 0xffffffff;
 }
 
 // Select an element from a pool using deterministic RNG
@@ -70,9 +72,9 @@ export function recordRotating(list: string[], value: string, max = 3) {
 // Decide whether to add micro elaboration based on persona verbosity & rapport
 export function shouldElaborate(state: SPSRuntimeState, ctx: ElaborateDecisionContext): boolean {
   if (ctx.questionType !== 'open' && ctx.questionType !== 'narrative') return false;
-  const base = state.personaVerbosity === 'brief' ? 0.25 : state.personaVerbosity === 'balanced' ? 0.40 : 0.55;
+  const base = state.personaVerbosity === 'brief' ? 0.25 : state.personaVerbosity === 'balanced' ? 0.4 : 0.55;
   const rapportMultiplier = state.rapport === 'guarded' ? 0.9 : state.rapport === 'neutral' ? 1.0 : 1.1;
-  return nextRng(state) < (base * rapportMultiplier);
+  return nextRng(state) < base * rapportMultiplier;
 }
 
 // Rapport management -------------------------------------------------------
@@ -85,11 +87,7 @@ const EMPATHY_PATTERNS = [
   /that must be/i,
 ];
 
-const DISMISSIVE_PATTERNS = [
-  /okay but/i,
-  /let me (just )?ask/i,
-  /anyway/i,
-];
+const DISMISSIVE_PATTERNS = [/okay but/i, /let me (just )?ask/i, /anyway/i];
 
 export interface LearnerTurnAnalysis {
   empathyCues: string[];
@@ -98,7 +96,9 @@ export interface LearnerTurnAnalysis {
 
 export function analyzeLearnerTurn(text: string): LearnerTurnAnalysis {
   const empathyCues: string[] = [];
-  for (const p of EMPATHY_PATTERNS) { if (p.test(text)) empathyCues.push(p.source); }
+  for (const p of EMPATHY_PATTERNS) {
+    if (p.test(text)) empathyCues.push(p.source);
+  }
   const dismissive = DISMISSIVE_PATTERNS.some(p => p.test(text));
   return { empathyCues, dismissive };
 }
@@ -106,7 +106,8 @@ export function analyzeLearnerTurn(text: string): LearnerTurnAnalysis {
 export function updateRapport(state: SPSRuntimeState, analysis: LearnerTurnAnalysis) {
   // Add empathy cues
   for (const cue of analysis.empathyCues) state.empathyCueBuffer.add(cue);
-  if (analysis.dismissive) state.dismissiveCueCount += 1; else state.dismissiveCueCount = 0;
+  if (analysis.dismissive) state.dismissiveCueCount += 1;
+  else state.dismissiveCueCount = 0;
 
   const canShift = state.lastRapportShiftTurn == null || state.turnIndex - state.lastRapportShiftTurn >= 2;
   if (!canShift) return;
@@ -181,11 +182,14 @@ export function recentlyUsedClarification(state: SPSRuntimeState, phrase: string
 }
 
 // Derive numeric presence of elaboration target sentences (guidance only)
-export function targetSentenceRange(state: SPSRuntimeState, questionType: 'closed'|'open'|'narrative'): [number, number] {
+export function targetSentenceRange(
+  state: SPSRuntimeState,
+  questionType: 'closed' | 'open' | 'narrative'
+): [number, number] {
   if (questionType === 'closed') return [1, 1];
   const base: [number, number] = questionType === 'open' ? [2, 4] : [3, 6];
-  if (state.personaVerbosity === 'brief') return [Math.max(1, base[0]-1), base[1]-1];
-  if (state.personaVerbosity === 'talkative') return [base[0], base[1]+1];
+  if (state.personaVerbosity === 'brief') return [Math.max(1, base[0] - 1), base[1] - 1];
+  if (state.personaVerbosity === 'talkative') return [base[0], base[1] + 1];
   return base; // balanced
 }
 

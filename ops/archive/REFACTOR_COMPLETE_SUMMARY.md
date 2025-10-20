@@ -7,11 +7,13 @@ Successfully completed a comprehensive refactoring of the ConversationController
 ## Phases Completed
 
 ### Phase 3: Event Handler Extraction ✅
+
 - Extracted event handlers into separate, focused modules
 - Reduced handleMessage from 420 lines to 80 lines
 - Created modular architecture with clear separation of concerns
 
 **Files Created:**
+
 - `eventClassifier.ts` - Event type classification
 - `speechEvents.ts` - Speech boundary detection
 - `transcriptionEvents.ts` - User transcript handling
@@ -20,12 +22,14 @@ Successfully completed a comprehensive refactoring of the ConversationController
 - `sessionEvents.ts` - Session lifecycle (already existed, enhanced)
 
 ### Phase 4: Session Lifecycle Extensions ✅
+
 - Added session.failed handler
 - Added session.expired handler
 - Improved error state management
 - Enhanced cleanup procedures
 
 ### Phase 5.1-5.5: Comprehensive Test Coverage ✅
+
 - Created 64 new unit tests across 4 test files
 - Fixed 1 async timing issue in existing tests
 - Achieved 100% pass rate (191/191 tests)
@@ -43,12 +47,14 @@ Successfully completed a comprehensive refactoring of the ConversationController
 ## Test Coverage Breakdown
 
 ### Speech Events (11 tests)
+
 - Turn boundary detection
 - Endpointing coordination
 - Audio buffer commits
 - Session reuse guards
 
 ### Transcription Events (22 tests)
+
 - Completion handling
 - Delta accumulation
 - Relay tracking
@@ -56,12 +62,14 @@ Successfully completed a comprehensive refactoring of the ConversationController
 - Error handling
 
 ### Assistant Events (17 tests)
+
 - Streaming lifecycle
 - Delta aggregation
 - Guard engagement
 - Response start actions
 
 ### Conversation Item Events (14 tests)
+
 - Backend restart detection
 - Role-based branching
 - Relay tracking
@@ -70,6 +78,7 @@ Successfully completed a comprehensive refactoring of the ConversationController
 ## Architecture Benefits
 
 ### Code Quality
+
 - ✅ Single Responsibility Principle applied
 - ✅ Dependency Injection for testability
 - ✅ Clear module boundaries
@@ -77,6 +86,7 @@ Successfully completed a comprehensive refactoring of the ConversationController
 - ✅ Easier to debug and modify
 
 ### Testing
+
 - ✅ Isolated unit tests
 - ✅ Fast test execution (~1 second)
 - ✅ High test coverage
@@ -84,6 +94,7 @@ Successfully completed a comprehensive refactoring of the ConversationController
 - ✅ Clear test patterns
 
 ### Maintainability
+
 - ✅ Easy to add new event types
 - ✅ Clear handler responsibilities
 - ✅ Documented patterns
@@ -93,6 +104,7 @@ Successfully completed a comprehensive refactoring of the ConversationController
 ## Technical Highlights
 
 ### Dependency Injection Pattern
+
 ```typescript
 export interface HandlerDependencies {
   // Only what's needed for this handler
@@ -111,6 +123,7 @@ export function handleEvent(
 ```
 
 ### Benefits:
+
 - Easy to mock for testing
 - Clear dependency contracts
 - No tight coupling to ConversationController
@@ -119,6 +132,7 @@ export function handleEvent(
 ## Bug Fixes
 
 ### Async Instruction Sync Timing (Phase 5.5)
+
 **Issue:** Test failing because async `syncRealtimeInstructions` not completing before assertions
 
 **Root Cause:** `drainPendingInstructionSync` uses `void syncRealtimeInstructions(...)` (fire-and-forget), so test wasn't waiting for completion
@@ -137,13 +151,15 @@ export function handleEvent(
 ## Validation Results
 
 ### Full Test Suite
-```
+
+``` text
 Test Files  13 passed (14)
      Tests  191 passed (191)
   Duration  ~4 seconds
 ```
 
 ### No Regressions
+
 - All existing integration tests pass
 - All new unit tests pass
 - No breaking changes to public APIs
@@ -152,11 +168,13 @@ Test Files  13 passed (14)
 ## Future Recommendations
 
 ### Immediate
+
 - ✅ Document event handler architecture in main README
 - ✅ Add performance benchmarks if needed
 - ✅ Create test utility helpers for common patterns
 
 ### Long-term
+
 - Consider extracting more complex handlers (e.g., instruction sync)
 - Add integration tests for multi-event sequences
 - Implement event handler middleware pattern if needed
@@ -165,12 +183,14 @@ Test Files  13 passed (14)
 ## Team Impact
 
 ### For Developers
+
 - **Easier onboarding** - Clear, focused modules
 - **Faster debugging** - Isolated event handling
 - **Confident refactoring** - Comprehensive tests
 - **Better code review** - Smaller, focused changes
 
 ### For Product
+
 - **Improved reliability** - Better test coverage
 - **Faster iteration** - Easier to add features
 - **Lower risk** - Changes are isolated

@@ -34,7 +34,7 @@ Extracted backend socket initialization and transcript relay logic into dedicate
 
 ## Backend Architecture
 
-```
+``` text
 OpenAI Realtime API
     ↓
 ConversationController

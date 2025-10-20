@@ -21,7 +21,7 @@ export function logEvent(type: string, payload: Record<string, unknown>): void {
     ensureLogDir();
     const record: TelemetryEvent = { ts: Date.now(), type, ...payload };
     fs.appendFileSync(LOG_FILE, JSON.stringify(record) + '\n');
-  } catch (e) {
+  } catch {
     // silent; avoid crashing runtime due to logging issues
   }
 }

@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import App from './App'
+import ChatPage from './ChatPage'
 import { SettingsProvider } from '../shared/settingsContext'
 
 vi.mock('../shared/api.ts', () => {
@@ -71,7 +71,7 @@ describe('App case setup layout', () => {
     render(
       <MemoryRouter>
         <SettingsProvider>
-          <App />
+          <ChatPage />
         </SettingsProvider>
       </MemoryRouter>
     )

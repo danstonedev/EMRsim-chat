@@ -4,6 +4,19 @@ import type { ClinicalScenarioV3, ScenarioSourceLite } from './types/scenario';
 const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002';
 export const API_BASE_URL = BASE;
 
+// Dev-time guardrail: warn if BASE appears to target a different common dev port
+if (import.meta.env.DEV) {
+  try {
+    const u = new URL(BASE);
+    const isLocal = u.hostname === 'localhost' || u.hostname === '127.0.0.1';
+    if (isLocal && u.port && u.port !== '3002') {
+      // Backend defaults to 3002 per backend/.env.example; warn to avoid CORS/404 surprises
+      // This is only a hint; user may intentionally override.
+      console.warn('[API] VITE_API_BASE_URL is set to', BASE, 'but backend default port is 3002.\nIf requests like /api/sessions/:id/turns fail, confirm the backend port or update frontend/.env.local.');
+    }
+  } catch {}
+}
+
 function toMs(v: unknown, def: number): number {
   const n = typeof v === 'string' ? Number(v) : typeof v === 'number' ? v : NaN;
   return Number.isFinite(n) && n > 0 ? n : def;
@@ -166,9 +179,24 @@ export const api = {
     created_at: string;
     timestamp: number;
   }>> {
-    const r = await fetchWithTimeout(`${BASE}/api/sessions/${sessionId}/turns`);
+    const r = await fetchWithTimeout(`${BASE}/api/sessions/${encodeURIComponent(sessionId)}/turns`);
     if (!r.ok) {
       const txt = await r.text().catch(() => '');
+      // Optional debug logging when enabled via env or localStorage
+      try {
+        const dbgEnv = (import.meta as any)?.env?.VITE_DEBUG_HISTORY_FETCH;
+        // Avoid accessing window in SSR; guard with typeof
+        const dbgStorage = typeof window !== 'undefined' ? window.localStorage?.getItem('DEBUG_HISTORY_FETCH') : null;
+        if ((dbgEnv && String(dbgEnv).toLowerCase() !== 'false') || dbgStorage === '1' || dbgStorage === 'true') {
+          // eslint-disable-next-line no-console
+          console.warn('[api.getSessionTurns] Non-200 response', {
+            status: r.status,
+            statusText: r.statusText,
+            body: txt?.slice(0, 400),
+            url: `${BASE}/api/sessions/${encodeURIComponent(sessionId)}/turns`,
+          });
+        }
+      } catch {}
       throw new Error(`get_turns_http_${r.status}_${txt}`);
     }
   const data = (await r.json()) as { turns?: Array<{ id: string; role: string; text: string; created_at: string; timestamp: number }>; };

@@ -3,6 +3,7 @@
 ## Summary
 
 Fixed the alternating transcription failures by:
+
 1. **Configuring the proper transcription model** for OpenAI Realtime API
 2. **Adding comprehensive diagnostic logging** throughout the transcript flow
 3. **Verifying the relay architecture** is working correctly
@@ -27,28 +28,34 @@ OPENAI_TRANSCRIPTION_MODEL=gpt-4o-mini-transcribe
 ### 2. Enhanced Diagnostic Logging
 
 #### Backend Relay Controller
+
 **File:** `backend/src/controllers/transcriptRelayController.js`
 
 Added detailed logging at each step:
+
 - When transcript relay request is received
 - Validation of session ID, role, and text
 - Broadcasting confirmation
 - Success/failure status
 
 **Benefits:**
+
 - Track exactly when transcripts arrive at backend
 - See if validation is failing
 - Confirm broadcasts are sent
 
 #### Frontend Relay Method
+
 **File:** `frontend/src/shared/ConversationController.ts`
 
 Enhanced `relayTranscriptToBackend()` method with:
+
 - Pre-relay logging (session, role, text preview)
 - Success confirmation
 - Error details on failure
 
 **Benefits:**
+
 - See when frontend sends relay requests
 - Confirm API calls succeed
 - Debug network issues
@@ -57,7 +64,7 @@ Enhanced `relayTranscriptToBackend()` method with:
 
 ### User Speech Transcription Flow
 
-```
+``` text
 1. User speaks → Microphone
 2. Audio sent via WebRTC → OpenAI Realtime API
 3. OpenAI processes with built-in STT
@@ -72,7 +79,7 @@ Enhanced `relayTranscriptToBackend()` method with:
 
 ### AI Speech Transcription Flow
 
-```
+``` text
 1. AI generates audio response via Realtime API
 2. Audio plays to user through WebRTC
 3. OpenAI simultaneously generates text transcript:
@@ -91,7 +98,7 @@ Enhanced `relayTranscriptToBackend()` method with:
 Open the browser console and Diagnostics panel. You should see this flow:
 
 **When user speaks:**
-```
+``` text
 [ConversationController] 📤 Relaying transcript to backend: { role: 'user', ... }
 [ConversationController] ✅ Relay successful
 [TranscriptRelay] 📥 Received relay request: { role: 'user', ... }
@@ -100,7 +107,7 @@ Open the browser console and Diagnostics panel. You should see this flow:
 ```
 
 **When AI responds:**
-```
+``` text
 [ConversationController] 📤 Relaying transcript to backend: { role: 'assistant', ... }
 [ConversationController] ✅ Relay successful
 [TranscriptRelay] 📥 Received relay request: { role: 'assistant', ... }
@@ -133,21 +140,25 @@ Open the browser console and Diagnostics panel. You should see this flow:
 ### Common Issues & Solutions
 
 **Issue:** User transcript missing
+
 - Check console for "Relaying transcript to backend"
 - If missing: OpenAI didn't generate transcript (check VAD settings)
 - If present: Check backend logs for relay receipt
 
 **Issue:** AI transcript missing
+
 - Check console for "response.audio_transcript.done"
 - If missing: OpenAI didn't generate transcript
 - If present: Check relay and broadcast logs
 
 **Issue:** Transcripts appear but are incomplete
+
 - Check if `gpt-4o-mini-transcribe` model is being used
 - Verify VAD settings aren't cutting off speech too early
 - Check console for "⚠️ Ignoring empty transcription"
 
 **Issue:** Duplicate transcripts
+
 - Check for duplicate itemId in relay logs
 - Deduplication logic should prevent this
 
@@ -169,6 +180,7 @@ Your current architecture is **correct** and follows best practices:
 4. **Validate accuracy** - Ensure transcriptions are accurate
 
 If issues persist after this fix:
+
 - The VAD settings may need tuning
 - Network latency could be affecting WebSocket delivery
 - OpenAI API rate limits might be triggering

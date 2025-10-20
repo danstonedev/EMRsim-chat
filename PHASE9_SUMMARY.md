@@ -26,12 +26,14 @@ StateCoordinator consolidates state coordination methods that span multiple mana
 **StateCoordinator** acts as a thin orchestration layer for state-related operations involving multiple services. Unlike handlers that process events or orchestrators that build complex objects, coordinators manage cross-cutting state concerns.
 
 **Dependencies**:
+
 - ConnectionOrchestrator (operation epochs)
 - MicrophoneControlManager (mic pause state)
 - AudioStreamManager (mic stream access)
 - SessionReuseHandlers (guard logic)
 
 **Benefits**:
+
 - Centralized state coordination
 - Reduced method duplication
 - Clear dependency visualization
@@ -40,9 +42,11 @@ StateCoordinator consolidates state coordination methods that span multiple mana
 ## Files
 
 ### Created
+
 - `frontend/src/shared/coordinators/StateCoordinator.ts` (84 lines)
 
 ### Modified
+
 - `frontend/src/shared/ConversationController.ts` (750 → 683 lines)
   - Added StateCoordinator import
   - Added stateCoordinator field
@@ -89,6 +93,7 @@ StateCoordinator consolidates state coordination methods that span multiple mana
 🎉 **All 9 phases complete!**
 
 **Achievements**:
+
 - ✅ 58.8% code reduction (1473 → 683 lines)
 - ✅ 9 modular, testable components
 - ✅ All modules ≤300 lines

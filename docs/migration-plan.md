@@ -1,9 +1,11 @@
 # Voice/Realtime System Migration Plan
 
 ## Overview
+
 This plan outlines a systematic approach to migrate from the current problematic architecture to a clean, maintainable system. The migration is designed to be incremental, allowing the system to remain functional throughout the process.
 
 ## Current Critical Issues
+
 1. **"Hi." Response Loop** - AI gets stuck in greeting mode
 2. **Session Race Conditions** - Multiple session types not synchronized
 3. **Duplicate Transcripts** - Same messages processed multiple times
@@ -13,10 +15,12 @@ This plan outlines a systematic approach to migrate from the current problematic
 ## Migration Phases
 
 ### Phase 0: Immediate Stabilization (Days 1-3)
+
 **Goal**: Fix critical bugs without major refactoring
 
 #### Day 1: Session Synchronization Fix
-```
+
+``` text
 Tasks:
 1. Add session readiness checks before WebRTC connection
 2. Implement session state validator
@@ -30,7 +34,8 @@ Files to modify:
 ```
 
 #### Day 2: Transcript Deduplication
-```
+
+``` text
 Tasks:
 1. Centralize all duplicate detection in TranscriptEngine
 2. Remove duplicate detection from useVoiceTranscripts
@@ -44,7 +49,8 @@ Files to modify:
 ```
 
 #### Day 3: Memory Leak Fixes
-```
+
+``` text
 Tasks:
 1. Add proper cleanup in useEffect hooks
 2. Clear event listeners on unmount
@@ -58,10 +64,12 @@ Files to modify:
 ```
 
 ### Phase 1: Foundation Building (Days 4-8)
+
 **Goal**: Create new architecture components alongside existing code
 
 #### Day 4-5: Core Infrastructure
-```
+
+``` text
 Create new files:
 - frontend/src/modules/voice/v2/EventBus.ts
 - frontend/src/modules/voice/v2/StateStore.ts
@@ -74,7 +82,8 @@ Implementation:
 ```
 
 #### Day 6-7: State Machines
-```
+
+``` text
 Create new files:
 - frontend/src/modules/voice/v2/ConnectionStateMachine.ts
 - frontend/src/modules/voice/v2/TranscriptStateMachine.ts
@@ -87,7 +96,8 @@ Implementation:
 ```
 
 #### Day 8: Session Coordinator
-```
+
+``` text
 Create new files:
 - frontend/src/modules/voice/v2/SessionCoordinator.ts
 - frontend/src/modules/voice/v2/BackendClient.ts
@@ -99,10 +109,12 @@ Implementation:
 ```
 
 ### Phase 2: Gradual Migration (Days 9-15)
+
 **Goal**: Route existing functionality through new architecture
 
 #### Day 9-10: WebRTC Management
-```
+
+``` text
 Create new files:
 - frontend/src/modules/voice/v2/WebRTCManager.ts
 - frontend/src/modules/voice/v2/OpenAIClient.ts
@@ -114,7 +126,8 @@ Tasks:
 ```
 
 #### Day 11-12: Transcript Processing
-```
+
+``` text
 Tasks:
 1. Route all transcripts through TranscriptStateMachine
 2. Replace direct TranscriptEngine usage
@@ -123,7 +136,8 @@ Tasks:
 ```
 
 #### Day 13-14: Session Management
-```
+
+``` text
 Create new file:
 - frontend/src/modules/voice/v2/VoiceSessionManager.ts
 
@@ -134,7 +148,8 @@ Tasks:
 ```
 
 #### Day 15: Integration Testing
-```
+
+``` text
 Tasks:
 1. Test all voice flows with new architecture
 2. Verify no regressions
@@ -143,10 +158,12 @@ Tasks:
 ```
 
 ### Phase 3: Cleanup (Days 16-18)
+
 **Goal**: Remove old code and consolidate
 
 #### Day 16: Remove Old Controllers
-```
+
+``` text
 Tasks:
 1. Remove old ConversationController code
 2. Remove old runConnectionFlow
@@ -154,7 +171,8 @@ Tasks:
 ```
 
 #### Day 17: Consolidate Hooks
-```
+
+``` text
 Tasks:
 1. Simplify useVoiceSession
 2. Remove useResponseMonitor (replaced by EventBus)
@@ -162,7 +180,8 @@ Tasks:
 ```
 
 #### Day 18: Documentation
-```
+
+``` text
 Tasks:
 1. Update API documentation
 2. Create component diagrams
@@ -171,10 +190,12 @@ Tasks:
 ```
 
 ### Phase 4: Optimization (Days 19-21)
+
 **Goal**: Performance and reliability improvements
 
 #### Day 19: Performance
-```
+
+``` text
 Tasks:
 1. Add event batching to EventBus
 2. Optimize transcript deduplication
@@ -183,7 +204,8 @@ Tasks:
 ```
 
 #### Day 20: Error Recovery
-```
+
+``` text
 Tasks:
 1. Implement exponential backoff
 2. Add circuit breaker pattern
@@ -192,7 +214,8 @@ Tasks:
 ```
 
 #### Day 21: Final Testing
-```
+
+``` text
 Tasks:
 1. End-to-end testing
 2. Load testing
@@ -202,7 +225,7 @@ Tasks:
 
 ## File Structure (New)
 
-```
+``` text
 frontend/src/modules/voice/
 ├── v2/                           # New architecture
 │   ├── core/
@@ -231,6 +254,7 @@ frontend/src/modules/voice/
 ## Success Metrics
 
 ### Technical Metrics
+
 - [ ] No "Hi." response loops for 24 hours
 - [ ] Zero duplicate transcripts in production
 - [ ] Session creation success rate > 99%
@@ -238,6 +262,7 @@ frontend/src/modules/voice/
 - [ ] Connection retry success rate > 95%
 
 ### Code Quality Metrics
+
 - [ ] Each module < 300 lines of code
 - [ ] Test coverage > 80%
 - [ ] Zero circular dependencies
@@ -245,6 +270,7 @@ frontend/src/modules/voice/
 - [ ] Single responsibility per module
 
 ### Performance Metrics
+
 - [ ] Session creation < 2 seconds
 - [ ] Transcript processing < 50ms
 - [ ] Event propagation < 10ms
@@ -253,6 +279,7 @@ frontend/src/modules/voice/
 ## Risk Mitigation
 
 ### Feature Flags
+
 ```typescript
 const FEATURE_FLAGS = {
   USE_NEW_SESSION_MANAGER: false,
@@ -263,12 +290,14 @@ const FEATURE_FLAGS = {
 ```
 
 ### Rollback Plan
+
 1. Each phase can be rolled back independently
 2. Feature flags control new vs old code paths
 3. Old code kept in legacy/ folder until Phase 3
 4. Database migrations are backward compatible
 
 ### Testing Strategy
+
 1. Unit tests for each new module
 2. Integration tests for each phase
 3. A/B testing in production with feature flags
@@ -277,13 +306,16 @@ const FEATURE_FLAGS = {
 ## Implementation Order
 
 ### Week 1: Stabilization & Foundation
+
 - Days 1-3: Critical fixes (Phase 0)
 - Days 4-8: Build new components (Phase 1)
 
 ### Week 2: Migration
+
 - Days 9-15: Gradual migration (Phase 2)
 
 ### Week 3: Cleanup & Optimization
+
 - Days 16-18: Remove old code (Phase 3)
 - Days 19-21: Optimize and test (Phase 4)
 
@@ -307,16 +339,19 @@ const FEATURE_FLAGS = {
 ## Team Responsibilities
 
 ### Frontend Team
+
 - Own the migration implementation
 - Create new v2 modules
 - Maintain backward compatibility
 
 ### Backend Team
+
 - Ensure API stability
 - Add session validation endpoints
 - Support new event patterns
 
 ### QA Team
+
 - Create comprehensive test suite
 - Monitor production metrics
 - Validate each phase
@@ -324,12 +359,14 @@ const FEATURE_FLAGS = {
 ## Communication Plan
 
 ### Daily Standup Topics
+
 - Migration progress
 - Blockers and risks
 - Metrics review
 - Next 24-hour plan
 
 ### Weekly Reviews
+
 - Phase completion status
 - Metric trends
 - Architecture decisions
@@ -340,6 +377,7 @@ const FEATURE_FLAGS = {
 This migration plan provides a clear path from the current problematic architecture to a clean, maintainable system. By following this systematic approach, we can fix immediate issues while building a solid foundation for the future.
 
 The key principles:
+
 1. **Incremental**: Each phase builds on the previous
 2. **Reversible**: Can roll back at any point
 3. **Testable**: Each component tested in isolation

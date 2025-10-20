@@ -119,6 +119,7 @@ sequenceDiagram
 ## Problems in Current Architecture
 
 ### 1. Session Management Chaos
+
 - **Multiple Session IDs**: 
   - Frontend session (created in App.tsx)
   - Backend session (created via API)
@@ -128,6 +129,7 @@ sequenceDiagram
 - **No Single Source of Truth**: Each layer maintains its own session state
 
 ### 2. Event System Fragmentation
+
 - **Multiple Event Sources**:
   - OpenAI events via DataChannel
   - Socket.io events from backend
@@ -137,6 +139,7 @@ sequenceDiagram
 - **Duplicate Event Handling**: Same events processed multiple times
 
 ### 3. Transcript Processing Complexity
+
 - **Multiple Processing Paths**:
   - Direct from OpenAI → TranscriptEngine
   - Backend relay path
@@ -148,6 +151,7 @@ sequenceDiagram
 - **Race Conditions**: Finals arriving before partials, duplicates from multiple paths
 
 ### 4. Connection Management Issues
+
 - **Retry Logic Duplication**:
   - In runConnectionFlow
   - In ConversationController
@@ -156,7 +160,9 @@ sequenceDiagram
 - **Resource Cleanup**: Unclear ownership of resources
 
 ### 5. Monolithic ConversationController
+
 Currently handling:
+
 - WebRTC connection management
 - Session management
 - Event processing from OpenAI
@@ -182,6 +188,7 @@ flowchart LR
 ```
 
 ### Problems:
+
 1. Multiple paths to the same destination
 2. Race conditions between paths
 3. Duplicate messages from different sources

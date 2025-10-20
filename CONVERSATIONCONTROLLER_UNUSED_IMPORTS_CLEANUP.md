@@ -10,6 +10,7 @@ Cleaned up 41 TypeScript unused import and declaration warnings from `frontend/s
 ## What Was Removed
 
 ### 1. Unused Import Blocks (5 items)
+
 ```typescript
 // REMOVED: Config flag resolvers
 resolveAdaptiveVadDebug
@@ -20,6 +21,7 @@ resolveIceServers
 ```
 
 ### 2. Unused Socket Event Types (4 items)
+
 ```typescript
 // REMOVED: Socket event types no longer used
 type SocketEventHandlers
@@ -29,18 +31,21 @@ type CatchupData
 ```
 
 ### 3. Unused Class Imports (1 item)
+
 ```typescript
 // REMOVED: Configurator class
 DataChannelConfigurator
 ```
 
 ### 4. Unused Module Import (1 item)
+
 ```typescript
 // REMOVED: TranscriptEngine class import
 import { TranscriptEngine } from './transcript/TranscriptEngine'
 ```
 
 ### 5. Unused Private Fields (8 items)
+
 ```typescript
 // REMOVED: Unused private fields
 private readonly bargeInEnabled!: boolean
@@ -53,6 +58,7 @@ private conversationItemHandlers!: ConversationItemHandlers
 ```
 
 ### 6. Unused Private Getters (2 items)
+
 ```typescript
 // REMOVED: Unused delegate getters
 private get initialAssistantGuardUsed(): boolean
@@ -62,6 +68,7 @@ private get remoteVolumeBeforeGuard(): number | null
 Note: The setters for these properties were kept as they are used.
 
 ### 7. Deprecated Method Updated (1 item)
+
 ```typescript
 // UPDATED: Method body made no-op, parameter marked unused
 setRealtimeEventListener(_listener: ((payload: unknown) => void) | null): void {
@@ -73,6 +80,7 @@ setRealtimeEventListener(_listener: ((payload: unknown) => void) | null): void {
 ## What Was Kept
 
 ### Type Imports Still Needed
+
 ```typescript
 // KEPT: Types actually used in class
 import { type SessionReadyManager } from '../features/voice/conversation/connection/sessionReady'
@@ -81,6 +89,7 @@ import { type InstructionSyncManager } from '../features/voice/conversation/inst
 ```
 
 ### Private Fields Still Needed
+
 ```typescript
 // KEPT: Actively used by methods
 private instructionSyncManager!: InstructionSyncManager
@@ -89,6 +98,7 @@ private sessionReuseHandlers!: SessionReuseHandlers
 ```
 
 These were initially removed but then restored after discovering they are actually referenced in methods like:
+
 - `getEncounterState()`
 - `updateEncounterState()`
 - `reset()`
@@ -104,7 +114,8 @@ During the refactoring to the manager-based architecture (ConnectionOrchestrator
 ## Verification
 
 ### TypeScript Errors Before
-```
+
+``` text
 41 total warnings in ConversationController.ts
 - 5 unused config flag imports
 - 4 unused socket event types
@@ -116,7 +127,8 @@ During the refactoring to the manager-based architecture (ConnectionOrchestrator
 ```
 
 ### TypeScript Errors After
-```
+
+``` text
 ✅ 0 errors in ConversationController.ts
 ```
 
@@ -136,7 +148,7 @@ Type-check output:
 
 ## Files Modified
 
-```
+``` text
 frontend/src/shared/ConversationController.ts
 ```
 
@@ -150,6 +162,7 @@ frontend/src/shared/ConversationController.ts
 ---
 
 **Next Steps:**
+
 - Consider removing deprecated `setRealtimeEventListener` method in next major version
 - Continue monitoring for other unused imports across codebase
 - Run full test suite to confirm no behavioral changes

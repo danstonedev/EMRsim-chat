@@ -28,6 +28,7 @@ Added `modalities: ['text', 'audio']` to session config to ensure voice response
 ### 3. Enhanced Error Handling ✅
 
 **New features:**
+
 - Detects 429 rate limit errors specifically
 - Shows helpful error message with solution link
 - Custom fallback text: `[Rate limit exceeded - upgrade OpenAI account]`
@@ -51,6 +52,7 @@ Go to: https://platform.openai.com/usage
 Go to: https://platform.openai.com/settings/organization/billing
 
 **Actions:**
+
 1. Click "Add payment method"
 2. Add credit/debit card
 3. Add $5-10 credit (minimum)
@@ -60,6 +62,7 @@ Go to: https://platform.openai.com/settings/organization/billing
 ### Step 3: Test Again
 
 Once upgraded:
+
 - Rate limits increase 100x-1000x
 - Transcription will work perfectly
 - Your code changes will shine ✨
@@ -67,11 +70,12 @@ Once upgraded:
 ## What Will Happen After Upgrade
 
 **Console output:**
-```
+``` text
 [ConversationController] ✅ TRANSCRIPTION COMPLETED: {transcript: "your actual words"}
 ```
 
 **UI will show:**
+
 - Your actual spoken words (not fallback)
 - Assistant voice responses work
 - Smooth conversation flow
@@ -79,6 +83,7 @@ Once upgraded:
 ## Alternative: Wait 24 Hours
 
 Free tier rate limits reset daily. You can:
+
 - Wait until tomorrow
 - Test with limited requests
 - Then upgrade for production use
@@ -86,6 +91,7 @@ Free tier rate limits reset daily. You can:
 ## Code Status
 
 **All changes are live and working:**
+
 - ✅ Async transcription handling fixed
 - ✅ Audio modalities configured
 - ✅ Rate limit detection added
@@ -110,6 +116,7 @@ Free tier rate limits reset daily. You can:
 ---
 
 **Files Modified:**
+
 - `frontend/src/shared/ConversationController.ts` (core fixes)
 - `RATE_LIMIT_SOLUTION.md` (detailed guide)
 - `TRANSCRIPTION_FIX_PLAN.md` (technical details)

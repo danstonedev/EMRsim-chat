@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, act } from '@testing-library/react'
+
+// Note: We do not mock 'three' here; a lightweight global mock is provided via Vite resolve.alias in vitest.config.ts
 
 vi.mock('../manifest', () => ({
   MODEL: { baseModelPath: '/models/base.glb', scale: 1 },
@@ -13,11 +14,16 @@ vi.mock('../manifest', () => ({
   DEFAULT_ANIMATION_ID: 'Walk.glb',
 }))
 
-import Model from '../Model'
+// NOTE: Import the component AFTER all mocks to avoid loading real three/fiber/drei
 
 // Mock @react-three/drei: useGLTF and useAnimations
-vi.mock('@react-three/drei', async () => {
-  const THREE = await import('three')
+vi.mock('@react-three/drei', () => {
+  const createSceneStub = () => ({
+    traverse: (fn: (o: any) => void) => {
+      // no skinned meshes or bones in stub
+      try { if (typeof fn === 'function') fn({}) } catch { /* noop */ }
+    },
+  })
 
   type FakeAction = {
     name: string
@@ -75,7 +81,7 @@ vi.mock('@react-three/drei', async () => {
 
   function useGLTF() {
     // Base model: no embedded animations (we test external orchestration)
-    const scene = new THREE.Group()
+    const scene = createSceneStub()
     return { scene, animations: [] as any[] }
   }
 
@@ -108,16 +114,15 @@ vi.mock('@react-three/drei', async () => {
   return { useGLTF, useAnimations, Html, __mockState, __resetRegistry }
 })
 
-// Mock @react-three/fiber: provide useLoader and no-op useFrame
-vi.mock('@react-three/fiber', async (importOriginal) => {
-  const actual: any = await importOriginal()
-  const THREE = await import('three')
+// Mock @react-three/fiber: provide minimal APIs without importing the real module to avoid pulling in Three.js
+vi.mock('@react-three/fiber', () => {
+  const createSceneStub = () => ({
+    traverse: (fn: (o: any) => void) => { try { if (typeof fn === 'function') fn({}) } catch { /* noop */ } },
+  })
   function useLoader(_Loader: any, input: string | string[]) {
-    const makeClip = (name: string) => new THREE.AnimationClip(name, -1, [
-      new THREE.NumberKeyframeTrack('.morphTargetInfluences[0]', [0, 1], [0, 1]),
-    ])
+    const makeClip = (name: string) => ({ name }) as any
     const mk = (url: string) => {
-      const scene = new THREE.Group()
+      const scene = createSceneStub()
       let animations: any[] = []
       if (url.includes('Walk.glb')) animations = [makeClip('clip0')]
       else if (url.includes('Jump.glb')) animations = [makeClip('clip0')]
@@ -127,10 +132,26 @@ vi.mock('@react-three/fiber', async (importOriginal) => {
     return mk(input as string)
   }
   const useFrame = () => { /* no-op */ }
-  return Object.assign({}, actual, { useLoader, useFrame })
+  // Export a minimal subset used by the component/tests
+  return { useLoader, useFrame }
+})
+
+// Stub useModelClips to avoid relying on useThree()/Canvas in tests
+vi.mock('../useModelClips', () => {
+  const makeClip = (name: string) => ({ name })
+  const createSceneStub = () => ({
+    traverse: (fn: (o: any) => void) => { try { if (typeof fn === 'function') fn({}) } catch { /* noop */ } },
+  })
+  return {
+    useRetargetedClips: (_scene: any, animations: any[]) => {
+      const clips = animations.map((a: any) => makeClip(a.id))
+      return { clips, gltfs: animations.map(() => ({ scene: createSceneStub(), animations: [] })) }
+    },
+  }
 })
 
 import * as DreiMock from '@react-three/drei'
+import Model from '../Model'
 
 async function flush() {
   await act(async () => { await Promise.resolve() })
@@ -146,8 +167,10 @@ describe('v2 Model animation orchestration', () => {
     const { rerender } = render(<Model isAnimating={true} onActiveChange={onActiveChange} />)
     await flush()
 
-    const actions1 = (DreiMock as any).__mockState.lastActions
-    expect(Object.keys(actions1)).toEqual(expect.arrayContaining(['Walk.glb', 'Jump.glb']))
+  const actions1 = (DreiMock as any).__mockState.lastActions
+  // With lazy binding, only the default ('Walk.glb') is bound initially
+  expect(Object.keys(actions1)).toContain('Walk.glb')
+  expect(Object.keys(actions1)).not.toContain('Jump.glb')
     const walk = actions1['Walk.glb']
     expect(walk._playCalls).toBe(1)
     expect(walk.paused).toBe(false)

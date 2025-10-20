@@ -3,6 +3,7 @@
 ## Implementation: Item ID Tracking
 
 ### Strategy
+
 Replaced boolean `userTranscriptRelayed` flag with `lastRelayedItemId: string | null` to track which transcript item has been relayed. This prevents duplicate relays even when events arrive out of order.
 
 ### Key Changes
@@ -16,7 +17,8 @@ Replaced boolean `userTranscriptRelayed` flag with `lastRelayedItemId: string | 
 ### Logic Flow
 
 #### Scenario 1: Empty Completion Event (Force Finalization Only)
-```
+
+``` text
 1. User speaks → Deltas arrive
 2. response.created → Force finalize → transcriptEngine.finalizeUser()
 3. Transcription completion arrives with EMPTY transcript
@@ -31,7 +33,8 @@ Replaced boolean `userTranscriptRelayed` flag with `lastRelayedItemId: string | 
 ```
 
 #### Scenario 2: Non-Empty Completion Event
-```
+
+``` text
 1. User speaks → Deltas arrive
 2. response.created → Force finalize → transcriptEngine.finalizeUser()
 3. conversation.item.created (user) arrives EARLY
@@ -49,7 +52,8 @@ Replaced boolean `userTranscriptRelayed` flag with `lastRelayedItemId: string | 
 ```
 
 #### Scenario 3: Multiple Completion Events for Same Item
-```
+
+``` text
 1. Force finalization happens
 2. Completion event 1 arrives: item_id = "item_abc123"
    → Relay to backend
@@ -63,13 +67,16 @@ Replaced boolean `userTranscriptRelayed` flag with `lastRelayedItemId: string | 
 ### Test Cases to Verify
 
 #### ✅ Test 1: Normal Conversation Flow
+
 **Steps:**
+
 1. Start voice session
 2. User speaks a complete sentence
 3. Wait for assistant response
 4. Check Print Transcript page
 
 **Expected:**
+
 - ✅ User transcript appears ONCE in chat bubbles
 - ✅ User transcript appears ONCE in Print Transcript
 - ✅ Console shows ONE relay log: "📡 Relaying user transcript from completion event"
@@ -77,7 +84,9 @@ Replaced boolean `userTranscriptRelayed` flag with `lastRelayedItemId: string | 
 - ✅ No duplicate relay warnings
 
 #### ✅ Test 2: Multiple Turns
+
 **Steps:**
+
 1. Start voice session
 2. User speaks sentence 1
 3. Assistant responds
@@ -86,29 +95,36 @@ Replaced boolean `userTranscriptRelayed` flag with `lastRelayedItemId: string | 
 6. Check Print Transcript page
 
 **Expected:**
+
 - ✅ Both user transcripts appear ONCE each
 - ✅ Both assistant transcripts appear ONCE each
 - ✅ Each turn has unique item_id
 - ✅ No duplicates
 
 #### ✅ Test 3: Race Condition (item.created before completion)
+
 **Steps:**
+
 1. Start voice session
 2. User speaks
 3. Watch console for event order
 
 **Expected:**
+
 - ✅ Even if `conversation.item.created` arrives before completion event
 - ✅ Relay still happens ONCE
 - ✅ Item ID check prevents duplicates
 
 #### ✅ Test 4: Backend Broadcast Reception
+
 **Steps:**
+
 1. Start voice session
 2. User speaks
 3. Check console for socket events
 
 **Expected:**
+
 - ✅ Frontend logs: "📡 Relaying user transcript from completion event"
 - ✅ Backend should receive POST to `/api/voice/transcript`
 - ✅ Frontend logs: "📡 Backend transcript received"

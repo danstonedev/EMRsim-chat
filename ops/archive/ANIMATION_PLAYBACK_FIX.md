@@ -5,13 +5,14 @@
 The animation selector UI is working correctly (state flows properly), but the 3D model **isn't visually animating**. The figure stays in idle standing pose regardless of selection.
 
 ### Console Evidence
-```
+
+``` text
 ✅ HumanFigure: Switching to animation: Walk.glb
 Playing animation: Walk.glb
 ```
 
 State flow is correct, but animations have **zero duration**:
-```
+``` text
 Prepared animations: [{duration: 0.00}, {duration: 0.00}, ...]
 ⚠️ Animation 'Standing.glb' has zero duration or tracks
 ```
@@ -27,9 +28,11 @@ Prepared animations: [{duration: 0.00}, {duration: 0.00}, ...]
 ### Two Possible Solutions
 
 #### Option A: Use Base Model's Embedded Animations (RECOMMENDED)
+
 The 38MB `human-figure.glb` likely contains all animations already. The 1.2MB backup suggests the current file is different.
 
 **Implementation**: Modified `useAnimationClips.ts` to:
+
 1. Check if base model has animations
 2. Use those directly (no retargeting needed)
 3. Map them to the manifest spec names
@@ -37,9 +40,11 @@ The 38MB `human-figure.glb` likely contains all animations already. The 1.2MB ba
 **Status**: ✅ Code updated, awaiting browser test
 
 #### Option B: Fix Retargeting
+
 Make bone name mapping work between separate files.
 
 **Challenges**:
+
 - Need to debug bone name differences
 - Complex skeleton mapping
 - Might not work if skeletons are fundamentally different
@@ -66,6 +71,7 @@ if (baseGltf.animations && baseGltf.animations.length > 0) {
 ```
 
 Added enhanced debugging:
+
 - Log base model animation count
 - Log bone names from both models
 - Log retargeting results
@@ -90,7 +96,7 @@ Added enhanced debugging:
 
 ## Expected Console Output (Success Case)
 
-```
+``` text
 🎬 Base model info: { animations: 5, animationNames: ['Standing', 'Walk', ...] }
 ✅ Using animations from base model: ['Standing', 'Walk', 'Jump', 'Sitting', 'Sit-to-Stand']
 Prepared animations: [{duration: 2.50}, {duration: 1.33}, ...]
@@ -99,7 +105,7 @@ Playing animation: Walk.glb
 
 ## Expected Console Output (Failure Case - Need Retargeting Fix)
 
-```
+``` text
 🎬 Base model info: { animations: 0, animationNames: [] }
 ⚠️ No animations in base model, attempting to load from separate files...
 🔧 Processing animation 'Walk.glb': { srcDuration: 1.33, srcTracks: 65 }
@@ -121,6 +127,7 @@ Playing animation: Walk.glb
 ## Fallback Plan
 
 If current approach doesn't work:
+
 1. Swap `human-figure.glb` with `human-figure.glb.backup`
 2. Or download fresh Mixamo model WITH animations embedded
 3. Or fix bone name mapping in retargeting logic

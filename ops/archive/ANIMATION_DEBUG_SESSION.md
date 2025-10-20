@@ -3,6 +3,7 @@
 ## Current Issues
 
 Based on your report:
+
 1. ❌ Page loads with **Walking** animation (but logs say "Starting Standing")
 2. ❌ Pause snaps to **T-pose** instead of freezing current pose
 3. ❌ Animation selector input not working
@@ -12,6 +13,7 @@ Based on your report:
 **The GLB files may be misnamed!**
 
 When you downloaded from Mixamo, you might have:
+
 - Downloaded "Walking" animation but saved it as "Standing.glb"
 - Downloaded "Standing" but saved it as "Walk.glb"
 - Or the exports got mixed up
@@ -19,7 +21,7 @@ When you downloaded from Mixamo, you might have:
 ## New Debugging Logs Added
 
 The code now logs:
-```
+``` text
 📁 Standing.glb animations: ['Armature|mixamo.com|Layer0']
 📁 Walk.glb animations: ['Armature|mixamo.com|Layer0']
 📁 Jump.glb animations: ['Armature|mixamo.com|Layer0']
@@ -38,7 +40,7 @@ The code now logs:
 ### 1. Which File Contains Which Animation?
 
 **Refresh the page** and look for these logs right at the start:
-```
+``` text
 📁 Standing.glb animations: [...]
 📁 Walk.glb animations: [...]
 ```
@@ -48,13 +50,14 @@ The original Mixamo names won't tell us much, but...
 ### 2. Watch the Model!
 
 **Visual inspection is key:**
+
 - Does the mannequin start **walking** or **standing still**?
 - If it's WALKING but logs say "Starting Standing", then **Standing.glb contains the walk animation!**
 
 ### 3. Pause Behavior
 
 When you click Pause, check for:
-```
+``` text
 🎯 Current animation to control: Standing (or null?)
 ⚠️ No current animation set or action not found!
 ```
@@ -102,6 +105,7 @@ StrictMode intentionally double-renders in development, which resets refs.
 ### Solution 3: Pause Not Working
 
 If pause snaps to T-pose:
+
 - `currentAnimationRef.current` is becoming `null`
 - OR the action is being `.stop()` instead of `paused = true`
 - OR React is re-creating the component

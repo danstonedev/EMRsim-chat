@@ -1,6 +1,5 @@
 import React from 'react'
 import { Html } from '@react-three/drei'
-import { animationError } from '../../../shared/utils/animationLogging'
 
 type ErrorBoundaryState = { hasError: boolean; error?: any }
 
@@ -14,8 +13,13 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren, ErrorBounda
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: any, info: any) {
-    animationError('3D Viewer ErrorBoundary caught an error', { error, info })
+  componentDidCatch(error: any) {
+    // Silent error handling for production
+    try {
+      console.error('3D Viewer Error:', error?.message || error)
+    } catch {
+      /* noop */
+    }
   }
 
   render() {

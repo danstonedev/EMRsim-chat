@@ -7,9 +7,11 @@ The Walk.glb animation from Mixamo has been successfully integrated into the 3D 
 ## What Changed
 
 ### Files Modified
+
 - **HumanFigure.fixed.tsx** - Now loads and merges animations from multiple GLTF files
 
 ### New Animation Files
+
 - `frontend/public/models/animations/Walk.glb` (38.7 MB)
 
 ## How It Works
@@ -31,6 +33,7 @@ const { actions, names } = useAnimations(animations, groupRef)
 ## Available Animations
 
 Your mannequin now has **2 animations**:
+
 1. `Armature|mixamo.com|Layer0` - Original (idle/T-pose)
 2. `Walking` (or similar) - From Walk.glb
 
@@ -67,6 +70,7 @@ To add more Mixamo animations:
    - Keep "In Place" checked (for most animations)
 
 2. **Add to project**
+
    ```powershell
    # Copy to animations folder
    Copy-Item "C:\Users\danst\Desktop\Mixamo Animations\*.glb" `
@@ -74,6 +78,7 @@ To add more Mixamo animations:
    ```
 
 3. **Update HumanFigure.fixed.tsx**
+
    ```typescript
    // Add new animation URLs
    const WALK_ANIM_URL = `${import.meta.env.BASE_URL}/models/animations/Walk.glb`
@@ -100,6 +105,7 @@ To add more Mixamo animations:
    ```
 
 4. **Update keywords** (optional)
+
    ```typescript
    const keywords = {
      'walk': ['walk', 'walking', 'stroll'],
@@ -123,7 +129,7 @@ Popular animations for a medical training simulator:
 
 When animations load successfully, you'll see:
 
-```
+``` text
 🔄 HumanFigure: Loading model from: /models/human-figure.glb
 🔄 HumanFigure: Loading walk animation from: /models/animations/Walk.glb
 ✅ HumanFigure: Model loaded
@@ -138,6 +144,7 @@ When animations load successfully, you'll see:
 - **Total**: ~69 MB
 
 **Note**: Animation files can be large. Consider:
+
 - Using smaller/shorter animations
 - Compressing GLB files with gltf-pipeline
 - Loading animations on-demand instead of all at once

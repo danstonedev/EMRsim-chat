@@ -1,11 +1,13 @@
 # App.tsx Refactoring Summary
 
 ## Overview
+
 Successfully extracted and modularized complex logic from App.tsx (1,041 lines) into reusable, well-tested hooks.
 
 ## Created Hooks
 
 ### 1. **useMessageQueue** (`src/shared/hooks/useMessageQueue.ts`)
+
 - **Purpose**: Manages batched message updates to prevent race conditions
 - **Key Features**:
   - Queues updates and processes them in microtasks
@@ -14,6 +16,7 @@ Successfully extracted and modularized complex logic from App.tsx (1,041 lines) 
 - **Benefits**: Eliminates race conditions in message updates, testable in isolation
 
 ### 2. **useVoiceTranscripts** (`src/shared/hooks/useVoiceTranscripts.ts`)
+
 - **Purpose**: Handles voice transcript state, deduplication, and persistence
 - **Key Features**:
   - Manages user/assistant voice message IDs and timestamps
@@ -23,6 +26,7 @@ Successfully extracted and modularized complex logic from App.tsx (1,041 lines) 
 - **Benefits**: Consolidates 200+ lines of complex logic, easier to test and maintain
 
 ### 3. **useTextMessages** (`src/shared/hooks/useTextMessages.ts`)
+
 - **Purpose**: Manages text-based assistant messages (SSE/API responses)
 - **Key Features**:
   - Handles streaming updates with delta appending
@@ -32,6 +36,7 @@ Successfully extracted and modularized complex logic from App.tsx (1,041 lines) 
 - **Benefits**: Clear separation between text and voice message handling
 
 ### 4. **useSessionLifecycle** (`src/shared/hooks/useSessionLifecycle.ts`)
+
 - **Purpose**: Manages SPS session composition, auto-creation, and auto-start
 - **Key Features**:
   - Automatic encounter creation when persona+scenario selected
@@ -41,6 +46,7 @@ Successfully extracted and modularized complex logic from App.tsx (1,041 lines) 
 - **Benefits**: Encapsulates complex async session management logic
 
 ### 5. **useConnectionProgress** (`src/shared/hooks/useConnectionProgress.ts`)
+
 - **Purpose**: Tracks voice connection progress and ready notifications
 - **Key Features**:
   - Step-by-step progress tracking (mic → session → token → webrtc)
@@ -49,6 +55,7 @@ Successfully extracted and modularized complex logic from App.tsx (1,041 lines) 
 - **Benefits**: Clean interface for user-facing connection state
 
 ### 6. **useBackendData** (`src/shared/hooks/useBackendData.ts`)
+
 - **Purpose**: Fetches and manages backend data (personas, scenarios, health)
 - **Key Features**:
   - Parallel data fetching with `Promise.allSettled`
@@ -58,6 +65,7 @@ Successfully extracted and modularized complex logic from App.tsx (1,041 lines) 
 - **Benefits**: Centralized data fetching, easy to add caching/refetching
 
 ### 7. **useUIState** (`src/shared/hooks/useUIState.ts`)
+
 - **Purpose**: Manages all UI state (drawers, dropdowns, modals, toasts)
 - **Key Features**:
   - Centralized state for 8+ UI elements
@@ -68,7 +76,8 @@ Successfully extracted and modularized complex logic from App.tsx (1,041 lines) 
 ## Architecture Improvements
 
 ### Before
-```
+
+``` text
 App.tsx (1,041 lines)
 ├── 15+ useState declarations
 ├── 20+ useRef declarations
@@ -80,7 +89,8 @@ App.tsx (1,041 lines)
 ```
 
 ### After
-```
+
+``` text
 App.tsx (refactored version)
 ├── useBackendData() → personas, scenarios, health
 ├── useMessageQueue() → queueMessageUpdate, clearQueue
@@ -95,29 +105,34 @@ App.tsx (refactored version)
 ## Key Benefits
 
 ### 1. **Modularity**
+
 - Each hook has a single, clear responsibility
 - Hooks can be used independently in other components
 - Easy to understand what each piece does
 
 ### 2. **Testability**
+
 - Voice transcript deduplication logic can be unit tested
 - Message queue behavior can be tested in isolation
 - Session lifecycle can be tested with mocked API calls
 - UI state transitions are testable
 
 ### 3. **Maintainability**
+
 - Changes to voice logic are localized to one hook
 - Session management changes don't affect message handling
 - UI state changes don't cascade through the component
 - Clear interfaces make refactoring safer
 
 ### 4. **Reusability**
+
 - useMessageQueue can be used in any component with message lists
 - useVoiceTranscripts can power other voice interfaces
 - useUIState pattern can be applied to other complex UIs
 - useBackendData provides a template for data fetching
 
 ### 5. **Type Safety**
+
 - All hooks have proper TypeScript interfaces
 - Removed 'any' types where possible
 - Clear parameter and return type definitions
@@ -126,6 +141,7 @@ App.tsx (refactored version)
 ## Modernization Improvements
 
 ### React Best Practices
+
 - ✅ Custom hooks for complex logic
 - ✅ Proper dependency arrays in useEffect
 - ✅ Stable callback references with useCallback
@@ -134,6 +150,7 @@ App.tsx (refactored version)
 - ✅ Proper cleanup functions
 
 ### Code Quality
+
 - ✅ Single Responsibility Principle
 - ✅ DRY (Don't Repeat Yourself)
 - ✅ Clear naming conventions
@@ -142,6 +159,7 @@ App.tsx (refactored version)
 - ✅ Loading state management
 
 ### Performance
+
 - ✅ Batched message updates prevent unnecessary re-renders
 - ✅ Memoized selectors reduce computation
 - ✅ Smart auto-scroll only when near bottom
@@ -151,12 +169,14 @@ App.tsx (refactored version)
 ## Migration Path
 
 ### Option 1: Gradual Migration (Recommended)
+
 1. Keep App.tsx as is
 2. Introduce hooks one at a time
 3. Test each integration thoroughly
 4. Gradually replace inline logic
 
 ### Option 2: Complete Refactor
+
 1. Use App.refactored.tsx as reference
 2. Resolve circular dependencies in session lifecycle
 3. Update voice session integration
@@ -165,12 +185,14 @@ App.tsx (refactored version)
 ## Next Steps
 
 ### Immediate
+
 1. ✅ All hooks created and exported
 2. ✅ TypeScript compilation clean
 3. ⏳ Integration testing needed
 4. ⏳ Update App.tsx to use hooks
 
 ### Future Enhancements
+
 - [ ] Add React Query for data fetching (useBackendData)
 - [ ] Add Zustand/Redux for global state
 - [ ] Extract more granular hooks (e.g., usePendingMessages)
@@ -198,6 +220,7 @@ App.tsx (refactored version)
 ## Conclusion
 
 This refactoring represents a significant modernization of the App.tsx component:
+
 - **Extracted 885 lines** of complex logic into reusable hooks
 - **Reduced App.tsx by 42%** (estimated)
 - **Improved testability** through isolated units
@@ -206,6 +229,7 @@ This refactoring represents a significant modernization of the App.tsx component
 - **Better type safety** with proper TypeScript interfaces
 
 The modular architecture makes it easier for developers to:
+
 - Understand what each part of the system does
 - Make changes without unintended side effects
 - Test individual components in isolation

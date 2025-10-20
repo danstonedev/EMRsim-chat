@@ -1,9 +1,11 @@
 # Play/Pause Fix for Range of Motion Measurement ✅
 
 ## Issue
+
 The play/pause button was not working, and when paused, the animation would snap back to T-pose instead of holding the current pose.
 
 ## Root Cause
+
 The original code had two problems:
 
 1. **Cleanup function was stopping animations**: Every time `isAnimating` changed, the effect cleanup would call `action.stop()`, which resets the animation to frame 0.
@@ -13,6 +15,7 @@ The original code had two problems:
 ## The Fix
 
 ### Before (BROKEN):
+
 ```typescript
 useEffect(() => {
   const firstAction = actions[names[0]]
@@ -32,6 +35,7 @@ useEffect(() => {
 ```
 
 ### After (FIXED):
+
 ```typescript
 useEffect(() => {
   // Control ALL currently playing animations
@@ -85,6 +89,7 @@ useEffect(() => {
 ## Testing
 
 **Test Play/Pause:**
+
 1. Let animation play
 2. Click "Pause" button
 3. ✅ Animation should freeze in current pose
@@ -92,6 +97,7 @@ useEffect(() => {
 5. ✅ Animation should resume from where it was paused
 
 **Test Range of Motion:**
+
 1. Type "walk" and click Apply
 2. Let walk animation play
 3. Click "Pause" when leg is extended
@@ -99,6 +105,7 @@ useEffect(() => {
 5. User can now measure joint angles
 
 **Test Animation Switching:**
+
 1. Start with walk animation
 2. Type "idle" and click Apply
 3. ✅ Walk fades out, idle fades in smoothly
@@ -123,18 +130,21 @@ For reference, the key properties:
 This fix enables:
 
 ✅ **Range of Motion Measurement**
+
 - Pause walk cycle mid-stride
 - Measure knee flexion angle
 - Measure hip extension
 - Measure ankle dorsiflexion
 
 ✅ **Gait Analysis**
+
 - Freeze at heel strike
 - Freeze at toe-off
 - Freeze at mid-stance
 - Compare left vs right
 
 ✅ **Movement Study**
+
 - Pause to examine posture
 - Measure joint positions
 - Analyze movement patterns
@@ -142,7 +152,7 @@ This fix enables:
 
 ## Console Output
 
-```
+``` text
 🎮 HumanFigure: Animation state: PLAYING
 ▶️ HumanFigure: Starting first animation: Walking
 🎮 HumanFigure: Animation state: PAUSED

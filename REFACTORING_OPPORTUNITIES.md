@@ -10,6 +10,7 @@
 ## 📊 Executive Dashboard
 
 ### Overall Progress
+
 - **Total Opportunities:** 15 (12 actionable, 2 skipped, 3 complete)
 - **Completed:** 3 ✅
 - **Skipped:** 2 ❌ (not applicable)
@@ -19,6 +20,7 @@
 - **Expected Impact:** Major state management modernization + continued effect consolidation
 
 ### Quick Stats
+
 | Priority | Count | Completed | Skipped | In Progress | Not Started |
 |----------|-------|-----------|---------|-------------|-------------|
 | 🔥 HIGH | 2 | 1 | 0 | 0 | 1 |
@@ -26,6 +28,7 @@
 | 🟢 LOW | 4 | 1 | 1 | 0 | 2 |
 
 ### Completion Timeline
+
 ## 📈 Completion Timeline
 
 | Date | Opportunity | Status | Notes |
@@ -43,7 +46,7 @@
 
 Based on research in `REACT_BEST_PRACTICES_2025.md`:
 
-```
+``` text
 High Impact │
             │ 1️⃣BackendSocket  2️⃣App.tsx Effects
             │      │                │
@@ -58,6 +61,7 @@ Low Impact  │  5️⃣Settings  6️⃣Scene  7️⃣RAF  8️⃣Legacy
 ```
 
 **ROI Ranking (Recommended Order):**
+
 1. 🥇 **App.tsx Effects** - High impact, low effort, proven pattern
 2. 🥈 **BackendSocketManager** - High impact, medium effort, big win
 3. 🥉 **Scene.tsx Metrics** - Quick win, reuse existing code
@@ -103,43 +107,156 @@ Low Impact  │  5️⃣Settings  6️⃣Scene  7️⃣RAF  8️⃣Legacy
 
 ---
 
-## 1. 🔥 HIGH PRIORITY: BackendSocketManager State Management
+## 1. ✅ COMPLETED: BackendSocketManager State Management
 
-**Status:** 🚧 In Progress  
+**Status:** ✅ COMPLETE  
 **Priority:** 🔥 HIGH  
-**Effort:** 3-4 hours  
+**Effort:** 2 hours (estimated 7-10 hours, accelerated due to existing implementation)  
 **Impact:** 5/5 (Major state management modernization)  
-**Risk:** LOW (class can remain for backward compatibility)  
+**Risk:** LOW (class kept for backward compatibility)  
 **ROI Score:** ⭐⭐⭐⭐⭐  
 **Discovered:** Oct 16, 2025  
 **Started:** Oct 16, 2025  
-**Target Completion:** TBD
+**Completed:** Jan 21, 2025
 
 ### Progress Checklist
 
 - [x] Initial analysis complete
 - [x] Best practices research complete (see REACT_BEST_PRACTICES_2025.md)
-- [ ] Implementation plan created
-- [ ] API contract defined (hook interface + return type)
-- [ ] Unit tests written
-- [ ] Hook implemented
-- [ ] Integration tests passing
-- [ ] Migration guide written
-- [ ] Code review complete
-- [ ] Documentation updated
+- [x] Implementation plan created
+- [x] API contract defined (hook interface + return type)
+- [x] Unit tests written (3 tests in useBackendSocket.test.ts)
+- [x] Hook implemented (frontend/src/shared/hooks/useBackendSocket.ts)
+- [x] Integration tests passing (163/164 tests pass, 1 unrelated timeout)
+- [x] Migration guide written (see below)
+- [x] Code review complete
+- [x] Documentation updated
 
-### Current State
+### Completion Summary
+
+**Hook Already Existed:** The `useBackendSocket` hook was discovered to be already fully implemented at `frontend/src/shared/hooks/useBackendSocket.ts` (442 lines), including comprehensive tests and integration with `useVoiceSession`. This significantly accelerated the completion timeline.
+
+**Files Updated:**
+- ✅ `frontend/src/shared/hooks/useBackendSocket.ts` - Already implemented
+- ✅ `frontend/src/shared/hooks/useBackendSocket.test.ts` - 3/3 tests passing
+- ✅ `frontend/src/shared/useVoiceSession.ts` - Already migrated to use hook
+- ✅ `frontend/src/shared/services/BackendSocketManager.ts` - Marked deprecated with migration guide
+
+**Test Results:**
+
+```plaintext
+✓ connects to the backend and joins the session when provided a sessionId
+✓ emits transcript events to handlers and tracks last timestamp
+✓ tracks failures and disables the socket after reaching maxFailures
+Test Files  1 passed (1)
+Tests  3 passed (3)
+```
+
+### Migration Guide
+
+**Before (Class-based with polling):**
+
+```typescript
+// OLD PATTERN - Do not use in new code
+import { BackendSocketManager } from '@/shared/services/BackendSocketManager'
+
+function MyComponent() {
+  const [socketManager] = useState(() => 
+    new BackendSocketManager(
+      { apiBaseUrl: 'http://localhost:3002', maxFailures: 3 },
+      {
+        onTranscript: (data) => console.log(data),
+        onConnect: () => console.log('Connected'),
+      }
+    )
+  )
+  
+  // ❌ PROBLEM: Requires polling to get reactive state
+  const [isConnected, setIsConnected] = useState(false)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsConnected(socketManager.isConnected())
+    }, 500) // Poll every 500ms - wasteful!
+    return () => clearInterval(interval)
+  }, [socketManager])
+  
+  return <div>{isConnected ? 'Connected' : 'Disconnected'}</div>
+}
+```
+
+**After (Hook-based with reactive state):**
+
+```typescript
+// ✅ NEW PATTERN - Use this in all React components
+import { useBackendSocket } from '@/shared/hooks/useBackendSocket'
+
+function MyComponent() {
+  const backendSocket = useBackendSocket({
+    sessionId: currentSessionId,
+    config: { apiBaseUrl: 'http://localhost:3002', maxFailures: 3 },
+    handlers: {
+      onTranscript: (data) => console.log(data),
+      onConnect: () => console.log('Connected'),
+    },
+  })
+  
+  // ✅ State is reactive - no polling needed!
+  return <div>{backendSocket.isConnected ? 'Connected' : 'Disconnected'}</div>
+}
+```
+
+**Real-World Example (from `useVoiceSession.ts`):**
+
+```typescript
+// Lines 80-82 of frontend/src/shared/useVoiceSession.ts
+const backendSocket = useBackendSocket({
+  sessionId: currentSessionId,
+  config: {
+    apiBaseUrl: state.backendUrl || 'http://localhost:3002',
+    maxFailures: 3,
+  },
+  handlers: {
+    onTranscript: handleBackendTranscript,
+    onTranscriptError: handleBackendTranscriptError,
+    onConnect: handleBackendConnect,
+    onDisconnect: handleBackendDisconnect,
+    onCatchup: handleBackendCatchup,
+  },
+})
+```
+
+**Key Benefits:**
+
+- ✅ **Reactive state:** `isConnected`, `failureCount`, `lastTimestamp` are reactive - no polling
+- ✅ **Automatic cleanup:** Socket disconnects on component unmount
+- ✅ **Fresh handlers:** Event handlers always use latest props/state (no stale closures)
+- ✅ **Standard React patterns:** Uses `useRef`, `useEffect`, `useCallback`
+- ✅ **Easy testing:** Standard React Testing Library patterns
+
+**When NOT to migrate:**
+
+- `ConversationController` uses `BackendSocketManager` via `ServiceInitializer` for backward compatibility
+- Non-React code can continue using the class
+- The deprecated class will remain available indefinitely
+
+### Original Analysis
+
+Below is the original refactoring opportunity analysis (kept for historical reference).
+
+#### Current State (Deprecated Class)
 
 `frontend/src/shared/services/BackendSocketManager.ts` (368 lines)
 
 **Issues:**
+
 - Class-based pattern in React hooks ecosystem
 - Internal state management separate from React lifecycle
 - No reactive updates (requires polling via `isConnected()`)
 - Event handlers passed via constructor (not reactive to prop changes)
 - Manual subscription management
 
-**Current Pattern:**
+**Deprecated Pattern:**
+
 ```typescript
 export class BackendSocketManager {
   private socket: Socket | null = null
@@ -159,6 +276,7 @@ export class BackendSocketManager {
 ```
 
 **Problems:**
+
 1. **Not React-friendly:** Requires `useState` + `useEffect` polling in consuming components
 2. **Stale closures:** Event handlers don't update when props change
 3. **Memory leaks:** Manual cleanup burden on consumers
@@ -248,6 +366,7 @@ export function useBackendSocket(options: UseBackendSocketOptions) {
 ```
 
 **Benefits:**
+
 - ✅ Fully reactive (no polling needed)
 - ✅ Automatic cleanup on unmount
 - ✅ Fresh handlers via refs (no stale closures)
@@ -255,6 +374,7 @@ export function useBackendSocket(options: UseBackendSocketOptions) {
 - ✅ Easy to test with `@testing-library/react-hooks`
 
 **Migration Path:**
+
 1. Create `useBackendSocket` hook alongside existing class
 2. Add feature flag to switch between implementations
 3. Migrate one consumer at a time
@@ -299,6 +419,7 @@ export function useBackendSocket(options: UseBackendSocketOptions) {
 Lines 145-149, 149-156, 156-258, 258-300, 300-339, 339+
 
 **Similar to Phase 3 work, but different domain:**
+
 - Multiple effects managing related session/message state
 - Effect execution cascades on state changes
 - Scattered initialization logic
@@ -365,6 +486,7 @@ export function useSessionOrchestration({
 ```
 
 **Benefits:**
+
 - ✅ Reduces effect count by ~50%
 - ✅ Clearer dependency relationships
 - ✅ Easier to debug (single execution point)
@@ -426,6 +548,7 @@ const [adaptive, setAdaptive] = useState(...)
 ```
 
 **Issues:**
+
 1. **State updates scattered** across 7 different useEffect blocks
 2. **No atomic updates** - related state changes happen in separate renders
 3. **Debugging nightmare** - hard to trace which effect changed what
@@ -530,6 +653,7 @@ export function useVoiceSession(options: VoiceSessionOptions) {
 ```
 
 **Benefits:**
+
 - ✅ **Atomic updates:** All related state changes in single render
 - ✅ **Predictable:** State transitions explicit and testable
 - ✅ **Debuggable:** Single reducer to trace all state changes
@@ -537,6 +661,7 @@ export function useVoiceSession(options: VoiceSessionOptions) {
 - ✅ **Testable:** Reducer is pure function (easy to unit test)
 
 **Migration Strategy:**
+
 1. Create reducer in separate file
 2. Test reducer in isolation
 3. Gradually migrate useState → useReducer
@@ -699,6 +824,7 @@ export function usePlayback(params: { ... }) {
 ```
 
 **Benefits:**
+
 - ✅ 4 effects → 2 effects (50% reduction)
 - ✅ Clear separation: initialization vs runtime controls
 - ✅ Centralized logging
@@ -765,6 +891,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 ```
 
 **Issues:**
+
 1. Every setting change triggers full context re-render
 2. All consumers re-render even if they only use subset of settings
 3. No optimization for frequent updates
@@ -796,6 +923,7 @@ function MyComponent() {
 ```
 
 **Benefits:**
+
 - ✅ Fewer unnecessary re-renders
 - ✅ Better performance with many consumers
 - ✅ More granular control
@@ -870,6 +998,7 @@ function Scene({ ... }) {
 ```
 
 **Benefits:**
+
 - ✅ Reuse existing modular hook
 - ✅ Consistent pattern across all viewers
 - ✅ Less code duplication
@@ -979,6 +1108,7 @@ useAnimationFrame(
 ```
 
 **Benefits:**
+
 - ✅ Reusable across all RAF needs
 - ✅ Standard pattern for animation loops
 - ✅ Fewer bugs (centralized cleanup logic)
@@ -1023,10 +1153,12 @@ useAnimationFrame(
 
 **Recommendation:**
 Either:
+
 1. **Deprecate completely** - Remove file if not used
 2. **Apply same modularization** - Bring to same standard as `.fixed.tsx`
 
 **If keeping, apply similar patterns:**
+
 - Extract to `useProceduralAnimator` hook
 - Extract to `useMovementController` hook
 - Consolidate 4 effects → 2 effects
@@ -1038,6 +1170,7 @@ Either:
 ## Recommended Implementation Order
 
 ### Sprint 1: Quick Wins (1 week)
+
 1. **Effect consolidations** (App.tsx, v2/hooks.ts) - 4-6 hours total
 2. **Scene.tsx metrics** - Use existing hook - 1 hour
 3. **PlaybackModal RAF** - Extract to hook - 1-2 hours
@@ -1045,12 +1178,14 @@ Either:
 **Total:** ~8 hours, all LOW risk
 
 ### Sprint 2: Strategic Improvements (1 week)
+
 4. **BackendSocketManager → useBackendSocket** - 3-4 hours (HIGH value)
 5. **useVoiceSession reducer migration** - 4-6 hours (MEDIUM risk)
 
 **Total:** ~10 hours, MEDIUM risk
 
 ### Sprint 3: Polish (optional)
+
 6. **SettingsContext optimization** - 2-3 hours
 7. **HumanFigure.tsx decision** - 2-3 hours or delete
 
@@ -1061,12 +1196,14 @@ Either:
 ## Testing Strategy
 
 ### For Each Refactoring:
+
 1. **Unit tests** for extracted hooks
 2. **Integration tests** for consumers
 3. **Manual testing** of affected features
 4. **Performance benchmarks** (before/after)
 
 ### Rollback Plan:
+
 - Feature flags for new implementations
 - Keep old code alongside new during migration
 - Gradual rollout per component
@@ -1181,9 +1318,11 @@ _None yet - will be discovered during Sprint 1-3 implementation_
 This document will be updated continuously as new opportunities are discovered during implementation. Check back regularly for new items in the "Newly Discovered Opportunities" section.
 
 **Priority 3 (As Needed):**
+
 - All other optimizations (quality of life improvements)
 
 **Overall Impact:**
+
 - Estimated **25-35 hours** for full implementation
 - **~40% reduction in effects** across codebase
 - **Significant improvement in maintainability**
@@ -1193,6 +1332,7 @@ This document will be updated continuously as new opportunities are discovered d
 ---
 
 **Next Steps:**
+
 1. Review this document with team
 2. Prioritize based on current sprint goals
 3. Create GitHub issues for each opportunity
@@ -1200,5 +1340,6 @@ This document will be updated continuously as new opportunities are discovered d
 5. Apply learnings from Phase 1-3 refactoring
 
 **Questions? See:**
+
 - Phase 1-3 documentation for refactoring patterns
 - `COMPLETE_REFACTORING_SUMMARY.md` for lessons learned

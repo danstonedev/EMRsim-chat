@@ -5,7 +5,11 @@ import { fileURLToPath } from 'node:url';
 import type { ContentManifest, DependencyManifest } from '../../utils/manifestGenerator.ts';
 import { loadManifest, loadDependencyManifest } from '../../utils/manifestGenerator.ts';
 import { formatChecksum, generateObjectChecksum } from '../../utils/checksum.ts';
-import type { CompiledScenarioArtifact, CompiledScenarioIndex, CompiledScenarioIndexEntry } from '../../tools/compiledTypes.ts';
+import type {
+  CompiledScenarioArtifact,
+  CompiledScenarioIndex,
+  CompiledScenarioIndexEntry,
+} from '../../tools/compiledTypes.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,7 +72,7 @@ export class ScenarioValidationService {
 
   validateScenarioDefinition(scenarioId: string): ValidationSummary {
     const issues: ValidationIssue[] = [];
-    
+
     const manifest = this.getManifest();
     const dependencies = this.getDependencies();
 
@@ -76,67 +80,150 @@ export class ScenarioValidationService {
     const dependencyEntry = dependencies.scenarios[scenarioId] ?? null;
 
     if (!manifestEntry) {
-      issues.push(this.issue('error', 'SCENARIO_MANIFEST_MISSING', `Scenario ${scenarioId} is not present in manifest.json`, scenarioId));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_MANIFEST_MISSING',
+          `Scenario ${scenarioId} is not present in manifest.json`,
+          scenarioId
+        )
+      );
     }
 
     if (!dependencyEntry) {
-      issues.push(this.issue('error', 'SCENARIO_DEPENDENCY_MISSING', `Scenario ${scenarioId} is not present in dependencies.json`, scenarioId));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_DEPENDENCY_MISSING',
+          `Scenario ${scenarioId} is not present in dependencies.json`,
+          scenarioId
+        )
+      );
     }
 
     const scenarioDir = this.scenarioSourceDir(scenarioId);
     if (!fs.existsSync(scenarioDir)) {
-      issues.push(this.issue('error', 'SCENARIO_SOURCE_DIR_MISSING', `Scenario source directory not found for ${scenarioId}`, scenarioId, {
-        path: scenarioDir,
-      }));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_SOURCE_DIR_MISSING',
+          `Scenario source directory not found for ${scenarioId}`,
+          scenarioId,
+          {
+            path: scenarioDir,
+          }
+        )
+      );
       return this.toSummary(issues);
     }
 
     const headerPath = path.join(scenarioDir, 'scenario.header.json');
     if (!fs.existsSync(headerPath)) {
-      issues.push(this.issue('error', 'SCENARIO_HEADER_MISSING', `scenario.header.json missing for scenario ${scenarioId}`, scenarioId));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_HEADER_MISSING',
+          `scenario.header.json missing for scenario ${scenarioId}`,
+          scenarioId
+        )
+      );
       return this.toSummary(issues);
     }
 
     const { data: header, error: headerError } = this.readJson(headerPath);
     if (!header) {
-      issues.push(this.issue('error', 'SCENARIO_HEADER_INVALID', `Failed to parse scenario.header.json for ${scenarioId}: ${headerError?.message ?? 'unknown error'}`, scenarioId));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_HEADER_INVALID',
+          `Failed to parse scenario.header.json for ${scenarioId}: ${headerError?.message ?? 'unknown error'}`,
+          scenarioId
+        )
+      );
       return this.toSummary(issues);
     }
 
-    if (typeof header.scenario_id === 'string' && header.scenario_id.trim() && header.scenario_id.trim() !== scenarioId) {
-      issues.push(this.issue('warning', 'SCENARIO_HEADER_ID_MISMATCH', `Scenario header scenario_id ${header.scenario_id} does not match directory name ${scenarioId}`, scenarioId, {
-        headerScenarioId: header.scenario_id,
-      }));
+    if (
+      typeof header.scenario_id === 'string' &&
+      header.scenario_id.trim() &&
+      header.scenario_id.trim() !== scenarioId
+    ) {
+      issues.push(
+        this.issue(
+          'warning',
+          'SCENARIO_HEADER_ID_MISMATCH',
+          `Scenario header scenario_id ${header.scenario_id} does not match directory name ${scenarioId}`,
+          scenarioId,
+          {
+            headerScenarioId: header.scenario_id,
+          }
+        )
+      );
     }
 
     const linkage = typeof header.linkage === 'object' && header.linkage ? header.linkage : {};
-    const personaId = typeof linkage.persona_id === 'string' && linkage.persona_id.trim()
-      ? linkage.persona_id.trim()
-      : null;
+    const personaId =
+      typeof linkage.persona_id === 'string' && linkage.persona_id.trim() ? linkage.persona_id.trim() : null;
 
     if (personaId) {
       const personaEntry = manifest.content.personas[personaId];
       if (!personaEntry) {
-        issues.push(this.issue('error', 'PERSONA_MISSING_FROM_MANIFEST', `Persona ${personaId} referenced by ${scenarioId} is not present in manifest`, scenarioId, { personaId }));
+        issues.push(
+          this.issue(
+            'error',
+            'PERSONA_MISSING_FROM_MANIFEST',
+            `Persona ${personaId} referenced by ${scenarioId} is not present in manifest`,
+            scenarioId,
+            { personaId }
+          )
+        );
       }
 
       if (dependencyEntry?.persona?.id !== personaId) {
-        issues.push(this.issue('error', 'PERSONA_DEPENDENCY_MISMATCH', `Dependency manifest persona for ${scenarioId} does not match linkage.persona_id`, scenarioId, {
-          dependencyPersonaId: dependencyEntry?.persona?.id ?? null,
-          linkagePersonaId: personaId,
-        }));
+        issues.push(
+          this.issue(
+            'error',
+            'PERSONA_DEPENDENCY_MISMATCH',
+            `Dependency manifest persona for ${scenarioId} does not match linkage.persona_id`,
+            scenarioId,
+            {
+              dependencyPersonaId: dependencyEntry?.persona?.id ?? null,
+              linkagePersonaId: personaId,
+            }
+          )
+        );
       }
 
-      if (personaEntry && dependencyEntry?.persona?.checksum && personaEntry.checksum !== dependencyEntry.persona.checksum) {
-        issues.push(this.issue('warning', 'PERSONA_CHECKSUM_MISMATCH', `Persona checksum mismatch between manifest and dependency manifest for ${personaId}`, scenarioId, {
-          manifestChecksum: personaEntry.checksum,
-          dependencyChecksum: dependencyEntry.persona.checksum,
-        }));
+      if (
+        personaEntry &&
+        dependencyEntry?.persona?.checksum &&
+        personaEntry.checksum !== dependencyEntry.persona.checksum
+      ) {
+        issues.push(
+          this.issue(
+            'warning',
+            'PERSONA_CHECKSUM_MISMATCH',
+            `Persona checksum mismatch between manifest and dependency manifest for ${personaId}`,
+            scenarioId,
+            {
+              manifestChecksum: personaEntry.checksum,
+              dependencyChecksum: dependencyEntry.persona.checksum,
+            }
+          )
+        );
       }
     } else if (manifestEntry?.persona_id) {
-      issues.push(this.issue('warning', 'PERSONA_EXPECTED', `Manifest lists persona ${manifestEntry.persona_id} but header linkage.persona_id is missing`, scenarioId, {
-        manifestPersonaId: manifestEntry.persona_id,
-      }));
+      issues.push(
+        this.issue(
+          'warning',
+          'PERSONA_EXPECTED',
+          `Manifest lists persona ${manifestEntry.persona_id} but header linkage.persona_id is missing`,
+          scenarioId,
+          {
+            manifestPersonaId: manifestEntry.persona_id,
+          }
+        )
+      );
     }
 
     const moduleRefs: Array<{ module_id: string; version: string }> = [];
@@ -155,32 +242,65 @@ export class ScenarioValidationService {
     for (const ref of moduleRefs) {
       const moduleCollection = manifest.content.modules[ref.module_id];
       if (!moduleCollection) {
-        issues.push(this.issue('error', 'MODULE_MISSING_FROM_MANIFEST', `Module ${ref.module_id} referenced by ${scenarioId} is not present in manifest`, scenarioId, {
-          moduleId: ref.module_id,
-          requestedVersion: ref.version || null,
-        }));
+        issues.push(
+          this.issue(
+            'error',
+            'MODULE_MISSING_FROM_MANIFEST',
+            `Module ${ref.module_id} referenced by ${scenarioId} is not present in manifest`,
+            scenarioId,
+            {
+              moduleId: ref.module_id,
+              requestedVersion: ref.version || null,
+            }
+          )
+        );
         continue;
       }
 
       if (ref.version && !moduleCollection[ref.version]) {
-        issues.push(this.issue('error', 'MODULE_VERSION_MISSING', `Module ${ref.module_id} version ${ref.version} referenced by ${scenarioId} is not present in manifest`, scenarioId, {
-          moduleId: ref.module_id,
-          requestedVersion: ref.version,
-          availableVersions: Object.keys(moduleCollection),
-        }));
+        issues.push(
+          this.issue(
+            'error',
+            'MODULE_VERSION_MISSING',
+            `Module ${ref.module_id} version ${ref.version} referenced by ${scenarioId} is not present in manifest`,
+            scenarioId,
+            {
+              moduleId: ref.module_id,
+              requestedVersion: ref.version,
+              availableVersions: Object.keys(moduleCollection),
+            }
+          )
+        );
       }
 
-      const dependencyMatch = dependencyModules.find(entry => entry.module_id === ref.module_id && (!ref.version || entry.version === ref.version));
+      const dependencyMatch = dependencyModules.find(
+        entry => entry.module_id === ref.module_id && (!ref.version || entry.version === ref.version)
+      );
       if (!dependencyMatch) {
-        issues.push(this.issue('warning', 'MODULE_DEPENDENCY_MISSING', `Dependency manifest missing module ${ref.module_id}${ref.version ? `@${ref.version}` : ''} for scenario ${scenarioId}`, scenarioId, {
-          moduleId: ref.module_id,
-          version: ref.version || null,
-        }));
+        issues.push(
+          this.issue(
+            'warning',
+            'MODULE_DEPENDENCY_MISSING',
+            `Dependency manifest missing module ${ref.module_id}${ref.version ? `@${ref.version}` : ''} for scenario ${scenarioId}`,
+            scenarioId,
+            {
+              moduleId: ref.module_id,
+              version: ref.version || null,
+            }
+          )
+        );
       }
     }
 
     if (!moduleRefs.length && manifestModuleRefs.length > 0) {
-      issues.push(this.issue('warning', 'MODULE_LINKAGE_MISSING', `Manifest lists ${manifestModuleRefs.length} module(s) for ${scenarioId} but linkage.active_context_modules is empty`, scenarioId));
+      issues.push(
+        this.issue(
+          'warning',
+          'MODULE_LINKAGE_MISSING',
+          `Manifest lists ${manifestModuleRefs.length} module(s) for ${scenarioId} but linkage.active_context_modules is empty`,
+          scenarioId
+        )
+      );
     }
 
     if (manifestModuleRefs.length) {
@@ -188,10 +308,18 @@ export class ScenarioValidationService {
       for (const manifestModule of manifestModuleRefs) {
         const key = `${manifestModule.module_id}@${manifestModule.version ?? ''}`;
         if (!moduleSet.has(key)) {
-          issues.push(this.issue('warning', 'MODULE_LINKAGE_INCOMPLETE', `Manifest module ${manifestModule.module_id}@${manifestModule.version ?? 'latest'} is not present in linkage.active_context_modules`, scenarioId, {
-            moduleId: manifestModule.module_id,
-            version: manifestModule.version ?? null,
-          }));
+          issues.push(
+            this.issue(
+              'warning',
+              'MODULE_LINKAGE_INCOMPLETE',
+              `Manifest module ${manifestModule.module_id}@${manifestModule.version ?? 'latest'} is not present in linkage.active_context_modules`,
+              scenarioId,
+              {
+                moduleId: manifestModule.module_id,
+                version: manifestModule.version ?? null,
+              }
+            )
+          );
         }
       }
     }
@@ -201,7 +329,7 @@ export class ScenarioValidationService {
 
   validateScenarioBundle(scenarioId: string): ValidationSummary {
     const issues: ValidationIssue[] = [];
-    
+
     const manifest = this.getManifest();
     const dependencies = this.getDependencies();
 
@@ -210,84 +338,183 @@ export class ScenarioValidationService {
     const index = this.tryGetCompiledIndex();
 
     if (!manifestEntry) {
-      issues.push(this.issue('error', 'SCENARIO_MANIFEST_MISSING', `Scenario ${scenarioId} is not present in manifest.json`, scenarioId));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_MANIFEST_MISSING',
+          `Scenario ${scenarioId} is not present in manifest.json`,
+          scenarioId
+        )
+      );
     }
 
     if (!dependencyEntry) {
-      issues.push(this.issue('error', 'SCENARIO_DEPENDENCY_MISSING', `Scenario ${scenarioId} is not present in dependencies.json`, scenarioId));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_DEPENDENCY_MISSING',
+          `Scenario ${scenarioId} is not present in dependencies.json`,
+          scenarioId
+        )
+      );
     }
 
     const indexEntry = index?.scenarios?.[scenarioId] ?? null;
     if (!indexEntry) {
-      issues.push(this.issue('error', 'SCENARIO_INDEX_MISSING', `Scenario ${scenarioId} is not present in compiled index`, scenarioId));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_INDEX_MISSING',
+          `Scenario ${scenarioId} is not present in compiled index`,
+          scenarioId
+        )
+      );
       return this.toSummary(issues);
     }
 
     const compiledPath = this.scenarioCompiledPath(indexEntry, scenarioId);
     if (!fs.existsSync(compiledPath)) {
-      issues.push(this.issue('error', 'SCENARIO_COMPILED_FILE_MISSING', `Compiled scenario file missing at ${compiledPath}`, scenarioId));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_COMPILED_FILE_MISSING',
+          `Compiled scenario file missing at ${compiledPath}`,
+          scenarioId
+        )
+      );
       return this.toSummary(issues);
     }
 
     const { data: artifact, error: artifactError } = this.readJson(compiledPath);
     if (!artifact) {
-      issues.push(this.issue('error', 'SCENARIO_COMPILED_FILE_INVALID', `Failed to parse compiled scenario file for ${scenarioId}: ${artifactError?.message ?? 'unknown error'}`, scenarioId));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_COMPILED_FILE_INVALID',
+          `Failed to parse compiled scenario file for ${scenarioId}: ${artifactError?.message ?? 'unknown error'}`,
+          scenarioId
+        )
+      );
       return this.toSummary(issues);
     }
 
     const compiled = artifact as CompiledScenarioArtifact;
 
     if (compiled.scenario_id !== scenarioId) {
-      issues.push(this.issue('error', 'SCENARIO_ID_MISMATCH', `Compiled scenario_id ${compiled.scenario_id} does not match expected ${scenarioId}`, scenarioId, {
-        compiledScenarioId: compiled.scenario_id,
-      }));
+      issues.push(
+        this.issue(
+          'error',
+          'SCENARIO_ID_MISMATCH',
+          `Compiled scenario_id ${compiled.scenario_id} does not match expected ${scenarioId}`,
+          scenarioId,
+          {
+            compiledScenarioId: compiled.scenario_id,
+          }
+        )
+      );
     }
 
     const computedChecksum = formatChecksum(generateObjectChecksum(compiled));
     if (computedChecksum !== indexEntry.checksum) {
-      issues.push(this.issue('error', 'COMPILED_CHECKSUM_MISMATCH', `Compiled scenario checksum does not match index entry for ${scenarioId}`, scenarioId, {
-        indexChecksum: indexEntry.checksum,
-        computedChecksum,
-      }));
+      issues.push(
+        this.issue(
+          'error',
+          'COMPILED_CHECKSUM_MISMATCH',
+          `Compiled scenario checksum does not match index entry for ${scenarioId}`,
+          scenarioId,
+          {
+            indexChecksum: indexEntry.checksum,
+            computedChecksum,
+          }
+        )
+      );
     }
 
     if (manifestEntry) {
       if (compiled.manifest_checksum !== manifestEntry.checksum) {
-        issues.push(this.issue('error', 'MANIFEST_CHECKSUM_MISMATCH', `Compiled manifest checksum for ${scenarioId} does not match manifest entry`, scenarioId, {
-          compiledChecksum: compiled.manifest_checksum,
-          manifestChecksum: manifestEntry.checksum,
-        }));
+        issues.push(
+          this.issue(
+            'error',
+            'MANIFEST_CHECKSUM_MISMATCH',
+            `Compiled manifest checksum for ${scenarioId} does not match manifest entry`,
+            scenarioId,
+            {
+              compiledChecksum: compiled.manifest_checksum,
+              manifestChecksum: manifestEntry.checksum,
+            }
+          )
+        );
       }
 
-      if (compiled.content_version && manifestEntry.content_version && compiled.content_version !== manifestEntry.content_version) {
-        issues.push(this.issue('warning', 'CONTENT_VERSION_MISMATCH', `Compiled content version ${compiled.content_version} differs from manifest version ${manifestEntry.content_version} for ${scenarioId}`, scenarioId, {
-          compiledContentVersion: compiled.content_version,
-          manifestContentVersion: manifestEntry.content_version,
-        }));
+      if (
+        compiled.content_version &&
+        manifestEntry.content_version &&
+        compiled.content_version !== manifestEntry.content_version
+      ) {
+        issues.push(
+          this.issue(
+            'warning',
+            'CONTENT_VERSION_MISMATCH',
+            `Compiled content version ${compiled.content_version} differs from manifest version ${manifestEntry.content_version} for ${scenarioId}`,
+            scenarioId,
+            {
+              compiledContentVersion: compiled.content_version,
+              manifestContentVersion: manifestEntry.content_version,
+            }
+          )
+        );
       }
 
       if (manifestEntry.persona_id && (!compiled.persona || compiled.persona.id !== manifestEntry.persona_id)) {
-        issues.push(this.issue('error', 'PERSONA_COMPILED_MISMATCH', `Compiled persona does not match manifest persona ${manifestEntry.persona_id}`, scenarioId, {
-          manifestPersonaId: manifestEntry.persona_id,
-          compiledPersonaId: compiled.persona?.id ?? null,
-        }));
+        issues.push(
+          this.issue(
+            'error',
+            'PERSONA_COMPILED_MISMATCH',
+            `Compiled persona does not match manifest persona ${manifestEntry.persona_id}`,
+            scenarioId,
+            {
+              manifestPersonaId: manifestEntry.persona_id,
+              compiledPersonaId: compiled.persona?.id ?? null,
+            }
+          )
+        );
       }
     }
 
     if (dependencyEntry) {
       const expectedDependencyChecksum = formatChecksum(generateObjectChecksum(dependencyEntry));
       if (compiled.dependencies_checksum !== expectedDependencyChecksum) {
-        issues.push(this.issue('error', 'DEPENDENCY_CHECKSUM_MISMATCH', `Compiled dependencies checksum does not match dependencies manifest for ${scenarioId}`, scenarioId, {
-          compiledChecksum: compiled.dependencies_checksum,
-          expectedChecksum: expectedDependencyChecksum,
-        }));
+        issues.push(
+          this.issue(
+            'error',
+            'DEPENDENCY_CHECKSUM_MISMATCH',
+            `Compiled dependencies checksum does not match dependencies manifest for ${scenarioId}`,
+            scenarioId,
+            {
+              compiledChecksum: compiled.dependencies_checksum,
+              expectedChecksum: expectedDependencyChecksum,
+            }
+          )
+        );
       }
 
-      if (compiled.persona && dependencyEntry.persona?.checksum && compiled.persona.checksum !== dependencyEntry.persona.checksum) {
-        issues.push(this.issue('warning', 'PERSONA_DEPENDENCY_CHECKSUM_MISMATCH', `Compiled persona checksum does not match dependency manifest for ${scenarioId}`, scenarioId, {
-          compiledChecksum: compiled.persona.checksum,
-          dependencyChecksum: dependencyEntry.persona.checksum,
-        }));
+      if (
+        compiled.persona &&
+        dependencyEntry.persona?.checksum &&
+        compiled.persona.checksum !== dependencyEntry.persona.checksum
+      ) {
+        issues.push(
+          this.issue(
+            'warning',
+            'PERSONA_DEPENDENCY_CHECKSUM_MISMATCH',
+            `Compiled persona checksum does not match dependency manifest for ${scenarioId}`,
+            scenarioId,
+            {
+              compiledChecksum: compiled.persona.checksum,
+              dependencyChecksum: dependencyEntry.persona.checksum,
+            }
+          )
+        );
       }
 
       const dependencyModuleChecksums = new Map<string, string>();
@@ -298,47 +525,94 @@ export class ScenarioValidationService {
       for (const moduleArtifact of compiled.modules) {
         const key = `${moduleArtifact.module_id}@${moduleArtifact.version}`;
         if (!dependencyModuleChecksums.has(key)) {
-          issues.push(this.issue('warning', 'MODULE_DEPENDENCY_MISSING', `Compiled module ${key} is not listed in dependency manifest for ${scenarioId}`, scenarioId, {
-            moduleId: moduleArtifact.module_id,
-            version: moduleArtifact.version,
-          }));
+          issues.push(
+            this.issue(
+              'warning',
+              'MODULE_DEPENDENCY_MISSING',
+              `Compiled module ${key} is not listed in dependency manifest for ${scenarioId}`,
+              scenarioId,
+              {
+                moduleId: moduleArtifact.module_id,
+                version: moduleArtifact.version,
+              }
+            )
+          );
           continue;
         }
 
         const expectedModuleChecksum = dependencyModuleChecksums.get(key)!;
         if (expectedModuleChecksum && expectedModuleChecksum !== moduleArtifact.checksum) {
-          issues.push(this.issue('warning', 'MODULE_DEPENDENCY_CHECKSUM_MISMATCH', `Checksum mismatch for module ${key} between compiled artifact and dependency manifest`, scenarioId, {
-            expectedChecksum: expectedModuleChecksum,
-            compiledChecksum: moduleArtifact.checksum,
-          }));
+          issues.push(
+            this.issue(
+              'warning',
+              'MODULE_DEPENDENCY_CHECKSUM_MISMATCH',
+              `Checksum mismatch for module ${key} between compiled artifact and dependency manifest`,
+              scenarioId,
+              {
+                expectedChecksum: expectedModuleChecksum,
+                compiledChecksum: moduleArtifact.checksum,
+              }
+            )
+          );
         }
       }
     }
 
     if (compiled.persona && indexEntry.persona_id) {
       if (compiled.persona.id !== indexEntry.persona_id) {
-        issues.push(this.issue('error', 'PERSONA_INDEX_MISMATCH', `Compiled persona ${compiled.persona.id} does not match index persona ${indexEntry.persona_id}`, scenarioId, {
-          compiledPersonaId: compiled.persona.id,
-          indexPersonaId: indexEntry.persona_id,
-        }));
+        issues.push(
+          this.issue(
+            'error',
+            'PERSONA_INDEX_MISMATCH',
+            `Compiled persona ${compiled.persona.id} does not match index persona ${indexEntry.persona_id}`,
+            scenarioId,
+            {
+              compiledPersonaId: compiled.persona.id,
+              indexPersonaId: indexEntry.persona_id,
+            }
+          )
+        );
       }
 
       if (compiled.persona.checksum !== indexEntry.persona_checksum) {
-        issues.push(this.issue('warning', 'PERSONA_INDEX_CHECKSUM_MISMATCH', `Persona checksum mismatch between compiled artifact and index entry for ${scenarioId}`, scenarioId, {
-          compiledChecksum: compiled.persona.checksum,
-          indexChecksum: indexEntry.persona_checksum,
-        }));
+        issues.push(
+          this.issue(
+            'warning',
+            'PERSONA_INDEX_CHECKSUM_MISMATCH',
+            `Persona checksum mismatch between compiled artifact and index entry for ${scenarioId}`,
+            scenarioId,
+            {
+              compiledChecksum: compiled.persona.checksum,
+              indexChecksum: indexEntry.persona_checksum,
+            }
+          )
+        );
       }
     }
 
     if (!compiled.persona && indexEntry.persona_id) {
-      issues.push(this.issue('warning', 'PERSONA_INDEX_EXPECTED', `Compiled scenario lacks persona but index lists ${indexEntry.persona_id}`, scenarioId, {
-        indexPersonaId: indexEntry.persona_id,
-      }));
+      issues.push(
+        this.issue(
+          'warning',
+          'PERSONA_INDEX_EXPECTED',
+          `Compiled scenario lacks persona but index lists ${indexEntry.persona_id}`,
+          scenarioId,
+          {
+            indexPersonaId: indexEntry.persona_id,
+          }
+        )
+      );
     }
 
     if (compiled.persona && !indexEntry.persona_id) {
-      issues.push(this.issue('warning', 'PERSONA_INDEX_MISSING', `Compiled scenario includes persona ${compiled.persona.id} but index omits persona reference`, scenarioId));
+      issues.push(
+        this.issue(
+          'warning',
+          'PERSONA_INDEX_MISSING',
+          `Compiled scenario includes persona ${compiled.persona.id} but index omits persona reference`,
+          scenarioId
+        )
+      );
     }
 
     return this.toSummary(issues);
@@ -346,28 +620,45 @@ export class ScenarioValidationService {
 
   validateCompiledAssets(scenarioFilter?: Set<string> | null): ValidationSummary {
     const issues: ValidationIssue[] = [];
-    
+
     const manifest = this.getManifest();
     const index = this.tryGetCompiledIndex();
 
     if (!index) {
-      issues.push(this.issue('error', 'COMPILED_INDEX_MISSING', `Compiled scenarios index not found at ${this.indexPath}`));
+      issues.push(
+        this.issue('error', 'COMPILED_INDEX_MISSING', `Compiled scenarios index not found at ${this.indexPath}`)
+      );
       return this.toSummary(issues);
     }
 
     const manifestScenarioIds = new Set(Object.keys(manifest.content.scenarios));
     const indexScenarioIds = new Set(Object.keys(index.scenarios));
 
-    const targets = scenarioFilter && scenarioFilter.size
-      ? Array.from(scenarioFilter)
-      : Array.from(new Set([...manifestScenarioIds, ...indexScenarioIds]));
+    const targets =
+      scenarioFilter && scenarioFilter.size
+        ? Array.from(scenarioFilter)
+        : Array.from(new Set([...manifestScenarioIds, ...indexScenarioIds]));
 
     for (const scenarioId of targets) {
       if (!manifestScenarioIds.has(scenarioId)) {
-        issues.push(this.issue('warning', 'SCENARIO_ORPHANED_IN_INDEX', `Scenario ${scenarioId} is present in compiled index but missing from manifest`, scenarioId));
+        issues.push(
+          this.issue(
+            'warning',
+            'SCENARIO_ORPHANED_IN_INDEX',
+            `Scenario ${scenarioId} is present in compiled index but missing from manifest`,
+            scenarioId
+          )
+        );
       }
       if (!indexScenarioIds.has(scenarioId)) {
-        issues.push(this.issue('error', 'SCENARIO_MISSING_FROM_INDEX', `Scenario ${scenarioId} is missing from compiled index`, scenarioId));
+        issues.push(
+          this.issue(
+            'error',
+            'SCENARIO_MISSING_FROM_INDEX',
+            `Scenario ${scenarioId} is missing from compiled index`,
+            scenarioId
+          )
+        );
       }
     }
 
@@ -381,7 +672,14 @@ export class ScenarioValidationService {
           }
           const scenarioIdFromFile = entry.name.replace(/\.json$/i, '');
           if (!indexScenarioIds.has(scenarioIdFromFile)) {
-            issues.push(this.issue('warning', 'SCENARIO_COMPILED_FILE_ORPHANED', `Compiled file ${entry.name} is not referenced in index.json`, scenarioIdFromFile));
+            issues.push(
+              this.issue(
+                'warning',
+                'SCENARIO_COMPILED_FILE_ORPHANED',
+                `Compiled file ${entry.name} is not referenced in index.json`,
+                scenarioIdFromFile
+              )
+            );
           }
         }
       }
@@ -418,7 +716,7 @@ export class ScenarioValidationService {
   private tryGetCompiledIndex(): CompiledScenarioIndex | null {
     try {
       return this.getCompiledIndex();
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -453,7 +751,13 @@ export class ScenarioValidationService {
     return path.join(this.contentRoot, 'scenarios', 'compiled', `${scenarioId}.json`);
   }
 
-  private issue(level: ValidationLevel, code: string, message: string, scenarioId?: string, details?: Record<string, unknown>): ValidationIssue {
+  private issue(
+    level: ValidationLevel,
+    code: string,
+    message: string,
+    scenarioId?: string,
+    details?: Record<string, unknown>
+  ): ValidationIssue {
     return { level, code, message, scenarioId, details };
   }
 }

@@ -24,7 +24,7 @@ export function restorePersistedSessions(registry: SPSRegistry): RestoreResult {
   if (!fs.existsSync(file)) return { restored: 0 };
   try {
     const raw = fs.readFileSync(file, 'utf8');
-    const arr = JSON.parse(raw);
+    const arr: unknown = JSON.parse(raw);
     let restored = 0;
     if (Array.isArray(arr)) {
       for (const rec of arr) {
@@ -75,7 +75,11 @@ export function flushPersistence(): void {
 // Attempt to flush on process exit when enabled
 if (isPersistenceEnabled()) {
   process.on('beforeExit', () => {
-    try { persistSessionsSync(); } catch { /* ignore */ }
+    try {
+      persistSessionsSync();
+    } catch {
+      /* ignore */
+    }
   });
 }
 

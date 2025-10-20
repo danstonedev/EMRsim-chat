@@ -3,18 +3,22 @@
 ## Date: October 12, 2025
 
 ## Summary
+
 Successfully purged potentially problematic features from the 3D viewer, working backwards from the most recent additions to simplify and stabilize the application.
 
 ## Features Removed
 
 ### 1. ✅ Measurement & Isolation Tools (Most Recent)
+
 **Removed from:**
+
 - `Scene.tsx` - Removed measurement points state, selection state, and measurement line rendering
 - `HumanFigure.tsx` - Removed onClick handlers, highlight system, isolation visibility logic
 - `ViewerControls.tsx` - Removed "Isolate" and "Measure" buttons and related UI
 - `Viewer3D.tsx` - Removed isolate/measure state management
 
 **Props cleaned:**
+
 - `isolateEnabled`
 - `measureEnabled`
 - `measureResetToken`
@@ -25,13 +29,16 @@ Successfully purged potentially problematic features from the 3D viewer, working
 - `onClearMeasure`
 
 ### 2. ✅ Clipping Planes (Medical Feature)
+
 **Removed from:**
+
 - `Scene.tsx` - Removed clipping plane calculation, renderer local clipping sync
 - `HumanFigure.tsx` - Removed clipping plane material application
 - `ViewerControls.tsx` - Removed slice mode dropdown and offset slider
 - `Viewer3D.tsx` - Removed slice mode state and Canvas localClippingEnabled
 
 **Props cleaned:**
+
 - `clipping`
 - `clippingPlanes`
 - `sliceMode`
@@ -40,16 +47,21 @@ Successfully purged potentially problematic features from the 3D viewer, working
 - `onSliceOffsetChange`
 
 ### 3. ✅ Debug Overlay
+
 **Removed from:**
+
 - `Scene.tsx` - Removed DebugOverlay component import and rendering, debug mesh
 - `Viewer3D.tsx` - Removed debug query param reading
 - `HumanFigure.tsx` - Debug logging remains (controlled by internal flag)
 
 **Props cleaned:**
+
 - `debug`
 
 ### 4. ✅ Passive OrbitControls Enhancement (Console Warnings Fix)
+
 **Added earlier to reduce browser warnings:**
+
 - Created `PassiveOrbitControls.tsx` wrapper
 - Updated `Scene.tsx` to use passive controls
 - Added console log filtering in `main.tsx`
@@ -57,17 +69,20 @@ Successfully purged potentially problematic features from the 3D viewer, working
 ## Features Kept (Core Functionality)
 
 ### ✓ Basic 3D Scene
+
 - OrbitControls (camera rotation, zoom, pan)
 - Lighting system (ambient, directional, point lights)
 - Ground grid for spatial reference
 - Camera framing based on model metrics
 
 ### ✓ Human Figure Model
+
 - Mixamo Manny model loading
 - Skeleton analysis
 - Model normalization and metrics
 
 ### ✓ Text-to-Animation System
+
 - Animation prompt input UI
 - Prompt parsing and routing
 - Procedural animator
@@ -75,6 +90,7 @@ Successfully purged potentially problematic features from the 3D viewer, working
 - Pose library (7 poses: neutral, balance-left, balance-right, arms-up, arms-forward, t-pose, sit)
 
 ### ✓ Basic Controls
+
 - Animation play/pause toggle
 - Camera reset button
 - Close button
@@ -91,12 +107,14 @@ Successfully purged potentially problematic features from the 3D viewer, working
 ## Impact
 
 ### Code Simplification
+
 - **Lines removed:** ~300+ lines across all files
 - **Props reduced:** From 16 props to 7 props in Scene component
 - **State management:** Much simpler, fewer useState hooks
 - **Dependencies:** Fewer useEffect hooks, cleaner dependency arrays
 
 ### What Still Works
+
 ✅ Load and display 3D human model  
 ✅ Rotate, zoom, pan camera  
 ✅ Text-based animation prompts  
@@ -105,6 +123,7 @@ Successfully purged potentially problematic features from the 3D viewer, working
 ✅ Error boundaries and loading states  
 
 ### What No Longer Works
+
 ❌ Measuring distances between points  
 ❌ Isolating specific body parts  
 ❌ Clipping/slicing the model  
@@ -133,11 +152,13 @@ If the viewer still has problems, the next level of simplification would be:
 ## Rollback Instructions
 
 If you need to restore any features:
+
 1. Check git history for this date (October 12, 2025)
 2. Look for commits with "measurement", "clipping", or "debug" in message
 3. Use `git revert` or cherry-pick specific changes
 
 ## Documentation Updated
+
 - ✅ Created this summary: `3D_VIEWER_FEATURE_CLEANUP.md`
 - ✅ Previous docs still valid: `TEXT_TO_ANIMATION_COMPLETE.md`
 - ✅ Previous docs still valid: `MIXAMO_INTEGRATION_COMPLETE.md`

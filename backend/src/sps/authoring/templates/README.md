@@ -1,9 +1,11 @@
 EMR Case Master Templates v3
 ============================
+
 This package contains modular JSON templates for building evidence-based, AI-populated clinical scenarios.
 Designed to scale across professions (PT-first), settings (acute, primary care, outpatient, telehealth), and conditions.
 
 Folders
+
 - scenario/ : scenario header/meta (links to other modules)
 - persona/ : standardized patient/persona template
 - instructions/ : SP directions + LLM coaching hooks

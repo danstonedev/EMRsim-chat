@@ -1,11 +1,13 @@
 # 3D Viewer Bug Fix - Root Cause Analysis
 
 ## Problem
+
 3D mannequin model was not rendering - scene would appear briefly then crash/disappear.
 
 ## Root Causes Identified
 
 ### 1. **SkeletonUtils.clone() Breaking React Three Fiber** ❌
+
 **Location:** `modelMetrics.ts` - `normalizeHumanModel()` function
 
 **The Bug:**
@@ -18,6 +20,7 @@ return { root, metrics }
 ```
 
 **Why it failed:**
+
 - `SkeletonUtils.clone()` creates a deep copy of the GLTF scene
 - React Three Fiber manages the original GLTF object lifecycle
 - When we cloned it, R3F lost track of the object
@@ -32,6 +35,7 @@ return <primitive object={scene} scale={scaleFactor} />
 ```
 
 ### 2. **Infinite Metrics Loop Causing Rapid Zooming** 🔄
+
 **Location:** `Scene.tsx` - metrics callback
 
 **The Bug:**
@@ -43,6 +47,7 @@ const handleMetrics = useCallback((newMetrics: ModelMetrics) => {
 ```
 
 **Why it failed:**
+
 - `useMemo` in HumanFigure recreated metrics object every render
 - Each new metrics object triggered `setMetrics()`
 - `setMetrics()` triggered `useEffect` with `frameCamera()`
@@ -62,6 +67,7 @@ const handleMetrics = useCallback((newMetrics: ModelMetrics) => {
 ```
 
 ### 3. **createElement() Instead of JSX** (Minor Issue)
+
 **Location:** `Scene.tsx` - lights and meshes
 
 **The Bug:**
@@ -81,6 +87,7 @@ This was working at runtime but caused TypeScript errors and was harder to read.
 ## Key Learnings
 
 ### ✅ DO:
+
 1. **Use original GLTF scene directly** - Don't clone with SkeletonUtils
 2. **Apply transformations via props** - `<primitive object={scene} scale={factor} />`
 3. **Guard against infinite loops** - Use refs to track "first time" callbacks
@@ -88,6 +95,7 @@ This was working at runtime but caused TypeScript errors and was harder to read.
 5. **Let React Three Fiber manage object lifecycle** - Don't wrap in custom Groups
 
 ### ❌ DON'T:
+
 1. **Don't clone GLTF scenes** - SkeletonUtils.clone breaks R3F reconciliation
 2. **Don't recreate metrics objects** - Causes infinite re-render loops
 3. **Don't wrap primitives unnecessarily** - Use primitive directly
@@ -97,18 +105,21 @@ This was working at runtime but caused TypeScript errors and was harder to read.
 ## Migration Path
 
 ### Phase 1: ✅ COMPLETE
+
 - [x] Identify root cause (SkeletonUtils.clone)
 - [x] Create minimal working version
 - [x] Fix metrics loop
 - [x] Stabilize rendering
 
 ### Phase 2: 🔄 IN PROGRESS
+
 - [ ] Port animation system to work without cloning
 - [ ] Update ProceduralAnimator to use original scene
 - [ ] Update MovementController to use original scene
 - [ ] Test animations work with non-cloned model
 
 ### Phase 3: 📋 TODO
+
 - [ ] Remove old HumanFigure.tsx
 - [ ] Rename HumanFigure.minimal.tsx → HumanFigure.tsx
 - [ ] Update modelMetrics.ts to remove cloning

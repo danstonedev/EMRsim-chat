@@ -1,3 +1,4 @@
+@layer features.modals {
 /**
  * Modal Styles
  * Modals, dialogs, and overlay components
@@ -24,8 +25,8 @@
 
 .encounter-end-modal {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
   transform: translate(-50%, -50%);
   background: var(--surface, #ffffff);
   border-radius: var(--radius-lg, 12px);
@@ -42,21 +43,23 @@
 
 .encounter-end-modal__header {
   text-align: center;
-  margin-bottom: var(--space-2xl);
+  margin-block-end: var(--space-2xl);
 }
 
 .encounter-end-modal__icon {
   width: 56px;
   height: 56px;
   color: var(--color-und-green, #009A44);
-  margin-bottom: var(--space-lg);
+  margin-block-end: var(--space-lg);
 }
 
 .encounter-end-modal__title {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-primary, #111111);
-  margin: 0 0 var(--space-sm) 0;
+  margin-block-start: 0;
+  margin-block-end: var(--space-sm);
+  margin-inline: 0;
   letter-spacing: -0.02em;
 }
 
@@ -78,7 +81,8 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  padding: 0.85rem 1.5rem;
+  padding-block: 0.85rem;
+  padding-inline: 1.5rem;
   border-radius: var(--radius-md, 8px);
   font-size: 0.95rem;
   font-weight: 500;
@@ -157,7 +161,8 @@
   }
 
   .encounter-end-modal__button {
-    padding: 0.75rem 1.25rem;
+    padding-block: 0.75rem;
+    padding-inline: 1.25rem;
   }
 }
 
@@ -166,4 +171,6 @@
   .encounter-end-modal {
     animation: none;
   }
+}
+
 }

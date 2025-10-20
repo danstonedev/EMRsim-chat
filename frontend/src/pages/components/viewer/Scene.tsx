@@ -14,7 +14,6 @@ import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { PassiveOrbitControls } from './PassiveOrbitControls'
 import V2Model from '../../v2/Model'
 import { frameCamera } from './utils/cameraFramer'
-import { animationDebug, animationError } from '../../../shared/utils/animationLogging'
 
 
 
@@ -38,12 +37,13 @@ class LocalErrorBoundary extends React.Component<React.PropsWithChildren<object>
   static getDerivedStateFromError() {
     return { hasError: true }
   }
-  componentDidCatch(error: any, info: any) {
-    animationError('3D Scene error caught by boundary', error)
-    animationError('3D Scene error message', error?.message)
-    animationError('3D Scene error stack', error?.stack)
-    animationError('3D Scene component stack', info?.componentStack)
-    alert('3D Scene Error: ' + error?.message)
+  componentDidCatch(error: any) {
+    // Silent error handling for production
+    try {
+      console.error('3D Scene Error:', error?.message || error)
+    } catch {
+      /* noop */
+    }
   }
   render() {
     if (this.state.hasError) {
@@ -68,13 +68,23 @@ export default function Scene({ isAnimating, animationPrompt, controlsRef, human
   const { camera } = useThree()
   const [metrics, setMetrics] = useState<{ boundingSphere: THREE.Sphere; boundingBox: THREE.Box3; desiredHeight: number; scaleFactor: number } | null>(null)
   const metricsReceivedRef = useRef(false)
+  const [lightsReady, setLightsReady] = useState(false)
+  // Env-driven perf mode: trims lights and grid complexity
+  const parseBool = useCallback((v: unknown, fallback: boolean) => {
+    if (typeof v === 'boolean') return v
+    if (typeof v === 'number') return v !== 0
+    if (typeof v !== 'string') return fallback
+    const s = v.trim().toLowerCase()
+    return ['1','true','yes','on','enable','enabled'].includes(s) ? true : (['0','false','no','off','disable','disabled'].includes(s) ? false : fallback)
+  }, [])
+  const env = (import.meta as any)?.env ?? {}
+  const perfMode = parseBool(env.VITE_VIEWER_PERF_MODE, false)
   // Debug overlay removed
   
   // Memoize the metrics callback to prevent infinite re-renders
   const handleMetrics = useCallback((newMetrics: { boundingSphere: THREE.Sphere; boundingBox: THREE.Box3; desiredHeight: number; scaleFactor: number }) => {
     // Only set metrics once to avoid triggering camera framing loop
     if (!metricsReceivedRef.current) {
-  animationDebug('Scene received metrics (first time)', newMetrics)
       metricsReceivedRef.current = true
       setMetrics(newMetrics)
     }
@@ -101,6 +111,13 @@ export default function Scene({ isAnimating, animationPrompt, controlsRef, human
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [metrics])
 
+  // Defer secondary lights to reduce TTFP; keep ambient + key light immediate
+  useEffect(() => {
+    if (perfMode) return
+  const raf = requestAnimationFrame(() => setLightsReady(true))
+  return () => cancelAnimationFrame(raf)
+  }, [perfMode])
+
   // Lightweight HUD for diagnostics (polls every 200ms when enabled)
   // Debug HUD polling removed
 
@@ -120,28 +137,34 @@ export default function Scene({ isAnimating, animationPrompt, controlsRef, human
       />
 
       {/* Enhanced lighting for realistic skin rendering - custom configuration for full viewer */}
-      <ambientLight intensity={0.8} />
+      <ambientLight intensity={perfMode ? 0.6 : 0.8} />
+      {/* Key light always present; shadowing still controlled by Canvas prop */}
       <directionalLight
         position={[5, 10, 7]}
-        intensity={1.2}
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        intensity={perfMode ? 0.9 : 1.2}
+        castShadow={!perfMode}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
       />
-      <directionalLight position={[-5, 5, -5]} intensity={0.6} />
-      <directionalLight position={[0, 5, -10]} intensity={0.4} />
-      <pointLight position={[0, 3, 5]} intensity={0.5} />
+      {/* Secondary lights are skipped in perf mode; otherwise deferred one frame */}
+      {!perfMode && lightsReady && (
+        <>
+          <directionalLight position={[-5, 5, -5]} intensity={0.6} />
+          <directionalLight position={[0, 5, -10]} intensity={0.4} />
+          <pointLight position={[0, 3, 5]} intensity={0.5} />
+        </>
+      )}
 
       {/* Ground grid for spatial reference */}
       <Grid
-        args={[12, 12]}
-        cellSize={0.5}
-        cellThickness={0.4}
+        args={perfMode ? [8, 8] : [12, 12]}
+        cellSize={perfMode ? 0.75 : 0.5}
+        cellThickness={perfMode ? 0.3 : 0.4}
         cellColor="#6f6f6f"
-        sectionSize={2}
-        sectionThickness={0.8}
+        sectionSize={perfMode ? 2.5 : 2}
+        sectionThickness={perfMode ? 0.6 : 0.8}
         sectionColor="#009A44"
-        fadeDistance={20}
+        fadeDistance={perfMode ? 14 : 20}
         fadeStrength={1}
         followCamera={false}
         infiniteGrid={false}

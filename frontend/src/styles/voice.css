@@ -1,3 +1,4 @@
+@layer features.voice {
 /**
  * Voice Feature Styles
  * Voice controls, status indicators, and audio-related UI
@@ -8,8 +9,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  padding: var(--space-sm) var(--space-md);
-  border-top: 1px solid var(--border-muted, #d0d0d0);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-md);
+  border-block-start: 1px solid var(--border-muted, #d0d0d0);
   background: rgba(250, 250, 250, 0.92);
   -webkit-backdrop-filter: saturate(140%) blur(6px);
   backdrop-filter: saturate(140%) blur(6px);
@@ -24,7 +26,8 @@
   border: 1px solid var(--border-muted, #d0d0d0);
   color: var(--text-primary, #111111);
   border-radius: 999px;
-  padding: var(--space-sm) var(--space-lg);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-lg);
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
   cursor: pointer;
   font-weight: 500;
@@ -63,75 +66,82 @@
   font-size: 12px;
   color: var(--text-muted);
   flex: 1;
-  min-width: 0;
+  min-inline-size: 0;
 }
 
 /* Voice Meter */
 .voice-meter {
-  width: 80px;
-  height: 8px;
-  margin-left: var(--space-md);
+  inline-size: 80px;
+  block-size: 8px;
+  margin-inline-start: var(--space-md);
   border-radius: var(--radius-xs, 4px);
   background: rgba(0, 0, 0, 0.12);
-  overflow: hidden;
+  /* Hide only internal overflow without affecting page scroll */
+  overflow: clip;
   position: relative;
   flex-shrink: 0;
 }
 
 .voice-meter__bar {
-  height: 100%;
-  width: 0;
-  transition: width 120ms ease-out, background-color 120ms ease-out;
+  inline-size: 0;
+  block-size: 100%;
+  transition: inline-size 120ms ease-out, background-color 120ms ease-out;
   background-color: var(--color-und-green, #009A44);
 }
 
-.voice-meter__bar--level-0 { width: 0%; }
-.voice-meter__bar--level-1 { width: 10%; }
-.voice-meter__bar--level-2 { width: 20%; }
-.voice-meter__bar--level-3 { width: 30%; }
-.voice-meter__bar--level-4 { width: 40%; }
-.voice-meter__bar--level-5 { width: 50%; }
-.voice-meter__bar--level-6 { width: 60%; }
-.voice-meter__bar--level-7 { width: 70%; }
-.voice-meter__bar--level-8 { width: 80%; }
-.voice-meter__bar--level-9 { width: 90%; }
-.voice-meter__bar--level-10 { width: 100%; background-color: var(--color-flame-orange, #ff671f); }
+.voice-meter__bar--level-0 { inline-size: 0%; }
+.voice-meter__bar--level-1 { inline-size: 10%; }
+.voice-meter__bar--level-2 { inline-size: 20%; }
+.voice-meter__bar--level-3 { inline-size: 30%; }
+.voice-meter__bar--level-4 { inline-size: 40%; }
+.voice-meter__bar--level-5 { inline-size: 50%; }
+.voice-meter__bar--level-6 { inline-size: 60%; }
+.voice-meter__bar--level-7 { inline-size: 70%; }
+.voice-meter__bar--level-8 { inline-size: 80%; }
+.voice-meter__bar--level-9 { inline-size: 90%; }
+.voice-meter__bar--level-10 { inline-size: 100%; background-color: var(--color-flame-orange, #ff671f); }
 
 /* Voice Status Panel */
 .voice-status-panel {
   position: absolute;
-  bottom: var(--space-lg);
-  left: 50%;
+  inset-block-end: var(--space-lg);
+  inset-inline-start: 50%;
   transform: translateX(-50%);
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-md);
-  padding: var(--space-sm) var(--space-md);
-  width: min(calc(100% - 2rem), 440px);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-md);
+  inline-size: min(calc(100% - 2rem), 440px);
   background: transparent;
   border: none;
   border-radius: 999px;
   font-size: 0.875rem;
 }
 
+/* Guard against stray duplicate mounts so only the leading panel remains visible */
+.chat-panel__body .voice-status-panel ~ .voice-status-panel {
+  display: none !important;
+}
+
 .voice-status-panel__audio {
   flex: 0 1 100%;
-  min-width: 0;
+  min-inline-size: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .voice-status-panel__recording-pill {
-  width: 100%;
+  inline-size: 100%;
 }
 
 .voice-status-panel__badge {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 4px;
+  margin-block-end: 4px;
 }
 
 .voice-status-panel__audio .adaptive-badge {
@@ -143,8 +153,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px var(--space-sm);
-  margin-top: 6px;
+  padding-block: 3px;
+  padding-inline: var(--space-sm);
+  margin-block-start: 6px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
@@ -156,8 +167,8 @@
 
 .adaptive-badge::before {
   content: '';
-  width: 8px;
-  height: 8px;
+  inline-size: 8px;
+  block-size: 8px;
   border-radius: 50%;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06) inset;
 }
@@ -201,15 +212,15 @@
 
 .mic-popover-menu {
   position: absolute;
-  bottom: 100%;
-  right: 0;
+  inset-block-end: 100%;
+  inset-inline-end: 0;
   background: var(--surface, #ffffff);
   border: 1px solid var(--border-muted, #d0d0d0);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-lg);
-  min-width: 180px;
+  min-inline-size: 180px;
   z-index: 1000;
-  margin-bottom: 4px;
+  margin-block-end: 4px;
   padding: var(--space-xs);
 }
 
@@ -217,8 +228,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  width: 100%;
-  padding: var(--space-sm) 10px;
+  inline-size: 100%;
+  padding-block: var(--space-sm);
+  padding-inline: 10px;
   border: none;
   background: none;
   text-align: left;
@@ -252,10 +264,10 @@
 
 .recording-pill {
   --rp-height: 48px;
-  --rp-pad-x: 12px;
+  --rp-pad-x: 16px;
   --rp-radius: 999px;
-  --rp-shell-bg: #1f1f1f;
-  --rp-shell-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --rp-shell-bg: transparent;
+  --rp-shell-shadow: none;
   --rp-idle-bg: #2a2a2a;
   --rp-active-bg: #333333;
   --rp-recording-bg: #e34a4a;
@@ -271,9 +283,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 220px;
-  padding: 6px;
-  height: var(--rp-height);
+  min-inline-size: 220px;
+  padding: 0;
+  block-size: var(--rp-height);
   border: none;
   border-radius: var(--rp-radius);
   background: var(--rp-shell-bg);
@@ -307,9 +319,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 100%;
-  padding: 8px var(--rp-pad-x);
-  border-radius: calc(var(--rp-radius) - 6px);
+  inline-size: 100%;
+  padding-block: 8px;
+  padding-inline: var(--rp-pad-x);
+  border-radius: var(--rp-radius);
   background: var(--rp-idle-bg);
   color: var(--rp-text-idle);
   transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
@@ -332,7 +345,7 @@
 
 .recording-pill__timer {
   font-weight: 600;
-  font-family: var(--font-stack-mono, 'Roboto Mono', 'SFMono-Regular', Consolas, monospace);
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-size: 0.875rem;
   letter-spacing: 0.01em;
@@ -349,8 +362,8 @@
   display: inline-flex;
   align-items: flex-end;
   gap: 2px;
-  height: calc(var(--rp-height) - 20px);
-  min-width: 60px;
+  block-size: calc(var(--rp-height) - 20px);
+  min-inline-size: 60px;
 }
 
 .recording-pill__control {
@@ -358,7 +371,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .recording-pill__control > * {
@@ -367,11 +380,11 @@
 
 .recording-pill__bar {
   display: inline-block;
-  width: 3px;
+  inline-size: 3px;
   border-radius: 3px;
-  height: var(--bar-height, 20%);
+  block-size: var(--bar-height, 20%);
   transform-origin: bottom center;
-  transition: height 160ms ease, background-color 160ms ease, opacity 160ms ease;
+  transition: block-size 160ms ease, background-color 160ms ease, opacity 160ms ease;
   background: var(--rp-wave-idle);
   opacity: 0.7;
 }
@@ -387,16 +400,16 @@
 }
 
 .recording-pill__error-icon {
-  width: 22px;
-  height: 22px;
+  inline-size: 22px;
+  block-size: 22px;
   color: #ffb4b4;
   opacity: 0.85;
 }
 
 .recording-pill__pause-indicator {
   position: absolute;
-  left: 50%;
-  bottom: -18px;
+  inset-inline-start: 50%;
+  inset-block-end: -18px;
   transform: translateX(-50%);
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.7);
@@ -404,7 +417,7 @@
 
 @media (max-width: 640px) {
   .recording-pill {
-    min-width: 180px;
+    min-inline-size: 180px;
   }
 }
 
@@ -427,8 +440,8 @@
 
   .voice-meter {
     order: 2;
-    width: 100%;
-    margin-left: 0;
+    inline-size: 100%;
+    margin-inline-start: 0;
   }
 }
 
@@ -445,5 +458,7 @@
   .recording-pill__bar {
     transition: none !important;
   }
+}
+
 }
 

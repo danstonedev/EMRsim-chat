@@ -10,6 +10,7 @@
 ### 1. Files Removed (6 items + cleanup)
 
 ✅ **Deleted:**
+
 - `backend/.env.local.backup` - Backup with API credentials (already removed)
 - `frontend/src/styles/legacy-casebuilder.css` - 162 lines of unused CSS
 - `backend/src/sps/backup_schema_old/` - Entire directory (8 files)
@@ -21,7 +22,7 @@
 ### 2. CSS Import Fix Applied
 
 **Issue encountered:**
-```
+``` text
 GET http://127.0.0.1:5173/src/styles/index.css?t=1760631885127 
 net::ERR_ABORTED 500 (Internal Server Error)
 ```
@@ -45,9 +46,11 @@ Removed the orphaned import from `app.css`:
 ## Files Removed Details
 
 ### Security
+
 - ❌ `backend/.env.local.backup` - **CRITICAL:** Contained API credentials
 
 ### Code Cleanup
+
 - ❌ `frontend/src/styles/legacy-casebuilder.css` - Unused Case Builder styles
 - ❌ `backend/src/sps/backup_schema_old/schemas.ts.bak` - Old Zod schemas
 - ❌ `backend/src/sps/backup_schema_old/*.json` - 6 old scenario files
@@ -62,6 +65,7 @@ Removed the orphaned import from `app.css`:
 ## Verification Results
 
 ### Build Status
+
 ```bash
 ✅ Frontend build: SUCCESS (18.71s)
    - dist/index.html: 3.95 kB
@@ -75,6 +79,7 @@ Removed the orphaned import from `app.css`:
 ```
 
 ### Import Analysis
+
 - Verified via grep: No imports found for any removed file
 - CSS classes from legacy-casebuilder.css: Not used anywhere
 - Component imports: None found
@@ -84,6 +89,7 @@ Removed the orphaned import from `app.css`:
 ## Impact
 
 ### Before Cleanup
+
 - 80+ markdown files at root (from doc cleanup)
 - Backup files with sensitive credentials
 - 162 lines of unused CSS causing import errors
@@ -91,6 +97,7 @@ Removed the orphaned import from `app.css`:
 - 200+ lines of unused component code
 
 ### After Cleanup
+
 - 21 focused docs at root
 - ✅ Removed security risk (API credentials)
 - ✅ Fixed CSS import error
@@ -122,11 +129,13 @@ Removed the orphaned import from `app.css`:
 ## Lessons Learned
 
 ### Import Dependencies Matter
+
 - ❌ **Mistake:** Removed CSS file without checking imports
 - ✅ **Fix:** Always grep for imports before removing files
 - ✅ **Prevention:** Added note to audit document
 
 ### Verification Process
+
 1. Search for file references: `grep -r "filename" .`
 2. Check for imports: `grep -r "@import.*filename"`
 3. Remove file
@@ -138,6 +147,7 @@ Removed the orphaned import from `app.css`:
 ## Commands Used
 
 ### Cleanup
+
 ```powershell
 # Remove legacy CSS
 Remove-Item "frontend\src\styles\legacy-casebuilder.css" -Force
@@ -156,12 +166,14 @@ Remove-Item "src\components\" -Force
 ```
 
 ### Fix CSS Import
+
 ```powershell
 # Edit frontend/src/styles/app.css
 # Remove line: @import './legacy-casebuilder.css';
 ```
 
 ### Verification
+
 ```powershell
 cd frontend
 npm run build

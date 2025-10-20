@@ -1,6 +1,7 @@
 # Transcript-to-Chat-Bubble Diagnostic
 
 ## Problem
+
 Transcriptions work and appear in the "Print Transcript" page, but NOT in the chat bubble UI.
 
 ## What I Added
@@ -10,14 +11,16 @@ Transcriptions work and appear in the "Print Transcript" page, but NOT in the ch
 Added detailed logs to track the transcript flow:
 
 1. **When transcription completes:**
-```
+
+``` text
 ✅ TRANSCRIPTION COMPLETED: { transcriptLength, preview, userFinalized }
 🔥 Calling transcriptEngine.finalizeUser with transcript: [preview]
 ✅ transcriptEngine.finalizeUser completed
 ```
 
 2. **Inside handleUserTranscript:**
-```
+
+``` text
 📤 handleUserTranscript called: { isFinal, textLength, preview, listenerCount }
 🎯 EMITTING FINAL USER TRANSCRIPT: [text]
 ```
@@ -33,7 +36,7 @@ Added detailed logs to track the transcript flow:
 
 ### Step 2: Look for These Logs (in order)
 
-```
+``` text
 ✅ TRANSCRIPTION COMPLETED: { transcriptLength: 21, preview: "Hello, this is a test" }
 🔥 Calling transcriptEngine.finalizeUser with transcript: "Hello, this is a test"
 [TranscriptEngine] User finalized: { length: 21, preview: "Hello, this is a test" }
@@ -51,16 +54,19 @@ The log will show `listenerCount: ?` - this is CRITICAL!
 ## Possible Issues
 
 ### Issue A: No Listeners Attached
+
 **Symptom:** `listenerCount: 0`
 **Cause:** UI component not calling `controller.addEventListener(listener)`
 **Fix:** Check how App.tsx or useVoiceSession hooks up listeners
 
 ### Issue B: Listener Not Receiving Events
+
 **Symptom:** `listenerCount: 1+` but chat bubbles don't update
 **Cause:** Listener function not updating state correctly
 **Fix:** Check the listener implementation in the UI component
 
 ### Issue C: Race Condition
+
 **Symptom:** Sometimes works, sometimes doesn't
 **Cause:** Listener attached AFTER transcript event fires
 **Fix:** Ensure listener attached before starting voice
@@ -73,7 +79,7 @@ The log will show `listenerCount: ?` - this is CRITICAL!
 
 ## Expected Flow
 
-```
+``` text
 1. User speaks → audio captured
 2. OpenAI transcription completes
 3. ConversationController receives transcription event
@@ -90,6 +96,7 @@ The log will show `listenerCount: ?` - this is CRITICAL!
 **Run the test and share the console output!**
 
 Specifically look for:
+
 - Are the logs appearing?
 - What is the `listenerCount`?
 - Any errors in console?

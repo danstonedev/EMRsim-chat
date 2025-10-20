@@ -54,6 +54,20 @@ export default function Viewer3D({ embedded = false, initialAnimationId, onClose
 
   const containerClass = useMemo(() => embedded ? 'viewer3d-container viewer3d-container--embed' : 'viewer3d-container', [embedded])
 
+  // Lightweight env flag parsing for perf toggles
+  const parseBool = useCallback((v: unknown, fallback: boolean) => {
+    if (typeof v === 'boolean') return v
+    if (typeof v === 'number') return v !== 0
+    if (typeof v !== 'string') return fallback
+    const s = v.trim().toLowerCase()
+    return ['1','true','yes','on','enable','enabled'].includes(s) ? true : (['0','false','no','off','disable','disabled'].includes(s) ? false : fallback)
+  }, [])
+  const env = (import.meta as any)?.env ?? {}
+  const enableShadows = parseBool(env.VITE_VIEWER_SHADOWS, false)
+  const antialias = parseBool(env.VITE_VIEWER_AA, false)
+  // Clamp DPR to reduce GPU load on high-DPI displays
+  const dprRange: [number, number] = [1, 1.75]
+
   return (
     <RenderProfiler id="Viewer3D">
       <div className={containerClass}>
@@ -73,11 +87,13 @@ export default function Viewer3D({ embedded = false, initialAnimationId, onClose
           fov: 50,
         }}
         frameloop={isAnimating ? 'always' : 'demand'}
-        shadows
+        dpr={dprRange}
+        shadows={enableShadows}
         className="viewer3d-canvas"
         gl={{
           alpha: true,
-          antialias: true,
+          antialias,
+          powerPreference: 'high-performance',
           toneMapping: 2, // ACESFilmicToneMapping for realistic rendering
         }}
         style={{ background: 'linear-gradient(to bottom, #9e9e9e 0%, #e0e0e0 100%)' }}

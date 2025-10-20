@@ -1,0 +1,302 @@
+.connection-reliability-tester {
+  padding: 1.5rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.connection-reliability-tester h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+.connection-status-indicator {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+.status-connected {
+  background-color: #4caf50;
+  color: white;
+}
+
+.status-disconnected {
+  background-color: #f44336;
+  color: white;
+}
+
+.status-connecting {
+  background-color: #ff9800;
+  color: white;
+}
+
+.status-reconnecting {
+  background-color: #ff9800;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.test-controls {
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e0e0e0;
+}
+
+.control-group {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.control-group label {
+  width: 200px;
+  font-weight: 500;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.control-group input[type="range"] {
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.control-group span {
+  width: 50px;
+  text-align: right;
+  font-family: monospace;
+}
+
+.control-group.checkbox {
+  justify-content: flex-start;
+}
+
+.control-group.checkbox label {
+  display: flex;
+  align-items: center;
+  width: auto;
+}
+
+.control-group.checkbox input {
+  margin-right: 0.5rem;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+button {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  margin: 0 0.5rem;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.start-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.start-button:hover:not(:disabled) {
+  background-color: #388e3c;
+}
+
+.stop-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.stop-button:hover:not(:disabled) {
+  background-color: #d32f2f;
+}
+
+.reset-button {
+  background-color: #9e9e9e;
+  color: white;
+}
+
+.reset-button:hover:not(:disabled) {
+  background-color: #757575;
+}
+
+.test-progress {
+  margin: 1.5rem 0;
+}
+
+.progress-bar {
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #2196f3;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+.progress-label {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #757575;
+}
+
+.test-results {
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e0e0e0;
+}
+
+.test-results h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.result-item {
+  padding: 0.75rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.result-label {
+  font-size: 0.8rem;
+  color: #757575;
+  margin-bottom: 0.25rem;
+}
+
+.result-value {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #333;
+  font-family: monospace;
+}
+
+.reliability-summary {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.reliability-summary h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.reliability-excellent,
+.reliability-good,
+.reliability-fair,
+.reliability-poor {
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.reliability-excellent {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.reliability-good {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.reliability-fair {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.reliability-poor {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.connection-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.connect-button {
+  background-color: #2196f3;
+  color: white;
+}
+
+.connect-button:hover:not(:disabled) {
+  background-color: #1976d2;
+}
+
+.disconnect-button {
+  background-color: #ff9800;
+  color: white;
+}
+
+.disconnect-button:hover:not(:disabled) {
+  background-color: #f57c00;
+}
+
+@media (max-width: 768px) {
+  .control-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .control-group label {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .control-group input[type="range"] {
+    width: 100%;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}

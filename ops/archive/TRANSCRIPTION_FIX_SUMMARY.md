@@ -9,11 +9,13 @@ Fixed the root cause of transcription failures and no voice responses. The probl
 ### 1. Fixed Event Handling Logic (ConversationController.ts)
 
 **BEFORE** (Lines ~1278-1330):
+
 - Finalized user transcript immediately on `input_audio_buffer.committed`
 - Used fallback timeout that finalized with empty payload `{}`
 - Transcription events arrived too late, after finalization
 
 **AFTER**:
+
 - Wait for `conversation.item.input_audio_transcription.completed` event
 - Extract actual transcript from payload: `payload.transcript || payload.text || ''`
 - Only finalize with fallback on `transcription.failed` events
@@ -22,10 +24,12 @@ Fixed the root cause of transcription failures and no voice responses. The probl
 ### 2. Added Audio Modalities to Session Config
 
 **BEFORE**:
+
 - Only sent `input_audio_transcription` config
 - Might have been overwriting backend's audio modalities
 
 **AFTER** (Two locations):
+
 - Added `modalities: ['text', 'audio']` to session.update in `session.created` handler
 - Added `modalities: ['text', 'audio']` to session.update in data channel `open` handler
 - Ensures audio responses are explicitly enabled
@@ -33,6 +37,7 @@ Fixed the root cause of transcription failures and no voice responses. The probl
 ### 3. Cleaned Up Dead Code
 
 Removed unused code that was no longer needed after refactoring:
+
 - `extendedCommitMs` property and initialization
 - `fallbackCommitMs` property and initialization  
 - `estimateSpeechCadence()` method
@@ -41,7 +46,8 @@ Removed unused code that was no longer needed after refactoring:
 ## Expected Behavior After Fix
 
 ### Transcription Flow
-```
+
+``` text
 1. User speaks into microphone
 2. Speech detected → input_audio_buffer.speech_started
 3. User stops speaking → input_audio_buffer.speech_stopped
@@ -55,7 +61,7 @@ Removed unused code that was no longer needed after refactoring:
 ### Console Logs to Expect
 
 **Successful Flow**:
-```
+``` text
 [ConversationController] 🎯 session.created received, enabling transcription
 [ConversationController] 📤 Sending session.update: {type: 'session.update', session: {modalities: [...], input_audio_transcription: {...]}}
 [ConversationController] ✅ session.update sent successfully
@@ -66,7 +72,7 @@ Removed unused code that was no longer needed after refactoring:
 ```
 
 **Failure Flow (if transcription actually fails)**:
-```
+``` text
 [ConversationController] ⚠️ TRANSCRIPTION FAILED EVENT: {type: '...', payload: {...}}
 [Conversation Controller] (shows fallback: "[Speech not transcribed]")
 ```
@@ -90,7 +96,9 @@ Removed unused code that was no longer needed after refactoring:
 ## Technical Details
 
 ### OpenAI Realtime API Event Order
+
 The API sends events in this specific order:
+
 - `input_audio_buffer.speech_stopped` (speech ended)
 - `conversation.item.created` (user message created, NO transcript yet!)
 - `conversation.item.input_audio_transcription.completed` (**transcript arrives HERE**)
@@ -98,6 +106,7 @@ The API sends events in this specific order:
 Our previous code assumed transcript would be available immediately, but it's actually asynchronous.
 
 ### Why This Matters
+
 - Transcription uses Whisper model which processes audio asynchronously
 - We must wait for the async transcription result
 - Finalizing early causes UI to show fallback text
@@ -112,6 +121,7 @@ Our previous code assumed transcript would be available immediately, but it's ac
 ## Confidence Level
 
 **HIGH** - This fix addresses the fundamental design flaw identified through:
+
 1. Deep analysis of OpenAI's official Realtime API client code
 2. Understanding of the async transcription event model
 3. Examination of actual event sequences in test files

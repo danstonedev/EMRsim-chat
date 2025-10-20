@@ -26,7 +26,7 @@ function newGateFlags(): GateFlags {
     consent_done: false,
     identity_verified: false,
     locked_pressure_count: 0,
-    supervisor_escalated: false
+    supervisor_escalated: false,
   };
 }
 
@@ -73,7 +73,7 @@ router.post('/', sessionCreationLimiter, async (req: Request, res: Response) => 
       const spsScenario = spsRegistry.scenarios[scenario_id];
       if (!spsPersona) return res.status(404).json({ error: 'sps_persona_not_found' });
       if (!spsScenario) return res.status(404).json({ error: 'sps_scenario_not_found' });
-      
+
       // Compose SPS encounter
       const activeCase = spsRegistry.composeActiveCase(persona_id, scenario_id);
       const sps_session_id = crypto.randomUUID();
@@ -86,28 +86,32 @@ router.post('/', sessionCreationLimiter, async (req: Request, res: Response) => 
         persona_id,
         scenario_id,
         turn_count: 0,
-        recent_identity_requests: []
+        recent_identity_requests: [],
       };
-      
+
       spsSessions.set(sps_session_id, spsSessionData);
       console.log('[sessions][sps] composed', sps_session_id, activeCase.id, 'spsSessions.size=', spsSessions.size);
       logEvent('compose', { sps_session_id, persona_id, scenario_id, case_id: activeCase.id });
       touchPersistence();
-      
+
       // Create unified session with SPS data
-      const sessionId = createSession(persona_id, mode as any, {
-        sps_session_id,
-        scenario_id,
-        phase: 'subjective',
-        gate
-      } as any);
-      
-      return res.status(201).json({ 
+      const sessionId = createSession(
+        persona_id,
+        mode as any,
+        {
+          sps_session_id,
+          scenario_id,
+          phase: 'subjective',
+          gate,
+        } as any
+      );
+
+      return res.status(201).json({
         session_id: sessionId,
         sps_session_id,
         phase: 'subjective',
         gate,
-        gate_state: 'UNLOCKED'
+        gate_state: 'UNLOCKED',
       });
     }
     // Should not reach here under SPS-only
@@ -133,7 +137,7 @@ router.get('/sps/personas', (_req: Request, res: Response) => {
       sex: p.demographics?.sex,
       voice: p.voice_id || p.dialogue_style?.voice_id || null,
       tags: Array.isArray(p.tags) ? p.tags : undefined,
-      type: 'sps'
+      type: 'sps',
     }));
     res.json({ personas });
   } catch (e) {
@@ -168,11 +172,11 @@ router.get('/sps/personas/:id', (req: Request, res: Response) => {
   try {
     const personaId = req.params.id;
     const persona = spsRegistry.personas[personaId];
-    
+
     if (!persona) {
       return res.status(404).json({ error: 'persona_not_found' });
     }
-    
+
     res.json({ persona });
   } catch (e) {
     console.error('[sessions][sps-persona-detail][error]', e);
@@ -189,25 +193,25 @@ router.post('/:id/sps/phase', async (req: Request, res: Response) => {
     if (!session) return res.status(404).json({ error: 'session_not_found' });
     if (session.mode !== 'sps') return res.status(400).json({ error: 'not_sps_session' });
     if (!session.sps_session_id) return res.status(400).json({ error: 'missing_sps_session_id' });
-    
+
     const spsSession = spsSessions.get(session.sps_session_id);
     if (!spsSession) return res.status(404).json({ error: 'sps_session_not_found' });
-    
+
     // Import nextPhase function
     const { nextPhase } = await import('../sps/runtime/sps.service.ts');
     const next = nextPhase(spsSession.phase, signal);
     spsSession.phase = next;
-    
+
     console.log('[sessions][sps][phase]', session.sps_session_id, '->', next, 'signal=', signal);
     logEvent('phase', { sps_session_id: session.sps_session_id, to: next, signal });
-    updateSpsSessionData(sessionId, { 
-      sps_session_id: session.sps_session_id || '', 
-      scenario_id: session.sps_scenario_id || '', 
-      phase: next, 
-      gate: spsSession.gate 
+    updateSpsSessionData(sessionId, {
+      sps_session_id: session.sps_session_id || '',
+      scenario_id: session.sps_scenario_id || '',
+      phase: next,
+      gate: spsSession.gate,
     });
     touchPersistence();
-    
+
     res.json({ phase: next });
   } catch (e) {
     console.error('[sessions][sps-phase][error]', e);
@@ -220,13 +224,13 @@ router.post('/:id/end', (req: Request, res: Response) => {
   const sessionId = req.params.id;
   const session = getSessionById(sessionId);
   if (!session) return res.status(404).json({ error: 'session_not_found' });
-  
+
   // Clean up SPS session if it exists
   if (session.mode === 'sps' && session.sps_session_id) {
     spsSessions.delete(session.sps_session_id);
     console.log('[sessions][sps][cleanup]', session.sps_session_id, 'spsSessions.size=', spsSessions.size);
   }
-  
+
   endSession(sessionId);
   res.json({ summary: 'ended', metrics: {} });
 });
@@ -236,12 +240,12 @@ router.get('/:id/turns', (req: Request, res: Response) => {
   try {
     const sessionId = String(req.params.id || '');
     if (!sessionId) return res.status(400).json({ error: 'bad_request' });
-    
+
     const session = getSessionById(sessionId);
     if (!session) return res.status(404).json({ error: 'session_not_found' });
-    
+
     const turns = getSessionTurns(sessionId);
-    
+
     // Return turns with timestamps converted to milliseconds
     const turnsWithTimestamps = turns.map(turn => ({
       id: turn.id,
@@ -250,7 +254,7 @@ router.get('/:id/turns', (req: Request, res: Response) => {
       created_at: turn.created_at,
       timestamp: turn.created_at ? new Date(turn.created_at).getTime() : Date.now(),
     }));
-    
+
     res.json({ turns: turnsWithTimestamps });
   } catch (error) {
     console.error('[sessions] GET /turns error:', error);
@@ -293,7 +297,13 @@ router.post('/:id/sps/turns', (req: Request, res: Response) => {
       const emittedMs = normalizeMs(t?.emitted_at_ms ?? t?.timestamp_ms);
 
       const fingerprintTimestamp = startedMs ?? finalizedMs ?? emittedMs;
-      const fingerprint = createTurnFingerprint({ sessionId, role, text: trimmedText, channel, timestampMs: fingerprintTimestamp });
+      const fingerprint = createTurnFingerprint({
+        sessionId,
+        role,
+        text: trimmedText,
+        channel,
+        timestampMs: fingerprintTimestamp,
+      });
 
       if (seen.has(fingerprint)) {
         duplicates++;
@@ -358,37 +368,40 @@ router.get('/:id/transcript', (req: Request, res: Response) => {
   try {
     const sessionId = String(req.params.id || '');
     if (!sessionId) return res.status(400).json({ error: 'bad_request' });
-    
+
     const session = getSessionById(sessionId);
     if (!session) return res.status(404).json({ error: 'session_not_found' });
-    
+
     const turns = getSessionTurns(sessionId);
-    const escapeHtml = (s: string) => String(s || '').replace(/[&<>]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c as '&' | '<' | '>'] || c));
-    
+    const escapeHtml = (s: string) =>
+      String(s || '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c as '&' | '<' | '>'] || c);
+
     // Get persona and scenario info for the header (SPS sessions only)
     const persona = session.mode === 'sps' ? spsRegistry.personas[session.persona_id] : null;
     const scenario = session.sps_scenario_id ? spsRegistry.scenarios[session.sps_scenario_id] : null;
-    
+
     const personaName = persona?.display_name || persona?.demographics?.preferred_name || session.persona_id;
     const scenarioTitle = scenario?.title || 'Unknown Scenario';
     const sessionDate = new Date(session.started_at || Date.now()).toLocaleDateString();
-    
+
     // Build compact, script-style HTML: Role label + text in a single line/grid
-    const turnsHtml = turns.map((turn: any, index: number) => {
-      const roleLabel = turn.role === 'user' ? 'Student' : 'Patient';
-      const text = escapeHtml(turn.text || '');
-      
-      // Debug: log the order and timestamps
-      console.log(`[transcript] Turn ${index + 1}: ${turn.role} at ${turn.created_at} - "${text.slice(0, 30)}"`);
-      
-      return `
+    const turnsHtml = turns
+      .map((turn: any, index: number) => {
+        const roleLabel = turn.role === 'user' ? 'Student' : 'Patient';
+        const text = escapeHtml(turn.text || '');
+
+        // Debug: log the order and timestamps
+        console.log(`[transcript] Turn ${index + 1}: ${turn.role} at ${turn.created_at} - "${text.slice(0, 30)}"`);
+
+        return `
         <div class="line" role="listitem">
           <div class="who who--${turn.role}">${escapeHtml(roleLabel)}:</div>
           <div class="txt">${text}</div>
         </div>
       `;
-    }).join('');
-    
+      })
+      .join('');
+
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>

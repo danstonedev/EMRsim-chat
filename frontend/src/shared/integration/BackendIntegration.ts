@@ -1,5 +1,5 @@
 import { api } from '../api'
-import type { BackendSocketClient } from '../services/BackendSocketManager'
+import type { BackendSocketClient } from '../types/backendSocket'
 import { voiceDebug, voiceWarn } from '../utils/voiceLogging'
 import type { TranscriptTimings } from '../../features/voice/conversation/types/transcript'
 

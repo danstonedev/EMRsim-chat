@@ -15,6 +15,7 @@ Phase 1 focused on reducing verbose console output during startup by converting 
 ## Changes Made
 
 ### 1. **useVoiceSession.ts** - Scenario Media Logging
+
 **File:** `frontend/src/shared/useVoiceSession.ts`  
 **Lines:** 121-128
 
@@ -45,6 +46,7 @@ useEffect(() => {
 ```
 
 **Impact:**
+
 - ✅ Only logs when there's actual media data
 - ✅ Eliminated 3 empty array logs
 - ✅ Changed to `console.debug` (filterable in DevTools)
@@ -53,22 +55,26 @@ useEffect(() => {
 ---
 
 ### 2. **useVoiceTranscripts.ts** - Persistence Logging
+
 **File:** `frontend/src/shared/hooks/useVoiceTranscripts.ts`  
 **Lines:** 174, 179-185, 193-197
 
 **Changes:**
+
 - Wrapped duplicate skip log in dev check
 - Wrapped "Persisting voice turn" log in dev check  
 - Wrapped "Turn persisted" success log in dev check
 - Changed all to `console.debug`
 
 **Impact:**
+
 - ✅ Reduced startup noise from transcript persistence
 - ✅ Still available for debugging when needed
 
 ---
 
 ### 3. **MicControl.tsx** - Voice Session Start
+
 **File:** `frontend/src/pages/components/MicControl.tsx`  
 **Lines:** 47-49
 
@@ -85,70 +91,84 @@ if (import.meta.env.DEV) {
 ```
 
 **Impact:**
+
 - ✅ Cleaner component name in log
 - ✅ Dev-only debug level
 
 ---
 
 ### 4. **BackendSocketManager.ts** - Connection Logs
+
 **File:** `frontend/src/shared/services/BackendSocketManager.ts`  
 **Lines:** 206-208, 242-244, 249-251
 
 **Changes:**
+
 - "Connecting to:" → dev + debug
 - "✅ Connected" → dev + debug
 - "🔌 Disconnected" → dev + debug
 
 **Impact:**
+
 - ✅ Connection flow still logged in dev
 - ✅ Silent in production unless errors occur
 
 ---
 
 ### 5. **RealtimeTransport.ts** - WebRTC Logs
+
 **File:** `frontend/src/shared/transport/RealtimeTransport.ts`  
 **Lines:** 65-71, 76-80, 84-86
 
 **Changes:**
+
 - "track event received" → dev + debug
 - "calling onRemoteStream callback" → dev + debug
 - "no stream in track event" → dev + debug
 
 **Impact:**
+
 - ✅ WebRTC diagnostics available in dev mode
 - ✅ Silent in production
 
 ---
 
 ### 6. **AudioStreamManager.ts** - Stream Handling
+
 **File:** `frontend/src/shared/services/AudioStreamManager.ts`  
 **Lines:** 208-212, 220
 
 **Changes:**
+
 - "handleRemoteStream called" → dev + debug
 - "Set srcObject on audio element" → dev + debug
 
 **Impact:**
+
 - ✅ Audio stream flow trackable in dev
 - ✅ Reduced console noise
 
 ---
 
 ### 7. **api.ts** - Transcript Relay Logs
+
 **File:** `frontend/src/shared/api.ts`  
 **Lines:** 182-195, 203-207
 
 **Changes:**
+
 - "🚀 relayTranscript called" → dev + debug
 - "📡 relayTranscript response" → dev + debug
 
 **Impact:**
+
 - ✅ API calls still traceable in dev
 - ✅ Significant noise reduction
 
 ---
 
 ### 8. **TranscriptEngine.ts** - Default Logger
+
 **File:** `frontend/src/shared/transcript/TranscriptEngine.ts`  
 **Lines:** 12-18
 
@@ -177,6 +197,7 @@ const defaultLogger: TranscriptLogger = {
 ```
 
 **Impact:**
+
 - ✅ All TranscriptEngine logs now use debug level
 - ✅ Automatically applies to all logger.log() calls
 - ✅ Warnings still visible (as they should be)
@@ -184,15 +205,18 @@ const defaultLogger: TranscriptLogger = {
 ---
 
 ### 9. **transcriptText.ts** - Merge Delta Logs
+
 **File:** `frontend/src/shared/transcript/transcriptText.ts`  
 **Lines:** 140, 145, 154
 
 **Changes:**
+
 - "⏭️ Skipping redundant delta" → dev + debug
 - "⏭️ Skipping stale delta" → dev + debug
 - "⚠️ No overlap detected" → dev + debug
 
 **Impact:**
+
 - ✅ Delta merge diagnostics available in dev
 - ✅ Eliminated repetitive warning logs
 
@@ -201,7 +225,8 @@ const defaultLogger: TranscriptLogger = {
 ## Before vs After Console Output
 
 ### Before (Phase 0):
-```
+
+``` text
 [vite] connected.
 [useVoiceSession] Setting scenario media: {mediaCount: 0, mediaIds: []}
 [useVoiceSession] Setting scenario media: {mediaCount: 0, mediaIds: []}
@@ -231,7 +256,8 @@ const defaultLogger: TranscriptLogger = {
 ---
 
 ### After (Phase 1):
-```
+
+``` text
 [vite] connected.
 React DevTools message
 ⚠️ React Router Future Flag Warnings (2)
@@ -241,6 +267,7 @@ React DevTools message
 **Reduction:** ~75-80% fewer logs
 
 **Note:** All the eliminated logs are still available by:
+
 1. Opening DevTools Console
 2. Changing filter level to show "Debug" messages
 3. Or by filtering for specific tags like `[useVoiceSession]`
@@ -250,12 +277,14 @@ React DevTools message
 ## Testing
 
 ### Type Check
+
 ```bash
 cd frontend; npm run type-check
 ```
 **Result:** ✅ PASSED - No type errors
 
 ### Expected Behavior
+
 1. **Production Build:** Minimal console output (warnings/errors only)
 2. **Development Mode:** 
    - Default console view: Clean, focused on important logs
@@ -267,18 +296,22 @@ cd frontend; npm run type-check
 ## Developer Experience
 
 ### To Enable Verbose Logging:
+
 **Chrome DevTools:**
+
 1. Open Console (F12)
 2. Click the filter dropdown (Default levels)
 3. Check "Verbose" or "Debug"
 
 **Firefox DevTools:**
+
 1. Open Console (F12)  
 2. Click Settings (gear icon)
 3. Check "Show Timestamps" and adjust log levels
 
 ### Custom Filtering:
-```
+
+``` text
 Filter by: [useVoiceSession]
 Filter by: [TranscriptEngine]
 Filter by: [BackendSocketManager]
@@ -289,12 +322,14 @@ Filter by: [BackendSocketManager]
 ## Next Steps
 
 ### Phase 2: Media Loading Optimization
+
 - Add caching to `useScenarioMedia`
 - Defer state reset until after cancellation
 - Add loading state
 - **Expected Impact:** Eliminate remaining race conditions
 
 ### Phase 3: Effect Consolidation (Optional)
+
 - Consolidate 3 separate effects in `useVoiceSession`
 - **Expected Impact:** Cleaner code, slightly better performance
 

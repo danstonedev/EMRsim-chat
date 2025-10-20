@@ -28,6 +28,7 @@ Your transcription failures are **NOT a code bug** - they're caused by **OpenAI 
 **Go to:** https://platform.openai.com/usage
 
 Check:
+
 - ✅ Current usage vs. quota
 - ✅ Rate limits for your tier
 - ✅ Billing status (free vs. paid)
@@ -35,12 +36,14 @@ Check:
 ### Solution 2: Upgrade Your OpenAI Plan
 
 **If using Free Tier:**
+
 - Go to https://platform.openai.com/settings/organization/billing
 - Add payment method
 - Upgrade to Pay-as-you-go
 - **Paid tier has MUCH higher rate limits**
 
 **Cost Reference:**
+
 - Whisper API: ~$0.006 per minute of audio
 - Real-time voice: ~$0.06 per minute (includes transcription + TTS)
 - Very affordable for development/testing
@@ -66,6 +69,7 @@ if (type.includes('transcription.failed')) {
 **Current behavior:** Transcribes EVERY audio chunk in real-time
 
 **Alternative approaches:**
+
 1. **Batch transcription**: Only transcribe when user finishes speaking
 2. **Throttle requests**: Limit transcription to 1 per N seconds
 3. **Client-side VAD**: Only send audio when speech detected
@@ -74,6 +78,7 @@ if (type.includes('transcription.failed')) {
 ### Solution 5: Use Alternative Transcription
 
 **Options:**
+
 1. **Browser Web Speech API**: Free, client-side, no API calls
    - Pro: No rate limits, free
    - Con: Less accurate than Whisper
@@ -92,6 +97,7 @@ if (type.includes('transcription.failed')) {
 https://platform.openai.com/settings/organization/limits
 
 Look for:
+
 - Requests per minute (RPM)
 - Tokens per minute (TPM)
 - Current usage percentage
@@ -115,6 +121,7 @@ This is **working as designed** - the fallback prevents UI from breaking.
 ### 3. Upgrade Your Account (Recommended)
 
 **If you're serious about using this:**
+
 - Add payment method to OpenAI account
 - Costs are minimal for development (~$1-5/month)
 - Rate limits go from ~50 requests/day to thousands/minute
@@ -122,16 +129,19 @@ This is **working as designed** - the fallback prevents UI from breaking.
 ## Testing After Rate Limit Reset
 
 **Rate limits typically reset:**
+
 - Free tier: Daily reset (24 hours)
 - Paid tier: Per-minute rolling window
 
 **Try again:**
+
 - Wait 24 hours if free tier
 - Or upgrade to paid tier immediately
 
 ## Code Changes Already Made
 
 My previous changes actually **helped identify this issue**:
+
 - ✅ Now logs the ACTUAL error message
 - ✅ Shows 429 rate limit clearly
 - ✅ Gracefully handles failures with fallback
@@ -157,6 +167,7 @@ For production use, implement:
 **Code Status:** Working correctly - properly handling the error
 
 The transcription **would work fine** if you had available API quota. The code changes I made are still valuable because they:
+
 - Correctly handle async transcription events
 - Show actual error messages (helped us find this!)
 - Add audio modalities to session config

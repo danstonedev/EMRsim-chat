@@ -1,11 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import {
-  generateFileChecksum,
-  generateBundleChecksum,
-  generateObjectChecksum,
-  formatChecksum
-} from './checksum';
+import { generateFileChecksum, generateBundleChecksum, generateObjectChecksum, formatChecksum } from './checksum.ts';
 
 /**
  * Persona entry in the content manifest
@@ -179,7 +174,7 @@ function buildCatalogAnalysisReport(timestamp: string, accumulator: CatalogAccum
       subjectiveById.set(entry.id, {
         occurrences: 0,
         scenarios: new Set<string>(),
-        checksums: new Set<string>()
+        checksums: new Set<string>(),
       });
     }
     const idBucket = subjectiveById.get(entry.id)!;
@@ -191,7 +186,7 @@ function buildCatalogAnalysisReport(timestamp: string, accumulator: CatalogAccum
       subjectiveByChecksum.set(entry.checksum, {
         occurrences: 0,
         ids: new Set<string>(),
-        scenarios: new Set<string>()
+        scenarios: new Set<string>(),
       });
     }
     const checksumBucket = subjectiveByChecksum.get(entry.checksum)!;
@@ -205,7 +200,7 @@ function buildCatalogAnalysisReport(timestamp: string, accumulator: CatalogAccum
     byId[id] = {
       occurrences: bucket.occurrences,
       scenarios: Array.from(bucket.scenarios).sort(),
-      checksums: Array.from(bucket.checksums).sort()
+      checksums: Array.from(bucket.checksums).sort(),
     };
   });
 
@@ -214,7 +209,7 @@ function buildCatalogAnalysisReport(timestamp: string, accumulator: CatalogAccum
     byChecksum[checksum] = {
       occurrences: bucket.occurrences,
       ids: Array.from(bucket.ids).sort(),
-      scenarios: Array.from(bucket.scenarios).sort()
+      scenarios: Array.from(bucket.scenarios).sort(),
     };
   });
 
@@ -238,22 +233,22 @@ function buildCatalogAnalysisReport(timestamp: string, accumulator: CatalogAccum
       subjective: {
         total_occurrences: totalEntries,
         by_id: byId,
-        by_checksum: byChecksum
-      }
+        by_checksum: byChecksum,
+      },
     },
     statistics: {
       total_entries: totalEntries,
       unique_ids: subjectiveById.size,
       unique_checksums: subjectiveByChecksum.size,
       duplicate_ids: duplicateIds,
-      duplicate_checksums: duplicateChecksums
-    }
+      duplicate_checksums: duplicateChecksums,
+    },
   };
 }
 
 function ensureCatalogAccumulator(): CatalogAccumulator {
   return {
-    subjective: []
+    subjective: [],
   };
 }
 
@@ -267,14 +262,14 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
     content: {
       personas: {},
       scenarios: {},
-      modules: {}
+      modules: {},
     },
     statistics: {
       total_personas: 0,
       total_scenarios: 0,
       total_modules: 0,
-      total_files_tracked: 0
-    }
+      total_files_tracked: 0,
+    },
   };
 
   const dependencyManifest: DependencyManifest = {
@@ -288,17 +283,13 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
       total_modules: 0,
       total_catalog_entries: 0,
       total_special_questions: 0,
-      total_media_assets: 0
-    }
+      total_media_assets: 0,
+    },
   };
 
   const catalogAccumulator = ensureCatalogAccumulator();
 
-  const personaDirectories = [
-    'personas/base',
-    'personas/shared',
-    'personas/realtime'
-  ];
+  const personaDirectories = ['personas/base', 'personas/shared', 'personas/realtime'];
 
   personaDirectories.forEach(subPath => {
     const personasDir = path.join(contentRoot, subPath);
@@ -322,11 +313,15 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
       }
 
       manifest.content.personas[personaKey] = {
-        content_version: typeof data.content_version === 'string' && data.content_version.trim() ? data.content_version.trim() : '1.0.0',
+        content_version:
+          typeof data.content_version === 'string' && data.content_version.trim()
+            ? data.content_version.trim()
+            : '1.0.0',
         file: `${subPath}/${file}`,
         checksum: formatChecksum(generateFileChecksum(filePath)),
-        updated_at: typeof data.updated_at === 'string' && data.updated_at.trim() ? data.updated_at.trim() : generatedAt,
-        patient_id: data.patient_id
+        updated_at:
+          typeof data.updated_at === 'string' && data.updated_at.trim() ? data.updated_at.trim() : generatedAt,
+        patient_id: data.patient_id,
       };
       manifest.statistics.total_personas++;
     }
@@ -356,19 +351,24 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
       console.warn(`[manifest] Failed to parse module file ${fileName}: ${error}`);
     }
 
-    const moduleVersion = typeof moduleData.module_version === 'string' && moduleData.module_version.trim()
-      ? moduleData.module_version.trim()
-      : version;
+    const moduleVersion =
+      typeof moduleData.module_version === 'string' && moduleData.module_version.trim()
+        ? moduleData.module_version.trim()
+        : version;
     if (moduleVersion !== version) {
-      console.warn(`[manifest] Module file ${fileName} reports module_version ${moduleVersion}; filename version ${version}`);
+      console.warn(
+        `[manifest] Module file ${fileName} reports module_version ${moduleVersion}; filename version ${version}`
+      );
     }
 
-    const contentVersion = typeof moduleData.content_version === 'string' && moduleData.content_version.trim()
-      ? moduleData.content_version.trim()
-      : '1.0.0';
-    const updatedAt = typeof moduleData.updated_at === 'string' && moduleData.updated_at.trim()
-      ? moduleData.updated_at.trim()
-      : generatedAt;
+    const contentVersion =
+      typeof moduleData.content_version === 'string' && moduleData.content_version.trim()
+        ? moduleData.content_version.trim()
+        : '1.0.0';
+    const updatedAt =
+      typeof moduleData.updated_at === 'string' && moduleData.updated_at.trim()
+        ? moduleData.updated_at.trim()
+        : generatedAt;
 
     const metadata: ModuleMetadata = {
       moduleId,
@@ -377,7 +377,7 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
       module_version: moduleVersion,
       content_version: contentVersion,
       updated_at: updatedAt,
-      checksum: formatChecksum(generateFileChecksum(filePath))
+      checksum: formatChecksum(generateFileChecksum(filePath)),
     };
 
     moduleMetadataCache.set(cacheKey, metadata);
@@ -402,20 +402,21 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
 
       const header = JSON.parse(fs.readFileSync(headerPath, 'utf-8'));
 
-      const personaId = typeof header.linkage?.persona_id === 'string' && header.linkage.persona_id.trim()
-        ? header.linkage.persona_id.trim()
-        : null;
+      const personaId =
+        typeof header.linkage?.persona_id === 'string' && header.linkage.persona_id.trim()
+          ? header.linkage.persona_id.trim()
+          : null;
 
       const moduleRefs: Array<{ module_id: string; version: string }> = [];
       if (Array.isArray(header.linkage?.active_context_modules)) {
-        header.linkage.active_context_modules.forEach((entry: any, idx: number) => {
+        header.linkage.active_context_modules.forEach((entry: any, _idx: number) => {
           if (!entry || typeof entry !== 'object') {
-            console.warn(`[manifest] Scenario ${dir} has invalid module reference at index ${idx}`);
+            console.warn(`[manifest] Scenario ${dir} has invalid module reference at index ${_idx}`);
             return;
           }
           const moduleId = typeof entry.module_id === 'string' && entry.module_id.trim() ? entry.module_id.trim() : '';
           if (!moduleId) {
-            console.warn(`[manifest] Scenario ${dir} has module reference without module_id at index ${idx}`);
+            console.warn(`[manifest] Scenario ${dir} has module reference without module_id at index ${_idx}`);
             return;
           }
           const versionRef = typeof entry.version === 'string' && entry.version.trim() ? entry.version.trim() : '';
@@ -431,7 +432,7 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
         schema_version: header.schema_version,
         status: header.status,
         persona_id: personaId,
-        modules: moduleRefs.length ? moduleRefs : undefined
+        modules: moduleRefs.length ? moduleRefs : undefined,
       };
       manifest.statistics.total_scenarios++;
 
@@ -440,7 +441,7 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
         modules: [],
         catalogs: {},
         special_questions: [],
-        media_assets: []
+        media_assets: [],
       };
 
       if (personaId) {
@@ -451,14 +452,14 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
             id: personaId,
             content_version: null,
             checksum: null,
-            updated_at: null
+            updated_at: null,
           };
         } else {
           dependencyEntry.persona = {
             id: personaId,
             content_version: personaManifest.content_version,
             checksum: personaManifest.checksum,
-            updated_at: personaManifest.updated_at ?? null
+            updated_at: personaManifest.updated_at ?? null,
           };
           dependencyManifest.statistics.scenarios_with_persona++;
         }
@@ -471,40 +472,43 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
           version: ref.version || '',
           content_version: metadata?.content_version ?? null,
           checksum: metadata?.checksum ?? null,
-          updated_at: metadata?.updated_at ?? null
+          updated_at: metadata?.updated_at ?? null,
         });
         dependencyManifest.statistics.total_modules += 1;
       });
 
       if (Array.isArray(header.subjective_catalog)) {
-        const subjectiveEntries: ScenarioCatalogDependency[] = header.subjective_catalog.map((entry: any, idx: number) => {
-          const catalogId = typeof entry?.id === 'string' && entry.id.trim() ? entry.id.trim() : `subjective_${idx}`;
-          const checksum = formatChecksum(generateObjectChecksum(entry));
-          const dependency: ScenarioCatalogDependency = {
-            id: catalogId,
-            checksum,
-            source: 'scenario.header.json',
-            path: `scenarios/bundles_src/${dir}/scenario.header.json#subjective_catalog[${idx}]`
-          };
-          catalogAccumulator.subjective.push({
-            scenarioId: dir,
-            id: catalogId,
-            checksum,
-            source: dependency.source,
-            path: dependency.path
-          });
-          dependencyManifest.statistics.total_catalog_entries += 1;
-          return dependency;
-        });
+        const subjectiveEntries: ScenarioCatalogDependency[] = header.subjective_catalog.map(
+          (entry: any, idx: number) => {
+            const catalogId = typeof entry?.id === 'string' && entry.id.trim() ? entry.id.trim() : `subjective_${idx}`;
+            const checksum = formatChecksum(generateObjectChecksum(entry));
+            const dependency: ScenarioCatalogDependency = {
+              id: catalogId,
+              checksum,
+              source: 'scenario.header.json',
+              path: `scenarios/bundles_src/${dir}/scenario.header.json#subjective_catalog[${idx}]`,
+            };
+            catalogAccumulator.subjective.push({
+              scenarioId: dir,
+              id: catalogId,
+              checksum,
+              source: dependency.source,
+              path: dependency.path,
+            });
+            dependencyManifest.statistics.total_catalog_entries += 1;
+            return dependency;
+          }
+        );
         if (subjectiveEntries.length) {
           dependencyEntry.catalogs.subjective = subjectiveEntries;
         }
       }
 
       const soapSubjectivePath = (() => {
-        const linkagePath = typeof header.linkage?.soap_subjective_file === 'string' && header.linkage.soap_subjective_file.trim()
-          ? header.linkage.soap_subjective_file.trim()
-          : './soap.subjective.json';
+        const linkagePath =
+          typeof header.linkage?.soap_subjective_file === 'string' && header.linkage.soap_subjective_file.trim()
+            ? header.linkage.soap_subjective_file.trim()
+            : './soap.subjective.json';
         const resolved = path.join(bundleDir, linkagePath);
         return fs.existsSync(resolved) ? resolved : null;
       })();
@@ -513,7 +517,7 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
         try {
           const subjective = JSON.parse(fs.readFileSync(soapSubjectivePath, 'utf-8'));
           if (Array.isArray(subjective.special_questions_region_specific)) {
-            subjective.special_questions_region_specific.forEach((item: any, idx: number) => {
+            subjective.special_questions_region_specific.forEach((item: any, _idx: number) => {
               if (typeof item !== 'string') {
                 return;
               }
@@ -530,17 +534,17 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
       }
 
       if (Array.isArray(header.media_library)) {
-        header.media_library.forEach((entry: any, idx: number) => {
+        header.media_library.forEach((entry: any, _idx: number) => {
           if (!entry || typeof entry !== 'object') {
             return;
           }
-          const mediaId = typeof entry.id === 'string' && entry.id.trim() ? entry.id.trim() : `media_${idx}`;
+          const mediaId = typeof entry.id === 'string' && entry.id.trim() ? entry.id.trim() : `media_${_idx}`;
           const checksum = formatChecksum(generateObjectChecksum(entry));
           dependencyEntry.media_assets.push({
             id: mediaId,
             type: typeof entry.type === 'string' ? entry.type : 'unknown',
             checksum,
-            url: typeof entry.url === 'string' ? entry.url : undefined
+            url: typeof entry.url === 'string' ? entry.url : undefined,
           });
           dependencyManifest.statistics.total_media_assets += 1;
         });
@@ -552,9 +556,9 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
   }
 
   if (fs.existsSync(modulesDir)) {
-    const moduleFiles = fs.readdirSync(modulesDir).filter(f =>
-      f.endsWith('.json') && f !== 'index.json' && f !== 'README.md'
-    );
+    const moduleFiles = fs
+      .readdirSync(modulesDir)
+      .filter(f => f.endsWith('.json') && f !== 'index.json' && f !== 'README.md');
 
     for (const file of moduleFiles) {
       const match = file.match(/^(.+)\.(v\d+)\.json$/);
@@ -578,23 +582,21 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
         content_version: metadata.content_version,
         file: metadata.file,
         checksum: metadata.checksum,
-        updated_at: metadata.updated_at
+        updated_at: metadata.updated_at,
       };
       manifest.statistics.total_modules++;
     }
   }
 
   manifest.statistics.total_files_tracked =
-    manifest.statistics.total_personas +
-    manifest.statistics.total_scenarios +
-    manifest.statistics.total_modules;
+    manifest.statistics.total_personas + manifest.statistics.total_scenarios + manifest.statistics.total_modules;
 
   const catalogReport = buildCatalogAnalysisReport(generatedAt, catalogAccumulator);
 
   return {
     manifest,
     dependencies: dependencyManifest,
-    catalogReport
+    catalogReport,
   };
 }
 
@@ -619,7 +621,9 @@ export function saveManifest(manifest: ContentManifest, outputPath: string): voi
   const json = JSON.stringify(manifest, null, 2);
   fs.writeFileSync(outputPath, json, 'utf-8');
   console.log(`[manifest] Saved to ${outputPath}`);
-  console.log(`[manifest] Tracked: ${manifest.statistics.total_files_tracked} files (${manifest.statistics.total_personas} personas, ${manifest.statistics.total_scenarios} scenarios, ${manifest.statistics.total_modules} modules)`);
+  console.log(
+    `[manifest] Tracked: ${manifest.statistics.total_files_tracked} files (${manifest.statistics.total_personas} personas, ${manifest.statistics.total_scenarios} scenarios, ${manifest.statistics.total_modules} modules)`
+  );
 }
 
 function ensureDirForFile(filePath: string): void {
@@ -634,7 +638,9 @@ export function saveDependencyManifest(dependencies: DependencyManifest, outputP
   const json = JSON.stringify(dependencies, null, 2);
   fs.writeFileSync(outputPath, json, 'utf-8');
   console.log(`[manifest] Saved dependency manifest to ${outputPath}`);
-  console.log(`[manifest] Dependencies tracked: ${dependencies.statistics.total_scenarios} scenarios → ${dependencies.statistics.total_modules} modules / ${dependencies.statistics.total_catalog_entries} catalog entries`);
+  console.log(
+    `[manifest] Dependencies tracked: ${dependencies.statistics.total_scenarios} scenarios → ${dependencies.statistics.total_modules} modules / ${dependencies.statistics.total_catalog_entries} catalog entries`
+  );
 }
 
 export function saveCatalogAnalysis(report: CatalogAnalysisReport, outputPath: string): void {

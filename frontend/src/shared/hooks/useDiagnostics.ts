@@ -76,7 +76,7 @@ export function useDiagnostics({
         const suffix = preview ? ` — ${preview}` : ''
         return `${li.t} ${li.kind.toUpperCase()} ${li.src}: ${li.msg}${suffix}`
       }).join('\n')
-      navigator.clipboard?.writeText(text)
+  void navigator.clipboard?.writeText(text)
     } catch {
       // no-op: clipboard may be unavailable
     }

@@ -33,12 +33,14 @@ Successfully extracted backend socket initialization and transcript relay logic 
 #### 1. `frontend/src/shared/integration/BackendIntegration.ts` (230 lines)
 
 **Responsibilities:**
+
 - Initialize backend WebSocket connection with session ID
 - Relay transcript events from OpenAI to backend for broadcast
 - Validate backend mode and session state before operations
 - Log backend communication for debugging and monitoring
 
 **Key Features:**
+
 - ✅ **Session Management:** Initializes socket with correct session ID
 - ✅ **Transcript Relay:** Forwards user and assistant transcripts to backend
 - ✅ **Mode Validation:** Checks if backend mode is enabled before operations
@@ -46,7 +48,7 @@ Successfully extracted backend socket initialization and transcript relay logic 
 - ✅ **Debug Logging:** Comprehensive logging for backend operations
 
 **Backend Architecture:**
-```
+``` text
 OpenAI Realtime API
     ↓ (transcript events)
 ConversationController
@@ -69,6 +71,7 @@ export interface BackendIntegrationDependencies {
 ```
 
 **Public Methods:**
+
 - `initializeBackendSocket(sessionId)` - Initialize WebSocket connection
 - `relayTranscriptToBackend(role, text, isFinal, timestamp, timings, itemId)` - Relay transcript to backend
 
@@ -120,6 +123,7 @@ initializeBackendSocket: sessionId => this.backendIntegration.initializeBackendS
 ```
 
 **Removed:**
+
 - Lines 773-786: Removed `initializeBackendSocket()` method (14 lines)
 - Lines 788-834: Removed `relayTranscriptToBackend()` method (47 lines)
 - **Total removed: 61 lines** (net -54 after adding initialization code)
@@ -129,6 +133,7 @@ initializeBackendSocket: sessionId => this.backendIntegration.initializeBackendS
 ## Architecture Benefits
 
 ### Before Phase 5
+
 ```typescript
 class ConversationController {
   // 1200 lines total
@@ -160,6 +165,7 @@ class ConversationController {
 ```
 
 ### After Phase 5
+
 ```typescript
 class ConversationController {
   // 1146 lines total
@@ -226,10 +232,12 @@ class BackendIntegration {
 ## Critical Feature: Backend Transcript Broadcasting
 
 ### What is Backend Transcript Mode?
+
 Backend transcript mode enables real-time transcript broadcasting to multiple clients (observers, instructors, etc.) via WebSocket.
 
 ### Architecture Flow
-```
+
+``` text
 1. OpenAI emits transcript event (transcription.delta, transcription.done, etc.)
 2. ConversationController processes event
 3. BackendIntegration.relayTranscriptToBackend() called
@@ -241,16 +249,19 @@ Backend transcript mode enables real-time transcript broadcasting to multiple cl
 ### Why Two Communication Channels?
 
 **WebSocket (incoming):** Backend → Frontend
+
 - Receives transcripts from other participants
 - Receives system notifications
 - Low latency, real-time updates
 
 **REST API (outgoing):** Frontend → Backend
+
 - Sends transcripts to backend
 - Simple, reliable, easy to retry
 - No need for bidirectional messaging
 
 ### Transcript Relay Data Structure
+
 ```typescript
 {
   role: 'user' | 'assistant',
@@ -269,11 +280,13 @@ Backend transcript mode enables real-time transcript broadcasting to multiple cl
 ## Testing Strategy
 
 ### Automated Tests (Passing)
+
 - ✅ **TypeScript Compilation:** `npm run type-check` - No errors
 - ✅ **Unit Tests:** `npm test` - All tests passing
 - ✅ **Zero Regressions:** No breaking changes to public APIs
 
 ### Recommended Unit Tests (Future)
+
 ```typescript
 describe('BackendIntegration', () => {
   it('should initialize backend socket when enabled', () => {
@@ -384,6 +397,7 @@ describe('BackendIntegration', () => {
 ## Production Verification
 
 ### Validation Steps
+
 1. ✅ TypeScript compilation successful (no type errors)
 2. ✅ Unit tests passing (no regressions)
 3. 🔄 **TODO:** Test in dev environment (voice conversation flow)
@@ -392,6 +406,7 @@ describe('BackendIntegration', () => {
 6. 🔄 **TODO:** Monitor WebSocket broadcast to other clients
 
 ### Expected Behavior
+
 - Backend socket initializes on session creation
 - Transcripts relay to backend successfully
 - Backend broadcasts transcripts to connected clients
@@ -402,6 +417,7 @@ describe('BackendIntegration', () => {
 ## Next Steps
 
 ### Phase 6: PublicAPI (Final Phase!)
+
 **Target:** Extract public API methods (~280 lines)  
 **Impact:** Remove ~280 lines from ConversationController  
 **Benefit:** Clean public API facade, ConversationController ≤ ~900 lines
@@ -430,18 +446,21 @@ After Phase 6, we may need additional extractions to reach the ≤300 line goal.
 ## Lessons Learned
 
 ### What Went Well
+
 1. ✅ **Clean Extraction:** BackendIntegration has zero coupling to ConversationController internals
 2. ✅ **Dependency Injection:** All dependencies passed via interface (testable)
 3. ✅ **Zero Breaking Changes:** Public API unchanged, backward compatible
 4. ✅ **Comprehensive Documentation:** JSDoc with architecture diagrams
 
 ### Challenges
+
 1. ⚠️ **Dual Communication Channels:** REST (outgoing) + WebSocket (incoming) can be confusing
    - **Mitigation:** Clear documentation of why each channel is used
 2. ⚠️ **Constructor Still Large:** Constructor is still ~400 lines (need more extraction)
    - **Mitigation:** Continue with Phase 6 (PublicAPI) and additional phases
 
 ### Recommendations
+
 1. ✅ **Continue Sequential:** Proceed with Phase 6 (PublicAPI) next
 2. ✅ **Document as We Go:** Keep creating completion docs for each phase
 3. ✅ **Test Incrementally:** Run TypeScript + tests after each phase
@@ -462,6 +481,7 @@ Phase 5 successfully extracted backend socket initialization and transcript rela
 ## Appendix: Code Snippets
 
 ### BackendIntegration Usage Example
+
 ```typescript
 // In ConversationController constructor
 this.backendIntegration = new BackendIntegration({
@@ -486,7 +506,8 @@ const context = buildConnectionContext({
 ```
 
 ### Backend Communication Flow
-```
+
+``` text
 Session Created
     ↓
 BackendIntegration.initializeBackendSocket(sessionId)

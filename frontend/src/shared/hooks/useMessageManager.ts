@@ -81,6 +81,18 @@ export function useMessageManager({
   
   // Memoized sorted messages
   const sortedMessages = useMemo(() => sortMessages(messages), [messages])
+
+  // Stabilize effect dependencies via refs (to avoid re-running history load on every render)
+  const queueMessageUpdateRef = useRef(queueMessageUpdate)
+  useEffect(() => { queueMessageUpdateRef.current = queueMessageUpdate }, [queueMessageUpdate])
+  const setMessagesRef = useRef(setMessages)
+  useEffect(() => { setMessagesRef.current = setMessages }, [setMessages])
+  const updateVoiceMessageRef = useRef(updateVoiceMessage)
+  useEffect(() => { updateVoiceMessageRef.current = updateVoiceMessage }, [updateVoiceMessage])
+  const onPersistenceErrorRef = useRef(onPersistenceError)
+  useEffect(() => { onPersistenceErrorRef.current = onPersistenceError }, [onPersistenceError])
+  const messagesLenRef = useRef<number>(messages.length)
+  useEffect(() => { messagesLenRef.current = messages.length }, [messages.length])
   
   /**
    * Check if the user is scrolled near the bottom of the messages container.
@@ -225,12 +237,14 @@ export function useMessageManager({
     sessionId: string | null
     attempts: number
     timer: ReturnType<typeof setTimeout> | null
+    loaded: boolean
   }
 
   const historicalLoadStateRef = useRef<HistoricalLoadState>({
     sessionId: null,
     attempts: 0,
     timer: null,
+    loaded: false,
   })
   
   /**
@@ -247,6 +261,7 @@ export function useMessageManager({
       }
       historicalLoadStateRef.current.sessionId = null
       historicalLoadStateRef.current.attempts = 0
+      historicalLoadStateRef.current.loaded = false
       setIsInitialHistoryLoading(false)
       return
     }
@@ -254,6 +269,13 @@ export function useMessageManager({
     const activeSessionId = sessionId // Preserve non-null session id for async usage
     let mounted = true
     const state = historicalLoadStateRef.current
+
+    // If we already successfully loaded for this session, do nothing
+    if (state.sessionId === activeSessionId && state.loaded) {
+      return () => {
+        mounted = false
+      }
+    }
 
     if (state.sessionId !== activeSessionId) {
       // Reset retry state when the session changes
@@ -263,17 +285,31 @@ export function useMessageManager({
       }
       state.sessionId = activeSessionId
       state.attempts = 0
+      state.loaded = false
       setIsInitialHistoryLoading(true)
     } else if (state.attempts === 0) {
       setIsInitialHistoryLoading(true)
     }
 
     const MAX_ATTEMPTS = 5
+    const dbgEnabled = (() => {
+      try {
+        const envVal = (import.meta as any)?.env?.VITE_DEBUG_HISTORY_FETCH
+        const lsVal = typeof window !== 'undefined' ? window.localStorage?.getItem('DEBUG_HISTORY_FETCH') : null
+        return Boolean((envVal && String(envVal).toLowerCase() !== 'false') || lsVal === '1' || lsVal === 'true')
+      } catch {
+        return false
+      }
+    })()
     const BASE_DELAY_MS = 500
 
     const scheduleRetry = (attempt: number) => {
       const clampedAttempt = Math.min(attempt, MAX_ATTEMPTS - 1)
       const delay = Math.min(BASE_DELAY_MS * Math.pow(2, clampedAttempt), 5000)
+      if (dbgEnabled) {
+        // eslint-disable-next-line no-console
+        console.debug('[useMessageManager] scheduleRetry', { attempt, clampedAttempt, delay })
+      }
       state.timer = setTimeout(() => {
         state.timer = null
         void loadHistoricalTurns()
@@ -284,8 +320,19 @@ export function useMessageManager({
       try {
         if (!mounted) return
 
-        if (import.meta.env.DEV) {
+        if (import.meta.env.DEV || dbgEnabled) {
           console.debug('[useMessageManager] Loading historical turns for session:', activeSessionId, 'attempt', state.attempts + 1)
+        }
+
+        // Fast-path: if any messages are already present, mark as loaded without fetching
+        if (messagesLenRef.current > 0) {
+          if (import.meta.env.DEV || dbgEnabled) {
+            console.debug('[useMessageManager] Skipping historical fetch - messages already exist')
+          }
+          state.attempts = MAX_ATTEMPTS
+          state.loaded = true
+          setIsInitialHistoryLoading(false)
+          return
         }
 
         const turns = await api.getSessionTurns(activeSessionId)
@@ -295,19 +342,19 @@ export function useMessageManager({
         state.attempts += 1
 
         if (turns.length > 0) {
-          if (import.meta.env.DEV) {
+          if (import.meta.env.DEV || dbgEnabled) {
             console.debug('[useMessageManager] Loaded historical turns:', turns.length)
           }
 
-          queueMessageUpdate(() => {
-            setMessages(prev => {
+          queueMessageUpdateRef.current?.(() => {
+            setMessagesRef.current?.(prev => {
               if (prev.length > 0) {
                 console.debug('[useMessageManager] Skipping historical load - messages already exist')
                 return prev
               }
 
               turns.forEach(turn => {
-                updateVoiceMessage(turn.role as 'user' | 'assistant', turn.text, true, turn.timestamp)
+                updateVoiceMessageRef.current?.(turn.role as 'user' | 'assistant', turn.text, true, turn.timestamp)
               })
 
               // updateVoiceMessage will handle state updates; return previous array untouched
@@ -317,25 +364,53 @@ export function useMessageManager({
 
           // Mark completion by setting attempts to max so retries do not reschedule
           state.attempts = MAX_ATTEMPTS
+          state.loaded = true
           setIsInitialHistoryLoading(false)
         } else if (state.attempts < MAX_ATTEMPTS) {
+          if (import.meta.env.DEV || dbgEnabled) {
+            console.debug('[useMessageManager] Historical fetch returned no turns', {
+              attempt: state.attempts,
+              sessionId: activeSessionId,
+            })
+          }
           scheduleRetry(state.attempts)
         } else {
           setIsInitialHistoryLoading(false)
         }
       } catch (error) {
         if (!mounted) return
-        console.error('[useMessageManager] Failed to load historical turns:', error)
+        const errorPayload =
+          error instanceof Error
+            ? { message: error.message, stack: error.stack }
+            : { message: String(error) }
+        const logFn = (import.meta.env.DEV || dbgEnabled) ? console.warn : console.error
+        logFn('[useMessageManager] Failed to load historical turns:', {
+          sessionId: activeSessionId,
+          attempt: state.attempts + 1,
+          error: errorPayload,
+        })
         state.attempts += 1
         if (state.attempts < MAX_ATTEMPTS) {
           scheduleRetry(state.attempts)
         } else {
-          onPersistenceError('Failed to load conversation history')
+          onPersistenceErrorRef.current?.('Failed to load conversation history')
           setIsInitialHistoryLoading(false)
         }
       }
     }
-    
+
+    // If attempts already exhausted and marked loaded, avoid fetching again
+    if (state.attempts >= MAX_ATTEMPTS && state.loaded) {
+      setIsInitialHistoryLoading(false)
+      return () => {
+        mounted = false
+        if (state.timer) {
+          clearTimeout(state.timer)
+          state.timer = null
+        }
+      }
+    }
+
     void loadHistoricalTurns()
 
     return () => {
@@ -345,7 +420,7 @@ export function useMessageManager({
         state.timer = null
       }
     }
-  }, [sessionId, queueMessageUpdate, setMessages, updateVoiceMessage, onPersistenceError])
+  }, [sessionId])
   
   return {
     // State

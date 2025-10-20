@@ -3,11 +3,12 @@
 ## The Problem (From Your Logs)
 
 Your console showed:
-```
+``` text
 🎬 Found animations: (10) ['Armature|mixamo.com|Layer0', 'Armature|mixamo.com|Layer0.001', ...]
 ```
 
 **Issues:**
+
 1. ❌ 10 duplicate animations with cryptic Mixamo names
 2. ❌ No "Standing" animation found (looking for friendly names that don't exist)
 3. ❌ Pause not logging "Pausing animation in place"
@@ -16,6 +17,7 @@ Your console showed:
 ## Root Cause
 
 **Mixamo exports use generic animation clip names:**
+
 - All animations named `Armature|mixamo.com|Layer0` (or .001, .002, etc.)
 - These names don't describe what the animation does
 - Multiple files loaded = duplicate generic names
@@ -92,7 +94,7 @@ console.log('📋 Available animations:', names)
 
 ## Expected Console Output (After Fix)
 
-```
+``` text
 🔄 HumanFigure: Loading animations...
 ✅ HumanFigure: Model loaded
 🎬 HumanFigure: Found animations: ['Standing', 'Walking', 'Jumping', 'Squatting']
@@ -103,13 +105,13 @@ console.log('📋 Available animations:', names)
 ```
 
 When you click Pause:
-```
+``` text
 🎮 HumanFigure: Animation state: PAUSED
 ⏸️ HumanFigure: Pausing animation in place: Standing
 ```
 
 When you click Play:
-```
+``` text
 🎮 HumanFigure: Animation state: PLAYING
 ▶️ HumanFigure: Resuming animation: Standing
 ```
@@ -117,16 +119,19 @@ When you click Play:
 ## Why This Works
 
 **Animation Clip Names:**
+
 - Three.js AnimationClip objects have a mutable `name` property
 - Cloning creates a new clip with same data but independent properties
 - We can rename the clone without affecting the original file
 
 **Weight Detection:**
+
 - `action.getEffectiveWeight()` returns 0-1 indicating how much the animation affects the model
 - Weight > 0 means the animation is actively blending/playing
 - More reliable than just checking `isRunning()`
 
 **Exact Name Matching:**
+
 - `names.find(n => n === 'Standing')` looks for exact match first
 - Fallback to `.includes('standing')` for partial match
 - Ensures we find the right animation even if naming conventions change
@@ -157,10 +162,11 @@ After refresh, verify:
 ## File Structure Assumption
 
 Each GLB file should contain:
+
 - Character mesh (geometry + skeleton)
 - ONE animation clip (the primary animation)
 
-```
+``` text
 Standing.glb:
   ├── Geometry (shared character mesh)
   ├── Skeleton (bone structure)

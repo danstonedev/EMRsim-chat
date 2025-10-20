@@ -1,11 +1,24 @@
 import { defineConfig } from 'vitest/config';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      three: path.resolve(__dirname, 'src/test/mocks/three.ts'),
+    },
+  },
   test: {
     environment: 'jsdom',
-    setupFiles: ['./src/test/setup-msw.ts'],
+    setupFiles: [
+      './src/test/setup-jsdom-media.ts',
+      './src/test/setup-msw.ts',
+    ],
     globals: true,
     pool: 'forks',
     poolOptions: {

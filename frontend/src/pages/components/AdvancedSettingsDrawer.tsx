@@ -33,7 +33,7 @@ export function AdvancedSettingsDrawer({ open, onClose, onReconnectRequest }: Ad
       }
     }
 
-    fetchVoices()
+  void fetchVoices()
     return () => {
       cancelled = true
     }

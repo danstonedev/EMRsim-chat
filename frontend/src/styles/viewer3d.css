@@ -1,3 +1,4 @@
+@layer features.viewer3d {
 /**
  * 3D Viewer Styles
  * UND-branded 3D anatomy viewer with immersive full-screen experience
@@ -5,20 +6,21 @@
 
 .viewer3d-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: 100vw;
+  block-size: 100vh;
   background: linear-gradient(to bottom, #ffffff, #f5f5f5);
   overflow: hidden;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 }
 
 .viewer3d-canvas {
-  width: 100% !important;
-  height: 100% !important;
+  inline-size: 100% !important;
+  block-size: 100% !important;
   display: block;
-  touch-action: none; /* prevent page scroll during touch pan/zoom */
+  /* Only the canvas should capture gestures; container may still allow page scroll */
+  touch-action: none; /* prevent page scroll during touch pan/zoom on the canvas only */
   overscroll-behavior: contain;
 }
 
@@ -36,40 +38,41 @@
 /* Embedded variant (rendered inside a modal container) */
 .viewer3d-container--embed {
   position: relative;
-  width: 100%;
-  height: clamp(420px, 65vh, 720px);
+  inline-size: 100%;
+  block-size: clamp(420px, 65vh, 720px);
   background: transparent;
   border-radius: var(--radius-md, 12px);
   overflow: hidden;
 }
 .viewer3d-container--embed .viewer3d-canvas {
-  width: 100% !important;
-  height: 100% !important;
+  inline-size: 100% !important;
+  block-size: 100% !important;
 }
 
 /* Error box */
 .viewer-error-box {
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
-  padding: 8px 10px;
+  padding-block: 8px;
+  padding-inline: 10px;
   border-radius: 6px;
-  min-width: 160px;
+  min-inline-size: 160px;
 }
 .viewer-error-title {
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-block-end: 6px;
 }
 
 /* Header */
 .viewer-header {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  inset-block-start: 0;
+  inset-inline: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-lg) var(--space-xl);
+  padding-block: var(--space-lg);
+  padding-inline: var(--space-xl);
   background: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.95),
@@ -111,8 +114,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  inline-size: 40px;
+  block-size: 40px;
   border: none;
   background: rgba(0, 0, 0, 0.05);
   color: var(--text-primary, #111111);
@@ -139,9 +142,8 @@
 /* Bottom Controls */
 .viewer-controls {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  inset-block-end: 0;
+  inset-inline: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -168,7 +170,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-lg);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-lg);
   border: 1px solid var(--border-muted, #aeaeae);
   background: var(--surface, #ffffff);
   color: var(--text-primary, #111111);
@@ -213,7 +216,8 @@
 
 /* Select Dropdown */
 .viewer-select {
-  padding: var(--space-sm) var(--space-md);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-md);
   border: 1px solid var(--border-muted, #aeaeae);
   background: var(--surface, #ffffff);
   color: var(--text-primary, #111111);
@@ -239,7 +243,8 @@
 
 /* Help Text */
 .viewer-help-text {
-  padding: var(--space-sm) var(--space-md);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-md);
   font-size: 0.8rem;
   color: var(--text-muted, #333333);
   background: rgba(255, 255, 255, 0.8);
@@ -248,7 +253,8 @@
 }
 
 .viewer-loading {
-  padding: 0.75rem 1.5rem;
+  padding-block: 0.75rem;
+  padding-inline: 1.5rem;
   border-radius: 999px;
   background: rgba(0, 154, 68, 0.12);
   color: #004225;
@@ -260,8 +266,8 @@
 /* Playback Modal */
 .playback-modal {
   position: fixed;
-  left: 50%;
-  bottom: 24px;
+  inset-inline-start: 50%;
+  inset-block-end: 24px;
   transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
@@ -273,7 +279,7 @@
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   z-index: 50;
-  min-width: 520px;
+  min-inline-size: 520px;
 }
 
 .playback-controls {
@@ -283,7 +289,7 @@
 }
 
 .playback-speed-value {
-  min-width: 48px;
+  min-inline-size: 48px;
   text-align: center;
   font-variant-numeric: tabular-nums;
   font-size: 0.9rem;
@@ -292,12 +298,12 @@
 }
 
 .playback-select {
-  margin-left: 12px;
+  margin-inline-start: 12px;
 }
 
 .playback-timeline {
-  width: 100%;
-  height: 6px;
+  inline-size: 100%;
+  block-size: 6px;
   border-radius: 3px;
   background: rgba(0, 0, 0, 0.1);
   cursor: pointer;
@@ -309,8 +315,8 @@
 .playback-timeline::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  inline-size: 16px;
+  block-size: 16px;
   border-radius: 50%;
   background: var(--color-und-green, #009A44);
   cursor: pointer;
@@ -323,8 +329,8 @@
 }
 
 .playback-timeline::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  inline-size: 16px;
+  block-size: 16px;
   border: none;
   border-radius: 50%;
   background: var(--color-und-green, #009A44);
@@ -349,25 +355,27 @@
 
   .viewer-controls {
     flex-wrap: wrap;
-    padding: var(--space-lg) var(--space-md);
+    padding-block: var(--space-lg);
+    padding-inline: var(--space-md);
   }
 
   .viewer-help-text {
-    width: 100%;
+    inline-size: 100%;
     text-align: center;
     font-size: 0.75rem;
   }
 
   .viewer-btn {
     font-size: 0.85rem;
-    padding: var(--space-xs) var(--space-md);
+    padding-block: var(--space-xs);
+    padding-inline: var(--space-md);
   }
 
   .playback-modal {
-    min-width: 90%;
-    left: 5%;
+    min-inline-size: 90%;
+    inset-inline-start: 5%;
     transform: none;
-    bottom: 16px;
+    inset-block-end: 16px;
   }
 
   .playback-controls {
@@ -380,37 +388,38 @@
   }
 
   .playback-select {
-    margin-left: 0;
-    width: 100%;
+    margin-inline-start: 0;
+    inline-size: 100%;
   }
 }
 
 /* Animation Prompt Panel */
 .viewer-prompt-panel {
   position: absolute;
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%);
-  bottom: 80px;
+  inset-block-end: 80px;
   background: rgba(255, 255, 255, 0.95);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: var(--space-md);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  min-width: 500px;
-  max-width: 700px;
+  min-inline-size: 500px;
+  max-inline-size: 700px;
   z-index: 20;
 }
 
 .viewer-prompt-form {
   display: flex;
   gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
+  margin-block-end: var(--space-sm);
 }
 
 .viewer-prompt-input {
   flex: 1;
-  padding: var(--space-sm) var(--space-md);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-md);
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 0.95rem;
@@ -423,12 +432,13 @@
 }
 
 .viewer-prompt-result {
-  padding: var(--space-xs) var(--space-sm);
+  padding-block: var(--space-xs);
+  padding-inline: var(--space-sm);
   background: rgba(0, 154, 68, 0.1);
-  border-left: 3px solid #009a44;
+  border-inline-start: 3px solid #009a44;
   border-radius: 4px;
   font-size: 0.9rem;
-  margin-bottom: var(--space-sm);
+  margin-block-end: var(--space-sm);
   color: #006632;
 }
 
@@ -446,7 +456,8 @@
 }
 
 .viewer-suggestion-btn {
-  padding: var(--space-xs) var(--space-sm);
+  padding-block: var(--space-xs);
+  padding-inline: var(--space-sm);
   background: #f5f5f5;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
@@ -472,10 +483,10 @@
 
 @media (max-width: 768px) {
   .viewer-prompt-panel {
-    min-width: 90%;
-    left: 5%;
+    min-inline-size: 90%;
+    inset-inline-start: 5%;
     transform: none;
-    bottom: 70px;
+    inset-block-end: 70px;
   }
 }
 
@@ -488,8 +499,8 @@
 .mini-viewer-controls {
   position: absolute;
   z-index: 2;
-  top: 12px;
-  left: 12px;
+  inset-block-start: 12px;
+  inset-inline-start: 12px;
 }
 
 .mini-viewer-label {
@@ -499,5 +510,6 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-primary, #111111);
+}
 }
 

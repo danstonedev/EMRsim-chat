@@ -186,7 +186,7 @@ export class AudioStreamManager {
 
     if (this.audioContext) {
       try {
-        this.audioContext.close();
+  void this.audioContext.close();
       } catch {}
       this.audioContext = null;
     }
@@ -225,7 +225,7 @@ export class AudioStreamManager {
     this.applyRemoteFadeIn(this.remoteAudioElement);
 
     const el = this.remoteAudioElement;
-    const play = () => el.play().catch(() => {});
+  const play = () => { void el.play().catch(() => {}) };
 
     if (el.readyState >= 2) {
       play();
@@ -332,7 +332,7 @@ export class AudioStreamManager {
     // Clean up remote audio
     if (this.remoteAudioElement) {
       try {
-        this.remoteAudioElement.pause();
+  void this.remoteAudioElement.pause();
         this.remoteAudioElement.srcObject = null;
       } catch {}
     }

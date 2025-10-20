@@ -17,11 +17,13 @@ Found **5 categories** of legacy/unused files that can be safely removed:
 ## 1. Backup Files (REMOVE)
 
 ### `backend/.env.local.backup`
+
 - **Status:** ⚠️ Contains API credentials
 - **Reason:** Backup of environment file, not needed in version control
 - **Action:** DELETE (sensitive data)
 
 ### `backend/src/sps/backup_schema_old/schemas.ts.bak`
+
 - **Status:** Old Zod schema definitions
 - **Reason:** Superseded by current schemas in `backend/src/sps/core/schemas.ts`
 - **Action:** DELETE (covered by directory removal below)
@@ -31,6 +33,7 @@ Found **5 categories** of legacy/unused files that can be safely removed:
 ## 2. Legacy CSS (REMOVE)
 
 ### `frontend/src/styles/legacy-casebuilder.css`
+
 - **Status:** 162 lines of unused CSS
 - **Imports:** NOT imported anywhere in codebase
 - **Classes used:** None (`casebuilder-hint`, `casebuilder-callout`, etc. not found)
@@ -53,6 +56,7 @@ grep -r "casebuilder-callout" frontend/src/
 ### `backend/src/sps/backup_schema_old/`
 
 **Contents (8 files):**
+
 - `schemas.ts.bak` - Old schema definitions
 - `acl_sprain.core.json` - Old scenario format
 - `fai_labral.core.json` - Old scenario format
@@ -63,6 +67,7 @@ grep -r "casebuilder-callout" frontend/src/
 
 **Status:** Legacy backup directory
 **Current location:** 
+
 - Schemas: `backend/src/sps/core/schemas.ts`
 - Scenarios: `backend/src/sps/content/scenarios/compiled/*.json`
 
@@ -74,6 +79,7 @@ grep -r "casebuilder-callout" frontend/src/
 ## 4. Old Debug Utilities (REMOVE)
 
 ### `src/utils/animationDebug.js`
+
 - **Status:** 100 lines of animation debugging utilities
 - **Imports:** NOT imported anywhere in codebase
 - **Reason:** Old debugging code from early 3D viewer development
@@ -91,12 +97,14 @@ grep -r "animationDebug" . --exclude-dir=node_modules
 ## 5. Old Component Snippets (REMOVE)
 
 ### `src/App.jsx`
+
 - **Status:** 11 lines - React Three Fiber snippet
 - **Content:** Code example/snippet, not actual application code
 - **Reason:** Looks like copy-paste reference, not used
 - **Action:** DELETE
 
 ### `src/components/Model.jsx`
+
 - **Status:** 104 lines - Old Three.js model component
 - **Imports:** NOT imported anywhere
 - **Reason:** Early 3D viewer prototype, superseded by `frontend/src/pages/components/viewer/HumanFigure.tsx`
@@ -104,6 +112,7 @@ grep -r "animationDebug" . --exclude-dir=node_modules
 - **Action:** DELETE
 
 **Note:** The `/src` directory is still used by:
+
 - `scripts/generateManifest.ts` (imports from `src/sps/`)
 - `backend/tests/` (imports from `src/sps/`)
 - But NOT for these component files
@@ -113,20 +122,24 @@ grep -r "animationDebug" . --exclude-dir=node_modules
 ## Files to KEEP (False Positives)
 
 ### ✅ `src/sps/` (KEEP)
+
 - **Used by:** Backend tests and scripts
 - **References:** 19 imports found in `backend/tests/` and `scripts/`
 - **Status:** Active code, part of build system
 
 ### ✅ `frontend/public/models/Manny_Static.glb` (KEEP)
+
 - **Used by:** `HumanFigure.tsx`, `config.ts`, `settings.ts`
 - **Status:** Active 3D model asset
 - **Size:** Production asset
 
 ### ✅ `frontend/src/pages/v2/__tests__/Model.v2.spec.tsx` (KEEP)
+
 - **Status:** Valid test file
 - **Reason:** "v2" refers to versioned test, not legacy
 
 ### ✅ `ops/archive/LEGACY_ANIMATION_PATHS_CLEANUP.md` (KEEP)
+
 - **Location:** Already archived
 - **Status:** Historical documentation (properly archived)
 
@@ -172,17 +185,20 @@ Remove-Item "src\components\" -Force -ErrorAction SilentlyContinue
 ## Impact Assessment
 
 ### Before Removal
+
 - **Total project files:** ~15,000+ (including node_modules)
 - **Legacy/unused files:** 14 files (identified)
 - **Disk space:** ~500 KB (backup schemas, old components)
 
 ### After Removal
+
 - **Reduced confusion:** Developers won't encounter old backup code
 - **Security improvement:** Removed `.env.local.backup` with API credentials
 - **Cleaner codebase:** No unused CSS or old component snippets
 - **Disk space saved:** ~500 KB
 
 ### Risk Assessment
+
 - ✅ **Zero risk:** All files verified as unused via grep search
 - ✅ **No imports:** None of the files are imported in active code
 - ✅ **No runtime impact:** Files not loaded by build system
@@ -193,6 +209,7 @@ Remove-Item "src\components\" -Force -ErrorAction SilentlyContinue
 ## Recommendations
 
 ### Immediate Actions (Safe)
+
 1. ✅ Delete backup files (especially `.env.local.backup` - security)
 2. ✅ Delete legacy CSS file
 3. ✅ Delete old schema backup directory
@@ -200,6 +217,7 @@ Remove-Item "src\components\" -Force -ErrorAction SilentlyContinue
 5. ✅ Delete old component snippets
 
 ### Future Cleanup (Consider)
+
 1. 📋 **Review `/src` directory structure**
    - Currently used by scripts and backend tests
    - Consider moving `src/sps/` → `backend/src/sps-shared/` for clarity

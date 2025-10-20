@@ -27,6 +27,7 @@ docker-compose down -v
 ```
 
 Access the application:
+
 - Frontend: http://localhost
 - Backend API: http://localhost:3002
 - Health check: http://localhost:3002/health
@@ -45,6 +46,7 @@ docker-compose -f docker-compose.dev.yml down
 ```
 
 Access the development application:
+
 - Frontend (Vite HMR): http://localhost:5173
 - Backend API: http://localhost:3002
 
@@ -67,7 +69,7 @@ See `backend/.env.example` for all available options.
 
 ### Production Setup
 
-```
+``` text
 ┌─────────────┐
 │   Nginx     │  Port 80
 │  (Frontend) │
@@ -263,6 +265,7 @@ docker volume prune
 ### Build Time
 
 - Use BuildKit for faster builds:
+
   ```bash
   DOCKER_BUILDKIT=1 docker-compose build
   ```
@@ -298,6 +301,7 @@ services:
 ### Health Checks
 
 Both services have health check endpoints:
+
 - Backend: http://localhost:3002/health
 - Frontend: http://localhost/health
 

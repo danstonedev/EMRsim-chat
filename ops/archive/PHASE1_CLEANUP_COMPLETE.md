@@ -14,7 +14,8 @@ Phase 1 focused on removing dead code, legacy files, and backup files that had n
 ## ✅ Completed Tasks
 
 ### 1. Deleted Backup Files (2 files)
-```
+
+``` text
 ✓ frontend/src/shared/ConversationController.ts.backup
 ✓ frontend/src/pages/App.tsx.backup
 ```
@@ -23,7 +24,8 @@ Phase 1 focused on removing dead code, legacy files, and backup files that had n
 ---
 
 ### 2. Deleted Legacy Stub Components (7 files)
-```
+
+``` text
 ✓ frontend/src/pages/App.refactored.tsx
 ✓ frontend/src/pages/SpsDrawer.tsx
 ✓ frontend/src/pages/components/chat/MessageVoiceIndicator.tsx
@@ -34,6 +36,7 @@ Phase 1 focused on removing dead code, legacy files, and backup files that had n
 ```
 
 **Details:**
+
 - `App.refactored.tsx` - Legacy refactor prototype, replaced by active App.tsx
 - `SpsDrawer.tsx` - Legacy SPS drawer stub (functionality moved elsewhere)
 - `MessageVoiceIndicator.tsx` - Empty legacy component module
@@ -47,12 +50,14 @@ Phase 1 focused on removing dead code, legacy files, and backup files that had n
 ---
 
 ### 3. Deleted Legacy Test Files (2 files)
-```
+
+``` text
 ✓ frontend/src/pages/SpsDrawer.test.tsx
 ✓ backend/tests/persona_tone_randomness.test.ts
 ```
 
 **Details:**
+
 - Both files contained `describe.skip()` with "legacy" comments
 - Tests were not running and had no value
 
@@ -61,6 +66,7 @@ Phase 1 focused on removing dead code, legacy files, and backup files that had n
 ---
 
 ### 4. Updated .gitignore
+
 ```diff
 + # Backup files (never commit backups)
 + *.backup
@@ -75,20 +81,24 @@ Phase 1 focused on removing dead code, legacy files, and backup files that had n
 ## 🔍 Verification Results
 
 ### Import Validation ✅
+
 - Searched for imports of deleted files
 - **Result:** No broken imports found
 - `VoiceLanguageSettingsSection` (the modern replacement) is properly referenced
 
 ### Build Validation ✅
+
 ```bash
 npm run build
 ```
+
 - **Result:** Build succeeded (12.92s)
 - No compilation errors
 - All chunks compiled successfully
 - Warning about chunk size is pre-existing (not related to cleanup)
 
 ### Files Affected
+
 - **Deleted:** 11 files total
   - 2 backup files
   - 7 stub components
@@ -99,18 +109,21 @@ npm run build
 ## 📊 Impact Metrics
 
 ### Before Phase 1
+
 - Dead code files: 11
 - Backup files in repo: 2
 - Skipped tests: 2
 - .gitignore backup rules: None
 
 ### After Phase 1
+
 - Dead code files: 0 ✅
 - Backup files in repo: 0 ✅
 - Skipped tests: 0 ✅
 - .gitignore backup rules: Yes ✅
 
 ### Benefits
+
 - ✅ **Cleaner codebase** - 11 fewer files to maintain
 - ✅ **Less confusion** - No more wondering what stub files do
 - ✅ **Better hygiene** - Backup files won't sneak into commits
@@ -122,9 +135,11 @@ npm run build
 ## 🎯 Next Steps
 
 ### Phase 2: Deprecation Removal (Next Sprint)
+
 Ready to start when you are. See `CODE_MODERNIZATION_ANALYSIS.md` for details.
 
 **Quick preview of Phase 2:**
+
 1. Replace all `.on()` usages with `.addListener()` in ConversationController
 2. Remove deprecated methods from codebase
 3. Remove `legacyHeaders` configuration options
@@ -148,7 +163,8 @@ Before committing these changes:
 - [ ] Push to remote
 
 ### Suggested Commit Message
-```
+
+``` text
 chore: Phase 1 cleanup - Remove dead code and legacy files
 
 - Remove 2 backup files (.backup extensions)

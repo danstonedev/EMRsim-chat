@@ -10,6 +10,7 @@
 ## Overview
 
 Phase 2 eliminates the race condition causing multiple media loads on startup by implementing:
+
 1. **Scenario caching** - Prevents reloading already-loaded scenarios
 2. **Deferred state resets** - Only resets when necessary, not eagerly
 3. **Loading state tracking** - Provides infrastructure for UI feedback
@@ -19,7 +20,8 @@ Phase 2 eliminates the race condition causing multiple media loads on startup by
 ## Problem Recap
 
 ### Before Phase 2:
-```
+
+``` text
 [useVoiceSession] Setting scenario media: {mediaCount: 0, mediaIds: []}  ← Empty #1
 [useVoiceSession] Setting scenario media: {mediaCount: 0, mediaIds: []}  ← Empty #2
 [useVoiceSession] Setting scenario media: {mediaCount: 0, mediaIds: []}  ← Empty #3
@@ -37,6 +39,7 @@ Phase 2 eliminates the race condition causing multiple media loads on startup by
 ### Key Changes:
 
 #### 1. **Scenario Caching** ✅
+
 ```typescript
 const hasLoadedRef = useRef<string | null>(null)
 
@@ -54,6 +57,7 @@ if (hasLoadedRef.current === scenarioId && scenarioMedia.length > 0) {
 ---
 
 #### 2. **Deferred State Reset** ✅
+
 ```typescript
 // BEFORE: Eager reset
 useEffect(() => {
@@ -89,6 +93,7 @@ useEffect(() => {
 ---
 
 #### 3. **Loading State Tracking** ✅
+
 ```typescript
 const [isLoading, setIsLoading] = useState(false)
 
@@ -106,6 +111,7 @@ if (scenarioMediaRequestIdRef.current === requestId) {
 ```
 
 **Benefit:** 
+
 - Provides clean loading state for future UI enhancements
 - Prevents intermediate empty updates during load
 - Ready for loading spinners or skeleton screens
@@ -113,6 +119,7 @@ if (scenarioMediaRequestIdRef.current === requestId) {
 ---
 
 #### 4. **Enhanced Cancellation Handling** ✅
+
 ```typescript
 // Check if request is still valid
 if (scenarioMediaRequestIdRef.current !== requestId) {
@@ -130,7 +137,8 @@ if (scenarioMediaRequestIdRef.current !== requestId) {
 ## Before vs After
 
 ### State Update Flow - BEFORE:
-```
+
+``` text
 1. Component renders with scenarioId=""
    └─> useScenarioMedia sets [] (empty update #1)
 
@@ -152,7 +160,8 @@ if (scenarioMediaRequestIdRef.current !== requestId) {
 ---
 
 ### State Update Flow - AFTER:
-```
+
+``` text
 1. Component renders with scenarioId=""
    └─> No action (no data to clear)
 
@@ -190,17 +199,17 @@ if (scenarioMediaRequestIdRef.current !== requestId) {
 ### Console Output (with Phase 1):
 
 **Before Phase 2:**
-```
+``` text
 (Still had multiple media state changes internally)
 ```
 
 **After Phase 2:**
-```
+``` text
 [useScenarioMedia] Loaded media: {scenarioId: 'abc', count: 2, ids: [...]}
 ```
 
 **With cache hit:**
-```
+``` text
 [useScenarioMedia] Using cached media for scenario: abc
 ```
 
@@ -242,12 +251,14 @@ const { scenarioMedia } = useScenarioMedia({
 ## Testing
 
 ### Type Check: ✅ PASSED
+
 ```bash
 cd frontend; npm run type-check
 ```
 No type errors.
 
 ### Unit Tests: ✅ PASSED
+
 ```bash
 cd frontend; npm run test:viewer --silent
 ```
@@ -266,6 +277,7 @@ All tests passing.
 ## Code Quality Improvements
 
 ### 1. Better Documentation
+
 ```typescript
 /**
  * Phase 2 Optimizations:
@@ -276,6 +288,7 @@ All tests passing.
 ```
 
 ### 2. Debug Visibility
+
 ```typescript
 if (import.meta.env.DEV) {
   console.debug('[useScenarioMedia] Using cached media for scenario:', scenarioId)
@@ -285,6 +298,7 @@ if (import.meta.env.DEV) {
 ```
 
 ### 3. Smart State Management
+
 - Only resets when necessary
 - Tracks what's loaded to prevent duplicates
 - Provides loading indicators for UI
@@ -296,6 +310,7 @@ if (import.meta.env.DEV) {
 ### UI Integration Ideas:
 
 #### 1. Loading Skeleton
+
 ```tsx
 const { scenarioMedia, isLoading } = useScenarioMedia({...})
 
@@ -311,6 +326,7 @@ return (
 ```
 
 #### 2. Optimistic UI
+
 ```tsx
 // Show previous scenario's media while loading new one
 {isLoading && scenarioMedia.length > 0 && (
@@ -322,6 +338,7 @@ return (
 ```
 
 #### 3. Cache Invalidation
+
 ```typescript
 // Add manual refresh capability
 const refreshMedia = () => {
@@ -335,28 +352,32 @@ const refreshMedia = () => {
 ## Edge Cases Handled
 
 ### 1. **Rapid Scenario Switching**
-```
+
+``` text
 User clicks: A → B → C in quick succession
 Result: Only C loads, A & B cancelled
 ```
 ✅ Request ID tracking ensures only latest request completes
 
 ### 2. **Returning to Previous Scenario**
-```
+
+``` text
 User path: A → B → A
 Result: A loads once, cached on return
 ```
 ✅ Cache check prevents unnecessary reload
 
 ### 3. **Empty to Populated**
-```
+
+``` text
 User path: (none) → A
 Result: Single load, no empty updates
 ```
 ✅ Conditional reset only clears if needed
 
 ### 4. **Network Failure**
-```
+
+``` text
 API fails during load
 Result: Error logged, state reset, isLoading cleared
 ```
@@ -417,6 +438,7 @@ Phase 1 + Phase 2 together deliver:
 ### Optional: Phase 3 - Effect Consolidation
 
 Consolidate 3 separate `useEffect` blocks in `useVoiceSession.ts`:
+
 - `setScenarioId`
 - `setScenarioMedia`  
 - `setExternalSessionId`

@@ -3,12 +3,14 @@
 ## Problem Identified
 
 **User was experiencing transcription failures specifically for:**
+
 1. User speech not being transcribed
 2. First AI message not being transcribed
 
 ## Root Causes Found
 
 ### 1. ❌ Backend NOT Including Transcription Config in Token Request
+
 **File:** `backend/src/routes/voice.js`
 
 The backend was **completely omitting** `input_audio_transcription` from the OpenAI token request body:
@@ -28,12 +30,14 @@ body: JSON.stringify({
 ```
 
 **Why This Was Wrong:**
+
 - The misleading comment suggested transcription should ONLY be set via `session.update`
 - In reality, `input_audio_transcription` MUST be in the token request for OpenAI to enable transcription
 - Without it in the token, transcription was never enabled at the API level
 - `session.update` can only UPDATE settings, not enable transcription from scratch
 
 ### 2. ❌ Hardcoded `whisper-1` Fallbacks
+
 Multiple locations had hardcoded fallbacks to the old `whisper-1` model instead of using the configured optimized model.
 
 ## Fixes Applied
@@ -108,7 +112,8 @@ OPENAI_TRANSCRIPTION_MODEL=gpt-4o-mini-transcribe
 ## How OpenAI Realtime Transcription Works
 
 ### Token Request (Backend) - REQUIRED
-```
+
+``` text
 POST https://api.openai.com/v1/realtime/sessions
 {
   model: "gpt-realtime-2025-08-28",
@@ -121,7 +126,8 @@ POST https://api.openai.com/v1/realtime/sessions
 ```
 
 ### Session Update (Frontend) - OPTIONAL
-```
+
+``` text
 session.update (WebSocket)
 {
   session: {
@@ -134,6 +140,7 @@ session.update (WebSocket)
 ## Testing
 
 After these fixes:
+
 1. ✅ Backend validates `OPENAI_TRANSCRIPTION_MODEL` is configured
 2. ✅ Backend includes transcription config in token request  
 3. ✅ OpenAI API enables transcription at session creation
@@ -156,6 +163,7 @@ After these fixes:
 `session.update` cannot enable transcription if it wasn't requested in the token.
 
 Think of it like:
+
 - **Token request** = "Turn on transcription feature at API level"
 - **session.update** = "Update settings for already-enabled feature"
 

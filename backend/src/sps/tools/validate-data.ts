@@ -5,12 +5,7 @@
   - Prints a concise report and exits non-zero on any error
 */
 import { zScreeningChallenge, zSpecialQuestion, zPersona, zClinicalScenario } from '../core/schemas';
-import {
-  convertPersonaBundle,
-  convertScenarioBundle,
-  loadContextModules,
-  resolveModule,
-} from '../runtime/session';
+import { convertPersonaBundle, convertScenarioBundle, loadContextModules, resolveModule } from '../runtime/session';
 import type { ModuleReference } from '../runtime/session';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -33,9 +28,10 @@ function readJson(file: string) {
 
 function listJsonFiles(dir: string): string[] {
   if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir)
-    .filter((f) => f.endsWith('.json'))
-    .map((f) => path.join(dir, f));
+  return fs
+    .readdirSync(dir)
+    .filter(f => f.endsWith('.json'))
+    .map(f => path.join(dir, f));
 }
 
 function listJsonFilesDeep(dir: string): string[] {
@@ -52,9 +48,10 @@ function listJsonFilesDeep(dir: string): string[] {
 
 function listDirectories(dir: string): string[] {
   if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir)
-    .map((entry) => path.join(dir, entry))
-    .filter((fullPath) => fs.existsSync(fullPath) && fs.statSync(fullPath).isDirectory());
+  return fs
+    .readdirSync(dir)
+    .map(entry => path.join(dir, entry))
+    .filter(fullPath => fs.existsSync(fullPath) && fs.statSync(fullPath).isDirectory());
 }
 
 async function main() {
@@ -66,10 +63,16 @@ async function main() {
     if (fs.existsSync(PATHS.challenges)) {
       const arr = readJson(PATHS.challenges);
       if (!Array.isArray(arr)) throw new Error('challenges file must be an array');
-      challengeBank = arr.map((it, idx) => {
-        try { return zScreeningChallenge.parse(it); }
-        catch (e: any) { issues.push({ level: 'ERROR', file: PATHS.challenges, message: `index ${idx}: ${e}` }); return null; }
-      }).filter(Boolean);
+      challengeBank = arr
+        .map((it, idx) => {
+          try {
+            return zScreeningChallenge.parse(it);
+          } catch (e: any) {
+            issues.push({ level: 'ERROR', file: PATHS.challenges, message: `index ${idx}: ${e}` });
+            return null;
+          }
+        })
+        .filter(Boolean);
     } else {
       issues.push({ level: 'WARN', file: PATHS.challenges, message: 'challenges file not found' });
     }
@@ -86,8 +89,11 @@ async function main() {
       const arr = readJson(f);
       if (!Array.isArray(arr)) throw new Error('special questions file must be an array');
       arr.forEach((it: any, idx: number) => {
-        try { specialBank.push(zSpecialQuestion.parse(it)); }
-        catch (e: any) { issues.push({ level: 'ERROR', file: f, message: `index ${idx}: ${e}` }); }
+        try {
+          specialBank.push(zSpecialQuestion.parse(it));
+        } catch (e: any) {
+          issues.push({ level: 'ERROR', file: f, message: `index ${idx}: ${e}` });
+        }
       });
     } catch (e: any) {
       issues.push({ level: 'ERROR', file: f, message: String(e) });
@@ -159,18 +165,24 @@ async function main() {
         // Cross-check referenced ids
         const screeningIds = Array.isArray(sc.screening_challenge_ids) ? sc.screening_challenge_ids : [];
         for (const cid of screeningIds) {
-          if (!challengeIds.has(cid)) issues.push({ level: 'ERROR', file: f, message: `unknown screening_challenge_id: ${cid}` });
+          if (!challengeIds.has(cid))
+            issues.push({ level: 'ERROR', file: f, message: `unknown screening_challenge_id: ${cid}` });
         }
         const specialIdsRef = Array.isArray(sc.special_question_ids) ? sc.special_question_ids : [];
         for (const sid of specialIdsRef) {
-          if (!specialIds.has(sid)) issues.push({ level: 'ERROR', file: f, message: `unknown special_question_id: ${sid}` });
+          if (!specialIds.has(sid))
+            issues.push({ level: 'ERROR', file: f, message: `unknown special_question_id: ${sid}` });
         }
         // Objective catalog sanity: at least one output channel present
         const objectiveCatalog = Array.isArray(sc.objective_catalog) ? sc.objective_catalog : [];
         objectiveCatalog.forEach((o: any, idx: number) => {
-          const scr = o?.patient_output_script || {} as any;
+          const scr = o?.patient_output_script || ({} as any);
           if (!scr.numeric && !scr.binary_flags && !scr.qualitative) {
-            issues.push({ level: 'WARN', file: f, message: `objective_catalog[${idx}] has empty patient_output_script` });
+            issues.push({
+              level: 'WARN',
+              file: f,
+              message: `objective_catalog[${idx}] has empty patient_output_script`,
+            });
           }
         });
       } catch (e: any) {
@@ -199,9 +211,8 @@ async function main() {
     }
 
     const linkage = header.linkage || {};
-    const personaId = typeof linkage.persona_id === 'string' && linkage.persona_id.trim()
-      ? linkage.persona_id.trim()
-      : null;
+    const personaId =
+      typeof linkage.persona_id === 'string' && linkage.persona_id.trim() ? linkage.persona_id.trim() : null;
 
     if (personaId && !personaIds.has(personaId)) {
       issues.push({ level: 'ERROR', file: headerPath, message: `persona_id not found: ${personaId}` });
@@ -287,7 +298,7 @@ async function main() {
       objective,
       assessment,
       plan,
-      contextModules,
+      contextModules
     );
 
     if (!scenario) {
@@ -322,4 +333,7 @@ async function main() {
   if (errors.length > 0) process.exit(1);
 }
 
-main().catch((e) => { console.error('[sps][validate][fatal]', e); process.exit(1); });
+main().catch(e => {
+  console.error('[sps][validate][fatal]', e);
+  process.exit(1);
+});

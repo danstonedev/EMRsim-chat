@@ -25,6 +25,7 @@
 ## What Changed
 
 ### Created
+
 - `DataChannelConfigurator.ts` (182 lines)
   - `createDataChannelCallbacks()` - Factory method
   - `handleOpen()` - Enable transcription & audio
@@ -34,6 +35,7 @@
   - `handleClose()` - Cleanup ping interval
 
 ### Modified
+
 - `ConversationController.ts` (1290 → 1250 lines)
   - Added import for DataChannelConfigurator
   - Replaced 58-line inline callback object with 18-line configurator instantiation
@@ -49,6 +51,7 @@
 ## Next Steps
 
 **Recommended:** Proceed with **Phase 4: ConnectionHandlers**  
+
 - Extract WebRTC connection state handlers (~180 lines)
 - Target reduction: ~150 lines from ConversationController
 - Estimated time: 1.5 hours

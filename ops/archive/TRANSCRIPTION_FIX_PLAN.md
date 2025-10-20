@@ -14,7 +14,7 @@ After deep analysis of OpenAI's official Realtime API examples, I've identified 
 
 ###  The Correct Event Sequence (from OpenAI examples)
 
-```
+``` text
 1. input_audio_buffer.speech_started
 2. input_audio_buffer.speech_stopped  
 3. conversation.item.created (user message) ← NO TRANSCRIPT YET!
@@ -125,6 +125,7 @@ if (type.includes('transcription.failed') || type.includes('input_audio_transcri
 ### Audio Playback
 
 The audio playback code looks correct:
+
 - WebRTC `ontrack` handler connects remote stream to audio element
 - Audio element has `play()` called with fade-in
 - Modalities include 'audio' in session config and response.create
@@ -157,6 +158,7 @@ session: {
 **Fix**: Wait for `conversation.item.input_audio_transcription.completed` event
 
 **Expected Outcome**: 
+
 - ✅ Transcriptions show actual speech
 - ✅ No more "[Speech not transcribed]" fallback (unless actually failed)
 - ✅ Assistant responds with voice

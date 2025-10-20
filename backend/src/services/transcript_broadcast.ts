@@ -40,7 +40,9 @@ export interface TranscriptPayload {
 function appendTranscriptHistory(sessionId: string, role: TranscriptRole, payload: TranscriptPayload): void {
   const bucket = transcriptHistory.get(sessionId) ?? [];
   const fallbackTimestamp = Number.isFinite(payload.timestamp) ? payload.timestamp : Date.now();
-  const finalizedAt = Number.isFinite(payload.finalizedAtMs ?? undefined) ? Number(payload.finalizedAtMs) : fallbackTimestamp;
+  const finalizedAt = Number.isFinite(payload.finalizedAtMs ?? undefined)
+    ? Number(payload.finalizedAtMs)
+    : fallbackTimestamp;
   const emittedAt = Number.isFinite(payload.emittedAtMs ?? undefined) ? Number(payload.emittedAtMs) : fallbackTimestamp;
   const startedAt = Number.isFinite(payload.startedAtMs ?? undefined) ? Number(payload.startedAtMs) : null;
 
@@ -117,7 +119,9 @@ export function broadcastUserTranscript(sessionId: string, payload: TranscriptPa
 
   const { text, isFinal, itemId } = payload;
   const fallbackTimestamp = Number.isFinite(payload.timestamp) ? Number(payload.timestamp) : Date.now();
-  const finalizedAt = Number.isFinite(payload.finalizedAtMs ?? undefined) ? Number(payload.finalizedAtMs) : fallbackTimestamp;
+  const finalizedAt = Number.isFinite(payload.finalizedAtMs ?? undefined)
+    ? Number(payload.finalizedAtMs)
+    : fallbackTimestamp;
   const emittedAt = Number.isFinite(payload.emittedAtMs ?? undefined) ? Number(payload.emittedAtMs) : fallbackTimestamp;
   const startedAt = Number.isFinite(payload.startedAtMs ?? undefined) ? Number(payload.startedAtMs) : null;
 
@@ -168,7 +172,9 @@ export function broadcastAssistantTranscript(sessionId: string, payload: Transcr
 
   const { text, isFinal, itemId } = payload;
   const fallbackTimestamp = Number.isFinite(payload.timestamp) ? Number(payload.timestamp) : Date.now();
-  const finalizedAt = Number.isFinite(payload.finalizedAtMs ?? undefined) ? Number(payload.finalizedAtMs) : fallbackTimestamp;
+  const finalizedAt = Number.isFinite(payload.finalizedAtMs ?? undefined)
+    ? Number(payload.finalizedAtMs)
+    : fallbackTimestamp;
   const emittedAt = Number.isFinite(payload.emittedAtMs ?? undefined) ? Number(payload.emittedAtMs) : fallbackTimestamp;
   const startedAt = Number.isFinite(payload.startedAtMs ?? undefined) ? Number(payload.startedAtMs) : null;
 

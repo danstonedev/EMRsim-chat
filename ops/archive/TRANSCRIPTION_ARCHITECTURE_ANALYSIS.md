@@ -30,6 +30,7 @@ Your current solution uses **OpenAI's Realtime API for BOTH user and assistant t
 #### Problem 1: Backend Relay Mode Mismatch
 
 **Issue:** Your code has `backendTranscriptMode = true`, which means:
+
 - `handleUserTranscript()` does NOT relay user transcripts to backend
 - It only updates internal state (`userPartial`)
 - The actual relay happens in the OpenAI event handler on `input_audio_transcription.completed`
@@ -66,6 +67,7 @@ if (this.backendTranscriptMode) {
 #### Problem 2: Transcript Timing & Ordering Issues
 
 **Issue:** OpenAI events can arrive out-of-order, causing:
+
 - Assistant transcripts arriving BEFORE user transcript is finalized
 - Buffering logic attempting to reorder events
 - Race conditions between deltas and completions
@@ -102,6 +104,7 @@ OPENAI_TRANSCRIPTION_MODEL=
 You mentioned: *"transcription seems to alternate between the user's speech not being transcribed or the AI's input never being transcribed"*
 
 **Root Cause:** The relay logic is split:
+
 - User transcripts: Relayed in `input_audio_transcription.completed` event handler
 - Assistant transcripts: Relayed in `handleAssistantTranscript()` method
 
@@ -130,36 +133,42 @@ You asked: *"we need to get to a working solution and I think it probably needs 
 **Good instincts!** Here's why:
 
 #### Option A: Separate STT for User (Your Idea)
-```
+
+``` text
 User speaks → Separate Whisper API call → User transcript
 AI responds → Realtime API audio_transcript → AI transcript
 ```
 
 **Pros:**
+
 - Independent transcription pipelines (no coupling)
 - Could use faster/better STT models (Whisper large-v3)
 - More control over timing and accuracy
 - Simpler ordering logic
 
 **Cons:**
+
 - Need to send audio twice (WebRTC + separate API call)
 - More complex state management
 - Higher latency for user transcription
 - Extra API costs
 
 #### Option B: Realtime API for Both (Current)
-```
+
+``` text
 User speaks → Realtime API → User transcript
 AI responds → Realtime API → AI transcript (automatic)
 ```
 
 **Pros:**
+
 - Single audio pipeline
 - Lower latency
 - Built-in timing coordination
 - Lower costs
 
 **Cons:**
+
 - Coupled transcription (current issues)
 - Limited control over STT model
 - Event ordering complexity
@@ -281,17 +290,20 @@ export function relayTranscript(req, res) {
 If the above fixes don't resolve the issues, implement this hybrid:
 
 ### User Transcription: Browser-Based STT
+
 - Use Web Speech API or browser-based Whisper
 - Faster feedback, no API calls
 - Local processing
 
 ### Assistant Transcription: Realtime API (Keep Current)
+
 - Already works well
 - No changes needed
 
 ## Testing Plan
 
 1. **Enable transcription model:**
+
    ```env
    OPENAI_TRANSCRIPTION_MODEL=gpt-4o-mini-transcribe
    ```
@@ -314,6 +326,7 @@ If the above fixes don't resolve the issues, implement this hybrid:
 **Your current architecture is actually CORRECT** - you're using OpenAI Realtime API for both user and assistant transcription, which is the right approach.
 
 **The problem is not the architecture** - it's the implementation details:
+
 1. Empty transcription model configuration
 2. Backend mode preventing proper event flow
 3. Relay logic not executing consistently

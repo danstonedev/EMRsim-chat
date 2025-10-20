@@ -20,6 +20,7 @@ if (type === 'response.created') {
 ```
 
 **Event sequence causing the bug:**
+
 1. User speaks → `input_audio_buffer.committed` event
 2. `userCommitTimer` starts (waiting for transcription)
 3. Assistant starts responding → `response.created` event arrives **BEFORE** transcription deltas
@@ -52,23 +53,26 @@ if (type === 'response.created') {
 ## How It Works
 
 **`userCommitTimer` as a flag:**
+
 - Set when `input_audio_buffer.committed` arrives
 - Indicates transcription is processing
 - Cleared when transcription completes or times out
 
 **Decision logic:**
+
 - If `userCommitTimer != null` → Transcription in progress, **wait for it**
 - If `userCommitTimer == null` → No pending transcription, safe to finalize
 
 ## Files Changed
 
 **Frontend:** `frontend/src/shared/ConversationController.ts`
+
 - Line ~1789: Added check for `userCommitTimer` before force-finalizing
 
 ## Testing
 
 After this fix, watch for console log:
-```
+``` text
 [ConversationController] ⏳ Waiting for transcription to complete (audio committed, no deltas yet)
 ```
 
@@ -89,5 +93,6 @@ This means the system is correctly **waiting** for transcription instead of forc
 **Never force-finalize when transcription is in flight.**  
 
 Use state flags (`userCommitTimer`) to distinguish between:
+
 - "No user input at all" (OK to skip)
 - "User spoke but transcription not ready yet" (MUST wait)

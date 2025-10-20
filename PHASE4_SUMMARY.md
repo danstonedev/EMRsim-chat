@@ -25,12 +25,14 @@
 ## What Changed
 
 ### Created
+
 - `ConnectionHandlers.ts` (247 lines)
   - `handleIceConnectionStateChange()` - ICE state transitions
   - `handleConnectionStateChange()` - Peer connection states
   - `logTransport()` - Transport event logging
 
 ### Modified
+
 - `ConversationController.ts` (1260 → 1199 lines)
   - Added import for ConnectionHandlers
   - Added field `private connectionHandlers: ConnectionHandlers`
@@ -55,6 +57,7 @@ After ICE connection succeeds, we schedule a 2-second timeout to verify the data
 ## Next Steps
 
 **Recommended:** Proceed with **Phase 5: BackendIntegration**  
+
 - Extract backend socket & relay logic (~150 lines)
 - Target reduction: ~150 lines from ConversationController
 - Estimated time: 1.5-2 hours

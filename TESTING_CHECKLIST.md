@@ -15,16 +15,18 @@
 ## Testing Steps
 
 ### 1. Open the Application
+
 Go to: http://127.0.0.1:5173/
 
 ### 2. Start Voice Session
+
 - Click the microphone button
 - Wait for connection (watch console logs)
 
 ### 3. Look for These Console Logs
 
 **On Connection:**
-```
+``` text
 [ConversationController] 🎯 session.created received, enabling transcription
 [ConversationController] 📤 Sending session.update: {...}
 [ConversationController] ✅ session.update sent successfully
@@ -38,13 +40,13 @@ Say something clear like: **"Hello, this is a test"**
 ### 5. Check Console for Success OR Rate Limit
 
 **SUCCESS (if rate limit cleared):**
-```
+``` text
 [ConversationController] Audio buffer committed, waiting for transcription...
 [ConversationController] ✅ TRANSCRIPTION COMPLETED: {transcript: "Hello, this is a test"}
 ```
 
 **RATE LIMIT (if 429 still active):**
-```
+``` text
 [ConversationController] 🚫 RATE LIMIT ERROR (429): Input transcription failed. 429 Too Many Requests
 [ConversationController] 💡 Solution: Upgrade OpenAI account at https://platform.openai.com/settings/organization/billing
 ```
@@ -52,11 +54,13 @@ Say something clear like: **"Hello, this is a test"**
 ### 6. Check UI
 
 **If Success:**
+
 - ✅ Your message shows actual words: "Hello, this is a test"
 - ✅ Assistant responds with voice audio
 - ✅ Conversation flows naturally
 
 **If Rate Limit:**
+
 - ⚠️ Message shows: `[Rate limit exceeded - upgrade OpenAI account]`
 - ⚠️ This is expected - need to upgrade OpenAI account
 
@@ -65,13 +69,14 @@ Say something clear like: **"Hello, this is a test"**
 ### Outcome A: Transcription Works! 🎉
 
 **Console shows:**
-```
+``` text
 ✅ TRANSCRIPTION COMPLETED: {transcript: "..."}
 ```
 
 **UI shows:** Your actual spoken words
 
 **This means:** 
+
 - ✅ Code fixes are working perfectly
 - ✅ Rate limit has cleared or account was upgraded
 - ✅ Speech-to-speech is functional
@@ -79,13 +84,14 @@ Say something clear like: **"Hello, this is a test"**
 ### Outcome B: Rate Limit Still Active 🚫
 
 **Console shows:**
-```
+``` text
 🚫 RATE LIMIT ERROR (429): ...
 ```
 
 **UI shows:** `[Rate limit exceeded - upgrade OpenAI account]`
 
 **This means:**
+
 - ✅ Code is working correctly (detecting the error properly)
 - ⚠️ OpenAI account needs upgrade
 - ⚠️ Or wait 24 hours for rate limit reset (free tier)
@@ -110,16 +116,19 @@ If you see a different error, copy the console output and we'll investigate.
 ## Next Steps Based on Result
 
 ### If It Works:
+
 - Test multiple conversation turns
 - Verify voice responses play correctly
 - Enjoy your working voice chat! 🎤✨
 
 ### If Rate Limit:
+
 - Option 1: Upgrade OpenAI account ($5 minimum)
 - Option 2: Wait 24 hours for free tier reset
 - Option 3: Use different OpenAI API key
 
 ### If Different Error:
+
 - Copy full console output
 - Share with me for further investigation
 - May need additional fixes
@@ -127,6 +136,7 @@ If you see a different error, copy the console output and we'll investigate.
 ## Files Ready for Review
 
 All documentation is ready:
+
 - `FINAL_DIAGNOSIS.md` - Complete analysis
 - `RATE_LIMIT_SOLUTION.md` - Rate limit help
 - `TRANSCRIPTION_FIX_SUMMARY.md` - Code changes

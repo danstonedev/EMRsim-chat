@@ -1,12 +1,14 @@
 # Systemic Transcription Fix - First Message Race Condition
 
 ## Executive Summary
+
 Fixed the root cause of first-message transcription failures: a race condition in the OpenAI Realtime API event sequence where `response.created` arrives BEFORE `audio_buffer.committed`, causing the state machine to incorrectly assume "no user input" and force-finalize with empty text.
 
 ## The Systemic Problem
 
 ### Event Sequence in OpenAI Realtime API
-```
+
+``` text
 1. speech_stopped        → User done speaking (VAD detected silence)
 2. response.created      → AI responds IMMEDIATELY  ⚠️ RACE CONDITION HERE
 3. audio_buffer.committed → Audio processing starts
@@ -15,6 +17,7 @@ Fixed the root cause of first-message transcription failures: a race condition i
 ```
 
 ### Previous (Broken) State Machine
+
 ```typescript
 // speech_stopped handler (line ~1622)
 if (type === 'input_audio_buffer.speech_stopped') {
@@ -43,6 +46,7 @@ if (type === 'input_audio_buffer.committed') {
 **Problem:** The check for `userCommitTimer` was correct logic, but that flag wasn't set until `audio_buffer.committed`, which arrives AFTER `response.created`. So the check always failed for the first message.
 
 ### Why Previous Fixes Didn't Work
+
 1. **First fix:** Added `input_audio_transcription` to backend token request → Necessary but insufficient
 2. **Second fix:** Removed hardcoded whisper-1 fallbacks → Necessary but insufficient  
 3. **Third fix:** Added `userCommitTimer` check in `response.created` → **Correct logic, wrong timing!**
@@ -52,6 +56,7 @@ The third fix checked the right flag but at the wrong time - the flag wasn't set
 ## The Systemic Solution
 
 ### New State Flag: `userSpeechPending`
+
 Added an **early indicator** flag that's set BEFORE the race condition window:
 
 ```typescript
@@ -62,6 +67,7 @@ private userSpeechPending = false  // Set when speech_stopped, cleared when fina
 ### Implementation
 
 #### 1. Set Flag When Speech Stops (Earliest Point)
+
 ```typescript
 // speech_stopped handler (line ~1622)
 if (type === 'input_audio_buffer.speech_stopped' || type.endsWith('input_audio_buffer.speech_stopped')) {
@@ -74,6 +80,7 @@ if (type === 'input_audio_buffer.speech_stopped' || type.endsWith('input_audio_b
 ```
 
 #### 2. Check Flag Before Force-Finalizing (Decision Point)
+
 ```typescript
 // response.created handler (line ~1795)
 if (!this.userFinalized && !this.userHasDelta) {
@@ -96,6 +103,7 @@ if (!this.userFinalized && !this.userHasDelta) {
 ```
 
 #### 3. Clear Flag When Transcription Completes (Cleanup)
+
 ```typescript
 // transcription.completed handler (line ~1670)
 if (!this.userFinalized) {
@@ -108,6 +116,7 @@ if (!this.userFinalized) {
 ```
 
 #### 4. Clear Flag on Reset (State Hygiene)
+
 ```typescript
 // Reset handler (line ~1346)
 this.userFinalized = false
@@ -117,8 +126,9 @@ this.userSpeechPending = false  // Clear pending flag on reset
 ## Why This Fix Works
 
 ### Timing Comparison
+
 **Before (Broken):**
-```
+``` text
 speech_stopped → isUserSpeaking=false only
 response.created → checks userCommitTimer (null!) → force finalize empty ❌
 audio_buffer.committed → sets userCommitTimer (too late!)
@@ -126,7 +136,7 @@ transcription deltas → treated as new turn (wrong!)
 ```
 
 **After (Fixed):**
-```
+``` text
 speech_stopped → userSpeechPending=true ✅
 response.created → checks userSpeechPending (true!) → waits ✅
 audio_buffer.committed → sets userCommitTimer
@@ -135,12 +145,14 @@ transcription.completed → clears userSpeechPending ✅
 ```
 
 ### Key Insight
+
 The fix addresses the **systemic timing issue**: we need to set a flag at the **earliest possible event** (speech_stopped) that arrives **before** the decision point (response.created), not at a later event (audio_buffer.committed) that arrives **after** the decision point.
 
 ## Testing Expected Behavior
 
 ### Console Log Sequence (Fixed)
-```
+
+``` text
 🛑 User speech stopped
 🔧 Set userSpeechPending = true (audio captured, transcription incoming)
 🤖 Assistant response starting
@@ -152,6 +164,7 @@ The fix addresses the **systemic timing issue**: we need to set a flag at the **
 ```
 
 ### What Should Work Now
+
 - ✅ First user message in conversation transcribed correctly
 - ✅ Subsequent messages continue to work
 - ✅ No empty text force-finalizations
@@ -159,6 +172,7 @@ The fix addresses the **systemic timing issue**: we need to set a flag at the **
 - ✅ Chronological ordering maintained
 
 ## Files Modified
+
 1. `frontend/src/shared/ConversationController.ts`
    - Line 597: Added `userSpeechPending` state variable
    - Line 1622: Set flag when speech stops
@@ -167,12 +181,14 @@ The fix addresses the **systemic timing issue**: we need to set a flag at the **
    - Line 1346: Clear flag on reset
 
 ## Lessons Learned
+
 1. **Band-aids don't fix systemic issues** - Checking flags is useless if flags aren't set at the right time
 2. **Understand event ordering** - OpenAI API events arrive in specific sequence: speech_stopped → response.created (immediate!) → audio_buffer.committed (later)
 3. **State machine timing matters** - Flags must be set **before** they're checked, not after
 4. **Think systemically** - "Individual troubleshooting" (fix this specific bug) can miss architectural timing issues
 
 ## Related Documentation
+
 - `TRANSCRIPTION_ROOT_CAUSE_FIX.md` - Fix #1: Added input_audio_transcription to token request
 - `FIRST_MESSAGE_TRANSCRIPTION_FIX.md` - Fix #2 (incomplete): Added userCommitTimer check (correct logic, wrong timing)
 - `SYSTEMIC_TRANSCRIPTION_FIX.md` - Fix #3 (complete): This document - added early flag

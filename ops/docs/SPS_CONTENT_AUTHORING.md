@@ -6,7 +6,7 @@ This guide explains the SPS content system's structure, authoring workflow, and 
 
 ## Content Structure
 
-```
+``` text
 backend/src/sps/
   content/                 # Runtime-ingested only
     personas/
@@ -46,6 +46,7 @@ This generates a single compiled file in `content/scenarios/compiled/<scenario_i
 ### 2. Creating/Modifying Personas
 
 Personas are stored in:
+
 - `content/personas/realtime/*.json` - For realtime personas
 - `content/personas/shared/*.json` - For shared personas used across scenarios
 
@@ -91,12 +92,14 @@ npm run sps:bump-version -- --help
 ```
 
 The tool will:
+
 1. Update the version number according to semantic versioning rules
 2. Add your change note to the version history
 3. Regenerate the content manifests
 4. For scenarios, trigger recompilation of the affected scenario
 
 When to bump versions:
+
 - **Major (1.0.0)**: Breaking changes that require updates to dependent content
 - **Minor (0.1.0)**: New features or significant content additions
 - **Patch (0.0.1)**: Bug fixes, typo corrections, minor content adjustments
@@ -110,6 +113,7 @@ npm run sps:generate-manifests
 ```
 
 This creates:
+
 - `content/manifest.json` - Version information for all content
 - `content/dependencies.json` - Scenario dependency relationships
 - `content/catalogs/report.json` - Catalog usage analysis
