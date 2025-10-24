@@ -11,6 +11,9 @@ out/
 .cache/
 *.tsbuildinfo
 
+# Lint caches
+.eslintcache
+
 # Test & reports
 coverage/
 test-results/
@@ -18,6 +21,8 @@ playwright-report/
 jest-html-reporters-*/
 *.lcov
 e2e-results.json
+playwright/.auth/
+.nyc_output/
 
 # OS/editor junk
 .DS_Store
@@ -29,6 +34,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+.node_repl_history
 
 # Scripts and tool run artifacts (do not commit run outputs)
 scripts/*-results.json
@@ -40,19 +46,24 @@ scripts/transcription-message-flow-results.json
 scripts/knee-entry-gen-report.json
 
 # Stray compiled JS in TS source (prevent accidental add)
-backend/src/index.js
+backend/src/**/*.js
+backend/src/**/*.js.map
 
 # Env files (real values never committed)
 .env
 .env.local
 .env.*.local
+.env.development
+.env.test
+.env.production
+.env.staging
 *.env.backup
 *.env.local.backup
+.envrc
+.npmrc
 
 # Package managers
-pnpm-lock.yaml
-package-lock.json
-yarn.lock
+# Best practice: commit lockfiles for reproducible builds (no ignore)
 
 # IDE
 .vscode/*
@@ -63,6 +74,9 @@ yarn.lock
 *.swp
 *.swo
 *~
+
+# Hosting providers
+.vercel/
 
 # Backup files (never commit backups)
 *.backup
@@ -78,3 +92,4 @@ yarn.lock
 tmp/
 temp/
 *.tmp
+*.tgz
