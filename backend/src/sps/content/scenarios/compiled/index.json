@@ -1,18 +1,18 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2025-10-16T15:55:49.154Z",
+  "generated_at": "2025-10-24T06:38:25.567Z",
   "generator": "sps-compiler",
   "scenarios": {
     "sc_hip_tha_anterior_pod0_v1": {
       "scenario_id": "sc_hip_tha_anterior_pod0_v1",
       "file": "scenarios/compiled/sc_hip_tha_anterior_pod0_v1.json",
-      "checksum": "sha256:57dee18dada97735d2319d57553d2f8c52443554da1262d0c59063eaaed37ed9",
+      "checksum": "sha256:20ed360531fd9c3dcbffc652e2638a37bdb9c751caa0b1d63b8916108a6f3f6d",
       "content_version": "1.0.0",
-      "compiled_at": "2025-10-08T14:01:00.734Z",
-      "manifest_checksum": "sha256:43eff75d871b3f97c7cf0cea51870cf94966bf58a64ed83f2f10fdcca884853a",
-      "dependencies_checksum": "sha256:46f2f8a45c2e8a39c2951c72fd49f49948d079b9aa19dfe3b55e6e9f7e5c4e73",
-      "persona_id": "prsn_tha_pod0_v1",
-      "persona_checksum": "sha256:b6aaf1c3ab41917d6c12441d26688371306b32bbd21fb6f6ca877c2264680fbe",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:7add013bb24a7620b1e65a79fc20e1702c896ea26e821c0b9d160d183675257c",
+      "dependencies_checksum": "sha256:6179783cb6d2c929294278be845e1d480765136b2f8af9faad8fd621ad51bd6b",
+      "persona_id": "alloy-greta-olson",
+      "persona_checksum": "sha256:4493a216466f00f9d73166348378e73497105d9e6c98c8fdee408ecf99bf7060",
       "modules": [
         {
           "module_id": "acute_care_total_joint",
@@ -21,16 +21,28 @@
         }
       ]
     },
+    "sc_knee_acl_coper_nonop_entry_v1": {
+      "scenario_id": "sc_knee_acl_coper_nonop_entry_v1",
+      "file": "scenarios/compiled/sc_knee_acl_coper_nonop_entry_v1.json",
+      "checksum": "sha256:1aae8f46a0980863e0916fa5075a44c83d85c6722d8c39d2ff04827a340d523e",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:92b988d350cc294c5c326e6924325bf9571a2efbeaeae9ba7df963e8ee25eb86",
+      "dependencies_checksum": "sha256:c4468c760221c488d0d7ee67c79bb90d08b57bbbcd86097101721a2b4abd4a70",
+      "persona_id": "ash-hana-park",
+      "persona_checksum": "sha256:fdd047bf69ae19c372b2a35219485e3a18ceaf0d0fca4bac1aa31041ce559d3c",
+      "modules": []
+    },
     "sc_knee_acl_preop_direct_access_v1": {
       "scenario_id": "sc_knee_acl_preop_direct_access_v1",
       "file": "scenarios/compiled/sc_knee_acl_preop_direct_access_v1.json",
-      "checksum": "sha256:ae5741ca3eb318fd0ec9cb3c9d5252119cc92e5539d72df3ff43fb2ebd5c0cd4",
+      "checksum": "sha256:cf58ea5fa59094b2305fa6798d757c51fbc1ffe5ea2f8eb2f7a696c1634ae9d4",
       "content_version": "1.0.0",
-      "compiled_at": "2025-10-08T14:01:00.734Z",
-      "manifest_checksum": "sha256:f1057699572621a89819fc76047197764ca0087c38af2e8be88c3a9b83de3aab",
-      "dependencies_checksum": "sha256:5e278c8eca571d418b6b713bb818a1a9e869c049423c911761bb568d2c6f8b19",
-      "persona_id": "prsn_acl_preop_v1",
-      "persona_checksum": "sha256:69d711d0751aadb7c0dcc69b47eb7fa53b3121b9941918d14762d1e97136b33b",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:79b0c05575870dc47461be312e2e9886a4f6674eaefedaa79f8ddc3a261c4e90",
+      "dependencies_checksum": "sha256:b9fcce28408d8efeac9ee08dd7ead8ef652a8eae80eb9767ae6a52d09f13dfad",
+      "persona_id": "ash-riley-summers",
+      "persona_checksum": "sha256:1217502a818750406a3e82bc9fc6627009cdee8a001d3f254847568ab562aebb",
       "modules": [
         {
           "module_id": "sports_pt_generic",
@@ -39,16 +51,172 @@
         }
       ]
     },
+    "sc_knee_anterior_knee_pain_entry_v1": {
+      "scenario_id": "sc_knee_anterior_knee_pain_entry_v1",
+      "file": "scenarios/compiled/sc_knee_anterior_knee_pain_entry_v1.json",
+      "checksum": "sha256:267668f9472eb79ffdba9fe3bd6196070f9b90e510f0d9d620a99b59e643faeb",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:6bf1f97ff621f8ae74a3e5dfff83cf1058a84b88611e31aba997cb78590ea43c",
+      "dependencies_checksum": "sha256:4418031c9510fa88a3000920a5488727a99ad89e3bebe2064b03b8fbadf012cf",
+      "persona_id": "shimmer-lila-singh",
+      "persona_checksum": "sha256:82f110e3b9db0c71326b34b2ca051e068091f1ea7b487f61da1125370f436c41",
+      "modules": []
+    },
+    "sc_knee_anterior_knee_pain_intermediate_v1": {
+      "scenario_id": "sc_knee_anterior_knee_pain_intermediate_v1",
+      "file": "scenarios/compiled/sc_knee_anterior_knee_pain_intermediate_v1.json",
+      "checksum": "sha256:c84d2a17ec4cb487e4560384c88826f219842a3d97482ed8fba7a1babede6bfb",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:533ffa4b58dc14c1febf8f46924ff7bfa91a277b244bb2249a00a5feed6afa91",
+      "dependencies_checksum": "sha256:7193e70430f939b25ce421006858fe95b450827b58ecc048c4be9ad889364525",
+      "persona_id": null,
+      "persona_checksum": null,
+      "modules": []
+    },
+    "sc_knee_anterior_knee_pain_tendinosis_v1": {
+      "scenario_id": "sc_knee_anterior_knee_pain_tendinosis_v1",
+      "file": "scenarios/compiled/sc_knee_anterior_knee_pain_tendinosis_v1.json",
+      "checksum": "sha256:68b155e76752ce0ee9e7305ce408056df0d5dca4f4977fe886dfb10317a5f4db",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:17610d3463a98a89ac018a7953e491abba69370f454ac4f435ef001cbc75bc06",
+      "dependencies_checksum": "sha256:aa40530a79987b21a7cf1f8370313144fe65a17e7f8ec2437046a55bbc85f798",
+      "persona_id": null,
+      "persona_checksum": null,
+      "modules": []
+    },
+    "sc_knee_deg_meniscus_nonlocking_entry_v1": {
+      "scenario_id": "sc_knee_deg_meniscus_nonlocking_entry_v1",
+      "file": "scenarios/compiled/sc_knee_deg_meniscus_nonlocking_entry_v1.json",
+      "checksum": "sha256:506d0111fbab0d7a2fb3db0ee63e3de0d49fe063ca597af63fefc87debcf620e",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:4eba3e78855bcdbd948b7a7b50f0d063daa8e9c8680d86183edc8042b2b13a64",
+      "dependencies_checksum": "sha256:5f4f496fbd041ba9bbde48731d2be3ce041fd64634dbb56997bd3973745f50c5",
+      "persona_id": "echo-owen-carter",
+      "persona_checksum": "sha256:f82529d224da783a6f1e2ca6900c57bb5f140132978ffd18c537e473bb62f77a",
+      "modules": []
+    },
+    "sc_knee_hamstring_bf_grade1_entry_v1": {
+      "scenario_id": "sc_knee_hamstring_bf_grade1_entry_v1",
+      "file": "scenarios/compiled/sc_knee_hamstring_bf_grade1_entry_v1.json",
+      "checksum": "sha256:d388de97e3aeabdb94b97162689e53b7139595798a5045bafca8dd412528676c",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:b13c4da1bf714bd00e8bae92e80ec30a9bc8102ca41951a4dccc404394d3ba74",
+      "dependencies_checksum": "sha256:c7dea0c3598fc9edd260412b1223062d77122a1d37bc99c0f6ee566ce96fb204",
+      "persona_id": "sage-jonah-mensah",
+      "persona_checksum": "sha256:47f441ccab3981acf3434779bbfc7b14c16213a4a0dd2458afc3852f26ff4bc9",
+      "modules": []
+    },
+    "sc_knee_lcl_grade1_entry_v1": {
+      "scenario_id": "sc_knee_lcl_grade1_entry_v1",
+      "file": "scenarios/compiled/sc_knee_lcl_grade1_entry_v1.json",
+      "checksum": "sha256:6f15260fed03cad4bfa3c36eca7f373f76fbcb8abb3dc77eee3ac3b42094dadc",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:a4a0abb8c6acd7f27bf11a694bcfe4b17c7aefde5170322e9f58dca8e4df9fc6",
+      "dependencies_checksum": "sha256:c7dea0c3598fc9edd260412b1223062d77122a1d37bc99c0f6ee566ce96fb204",
+      "persona_id": "sage-jonah-mensah",
+      "persona_checksum": "sha256:47f441ccab3981acf3434779bbfc7b14c16213a4a0dd2458afc3852f26ff4bc9",
+      "modules": []
+    },
+    "sc_knee_mcl_grade1_entry_v1": {
+      "scenario_id": "sc_knee_mcl_grade1_entry_v1",
+      "file": "scenarios/compiled/sc_knee_mcl_grade1_entry_v1.json",
+      "checksum": "sha256:ae6d316ff8016dbe49020cd8479d7caa0bf7baf6ed164afd445f0ec9e6e63a14",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:fd5665194520de0fb15bc76fea97efa0e01bdab331658e6c8a8e4bf345bb76bc",
+      "dependencies_checksum": "sha256:c4468c760221c488d0d7ee67c79bb90d08b57bbbcd86097101721a2b4abd4a70",
+      "persona_id": "ash-hana-park",
+      "persona_checksum": "sha256:fdd047bf69ae19c372b2a35219485e3a18ceaf0d0fca4bac1aa31041ce559d3c",
+      "modules": []
+    },
+    "sc_knee_pcl_grade1_entry_v1": {
+      "scenario_id": "sc_knee_pcl_grade1_entry_v1",
+      "file": "scenarios/compiled/sc_knee_pcl_grade1_entry_v1.json",
+      "checksum": "sha256:398d7c8b177356de7e2ebec11b5ef771ed47e514b94d27acfb2744eea093055f",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:0bb231ed27a934da331699572d5f3e897d94a33558a5200e3e6b7bf7b260d776",
+      "dependencies_checksum": "sha256:85ebeabfb35b09aa7167788787986159ed75c2cfa29447bf5aaec43b52f0c58b",
+      "persona_id": "echo-devon-brooks",
+      "persona_checksum": "sha256:c24af504c895c76e913361d54d14bf9560382a2d0f971bcccff9f55e74bf06ac",
+      "modules": []
+    },
+    "sc_knee_pfp_entry_v1": {
+      "scenario_id": "sc_knee_pfp_entry_v1",
+      "file": "scenarios/compiled/sc_knee_pfp_entry_v1.json",
+      "checksum": "sha256:746271f7973c78e370b25cb6dc039e6653f44dc4c541b0c8531db5fb2afe0093",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:87bb4e7638ff3e1ef4cec4bbe6c2875e031cb858909767c440c7a306875fccec",
+      "dependencies_checksum": "sha256:c4468c760221c488d0d7ee67c79bb90d08b57bbbcd86097101721a2b4abd4a70",
+      "persona_id": "ash-hana-park",
+      "persona_checksum": "sha256:fdd047bf69ae19c372b2a35219485e3a18ceaf0d0fca4bac1aa31041ce559d3c",
+      "modules": []
+    },
+    "sc_knee_pfp_mobility_deficits_entry_v1": {
+      "scenario_id": "sc_knee_pfp_mobility_deficits_entry_v1",
+      "file": "scenarios/compiled/sc_knee_pfp_mobility_deficits_entry_v1.json",
+      "checksum": "sha256:691b872db4bf0e17221bab9db61f948986c946e0fe788dbca75cb045f8638203",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:05df400cfde59234824e3efdc04a4371fe7240b24a138732deac48293fea2e9b",
+      "dependencies_checksum": "sha256:c35d31cb30065f4013e17fe0be4acc1b1a291e44bcca4ab1a60fa912ef3f25e7",
+      "persona_id": "sage-marisol-vega",
+      "persona_checksum": "sha256:dca6afa62c984f56e7375670d537a875ca01946b5207d2569d8a5e861656e5b8",
+      "modules": []
+    },
+    "sc_knee_pfp_overuse_volume_entry_v1": {
+      "scenario_id": "sc_knee_pfp_overuse_volume_entry_v1",
+      "file": "scenarios/compiled/sc_knee_pfp_overuse_volume_entry_v1.json",
+      "checksum": "sha256:aadef4eef8c23eb179f24ec1777091b2d818eb15ebdf43ec9e673a3d68ddd23f",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:9d2983f13a14d8b7a3a95b2855318730bac97aea219d9c08b5176cf4762312bc",
+      "dependencies_checksum": "sha256:85ebeabfb35b09aa7167788787986159ed75c2cfa29447bf5aaec43b52f0c58b",
+      "persona_id": "echo-devon-brooks",
+      "persona_checksum": "sha256:c24af504c895c76e913361d54d14bf9560382a2d0f971bcccff9f55e74bf06ac",
+      "modules": []
+    },
+    "sc_knee_post_meniscectomy_stable_entry_v1": {
+      "scenario_id": "sc_knee_post_meniscectomy_stable_entry_v1",
+      "file": "scenarios/compiled/sc_knee_post_meniscectomy_stable_entry_v1.json",
+      "checksum": "sha256:d204700ea69701422ae071d864c6de7e6a1c56ac20c46be2da2a632c343ae9bc",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:d03139b1c6d157a97939315fcf57f31e582cae4989cbbfa9f263864a4fb848ed",
+      "dependencies_checksum": "sha256:9589691b07c218aa569e202da82b393186dd3218e4796ef41c7d25c92b88f749",
+      "persona_id": "nova-caleb-nguyen",
+      "persona_checksum": "sha256:d24e01e58f7f7d676210e30d64ec012a81017e53cadd9b029015f9493e98f339",
+      "modules": []
+    },
+    "sc_knee_tcoa_entry_v1": {
+      "scenario_id": "sc_knee_tcoa_entry_v1",
+      "file": "scenarios/compiled/sc_knee_tcoa_entry_v1.json",
+      "checksum": "sha256:111705df29e23fe354967986cdc5ec945d039fd11758e3efa6efba3eaf831fff",
+      "content_version": "1.0.0",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:c2f07e6e150414f4c3f2929f1700b35a2dfd94129f4d4905517449114fa52241",
+      "dependencies_checksum": "sha256:b18cbcfa69b3833d0544ce0502ffce96c8a3b97aa16f80633e3a2fe587b5bfb9",
+      "persona_id": "ballad-moira-mckenzie",
+      "persona_checksum": "sha256:3d2d5fa235b7574bdad7fb929ad314ebe538c01d816c9d6790cc8c3c023feff3",
+      "modules": []
+    },
     "sc_lumbar_clbp_ext_pref_flare_v1": {
       "scenario_id": "sc_lumbar_clbp_ext_pref_flare_v1",
       "file": "scenarios/compiled/sc_lumbar_clbp_ext_pref_flare_v1.json",
-      "checksum": "sha256:8baaff8fc708f20b6775682f194e5ea14014ff4e97cc6066a9d3fdbc3b85b138",
+      "checksum": "sha256:209b2592f7b89ec2119c9c21316b45d25db0f7c5c0384dcb496f8973a5fc43e3",
       "content_version": "1.0.0",
-      "compiled_at": "2025-10-08T14:01:00.734Z",
-      "manifest_checksum": "sha256:11cf23c56b9f8c1c551c2b9e635ec6f2f493614a9c050b1e15538f82aa7c32fa",
-      "dependencies_checksum": "sha256:05024d4243f4542ceff74bf015a64b5136b42747d40552f45214c79543706063",
-      "persona_id": "prsn_clbp_extpref_v1",
-      "persona_checksum": "sha256:5e951ad1b61dd8332750b65c700779c9b485326970f552b06c6f438598a11c1a",
+      "compiled_at": "2025-10-24T06:38:25.567Z",
+      "manifest_checksum": "sha256:d3521da3d21f0e52b178baae8e7e9805d785e4cec774cf1253de9e7cfdd6688e",
+      "dependencies_checksum": "sha256:87aed42dd83f3b1b1bb54a2a6d58dfda656da73660b7eed68bedfb5af9f5eac9",
+      "persona_id": "echo-devon-brooks",
+      "persona_checksum": "sha256:c24af504c895c76e913361d54d14bf9560382a2d0f971bcccff9f55e74bf06ac",
       "modules": [
         {
           "module_id": "primary_care_low_back_pain",
@@ -56,24 +224,12 @@
           "checksum": "sha256:554df798f07cb74975f3e9f3522871b9c364dcc52e103735431fa5331098cf11"
         }
       ]
-    },
-    "sc_knee_anterior_knee_pain_entry_v1": {
-      "scenario_id": "sc_knee_anterior_knee_pain_entry_v1",
-      "file": "scenarios/compiled/sc_knee_anterior_knee_pain_entry_v1.json",
-      "checksum": "sha256:0965a9e6605e6fc65dc578cc80db8ba4f37e2ac1873687b8fbcd974b1d56a64c",
-      "content_version": "1.0.0",
-      "compiled_at": "2025-10-16T15:55:49.154Z",
-      "manifest_checksum": "sha256:34985b173f3fce92e17c140260fc161400d5f1d7702e9d2f1038921fbb65595a",
-      "dependencies_checksum": "sha256:0efb6c3d07343f3370ae4043c3c3af03954990f5f5010b687fe7dd6ee1bee684",
-      "persona_id": null,
-      "persona_checksum": null,
-      "modules": []
     }
   },
   "statistics": {
-    "total_scenarios": 4,
-    "scenarios_with_persona": 3,
+    "total_scenarios": 17,
+    "scenarios_with_persona": 15,
     "total_modules": 3,
-    "total_compiled_files": 4
+    "total_compiled_files": 17
   }
 }

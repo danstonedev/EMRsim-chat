@@ -1,0 +1,56 @@
+{
+  "sc_knee_anterior_knee_pain_entry_v1": {
+    "case_id": "patellofemoral_pain_v1",
+    "personas": [
+      { "id": "shimmer-zoë-laurent", "weight": 3 },
+      { "id": "ash-riley-summers", "weight": 2 },
+      { "id": "coral-julián-rivera", "weight": 2 },
+      "ash-luis-ortega"
+    ]
+  },
+  "sc_knee_anterior_knee_pain_intermediate_v1": {
+    "case_id": "patellofemoral_pain_v1",
+    "personas": [
+      { "id": "ash-riley-summers", "weight": 3 },
+      { "id": "coral-julián-rivera", "weight": 3 },
+      { "id": "shimmer-zoë-laurent", "weight": 2 },
+      "ash-luis-ortega"
+    ]
+  },
+  "sc_knee_anterior_knee_pain_tendinosis_v1": {
+    "case_id": "patellar_tendinosis_v1",
+    "personas": [
+      { "id": "shimmer-zoë-laurent", "weight": 2 },
+      { "id": "ash-riley-summers", "weight": 3 },
+      { "id": "coral-julián-rivera", "weight": 2 },
+      "ash-luis-ortega"
+    ]
+  },
+  "sc_knee_tcoa_entry_v1": {
+    "case_id": "knee_oa_tricompartmental_v1",
+    "personas": [
+      { "id": "ash-riley-summers", "weight": 3 },
+      { "id": "coral-julián-rivera", "weight": 2 },
+      { "id": "shimmer-zoë-laurent", "weight": 2 },
+      "ash-luis-ortega"
+    ]
+  },
+  "sc_knee_mcl_grade1_entry_v1": {
+    "case_id": "mcl_grade1_sprain_v1",
+    "personas": [
+      { "id": "ash-riley-summers", "weight": 3 },
+      { "id": "coral-julián-rivera", "weight": 2 },
+      { "id": "shimmer-zoë-laurent", "weight": 2 },
+      "ash-luis-ortega"
+    ]
+  },
+  "sc_knee_pfp_entry_v1": {
+    "case_id": "patellofemoral_pain_v1",
+    "personas": [
+      { "id": "shimmer-zoë-laurent", "weight": 3 },
+      { "id": "ash-riley-summers", "weight": 2 },
+      { "id": "coral-julián-rivera", "weight": 2 },
+      "ash-luis-ortega"
+    ]
+  }
+}

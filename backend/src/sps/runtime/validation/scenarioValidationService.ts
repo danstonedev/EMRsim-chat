@@ -615,6 +615,333 @@ export class ScenarioValidationService {
       );
     }
 
+  // Coverage validation: ensure Subjective and Objective basics are present for novice-friendly differential
+    try {
+      const sc = compiled.scenario as any;
+      // Subjective coverage
+      const subj: any[] = Array.isArray(sc?.subjective_catalog) ? sc.subjective_catalog : [];
+      const subjBuckets = new Map<string, number>();
+      const categorizeSubjective = (item: any): string => {
+        const id = String(item?.id || '').toLowerCase();
+        const name = String(item?.label || '').toLowerCase();
+        const text = `${id} ${name}`;
+        if (
+          /pain|hpi|history|onset|duration|aggravator|easer|24h|pattern|location|behavior|severity|opqrst/i.test(text)
+        ) {
+          return 'Pain/HPI';
+        }
+        if (/red *flag|night pain|weight loss|fever|cancer|cauda|saddle|incontinence/i.test(text)) {
+          return 'Red flags';
+        }
+        if (/sdoh|work|job|role|caregiv|adl|sleep|stress|transport|home|environment/i.test(text)) {
+          return 'Function & SDOH';
+        }
+        if (/med|medication|drug|allerg|pmh|psh|surgery|comorb|condition/i.test(text)) {
+          return 'PMH/PSH/Medications/Allergies';
+        }
+        if (/systems? review|ros|cardio|pulmo|neuro|gi|gu|endo|psych|derm/i.test(text)) {
+          return 'Systems review';
+        }
+        if (/imaging|x[- ]?ray|mri|ct|ultra|prior (tx|treatment)|previous (care|therapy)/i.test(text)) {
+          return 'Prior imaging/treatment';
+        }
+        if (/goal/i.test(text)) {
+          return 'Goals';
+        }
+        return 'Other subjective';
+      };
+      subj.forEach(item => {
+        const cat = categorizeSubjective(item);
+        subjBuckets.set(cat, (subjBuckets.get(cat) || 0) + 1);
+      });
+      const requiredSubj = [
+        'Pain/HPI',
+        'Red flags',
+        'Function & SDOH',
+        'PMH/PSH/Medications/Allergies',
+        'Systems review',
+        'Goals',
+      ];
+      for (const bucket of requiredSubj) {
+        if (!subjBuckets.get(bucket)) {
+          issues.push(
+            this.issue(
+              'warning',
+              'S_SUBJECTIVE_COVERAGE_MISSING',
+              `Subjective coverage missing for ${bucket}`,
+              scenarioId,
+              { bucket }
+            )
+          );
+        }
+      }
+
+  // Objective coverage
+      const obj: any[] = Array.isArray(sc?.objective_catalog) ? sc.objective_catalog : [];
+      const objBuckets = new Map<string, number>();
+      const categorizeObjective = (o: any): string => {
+        const id = String(o?.test_id || '').toLowerCase();
+        const name = String(o?.label || '').toLowerCase();
+        const text = `${id} ${name}`;
+        if (/neuro|myotome|dermatome|reflex|sensation|hoffmann|babinski|slump|slr|ulsnt|neural/i.test(text))
+          return 'Neurological';
+        if (
+          /\brom\b|range of motion|flexion|extension|abduction|adduction|rotation|pronation|supination|dorsiflex|plantarflex/i.test(
+            text
+          )
+        )
+          return 'Range of motion';
+        if (/strength|mmt|resisted|isometric|dynamometer|grip/i.test(text)) return 'Strength';
+        if (/joint mobility|accessory|glide|posterior[- ]?anterior|pa spring|arthrokinematic/i.test(text))
+          return 'Joint mobility';
+        if (/palpation|ttp|tenderness|edema|swelling|effusion|ecchymosis|observation|posture|inspection/i.test(text))
+          return 'Observation & palpation';
+        if (/balance|y[- ]?balance|single[- ]leg balance|romberg/i.test(text)) return 'Balance';
+        if (
+          /functional|sit[- ]?to[- ]?stand|squat|step[- ]?down|lunge|hop|jump|gait|stairs|reach|lift|carry/i.test(text)
+        )
+          return 'Functional movement';
+        if (
+          /lachman|mcmurray|valgus|varus|thompson|hawkins|kennedy|neer|empty\s?can|drop\s?arm|apprehension|relocation|spurling|faber|faddir|ober|thomas|patellar|drawer|pivot|squeeze|talar|windlass|sulcus/i.test(
+            text
+          ) ||
+          /\btest\b/.test(text)
+        )
+          return 'Special tests';
+        return 'Other';
+      };
+      obj.forEach(o => {
+        const cat = categorizeObjective(o);
+        objBuckets.set(cat, (objBuckets.get(cat) || 0) + 1);
+      });
+      const requiredObj = [
+        'Observation & palpation',
+        'Functional movement',
+        'Range of motion',
+        'Strength',
+        'Special tests',
+      ];
+      for (const bucket of requiredObj) {
+        if (!objBuckets.get(bucket)) {
+          issues.push(
+            this.issue(
+              'warning',
+              'O_OBJECTIVE_COVERAGE_MISSING',
+              `Objective coverage missing for ${bucket}`,
+              scenarioId,
+              { bucket }
+            )
+          );
+        }
+      }
+      // Neurological required for spine regions
+      const region = String(sc?.region || '').toLowerCase();
+      if (/(cervical|thoracic|lumbar)_spine/.test(region) && !objBuckets.get('Neurological')) {
+        issues.push(
+          this.issue(
+            'warning',
+            'O_OBJECTIVE_NEURO_MISSING',
+            'Objective neurological screen missing for spine scenario',
+            scenarioId,
+            { region }
+          )
+        );
+      }
+
+      // Region-specific must-haves (starter rules)
+      const objText = obj.map(o => `${String(o?.test_id || '')} ${String(o?.label || '')}`.toLowerCase());
+      const has = (re: RegExp) => objText.some(t => re.test(t));
+      const requireAll = (rules: Array<{ code: string; message: string; tests: RegExp[] }>) => {
+        for (const rule of rules) {
+          const ok = rule.tests.every(rx => has(rx));
+          if (!ok) {
+            issues.push(this.issue('warning', rule.code, rule.message, scenarioId, { region }));
+          }
+        }
+      };
+
+      // Knee must-haves
+      if (/^knee$/.test(region)) {
+        requireAll([
+          {
+            code: 'O_KNEE_ROM_BASIC_MISSING',
+            message: 'Knee ROM basics missing (flexion and extension)',
+            tests: [/rom|range of motion|flexion/i, /rom|range of motion|extension/i],
+          },
+          {
+            code: 'O_KNEE_STRENGTH_BASIC_MISSING',
+            message: 'Knee MMT basics missing (quadriceps and hamstrings)',
+            tests: [/strength|mmt|quad/i, /strength|mmt|ham/i],
+          },
+          {
+            code: 'O_KNEE_PALPATION_BASIC_MISSING',
+            message: 'Knee palpation basics missing (joint line or effusion)',
+            tests: [/palpation|joint\s*line/i, /effusion|swelling/i],
+          },
+          {
+            code: 'O_KNEE_FUNCTIONAL_BASIC_MISSING',
+            message: 'Knee functional movement missing (squat or step-down)',
+            tests: [/squat|sit\s*-?to\s*-?stand/i, /step\s*-?down/i],
+          },
+          {
+            code: 'O_KNEE_LIGAMENT_TESTS_MISSING',
+            message: 'Knee ligament special tests missing (Lachman/anterior drawer and valgus/varus)',
+            tests: [/lachman|anterior\s*drawer|pivot/i, /valgus/i, /varus/i],
+          },
+          {
+            code: 'O_KNEE_MENISCAL_TEST_MISSING',
+            message: 'Knee meniscal test missing (McMurray)',
+            tests: [/mcmurray/i],
+          },
+        ]);
+      }
+
+      // Shoulder must-haves
+      if (/^shoulder$/.test(region)) {
+        requireAll([
+          {
+            code: 'O_SHOULDER_ROM_BASIC_MISSING',
+            message: 'Shoulder ROM basics missing (flexion and abduction)',
+            tests: [/rom|range of motion|flexion/i, /rom|range of motion|abduction/i],
+          },
+          {
+            code: 'O_SHOULDER_STRENGTH_ABD_MISSING',
+            message: 'Shoulder strength basics missing (abduction/supraspinatus)',
+            tests: [/strength|mmt|abduction|supraspinatus/i],
+          },
+          {
+            code: 'O_SHOULDER_IMPINGEMENT_TESTS_MISSING',
+            message: 'Shoulder impingement tests missing (Hawkins-Kennedy or Neer)',
+            tests: [/hawkins|kennedy/i],
+          },
+          {
+            code: 'O_SHOULDER_RTC_TESTS_MISSING',
+            message: 'Shoulder RTC tests missing (Empty Can)',
+            tests: [/empty\s*can/i],
+          },
+          {
+            code: 'O_SHOULDER_INSTABILITY_TESTS_MISSING',
+            message: 'Shoulder instability tests missing (Apprehension/Relocation)',
+            tests: [/apprehension|relocation/i],
+          },
+        ]);
+      }
+
+      // Ankle/Foot must-haves
+      if (/^(ankle|foot|ankle_foot)$/.test(region)) {
+        requireAll([
+          {
+            code: 'O_ANKLE_ROM_BASIC_MISSING',
+            message: 'Ankle/Foot ROM basics missing (dorsiflexion and plantarflexion)',
+            tests: [
+              /\b(rom|range of motion)\b|dorsi|dorsiflex|\bdf\b/i,
+              /\b(rom|range of motion)\b|plantar|plantarflex|\bpf\b/i,
+            ],
+          },
+          {
+            code: 'O_ANKLE_STRENGTH_KEY_MMTS_MISSING',
+            message: 'Ankle/Foot strength basics missing (tibialis ant/post, peroneals, gastroc/soleus)',
+            tests: [
+              /strength|mmt.*(tibialis|tib\.?\s*ant|tib\.?\s*post)/i,
+              /(peroneal|fibularis)/i,
+              /(gastroc|soleus|calf)/i,
+            ],
+          },
+          {
+            code: 'O_ANKLE_PALPATION_STRUCTURES_MISSING',
+            message: 'Ankle/Foot palpation structures missing (ATFL/CFL/PTFL and navicular/base of 5th)',
+            tests: [
+              /(atfl|anterior\s*talo\s*-?fibular)/i,
+              /(cfl|calcaneo\s*-?fibular)/i,
+              /(ptfl|posterior\s*talo\s*-?fibular)/i,
+              /(navicular|base\s*(of\s*)?5(th)?)/i,
+            ],
+          },
+          {
+            code: 'O_ANKLE_FUNCTIONAL_TESTS_MISSING',
+            message: 'Ankle/Foot functional tests missing (single-leg balance and heel raise)',
+            tests: [/(single\s*-?leg\s*balance|\bsls\b)/i, /(heel\s*-?raise|calf\s*-?raise)/i],
+          },
+          {
+            code: 'O_ANKLE_SPECIAL_TESTS_MISSING',
+            message: 'Ankle/Foot special tests missing (Anterior Drawer, Talar Tilt, Thompson)',
+            tests: [/(anterior\s*drawer)/i, /(talar\s*tilt)/i, /(thompson)/i],
+          },
+        ]);
+      }
+
+      // Spine must-haves (cervical/lumbar specifics)
+      if (/(cervical|lumbar)_spine/.test(region)) {
+        // ROM: require flexion, extension, rotation, and side-bend present
+        requireAll([
+          {
+            code: 'O_SPINE_ROM_PLANES_MISSING',
+            message: 'Spine ROM planes missing (flexion, extension, rotation, side-bend)',
+            tests: [/flexion/i, /extension/i, /(rotation|rotate|rot)/i, /(side\s*-?bend|lateral\s*flexion)/i],
+          },
+        ]);
+
+        // Neuro screen details (beyond generic Neurological bucket)
+        requireAll([
+          {
+            code: 'O_SPINE_NEURO_DETAILS_MISSING',
+            message: 'Spine neuro screen details missing (myotomes, dermatomes/sensation, and reflexes)',
+            tests: [/(myotome|motor)/i, /(dermatome|sensation)/i, /(reflex|dtr)/i],
+          },
+        ]);
+
+        // Neural tension tests by region
+        if (/lumbar_spine/.test(region)) {
+          requireAll([
+            {
+              code: 'O_LUMBAR_NEURAL_TENSION_MISSING',
+              message: 'Lumbar neural tension tests missing (SLR and Prone Knee Bend)',
+              tests: [/(slr|straight\s*leg\s*raise)/i, /(prone\s*knee\s*bend|pkb)/i],
+            },
+          ]);
+        }
+        if (/cervical_spine/.test(region)) {
+          requireAll([
+            {
+              code: 'O_CERVICAL_NEURAL_TENSION_MISSING',
+              message: 'Cervical neural tension tests missing (ULTT)',
+              tests: [/(ultt|upper\s*limb\s*tension\s*test|ulsnt)/i],
+            },
+          ]);
+        }
+
+        // Centralization/peripheralization noted (in objective or assessment)
+        const assessmentText = JSON.stringify((sc?.soap as any)?.assessment || {}).toLowerCase();
+        if (!has(/centralization|peripheralization/)) {
+          const inAssessment = /centralization|peripheralization/.test(assessmentText);
+          if (!inAssessment) {
+            issues.push(
+              this.issue(
+                'warning',
+                'O_SPINE_CENTRALIZATION_NOTE_MISSING',
+                'Centralization/peripheralization response not documented for spine scenario',
+                scenarioId,
+                { region }
+              )
+            );
+          }
+        }
+
+        // Emphasize red flags coverage for spine
+        if (!subjBuckets.get('Red flags')) {
+          issues.push(
+            this.issue(
+              'warning',
+              'S_SPINE_REDFLAGS_MISSING',
+              'Red flags screening not documented under Subjective for spine scenario',
+              scenarioId,
+              { region }
+            )
+          );
+        }
+      }
+    } catch {}
+
     return this.toSummary(issues);
   }
 

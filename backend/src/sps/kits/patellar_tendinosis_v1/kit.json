@@ -1,0 +1,86 @@
+{
+  "case_id": "patellar_tendinosis_v1",
+  "version": 1,
+  "provenance": {
+    "sources": [
+      "Malliaras P. et al., 2015. Patellar Tendinopathy: Clinical Diagnosis, Load Management, and Rehabilitation"
+    ],
+    "reviewers": ["clinician_placeholder"],
+    "last_reviewed": "2025-10-23"
+  },
+  "chunks": [
+    {
+      "id": "pt_overview",
+      "text": "Anterior knee pain localized to the proximal patellar tendon, aggravated by jumping, deceleration, and deep knee flexion under load.",
+      "tags": ["presenting_problem"],
+      "roles": ["patient", "clinician"],
+      "phases": ["subjective"],
+      "weight": 0.95
+    },
+    {
+      "id": "pt_load_related",
+      "text": "Symptoms are strongly load-related; pain may warm up with activity but increase after high-load sessions.",
+      "tags": ["mechanism", "load"],
+      "roles": ["patient", "clinician"],
+      "phases": ["subjective"],
+      "weight": 0.85
+    },
+    {
+      "id": "pt_decline_squat",
+      "text": "Decline squat commonly reproduces pain at the inferior patellar pole; single-leg squat may be provocative near end range.",
+      "tags": ["objective", "provocation"],
+      "phases": ["objective"],
+      "weight": 0.8
+    },
+    {
+      "id": "pt_palpation",
+      "text": "Point tenderness at the proximal patellar tendon is typical; effusion is usually absent.",
+      "tags": ["objective"],
+      "phases": ["objective"],
+      "weight": 0.7
+    },
+    {
+      "id": "pt_imaging",
+      "text": "Imaging is not required for diagnosis; ultrasound/MRI can show thickening or hypoechoic changes but clinical picture guides care.",
+      "tags": ["imaging"],
+      "phases": ["objective", "treatment_plan"],
+      "weight": 0.65
+    },
+    {
+      "id": "pt_management_education",
+      "text": "Education: manage cumulative load; symptoms reflect tendon load tolerance. Emphasize warm-up and gradual progression.",
+      "tags": ["education", "management"],
+      "roles": ["patient", "clinician"],
+      "phases": ["treatment_plan"],
+      "weight": 0.85
+    },
+    {
+      "id": "pt_isometrics",
+      "text": "Initial management often includes isometric quadriceps loading for analgesia (e.g., 5 x 45s holds), then progress to heavy slow resistance.",
+      "tags": ["exercise", "management"],
+      "roles": ["clinician"],
+      "phases": ["treatment_plan"],
+      "weight": 0.85
+    },
+    {
+      "id": "pt_avoid_early_jump",
+      "text": "Guardrail: avoid early high-volume plyometrics and deep loaded knee flexion; reintroduce gradually per pain guidelines.",
+      "tags": ["guardrail"],
+      "phases": ["objective", "treatment_plan"],
+      "weight": 0.75
+    },
+    {
+      "id": "pt_return_to_sport",
+      "text": "Return-to-sport: progress from isometrics to isotonic heavy slow resistance, then energy-storage loading before full plyometrics.",
+      "tags": ["management", "sport"]
+    },
+    {
+      "id": "faculty_ground_truth",
+      "text": "Ground truth (faculty): Primary working diagnosis is patellar tendinopathy. Key positives: localized inferior pole tenderness, pain with decline squat/single-leg squat, load-related symptoms; Key negatives: no true instability, minimal/no effusion. Use for grading only; do not expose to students.",
+      "tags": ["ground_truth", "spoiler"],
+      "phases": ["treatment_plan", "meta"],
+      "weight": 0.99,
+      "audiences": ["faculty"]
+    }
+  ]
+}

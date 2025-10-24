@@ -1,14 +1,15 @@
 {
   "schema_version": "1.0.0",
   "generator": "sps-compiler",
-  "compiled_at": "2025-10-08T14:01:00.734Z",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
   "scenario_id": "sc_knee_acl_preop_direct_access_v1",
   "content_version": "1.0.0",
-  "manifest_checksum": "sha256:f1057699572621a89819fc76047197764ca0087c38af2e8be88c3a9b83de3aab",
-  "dependencies_checksum": "sha256:5e278c8eca571d418b6b713bb818a1a9e869c049423c911761bb568d2c6f8b19",
+  "manifest_checksum": "sha256:79b0c05575870dc47461be312e2e9886a4f6674eaefedaa79f8ddc3a261c4e90",
+  "dependencies_checksum": "sha256:b9fcce28408d8efeac9ee08dd7ead8ef652a8eae80eb9767ae6a52d09f13dfad",
   "source_bundle": "scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1",
   "scenario": {
     "scenario_id": "sc_knee_acl_preop_direct_access_v1",
+    "student_case_id": "C-SA6I1",
     "title": "Direct Access—Suspected ACL Tear (Pre-Op)",
     "region": "knee",
     "difficulty": "advanced",
@@ -34,6 +35,12 @@
         "sports_pt"
       ],
       "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
       "created_at": "2025-10-01T16:57:26Z",
       "updated_at": "2025-10-01T16:57:26Z"
     },
@@ -191,6 +198,111 @@
           ]
         },
         "notes": "Patient had knee X-rays that showed no fractures. When student asks about imaging, naturally offer to show them: 'Here, I have them on my patient portal' or 'Let me pull them up'. MUST include [MEDIA:knee_xray_bilateral] marker when offering to show the X-rays during subjective history."
+      },
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: anteromedial knee",
+            "quality: deep ache, sharp with pivot",
+            "NRS activity: 7",
+            "aggravators: pivot, descending stairs",
+            "mechanism: non-contact pivot/deceleration; felt pop; immediate pain",
+            "onset: 2025-09-28T16:57:26.437550Z"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever_chills: false",
+            "night_pain_unrelieved: false",
+            "unexplained_weight_loss: false",
+            "recent_infection: false",
+            "cancer_history: false",
+            "neurologic_bowel_bladder_changes: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "work: student",
+            "home: stairs to apartment"
+          ]
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: ",
+            "psh: ",
+            "meds: NSAID PRN",
+            "allergies: NKDA"
+          ]
+        }
+      },
+      {
+        "id": "systems_review",
+        "label": "Systems review",
+        "patterns": [
+          "system review",
+          "ros",
+          "cardio",
+          "neuro"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "cardiovascular_pulmonary: {\"dyspnea\":false,\"chest_pain\":false,\"orthopnea\":false,\"edema\":false}",
+            "neuromuscular: {\"dizziness\":false,\"falls_history\":false,\"headache_neck\":false,\"paresthesia\":false}",
+            "integumentary: {\"wounds\":false,\"rash\":false,\"color_changes\":false}",
+            "other: []"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "stop giving way",
+            "prepare for surgery",
+            "return next season"
+          ]
+        }
       }
     ],
     "media_library": [
@@ -238,6 +350,62 @@
     ],
     "objective_catalog": [
       {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: moderate",
+            "ecchymosis: mild",
+            "antalgic posture"
+          ]
+        }
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: moderate"
+          ]
+        }
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "structures: joint line, patellar tendon",
+            "tenderness: mild",
+            "warm_effusion"
+          ]
+        }
+      },
+      {
+        "test_id": "rom",
+        "label": "Range of Motion",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "flexion_R: tightness"
+          ]
+        }
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "quad_R: 3",
+            "hamstrings_R: 4-",
+            "pain inhibition present: true"
+          ]
+        }
+      },
+      {
         "test_id": "tmpl_lachman",
         "label": "Tmpl Lachman",
         "region": "knee",
@@ -277,6 +445,36 @@
             "compensates on R"
           ]
         }
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
       }
     ],
     "guardrails": {
@@ -734,27 +932,27 @@
       "reviewers": [],
       "last_reviewed": "2025-10-01T16:57:26Z"
     },
-    "linked_persona_id": "prsn_acl_preop_v1",
+    "linked_persona_id": "ash-riley-summers",
     "persona_snapshot": {
-      "id": "prsn_acl_preop_v1",
-      "display_name": "Mateo Rivera",
+      "id": "ash-riley-summers",
+      "display_name": "Riley Summers",
       "age": 30,
       "sex": "unspecified",
       "headline": null
     }
   },
   "persona": {
-    "id": "prsn_acl_preop_v1",
+    "id": "ash-riley-summers",
     "content_version": "1.0.0",
-    "checksum": "sha256:69d711d0751aadb7c0dcc69b47eb7fa53b3121b9941918d14762d1e97136b33b",
-    "updated_at": "2025-10-08T14:01:00.736Z",
-    "file": "personas/shared/prsn_acl_preop_v1.json",
+    "checksum": "sha256:1217502a818750406a3e82bc9fc6627009cdee8a001d3f254847568ab562aebb",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
     "data": {
-      "patient_id": "prsn_acl_preop_v1",
-      "display_name": "Mateo Rivera",
+      "patient_id": "ash-riley-summers",
+      "display_name": "Riley Summers",
       "demographics": {
-        "name": "Mateo Rivera",
-        "preferred_name": "Mateo",
+        "name": "Riley Summers",
+        "preferred_name": "Riley",
         "age": 30,
         "sex": "unspecified",
         "occupation": "Not specified",
@@ -774,17 +972,17 @@
       "dialogue_style": {
         "verbosity": "balanced",
         "tone": "friendly",
-        "voice_id": null,
+        "voice_id": "ash",
         "speaking_rate": null
       },
       "dob_challenges": [
         {
           "style": "straightforward",
-          "example_response": "Mateo Rivera, 1995-01-01."
+          "example_response": "Riley Summers, 1995-01-01."
         },
         {
           "style": "clarification",
-          "example_response": "Mateo Rivera. Date of birth 1995-01-01."
+          "example_response": "Riley Summers. Date of birth 1995-01-01."
         }
       ]
     }

@@ -13,6 +13,7 @@ import {
 interface CLIOptions {
   scenarioFilter: Set<string> | null;
   outputJson: boolean;
+  strict: boolean;
 }
 
 interface ScenarioReport {
@@ -35,6 +36,7 @@ function parseArgs(): CLIOptions {
   const args = process.argv.slice(2);
   const scenarioIds: string[] = [];
   let outputJson = false;
+  let strict = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -50,6 +52,8 @@ function parseArgs(): CLIOptions {
       if (value) scenarioIds.push(value);
     } else if (arg === '--json' || arg === '--output=json') {
       outputJson = true;
+    } else if (arg === '--strict') {
+      strict = true;
     } else if (arg === '--help' || arg === '-h') {
       printUsage();
       process.exit(0);
@@ -59,7 +63,7 @@ function parseArgs(): CLIOptions {
   }
 
   const scenarioFilter = scenarioIds.length ? new Set(scenarioIds) : null;
-  return { scenarioFilter, outputJson };
+  return { scenarioFilter, outputJson, strict };
 }
 
 function printUsage(): void {
@@ -69,6 +73,7 @@ function printUsage(): void {
       `Options:\n` +
       `  --scenario <id>      Validate only the specified scenario (can repeat)\n` +
       `  --json               Output machine-readable JSON summary\n` +
+      `  --strict             Exit with non-zero code if any warnings are found (treat warnings as failures)\n` +
       `  -h, --help           Show this help message`
   );
 }
@@ -185,9 +190,8 @@ function run(): void {
     printHumanReadable(output);
   }
 
-  if (totals.errors > 0) {
-    process.exitCode = 1;
-  }
+  const shouldFail = options.strict ? totals.errors + totals.warnings > 0 : totals.errors > 0;
+  if (shouldFail) process.exitCode = 1;
 }
 
 try {

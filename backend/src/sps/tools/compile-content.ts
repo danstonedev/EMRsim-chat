@@ -120,7 +120,8 @@ function toRelativeContentPath(absPath: string): string {
 }
 
 function loadPersonaBundles(): Map<string, PersonaBundle> {
-  const personaDirs = ['personas/shared', 'personas/base', 'personas/realtime'];
+  // Only load realtime personas; base/shared deprecated and ignored at runtime
+  const personaDirs = ['personas/realtime'];
   const map = new Map<string, PersonaBundle>();
 
   for (const dir of personaDirs) {
@@ -132,15 +133,31 @@ function loadPersonaBundles(): Map<string, PersonaBundle> {
       if (!entry.isFile() || !entry.name.endsWith('.json')) continue;
       const filePath = path.join(absDir, entry.name);
       const raw = readJsonOrThrow(filePath, `persona ${entry.name}`);
-      const persona = convertPersonaBundle(raw, undefined, undefined, undefined);
-      if (!persona) {
-        throw new Error(`[compile] Persona conversion failed for ${entry.name}`);
+
+      // realtime_personas.json contains an array of personas; index each
+      if (Array.isArray(raw)) {
+        raw.forEach((p: any, idx: number) => {
+          const persona = convertPersonaBundle(p, undefined, undefined, undefined);
+          if (!persona) {
+            throw new Error(`[compile] Persona conversion failed for ${entry.name} index ${idx}`);
+          }
+          map.set(persona.patient_id, {
+            source: toRelativeContentPath(filePath),
+            raw: p,
+            persona,
+          });
+        });
+      } else {
+        const persona = convertPersonaBundle(raw, undefined, undefined, undefined);
+        if (!persona) {
+          throw new Error(`[compile] Persona conversion failed for ${entry.name}`);
+        }
+        map.set(persona.patient_id, {
+          source: toRelativeContentPath(filePath),
+          raw,
+          persona,
+        });
       }
-      map.set(persona.patient_id, {
-        source: toRelativeContentPath(filePath),
-        raw,
-        persona,
-      });
     }
   }
 
@@ -215,26 +232,25 @@ function compileScenario(
 
   if (personaId) {
     const bundle = personaBundles.get(personaId);
-    if (!bundle) {
-      throw new Error(`[compile] Persona ${personaId} referenced by ${scenarioId} not found in personas/`);
-    }
-
     const personaManifest = manifest.content.personas[personaId];
-    if (!personaManifest) {
-      throw new Error(`[compile] Persona ${personaId} missing from manifest. Regenerate manifests first.`);
+    if (!bundle || !personaManifest) {
+      console.warn(
+        `[compile] Warning: Persona ${personaId} referenced by ${scenarioId} not found in realtime personas/ or manifest. Skipping persona linkage.`
+      );
+    } else {
+      personaObj = bundle.persona;
+      personaRaw = bundle.raw;
+
+      personaArtifact = {
+        id: personaId,
+        content_version: personaManifest.content_version,
+        checksum: personaManifest.checksum,
+        updated_at: personaManifest.updated_at ?? null,
+        // Omit file path in compiled artifacts to avoid lingering references to deprecated shared paths
+        file: null,
+        data: personaObj,
+      };
     }
-
-    personaObj = bundle.persona;
-    personaRaw = bundle.raw;
-
-    personaArtifact = {
-      id: personaId,
-      content_version: personaManifest.content_version,
-      checksum: personaManifest.checksum,
-      updated_at: personaManifest.updated_at ?? null,
-      file: personaManifest.file,
-      data: personaObj,
-    };
   }
 
   const instructionsPath = path.join(bundleDir, linkage.instructions_file || 'instructions.json');

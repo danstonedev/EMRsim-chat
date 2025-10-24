@@ -16,7 +16,9 @@ export interface CompiledPersonaArtifact {
   content_version: string;
   checksum: string;
   updated_at: string | null;
-  file: string;
+  // Source file path is omitted in compiled artifacts to avoid leaking deprecated paths
+  // and to reinforce the single-source runtime policy. Kept optional for backward compatibility.
+  file?: string | null;
   data: PatientPersona;
 }
 

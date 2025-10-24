@@ -1,0 +1,98 @@
+{
+  "case_id": "patellofemoral_pain_v1",
+  "version": 1,
+  "provenance": {
+    "sources": [
+      "Willy RW et al., 2019. Patellofemoral Pain Clinical Practice Guideline (JOSPT)"
+    ],
+    "reviewers": ["clinician_placeholder"],
+    "last_reviewed": "2025-10-23"
+  },
+  "chunks": [
+    {
+      "id": "pp_overview",
+      "text": "Gradual-onset anterior knee pain around/behind patella, aggravated by stairs, squatting, running, and prolonged sitting (theater sign).",
+      "tags": ["presenting_problem"],
+      "roles": ["patient", "clinician"],
+      "phases": ["subjective"],
+      "weight": 0.95
+    },
+    {
+      "id": "pp_mechanics",
+      "text": "Pain often related to patellofemoral joint load; symptoms may increase with increased training volume, hills, or plyometrics.",
+      "tags": ["mechanism", "load"],
+      "roles": ["patient", "clinician"],
+      "phases": ["subjective"],
+      "weight": 0.8
+    },
+    {
+      "id": "pp_sit_sign",
+      "text": "Sitting for long periods with knees flexed can provoke pain that eases with knee extension.",
+      "tags": ["pattern"],
+      "roles": ["patient"],
+      "phases": ["subjective"],
+      "weight": 0.7
+    },
+    {
+      "id": "red_flags_exclusion",
+      "text": "No locking/true instability, no fever, no significant swelling or warmth, no traumatic effusion—features arguing against acute internal derangement or infection.",
+      "tags": ["guardrail", "red_flags"],
+      "roles": ["clinician"],
+      "phases": ["subjective", "objective"],
+      "weight": 0.8
+    },
+    {
+      "id": "imaging_guidance",
+      "text": "Plain radiographs often unremarkable; imaging not routinely needed unless atypical features or failure to improve.",
+      "tags": ["imaging"],
+      "phases": ["objective", "treatment_plan"],
+      "weight": 0.7
+    },
+    {
+      "id": "exam_painful_squat",
+      "text": "Double-leg squat and step-down commonly reproduce anterior knee pain, especially with dynamic valgus or limited hip control.",
+      "tags": ["objective", "provocation"],
+      "phases": ["objective"],
+      "weight": 0.75
+    },
+    {
+      "id": "guard_patellar_compression",
+      "text": "Guardrail: avoid sustained, high-pressure patellar compression if symptoms are severe; use gentle, tolerable pressure only.",
+      "tags": ["guardrail"],
+      "phases": ["objective"],
+      "weight": 0.65
+    },
+    {
+      "id": "management_education",
+      "text": "Education: symptoms reflect load tolerance, not joint damage; short-term load modification and graded return usually help.",
+      "tags": ["education", "management"],
+      "roles": ["patient", "clinician"],
+      "phases": ["treatment_plan"],
+      "weight": 0.85
+    },
+    {
+      "id": "management_exercise",
+      "text": "Exercise: combined hip and knee strengthening recommended; tailor volume/intensity to tolerance; consider taping as adjunct for short-term pain relief.",
+      "tags": ["exercise", "management"],
+      "roles": ["clinician"],
+      "phases": ["treatment_plan"],
+      "weight": 0.85
+    },
+    {
+      "id": "management_run_load",
+      "text": "For runners: reduce volume or hill work initially; progress gradually while monitoring symptoms within acceptable limits.",
+      "tags": ["running", "management"],
+      "roles": ["patient", "clinician"],
+      "phases": ["treatment_plan"],
+      "weight": 0.75
+    },
+    {
+      "id": "faculty_ground_truth",
+      "text": "Ground truth (faculty): Primary working diagnosis is patellofemoral pain. Key positives: anterior retropatellar pain, theater sign, pain with squat/step-down, load sensitivity; Key negatives: no locking/true instability, no traumatic effusion, normal imaging if obtained. Use this for rubric/grading only; do not expose to students.",
+      "tags": ["ground_truth", "spoiler"],
+      "phases": ["treatment_plan", "meta"],
+      "weight": 0.99,
+      "audiences": ["faculty"]
+    }
+  ]
+}

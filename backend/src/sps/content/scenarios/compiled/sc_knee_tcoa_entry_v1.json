@@ -1,0 +1,766 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_tcoa_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:c2f07e6e150414f4c3f2929f1700b35a2dfd94129f4d4905517449114fa52241",
+  "dependencies_checksum": "sha256:b18cbcfa69b3833d0544ce0502ffce96c8a3b97aa16f80633e3a2fe587b5bfb9",
+  "source_bundle": "scenarios/bundles_src/sc_knee_tcoa_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_tcoa_entry_v1",
+    "student_case_id": "C-S8J53",
+    "title": "Entry: Tricompartmental Knee OA—Mobility and Function Limits",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": [
+      "entry_level_dpt",
+      "knee_oa",
+      "tricompartmental",
+      "mobility_impairments"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry: Tricompartmental Knee OA—Mobility and Function Limits",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "outpatient_pt",
+      "tags": [
+        "entry_level_dpt",
+        "knee_oa",
+        "tricompartmental",
+        "mobility_impairments"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-23T00:00:00Z",
+      "updated_at": "2025-10-23T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Identify clinical features of knee osteoarthritis and differentiate from inflammatory arthropathy or internal derangement.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "safety_screening",
+            "evidence_based_practice",
+            "documentation"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "clinical_reasoning",
+            "differential_diagnosis"
+          ],
+          "evidence_req": "CPG|systematic_review"
+        },
+        {
+          "id": "LO2",
+          "text": "Design an entry-level exercise and education plan emphasizing mobility, strength, and self-management per OA guidelines.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care",
+            "communication_education",
+            "documentation"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "plan_of_care"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "How do you screen for inflammatory red flags in OA presentations?",
+        "What low-cost options improve adherence for patients with limited resources?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Knee osteoarthritis, tricompartmental (right > left)",
+      "onset": "gradual",
+      "duration_weeks": 156,
+      "dominant_symptoms": [
+        "stiffness after sitting",
+        "pain with stairs and prolonged walking",
+        "morning stiffness <30 minutes"
+      ],
+      "pain_nrs_rest": 2,
+      "pain_nrs_activity": 6,
+      "aggravators": [
+        "prolonged walking >20–30 minutes",
+        "descending stairs",
+        "deep squat",
+        "cold/damp weather"
+      ],
+      "easers": [
+        "brief rest",
+        "heat",
+        "cane on bad days"
+      ],
+      "pattern_24h": "Stiff in the morning and after sitting; eases with gentle movement; worsens late day with activity",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "knee OA (tricompartmental)",
+      "body_functions_structures": [
+        "reduced knee extension ROM",
+        "crepitus",
+        "varus alignment",
+        "quadriceps weakness"
+      ],
+      "activities": [
+        "reduced walking tolerance",
+        "difficulty with stairs",
+        "limited squatting"
+      ],
+      "participation": [
+        "reduced community ambulation",
+        "less participation in gardening and church activities"
+      ],
+      "environmental_factors": [
+        "uses cane intermittently",
+        "lives in 2nd-floor apartment with stairs"
+      ],
+      "personal_factors": [
+        "age >60",
+        "overweight (BMI 29)",
+        "motivated to avoid surgery"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: anterior knee, medial joint line, lateral joint line, peripatellar",
+            "quality: achy, stiff",
+            "NRS activity: 6",
+            "aggravators: stairs, long walks, prolonged sitting",
+            "mechanism: degenerative—no single injury",
+            "onset: 3 years ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "night_pain: false",
+            "locking: false",
+            "true_instability: false",
+            "unexplained_weight_loss: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: hypertension—well controlled",
+            "psh: ",
+            "meds: [object Object], [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "walk 30–40 minutes without significant knee pain",
+            "climb church steps without stopping"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "vitals",
+        "label": "Vitals",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "alignment_gait",
+        "label": "Observation & Gait",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "rom",
+        "label": "ROM (goniometer)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_tests",
+        "label": "Functional Tests",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "joint_mobility_crepitus",
+        "label": "Joint signs",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "screening",
+        "label": "Screen for inflammatory/intra-articular red flags",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "palpation_joint_line",
+        "label": "Joint Line Palpation",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "guardrails": {
+      "impact_testing_unsafe": true
+    },
+    "instructions": {
+      "scenario_instruction_overrides": {
+        "tone": "Friendly and pragmatic; older adult wanting to stay active.",
+        "behavioral_notes": [
+          "Wait for student to start.",
+          "Answer concisely.",
+          "If asked for identity: Name Leonard Price, DOB 1962-03-02.",
+          "If student proposes high-impact tests, ask about safer alternatives."
+        ],
+        "gates": {
+          "requires_name_dob_before_sensitive": true
+        },
+        "safety_prompts": [
+          "If an activity causes sharp pain >3/10 or lasting soreness >24 hours, ask to scale."
+        ]
+      }
+    },
+    "soap": {
+      "subjective": {
+        "history": {
+          "chief_complaint": "My right knee is stiff and achy—stairs and long walks are tough.",
+          "mechanism": "No big injury—just gradually worse over a few years.",
+          "prior_episodes": "Both knees ache, but the right is worse the past year.",
+          "functional_impact": "I pause on stairs and limit grocery trips.",
+          "goals": "Walk 30–40 minutes and do church steps without stopping.",
+          "identity": {
+            "name": "Leonard Price",
+            "dob": "1962-03-02"
+          }
+        },
+        "subjective_catalog": [
+          {
+            "id": "meds_allergies",
+            "label": "Medications & Allergies",
+            "patterns": [
+              "meds",
+              "NSAIDs",
+              "acetaminophen",
+              "allergies"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Tylenol most days; occasional ibuprofen. No drug allergies."
+              ]
+            }
+          },
+          {
+            "id": "imaging",
+            "label": "Imaging",
+            "patterns": [
+              "x-ray",
+              "imaging",
+              "radiograph"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "The doctor showed me X-rays—said I have arthritis in all parts of the knee. [MEDIA:knee_oa_xray]"
+              ]
+            }
+          },
+          {
+            "id": "red_flags",
+            "label": "Red Flags",
+            "patterns": [
+              "night pain",
+              "fever",
+              "weight loss",
+              "locking",
+              "giving way"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "No night pain that wakes me, no fever or weight loss. It doesn’t lock or give out."
+              ]
+            }
+          },
+          {
+            "id": "pain_timing",
+            "label": "Pain timing",
+            "patterns": [
+              "morning",
+              "stiff",
+              "after sitting"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Stiff in the morning for maybe 15–20 minutes and after sitting; loosens up when I move."
+              ]
+            }
+          }
+        ],
+        "patient_reported_outcomes": {
+          "KOOS_JR": 60,
+          "NPRS_worst": 6,
+          "NPRS_usual": 3,
+          "LEFS": 48
+        },
+        "media_library": [
+          {
+            "id": "knee_oa_xray",
+            "type": "image",
+            "url": "/media/scenarios/oa/knee-oa-tricompartmental-ap-lat.png",
+            "caption": "Radiographs with joint space narrowing med/lat and patellofemoral osteophytes"
+          }
+        ],
+        "history_present_illness": {
+          "onset": "gradual",
+          "first_onset": "3 years ago",
+          "course_since_onset": "progressive with flare-ups",
+          "mechanism": "degenerative—no single injury",
+          "prior_episodes": "intermittent stiffness for years",
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "night_pain": false,
+            "locking": false,
+            "true_instability": false,
+            "unexplained_weight_loss": false
+          }
+        },
+        "pain": {
+          "location": [
+            "anterior knee",
+            "medial joint line",
+            "lateral joint line",
+            "peripatellar"
+          ],
+          "quality": [
+            "achy",
+            "stiff"
+          ],
+          "irritability": "low-moderate",
+          "nrs_rest": 1,
+          "nrs_activity": 6,
+          "aggravators": [
+            "stairs",
+            "long walks",
+            "prolonged sitting"
+          ],
+          "easers": [
+            "short rests",
+            "gentle movement"
+          ],
+          "24h_pattern": "morning stiffness ~15–20 minutes; loosens with movement"
+        },
+        "social_history": {
+          "living_situation": "two-story home; sleeps upstairs",
+          "occupational_demands": "desk job, occasional site walks",
+          "activity": [
+            "light walking"
+          ],
+          "supports": [
+            "spouse"
+          ]
+        },
+        "goals": [
+          "walk 30–40 minutes without significant knee pain",
+          "climb church steps without stopping"
+        ],
+        "past_medical_history": [
+          "hypertension—well controlled"
+        ],
+        "surgical_history": [],
+        "medications": [
+          {
+            "name": "acetaminophen",
+            "dose": "as needed"
+          },
+          {
+            "name": "ibuprofen",
+            "dose": "occasional, as needed"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "no known drug allergies"
+          }
+        ]
+      },
+      "objective": {
+        "objective_catalog": [
+          {
+            "test_id": "vitals",
+            "label": "Vitals",
+            "template": "vitals",
+            "findings": {
+              "bp": "128/78",
+              "hr": 72,
+              "rr": 14,
+              "spo2": 98
+            }
+          },
+          {
+            "test_id": "alignment_gait",
+            "label": "Observation & Gait",
+            "template": "gait_observation",
+            "findings": {
+              "alignment": "mild varus right",
+              "gait": "decreased knee extension mid-stance, shortened step length"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "rom",
+            "label": "ROM (goniometer)",
+            "template": "rom",
+            "findings": {
+              "knee_ext_right_deg": -5,
+              "knee_flex_right_deg": 110,
+              "knee_ext_left_deg": 0,
+              "knee_flex_left_deg": 120,
+              "pain_end_range": "yes (right flexion)"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "strength",
+            "label": "Strength (MMT)",
+            "template": "strength_testing",
+            "findings": {
+              "quad_right": "4/5",
+              "quad_left": "4+/5",
+              "hip_abd_bilateral": "4/5"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "functional_tests",
+            "label": "Functional Tests",
+            "template": "functional_task",
+            "findings": {
+              "chair_stand_30sec_reps": 10,
+              "stair_ascent_pain": 4,
+              "failure_criteria": "pain ≥3/10 or unsafe strategy"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "joint_mobility_crepitus",
+            "label": "Joint signs",
+            "template": "joint_exam",
+            "findings": {
+              "crepitus": "present with flex/ext",
+              "effusion": "trace",
+              "tenderness": "medial and PF joint line"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "screening",
+            "label": "Screen for inflammatory/intra-articular red flags",
+            "template": "screening",
+            "findings": {
+              "fever": "no",
+              "night_pain": "no",
+              "locking": "no true locking",
+              "neuro": "intact"
+            },
+            "difficulty": "easy"
+          }
+        ],
+        "contraindications_precautions": [
+          "Avoid high-impact hop testing; use pain-monitoring rule ≤3/10 during, ≤24-hr recovery."
+        ]
+      },
+      "assessment": {
+        "primary_diagnosis": "Tricompartmental knee osteoarthritis (right > left)",
+        "differential_diagnoses": [
+          "Degenerative meniscal tear (coexistent but not primary driver)",
+          "Inflammatory arthropathy (less likely—stiffness <30 min, no systemic features)"
+        ],
+        "clinical_reasoning": [
+          "Gradual onset, age >60, radiographic OA, crepitus, reduced ROM and strength, activity-related pain.",
+          "No inflammatory red flags; no mechanical locking or acute ligament signs."
+        ],
+        "prognosis": "Fair to good with exercise and weight management; likely functional gains in 6–8 weeks."
+      },
+      "plan": {
+        "goals": [
+          {
+            "timeframe": "2 weeks",
+            "goal": "KOOS JR +5, NPRS worst ≤4/10, knee extension to 0° right",
+            "measurable": true
+          },
+          {
+            "timeframe": "4 weeks",
+            "goal": "30-sec chair stand ≥12 reps; walk 20 minutes with pain ≤3/10",
+            "measurable": true
+          },
+          {
+            "timeframe": "6 weeks",
+            "goal": "Walk 40 minutes community pace; ascend one flight reciprocally with pain ≤2/10; LEFS +9",
+            "measurable": true
+          }
+        ],
+        "interventions": [
+          {
+            "category": "therapeutic_exercise",
+            "name": "Flexibility: heel slides, quad stretch, calf stretch",
+            "dosage": "Daily 2–3 sets of 30–45s holds"
+          },
+          {
+            "category": "therapeutic_exercise",
+            "name": "Strength: sit-to-stand, step-ups (low), mini-squats, TKE",
+            "dosage": "3x/week; 2–3 sets of 8–12; RPE 5–6/10"
+          },
+          {
+            "category": "aerobic_conditioning",
+            "name": "Walking or bike (low impact)",
+            "dosage": "3–5x/week; 10–30 min; progress 10%/week"
+          },
+          {
+            "category": "neuromotor",
+            "name": "Gait & stair strategy (handrail/cane as needed)",
+            "dosage": "Practice stairs 2–3x/week; cue controlled descent"
+          },
+          {
+            "category": "education",
+            "name": "Joint protection, pacing, weight management support, pain-monitoring rule (≤3/10 during, ≤24-hr recovery)",
+            "dosage": "Discuss each visit; written plan"
+          }
+        ],
+        "education": [
+          "Short, frequent bouts beat long, painful sessions.",
+          "On cold days, warm-up inside with gentle cycling or marching first."
+        ],
+        "disrecommended_items": [
+          "Passive modalities as stand-alone interventions",
+          "High-impact plyometrics early in care"
+        ],
+        "follow_up": {
+          "frequency": "1x/week for 6–8 weeks",
+          "reassessment": [
+            "KOOS JR (+5 at 2 weeks; +10 by 6 weeks)",
+            "LEFS (+9 by 6 weeks)",
+            "Chair stand (≥12 reps)",
+            "Goniometry (0–115° target by 6 weeks)"
+          ],
+          "resource_limited_alternatives": [
+            "Use sturdy chair and household step for exercises.",
+            "Walking program with phone timer; no gym required."
+          ]
+        }
+      }
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "Knee Osteoarthritis Management Guidelines (e.g., OARSI/AAOS)",
+          "identifier": "CPG-Knee-OA",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-23"
+    },
+    "linked_persona_id": "ballad-moira-mckenzie",
+    "persona_snapshot": {
+      "id": "ballad-moira-mckenzie",
+      "display_name": "Moira McKenzie",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "ballad-moira-mckenzie",
+    "content_version": "1.0.0",
+    "checksum": "sha256:3d2d5fa235b7574bdad7fb929ad314ebe538c01d816c9d6790cc8c3c023feff3",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "ballad-moira-mckenzie",
+      "display_name": "Moira McKenzie",
+      "demographics": {
+        "name": "Moira McKenzie",
+        "preferred_name": "Moira",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "ballad",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Moira McKenzie, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Moira McKenzie. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_tcoa_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_tcoa_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_tcoa_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_tcoa_entry_v1/soap.objective.json",
+    "soap_assessment": "scenarios/bundles_src/sc_knee_tcoa_entry_v1/soap.assessment.json",
+    "soap_plan": "scenarios/bundles_src/sc_knee_tcoa_entry_v1/soap.plan.json"
+  }
+}

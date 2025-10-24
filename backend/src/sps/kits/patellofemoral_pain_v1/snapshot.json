@@ -1,0 +1,16 @@
+{
+  "title": "Patellofemoral pain with activity",
+  "presenting_problem": {
+    "primary_dx": "Patellofemoral pain",
+    "dominant_symptoms": ["anterior knee pain", "pain with stairs/squats", "theater sign"],
+    "aggravators": ["running (especially hills)", "deep knee flexion", "prolonged sitting"],
+    "easers": ["activity modification", "knee extension after sitting"],
+    "red_flags_ruled_out": true
+  },
+  "context": {
+    "setting": "sports_rehab_clinic"
+  },
+  "media_library": [
+    { "id": "pfn_squat_demo", "type": "video", "url": "", "caption": "Squat demonstration reproducing anterior knee pain" }
+  ]
+}

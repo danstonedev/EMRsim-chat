@@ -1,0 +1,844 @@
+{
+  "generated_at": "2025-10-24T04:02:21.466Z",
+  "totals": {
+    "scenarios": 9,
+    "errors": 6,
+    "warnings": 137,
+    "needs_beef_up": 9
+  },
+  "scenarios": [
+    {
+      "scenario_id": "sc_hip_tha_anterior_pod0_v1",
+      "title": "Acute THA—Anterior Approach (POD0)",
+      "region": "hip",
+      "difficulty": "moderate",
+      "subjective": {},
+      "objective": {
+        "Other": 1
+      },
+      "issues": [
+        {
+          "level": "error",
+          "code": "PERSONA_MISSING_FROM_MANIFEST",
+          "message": "Persona prsn_tha_pod0_v1 referenced by sc_hip_tha_anterior_pod0_v1 is not present in manifest"
+        },
+        {
+          "level": "error",
+          "code": "PERSONA_COMPILED_MISMATCH",
+          "message": "Compiled persona does not match manifest persona prsn_tha_pod0_v1"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Pain/HPI"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Red flags"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Function & SDOH"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for PMH/PSH/Medications/Allergies"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Systems review"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Goals"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Observation & palpation"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Functional movement"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Range of motion"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Strength"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Special tests"
+        }
+      ],
+      "needs_beef_up": true
+    },
+    {
+      "scenario_id": "sc_knee_acl_preop_direct_access_v1",
+      "title": "Direct Access—Suspected ACL Tear (Pre-Op)",
+      "region": "knee",
+      "difficulty": "advanced",
+      "subjective": {
+        "Systems review": 1
+      },
+      "objective": {
+        "Special tests": 2,
+        "Other": 1
+      },
+      "issues": [
+        {
+          "level": "error",
+          "code": "PERSONA_MISSING_FROM_MANIFEST",
+          "message": "Persona prsn_acl_preop_v1 referenced by sc_knee_acl_preop_direct_access_v1 is not present in manifest"
+        },
+        {
+          "level": "error",
+          "code": "PERSONA_COMPILED_MISMATCH",
+          "message": "Compiled persona does not match manifest persona prsn_acl_preop_v1"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Pain/HPI"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Red flags"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Function & SDOH"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for PMH/PSH/Medications/Allergies"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Goals"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Observation & palpation"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Functional movement"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Range of motion"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Strength"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_ROM_BASIC_MISSING",
+          "message": "Knee ROM basics missing (flexion and extension)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_STRENGTH_BASIC_MISSING",
+          "message": "Knee MMT basics missing (quadriceps and hamstrings)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_PALPATION_BASIC_MISSING",
+          "message": "Knee palpation basics missing (joint line or effusion)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_FUNCTIONAL_BASIC_MISSING",
+          "message": "Knee functional movement missing (squat or step-down)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_LIGAMENT_TESTS_MISSING",
+          "message": "Knee ligament special tests missing (Lachman/anterior drawer and valgus/varus)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_MENISCAL_TEST_MISSING",
+          "message": "Knee meniscal test missing (McMurray)"
+        }
+      ],
+      "needs_beef_up": true
+    },
+    {
+      "scenario_id": "sc_knee_anterior_knee_pain_entry_v1",
+      "title": "Entry-Level: Anterior Knee Pain with Stairs",
+      "region": "knee",
+      "difficulty": "easy",
+      "subjective": {},
+      "objective": {
+        "Other": 1,
+        "Special tests": 1,
+        "Functional movement": 1
+      },
+      "issues": [
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Pain/HPI"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Red flags"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Function & SDOH"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for PMH/PSH/Medications/Allergies"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Systems review"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Goals"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Observation & palpation"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Range of motion"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Strength"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_ROM_BASIC_MISSING",
+          "message": "Knee ROM basics missing (flexion and extension)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_STRENGTH_BASIC_MISSING",
+          "message": "Knee MMT basics missing (quadriceps and hamstrings)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_PALPATION_BASIC_MISSING",
+          "message": "Knee palpation basics missing (joint line or effusion)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_FUNCTIONAL_BASIC_MISSING",
+          "message": "Knee functional movement missing (squat or step-down)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_LIGAMENT_TESTS_MISSING",
+          "message": "Knee ligament special tests missing (Lachman/anterior drawer and valgus/varus)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_MENISCAL_TEST_MISSING",
+          "message": "Knee meniscal test missing (McMurray)"
+        }
+      ],
+      "needs_beef_up": true
+    },
+    {
+      "scenario_id": "sc_knee_anterior_knee_pain_intermediate_v1",
+      "title": "Intermediate: Anterior Knee Pain with Running",
+      "region": "knee",
+      "difficulty": "moderate",
+      "subjective": {},
+      "objective": {
+        "Other": 1,
+        "Special tests": 5,
+        "Functional movement": 3
+      },
+      "issues": [
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Pain/HPI"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Red flags"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Function & SDOH"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for PMH/PSH/Medications/Allergies"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Systems review"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Goals"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Observation & palpation"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Range of motion"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Strength"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_ROM_BASIC_MISSING",
+          "message": "Knee ROM basics missing (flexion and extension)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_STRENGTH_BASIC_MISSING",
+          "message": "Knee MMT basics missing (quadriceps and hamstrings)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_PALPATION_BASIC_MISSING",
+          "message": "Knee palpation basics missing (joint line or effusion)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_LIGAMENT_TESTS_MISSING",
+          "message": "Knee ligament special tests missing (Lachman/anterior drawer and valgus/varus)"
+        }
+      ],
+      "needs_beef_up": true
+    },
+    {
+      "scenario_id": "sc_knee_anterior_knee_pain_tendinosis_v1",
+      "title": "Anterior Knee Pain: Patellar Tendinosis (Jumper's Knee)",
+      "region": "knee",
+      "difficulty": "moderate",
+      "subjective": {},
+      "objective": {
+        "Functional movement": 2
+      },
+      "issues": [
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Pain/HPI"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Red flags"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Function & SDOH"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for PMH/PSH/Medications/Allergies"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Systems review"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Goals"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Observation & palpation"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Range of motion"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Strength"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Special tests"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_ROM_BASIC_MISSING",
+          "message": "Knee ROM basics missing (flexion and extension)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_STRENGTH_BASIC_MISSING",
+          "message": "Knee MMT basics missing (quadriceps and hamstrings)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_PALPATION_BASIC_MISSING",
+          "message": "Knee palpation basics missing (joint line or effusion)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_FUNCTIONAL_BASIC_MISSING",
+          "message": "Knee functional movement missing (squat or step-down)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_LIGAMENT_TESTS_MISSING",
+          "message": "Knee ligament special tests missing (Lachman/anterior drawer and valgus/varus)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_MENISCAL_TEST_MISSING",
+          "message": "Knee meniscal test missing (McMurray)"
+        }
+      ],
+      "needs_beef_up": true
+    },
+    {
+      "scenario_id": "sc_knee_mcl_grade1_entry_v1",
+      "title": "Entry: Medial Collateral Ligament Sprain—Grade I",
+      "region": "knee",
+      "difficulty": "easy",
+      "subjective": {},
+      "objective": {},
+      "issues": [
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Pain/HPI"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Red flags"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Function & SDOH"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for PMH/PSH/Medications/Allergies"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Systems review"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Goals"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Observation & palpation"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Functional movement"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Range of motion"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Strength"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Special tests"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_ROM_BASIC_MISSING",
+          "message": "Knee ROM basics missing (flexion and extension)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_STRENGTH_BASIC_MISSING",
+          "message": "Knee MMT basics missing (quadriceps and hamstrings)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_PALPATION_BASIC_MISSING",
+          "message": "Knee palpation basics missing (joint line or effusion)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_FUNCTIONAL_BASIC_MISSING",
+          "message": "Knee functional movement missing (squat or step-down)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_LIGAMENT_TESTS_MISSING",
+          "message": "Knee ligament special tests missing (Lachman/anterior drawer and valgus/varus)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_MENISCAL_TEST_MISSING",
+          "message": "Knee meniscal test missing (McMurray)"
+        }
+      ],
+      "needs_beef_up": true
+    },
+    {
+      "scenario_id": "sc_knee_pfp_entry_v1",
+      "title": "Entry: Patellofemoral Pain with Stair Descent – Runner",
+      "region": "knee",
+      "difficulty": "easy",
+      "subjective": {},
+      "objective": {},
+      "issues": [
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Pain/HPI"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Red flags"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Function & SDOH"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for PMH/PSH/Medications/Allergies"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Systems review"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Goals"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Observation & palpation"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Functional movement"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Range of motion"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Strength"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Special tests"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_ROM_BASIC_MISSING",
+          "message": "Knee ROM basics missing (flexion and extension)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_STRENGTH_BASIC_MISSING",
+          "message": "Knee MMT basics missing (quadriceps and hamstrings)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_PALPATION_BASIC_MISSING",
+          "message": "Knee palpation basics missing (joint line or effusion)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_FUNCTIONAL_BASIC_MISSING",
+          "message": "Knee functional movement missing (squat or step-down)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_LIGAMENT_TESTS_MISSING",
+          "message": "Knee ligament special tests missing (Lachman/anterior drawer and valgus/varus)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_MENISCAL_TEST_MISSING",
+          "message": "Knee meniscal test missing (McMurray)"
+        }
+      ],
+      "needs_beef_up": true
+    },
+    {
+      "scenario_id": "sc_knee_tcoa_entry_v1",
+      "title": "Entry: Tricompartmental Knee OA—Mobility and Function Limits",
+      "region": "knee",
+      "difficulty": "easy",
+      "subjective": {},
+      "objective": {},
+      "issues": [
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Pain/HPI"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Red flags"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Function & SDOH"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for PMH/PSH/Medications/Allergies"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Systems review"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Goals"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Observation & palpation"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Functional movement"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Range of motion"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Strength"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Special tests"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_ROM_BASIC_MISSING",
+          "message": "Knee ROM basics missing (flexion and extension)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_STRENGTH_BASIC_MISSING",
+          "message": "Knee MMT basics missing (quadriceps and hamstrings)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_PALPATION_BASIC_MISSING",
+          "message": "Knee palpation basics missing (joint line or effusion)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_FUNCTIONAL_BASIC_MISSING",
+          "message": "Knee functional movement missing (squat or step-down)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_LIGAMENT_TESTS_MISSING",
+          "message": "Knee ligament special tests missing (Lachman/anterior drawer and valgus/varus)"
+        },
+        {
+          "level": "warning",
+          "code": "O_KNEE_MENISCAL_TEST_MISSING",
+          "message": "Knee meniscal test missing (McMurray)"
+        }
+      ],
+      "needs_beef_up": true
+    },
+    {
+      "scenario_id": "sc_lumbar_clbp_ext_pref_flare_v1",
+      "title": "Chronic Low Back Pain—Recent Flare (Extension Preference)",
+      "region": "lumbar_spine",
+      "difficulty": "moderate",
+      "subjective": {},
+      "objective": {
+        "Other": 3
+      },
+      "issues": [
+        {
+          "level": "error",
+          "code": "PERSONA_MISSING_FROM_MANIFEST",
+          "message": "Persona prsn_clbp_extpref_v1 referenced by sc_lumbar_clbp_ext_pref_flare_v1 is not present in manifest"
+        },
+        {
+          "level": "error",
+          "code": "PERSONA_COMPILED_MISMATCH",
+          "message": "Compiled persona does not match manifest persona prsn_clbp_extpref_v1"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Pain/HPI"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Red flags"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Function & SDOH"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for PMH/PSH/Medications/Allergies"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Systems review"
+        },
+        {
+          "level": "warning",
+          "code": "S_SUBJECTIVE_COVERAGE_MISSING",
+          "message": "Subjective coverage missing for Goals"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Observation & palpation"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Functional movement"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Range of motion"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Strength"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_COVERAGE_MISSING",
+          "message": "Objective coverage missing for Special tests"
+        },
+        {
+          "level": "warning",
+          "code": "O_OBJECTIVE_NEURO_MISSING",
+          "message": "Objective neurological screen missing for spine scenario"
+        },
+        {
+          "level": "warning",
+          "code": "O_SPINE_ROM_PLANES_MISSING",
+          "message": "Spine ROM planes missing (flexion, extension, rotation, side-bend)"
+        },
+        {
+          "level": "warning",
+          "code": "O_SPINE_NEURO_DETAILS_MISSING",
+          "message": "Spine neuro screen details missing (myotomes, dermatomes/sensation, and reflexes)"
+        },
+        {
+          "level": "warning",
+          "code": "O_LUMBAR_NEURAL_TENSION_MISSING",
+          "message": "Lumbar neural tension tests missing (SLR and Prone Knee Bend)"
+        },
+        {
+          "level": "warning",
+          "code": "S_SPINE_REDFLAGS_MISSING",
+          "message": "Red flags screening not documented under Subjective for spine scenario"
+        }
+      ],
+      "needs_beef_up": true
+    }
+  ]
+}

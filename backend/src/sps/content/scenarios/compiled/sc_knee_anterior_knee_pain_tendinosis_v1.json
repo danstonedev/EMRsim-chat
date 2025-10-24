@@ -1,0 +1,480 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_anterior_knee_pain_tendinosis_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:17610d3463a98a89ac018a7953e491abba69370f454ac4f435ef001cbc75bc06",
+  "dependencies_checksum": "sha256:aa40530a79987b21a7cf1f8370313144fe65a17e7f8ec2437046a55bbc85f798",
+  "source_bundle": "scenarios/bundles_src/sc_knee_anterior_knee_pain_tendinosis_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_anterior_knee_pain_tendinosis_v1",
+    "student_case_id": "C-1UQOK",
+    "title": "Anterior Knee Pain: Patellar Tendinosis (Jumper's Knee)",
+    "region": "knee",
+    "difficulty": "moderate",
+    "setting": "outpatient_pt",
+    "tags": [
+      "anterior_knee_pain",
+      "patellar_tendinosis",
+      "tendinopathy",
+      "sport_jumping"
+    ],
+    "schema_version": "3.1.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Anterior Knee Pain: Patellar Tendinosis (Jumper's Knee)",
+      "region": "knee",
+      "difficulty": "moderate",
+      "setting": "outpatient_pt",
+      "tags": [
+        "anterior_knee_pain",
+        "patellar_tendinosis",
+        "tendinopathy",
+        "sport_jumping"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-23T00:00:00Z",
+      "updated_at": "2025-10-23T00:00:00Z"
+    },
+    "presenting_problem": {
+      "primary_dx": "Patellar tendinopathy (tendinosis)",
+      "onset": "gradual",
+      "duration_weeks": 8,
+      "dominant_symptoms": [
+        "anterior knee pain at the inferior patellar pole",
+        "pain with jumping and deceleration"
+      ],
+      "pain_nrs_rest": 0,
+      "pain_nrs_activity": 6,
+      "aggravators": [
+        "jumping/landing",
+        "running hills",
+        "deep knee flexion under load"
+      ],
+      "easers": [
+        "relative rest",
+        "isometric loading"
+      ],
+      "pattern_24h": "stiff at start-up, warms up with activity, worse after high-load sessions",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "Midportion/proximal patellar tendon pain limiting jumping and running tolerance",
+      "body_functions_structures": [
+        "point tenderness at proximal patellar tendon",
+        "thickening possible"
+      ],
+      "activities": [
+        "pain with jump take-off/landing",
+        "pain with decline squat"
+      ],
+      "participation": [
+        "reduced sport participation"
+      ],
+      "environmental_factors": [
+        "in-season sport schedule"
+      ],
+      "personal_factors": [
+        "increased plyometric volume"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: inferior pole of patella",
+            "quality: sharp with jump, ache afterward",
+            "NRS activity: 6",
+            "aggravators: jumping, running hills, deep squat",
+            "mechanism: Gradual onset after increasing plyometrics and tournament schedule",
+            "onset: 8 weeks ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "locking: false",
+            "true_instability: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: ",
+            "psh: ",
+            "meds: [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "return to jumping without pain",
+            "full practice participation"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: none",
+            "localized tenderness at proximal patellar tendon"
+          ]
+        }
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "structures: patellar tendon",
+            "tenderness: moderate"
+          ]
+        }
+      },
+      {
+        "test_id": "decline_squat_test",
+        "label": "Decline Squat Test",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "pain reproduced at inferior patellar pole"
+          ],
+          "binary_flags": {
+            "pain_reproduced": true
+          }
+        }
+      },
+      {
+        "test_id": "single_leg_squat",
+        "label": "Single Leg Squat",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "pain near end range and on deceleration"
+          ]
+        }
+      },
+      {
+        "test_id": "rom",
+        "label": "Range of Motion",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "objective_guardrails": {
+      "deflection_lines": [
+        "Could you tell me exactly what movement or test you want me to try?"
+      ],
+      "require_explicit_physical_consent": false
+    },
+    "guardrails": {
+      "impact_testing_unsafe": true,
+      "min_age": 15,
+      "max_age": 40,
+      "strict": true
+    },
+    "instructions": {
+      "sp_instructions": {
+        "affect": "motivated",
+        "pain_behavior": "pain with rapid deceleration and deep knee flexion",
+        "cueing_rules": [
+          "answer with lived experience; avoid diagnosis",
+          "if unclear, ask the student to be specific"
+        ]
+      },
+      "llm_prompt_hooks": {
+        "coaching_cues": [
+          "ask about training spikes and plyometric load",
+          "ask about pain during decline squat or single-leg squat"
+        ],
+        "deflection_lines": [
+          "Could you tell me exactly what movement or test you want me to try?"
+        ]
+      },
+      "authoring_notes": "Tendinosis variant. Keep answers sport-focused and load-sensitive."
+    },
+    "soap": {
+      "subjective": {
+        "chief_complaint": "Pain just below the kneecap with jumping and after intense practices.",
+        "history_present_illness": {
+          "mechanism": "Gradual onset after increasing plyometrics and tournament schedule",
+          "first_onset": "8 weeks ago",
+          "course_since_onset": "fluctuating",
+          "prior_episodes": "mild similar ache last season that resolved",
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "locking": false,
+            "true_instability": false
+          }
+        },
+        "pain": {
+          "location": [
+            "inferior pole of patella"
+          ],
+          "quality": [
+            "sharp with jump",
+            "ache afterward"
+          ],
+          "irritability": "moderate",
+          "nrs_rest": 0,
+          "nrs_activity": 6,
+          "aggravators": [
+            "jumping",
+            "running hills",
+            "deep squat"
+          ],
+          "easers": [
+            "isometric quad holds",
+            "relative rest"
+          ],
+          "24h_pattern": "stiff at start-up, warms up then aches later"
+        },
+        "social_history": {
+          "sport_hobbies": [
+            "basketball",
+            "volleyball"
+          ]
+        },
+        "goals": [
+          "return to jumping without pain",
+          "full practice participation"
+        ],
+        "past_medical_history": [],
+        "surgical_history": [],
+        "medications": [
+          {
+            "name": "ibuprofen",
+            "dose": "as needed"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "no known drug allergies"
+          }
+        ]
+      },
+      "objective": {
+        "observation": {
+          "effusion": "none",
+          "other_findings": [
+            "localized tenderness at proximal patellar tendon"
+          ]
+        },
+        "palpation": {
+          "structures_assessed": [
+            "patellar tendon"
+          ],
+          "tenderness_grading": "moderate"
+        },
+        "special_tests": [
+          {
+            "test_template_id": "decline_squat_test",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "pain reproduced at inferior patellar pole"
+              ],
+              "binary_flags": {
+                "pain_reproduced": true
+              }
+            }
+          }
+        ],
+        "functional_tests": [
+          {
+            "test_template_id": "single_leg_squat",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "pain near end range and on deceleration"
+              ]
+            }
+          }
+        ],
+        "contraindications_precautions": [
+          "avoid high-load jumping early; progress as tolerated"
+        ]
+      },
+      "assessment": {
+        "problem_list": [
+          "anterior knee pain with jumping",
+          "patellar tendon tenderness"
+        ],
+        "working_diagnoses": [
+          "patellar tendinopathy"
+        ],
+        "clinical_impression": "Findings align with patellar tendinopathy; irritability moderate; pain with tendon loading.",
+        "prognosis": "good"
+      },
+      "plan": {
+        "frequency_duration": {
+          "visits_per_week": 1,
+          "weeks": 4
+        },
+        "interventions_planned": [
+          {
+            "intervention_id": "isometric_quad_holds",
+            "dose": {
+              "sets": 5,
+              "reps": 45,
+              "frequency_per_week": 5
+            },
+            "expected_response": {
+              "rationale": "short-term analgesia, load introduction"
+            }
+          },
+          {
+            "intervention_id": "progressive_tendon_loading",
+            "dose": {
+              "sets": 3,
+              "reps": 8,
+              "frequency_per_week": 3
+            },
+            "expected_response": {
+              "rationale": "gradual tolerance to tendon load"
+            }
+          }
+        ],
+        "patient_education": {
+          "topics": [
+            "load management",
+            "graduated return to sport"
+          ]
+        },
+        "safety_netting": [
+          "reduce volume if pain spikes >2/10 and persists 24h"
+        ]
+      }
+    }
+  },
+  "persona": null,
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_anterior_knee_pain_tendinosis_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_anterior_knee_pain_tendinosis_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_anterior_knee_pain_tendinosis_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_anterior_knee_pain_tendinosis_v1/soap.objective.json",
+    "soap_assessment": "scenarios/bundles_src/sc_knee_anterior_knee_pain_tendinosis_v1/soap.assessment.json",
+    "soap_plan": "scenarios/bundles_src/sc_knee_anterior_knee_pain_tendinosis_v1/soap.plan.json"
+  }
+}

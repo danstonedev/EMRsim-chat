@@ -1,14 +1,15 @@
 {
   "schema_version": "1.0.0",
   "generator": "sps-compiler",
-  "compiled_at": "2025-10-08T14:01:00.734Z",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
   "scenario_id": "sc_lumbar_clbp_ext_pref_flare_v1",
   "content_version": "1.0.0",
-  "manifest_checksum": "sha256:11cf23c56b9f8c1c551c2b9e635ec6f2f493614a9c050b1e15538f82aa7c32fa",
-  "dependencies_checksum": "sha256:05024d4243f4542ceff74bf015a64b5136b42747d40552f45214c79543706063",
+  "manifest_checksum": "sha256:d3521da3d21f0e52b178baae8e7e9805d785e4cec774cf1253de9e7cfdd6688e",
+  "dependencies_checksum": "sha256:87aed42dd83f3b1b1bb54a2a6d58dfda656da73660b7eed68bedfb5af9f5eac9",
   "source_bundle": "scenarios/bundles_src/sc_lumbar_clbp_ext_pref_flare_v1",
   "scenario": {
     "scenario_id": "sc_lumbar_clbp_ext_pref_flare_v1",
+    "student_case_id": "C-FGWAJ",
     "title": "Chronic Low Back Pain—Recent Flare (Extension Preference)",
     "region": "lumbar_spine",
     "difficulty": "moderate",
@@ -32,6 +33,12 @@
         "directional_preference"
       ],
       "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
       "created_at": "2025-10-01T16:57:26Z",
       "updated_at": "2025-10-01T16:57:26Z"
     },
@@ -176,7 +183,156 @@
       ],
       "environment": "apartment with elevator"
     },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: central low back",
+            "quality: ache, stiff",
+            "NRS activity: 6",
+            "aggravators: sitting >30–40 min, bending",
+            "mechanism: insidious over years; recent lift triggered flare",
+            "onset: 2019-01-01T00:00:00Z"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever_chills: false",
+            "night_pain_unrelieved: false",
+            "unexplained_weight_loss: false",
+            "recent_infection: false",
+            "cancer_history: false",
+            "neurologic_bowel_bladder_changes: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "work: desk job",
+            "home: apartment with elevator"
+          ]
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: none significant",
+            "psh: ",
+            "meds: occasional NSAID",
+            "allergies: NKDA"
+          ]
+        }
+      },
+      {
+        "id": "systems_review",
+        "label": "Systems review",
+        "patterns": [
+          "system review",
+          "ros",
+          "cardio",
+          "neuro"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "cardiovascular_pulmonary: {\"dyspnea\":false,\"chest_pain\":false,\"orthopnea\":false,\"edema\":false}",
+            "neuromuscular: {\"dizziness\":false,\"falls_history\":false,\"headache_neck\":false,\"paresthesia\":false}",
+            "integumentary: {\"wounds\":false,\"rash\":false,\"color_changes\":false}",
+            "other: []"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "sit 60 minutes ≤3/10",
+            "bike 45 minutes without flare"
+          ]
+        }
+      }
+    ],
     "objective_catalog": [
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "lumbar_spine",
+        "patient_output_script": {
+          "qualitative": [
+            "no distress"
+          ]
+        }
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "lumbar_spine",
+        "patient_output_script": {
+          "qualitative": [
+            "structures: paraspinals_L3_L5",
+            "tenderness: mild"
+          ]
+        }
+      },
+      {
+        "test_id": "rom",
+        "label": "Range of Motion",
+        "region": "lumbar_spine",
+        "patient_output_script": {
+          "qualitative": [
+            "flexion: worse",
+            "extension: better"
+          ]
+        }
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "lumbar_spine",
+        "patient_output_script": {
+          "qualitative": [
+            "hip_extensors: 4+",
+            "hip_abductors: 4+"
+          ]
+        }
+      },
       {
         "test_id": "tmpl_prone_instability",
         "label": "Tmpl Prone Instability",
@@ -213,6 +369,66 @@
           },
           "qualitative": []
         }
+      },
+      {
+        "test_id": "lumbar_rom_flexion",
+        "label": "Lumbar ROM: Flexion",
+        "region": "lumbar_spine",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lumbar_rom_extension",
+        "label": "Lumbar ROM: Extension",
+        "region": "lumbar_spine",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lumbar_rom_rotation",
+        "label": "Lumbar ROM: Rotation",
+        "region": "lumbar_spine",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lumbar_rom_side_bend",
+        "label": "Lumbar ROM: Side-bend",
+        "region": "lumbar_spine",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lumbar_neuro_myotomes",
+        "label": "Lumbar Neuro: Myotomes",
+        "region": "lumbar_spine",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lumbar_neuro_dermatomes",
+        "label": "Lumbar Neuro: Dermatomes/Sensation",
+        "region": "lumbar_spine",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lumbar_neuro_reflexes",
+        "label": "Lumbar Neuro: Reflexes (DTR)",
+        "region": "lumbar_spine",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "slr_test",
+        "label": "SLR Test",
+        "region": "lumbar_spine",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "prone_knee_bend_test",
+        "label": "Prone Knee Bend Test",
+        "region": "lumbar_spine",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_sit_to_stand",
+        "label": "Functional: Sit-to-Stand",
+        "region": "lumbar_spine",
+        "patient_output_script": {}
       }
     ],
     "instructions": {
@@ -674,27 +890,27 @@
       "reviewers": [],
       "last_reviewed": "2025-10-01T16:57:26Z"
     },
-    "linked_persona_id": "prsn_clbp_extpref_v1",
+    "linked_persona_id": "echo-devon-brooks",
     "persona_snapshot": {
-      "id": "prsn_clbp_extpref_v1",
-      "display_name": "Arjun Mehta",
+      "id": "echo-devon-brooks",
+      "display_name": "Devon Brooks",
       "age": 30,
       "sex": "unspecified",
       "headline": null
     }
   },
   "persona": {
-    "id": "prsn_clbp_extpref_v1",
+    "id": "echo-devon-brooks",
     "content_version": "1.0.0",
-    "checksum": "sha256:5e951ad1b61dd8332750b65c700779c9b485326970f552b06c6f438598a11c1a",
-    "updated_at": "2025-10-08T14:01:00.736Z",
-    "file": "personas/shared/prsn_clbp_extpref_v1.json",
+    "checksum": "sha256:c24af504c895c76e913361d54d14bf9560382a2d0f971bcccff9f55e74bf06ac",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
     "data": {
-      "patient_id": "prsn_clbp_extpref_v1",
-      "display_name": "Arjun Mehta",
+      "patient_id": "echo-devon-brooks",
+      "display_name": "Devon Brooks",
       "demographics": {
-        "name": "Arjun Mehta",
-        "preferred_name": "Arjun",
+        "name": "Devon Brooks",
+        "preferred_name": "Devon",
         "age": 30,
         "sex": "unspecified",
         "occupation": "Not specified",
@@ -714,17 +930,17 @@
       "dialogue_style": {
         "verbosity": "balanced",
         "tone": "friendly",
-        "voice_id": null,
+        "voice_id": "echo",
         "speaking_rate": null
       },
       "dob_challenges": [
         {
           "style": "straightforward",
-          "example_response": "Arjun Mehta, 1995-01-01."
+          "example_response": "Devon Brooks, 1995-01-01."
         },
         {
           "style": "clarification",
-          "example_response": "Arjun Mehta. Date of birth 1995-01-01."
+          "example_response": "Devon Brooks. Date of birth 1995-01-01."
         }
       ]
     }

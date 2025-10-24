@@ -1,14 +1,15 @@
 {
   "schema_version": "1.0.0",
   "generator": "sps-compiler",
-  "compiled_at": "2025-10-08T14:01:00.734Z",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
   "scenario_id": "sc_hip_tha_anterior_pod0_v1",
   "content_version": "1.0.0",
-  "manifest_checksum": "sha256:43eff75d871b3f97c7cf0cea51870cf94966bf58a64ed83f2f10fdcca884853a",
-  "dependencies_checksum": "sha256:46f2f8a45c2e8a39c2951c72fd49f49948d079b9aa19dfe3b55e6e9f7e5c4e73",
+  "manifest_checksum": "sha256:7add013bb24a7620b1e65a79fc20e1702c896ea26e821c0b9d160d183675257c",
+  "dependencies_checksum": "sha256:6179783cb6d2c929294278be845e1d480765136b2f8af9faad8fd621ad51bd6b",
   "source_bundle": "scenarios/bundles_src/sc_hip_tha_anterior_pod0_v1",
   "scenario": {
     "scenario_id": "sc_hip_tha_anterior_pod0_v1",
+    "student_case_id": "C-1MPCW",
     "title": "Acute THA—Anterior Approach (POD0)",
     "region": "hip",
     "difficulty": "moderate",
@@ -34,6 +35,12 @@
         "mobility_first_day"
       ],
       "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
       "created_at": "2025-10-01T16:57:26Z",
       "updated_at": "2025-10-01T16:57:26Z"
     },
@@ -203,7 +210,169 @@
       ],
       "environment": "single-story with two entry steps"
     },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: anterior hip incision",
+            "quality: aching, tight",
+            "NRS activity: 6",
+            "aggravators: sit_to_stand, end_range",
+            "mechanism: Elective THA for end-stage OA",
+            "onset: 2025-10-01T16:57:26Z"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever_chills: false",
+            "night_pain_unrelieved: false",
+            "unexplained_weight_loss: false",
+            "recent_infection: false",
+            "cancer_history: false",
+            "neurologic_bowel_bladder_changes: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "work: retired",
+            "home: single-story with two entry steps"
+          ]
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: HTN well-controlled",
+            "psh: Right THA today",
+            "meds: acetaminophen, opioid PRN, LMWH",
+            "allergies: NKDA"
+          ]
+        }
+      },
+      {
+        "id": "systems_review",
+        "label": "Systems review",
+        "patterns": [
+          "system review",
+          "ros",
+          "cardio",
+          "neuro"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "cardiovascular_pulmonary: {\"dyspnea\":false,\"chest_pain\":false,\"orthopnea\":false,\"edema\":false}",
+            "neuromuscular: {\"dizziness\":true,\"falls_history\":false,\"headache_neck\":false,\"paresthesia\":false}",
+            "integumentary: {\"wounds\":true,\"rash\":false,\"color_changes\":false}",
+            "other: []"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "stand and transfer safely",
+            "walk in hall with walker",
+            "learn precautions"
+          ]
+        }
+      }
+    ],
     "objective_catalog": [
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "hip",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: mild",
+            "ecchymosis: mild"
+          ]
+        }
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "hip",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: mild"
+          ]
+        }
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "hip",
+        "patient_output_script": {
+          "qualitative": [
+            "structures: peri-incisional region",
+            "tenderness: moderate",
+            "warmth mild"
+          ]
+        }
+      },
+      {
+        "test_id": "rom",
+        "label": "Range of Motion",
+        "region": "hip",
+        "patient_output_script": {
+          "qualitative": [
+            "hip_flexion_R: incisional_ache"
+          ]
+        }
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "hip",
+        "patient_output_script": {
+          "qualitative": [
+            "quad_R: 3-",
+            "glute_med_R: 3-",
+            "pain inhibition present: true"
+          ]
+        }
+      },
       {
         "test_id": "tmpl_tug",
         "label": "Tmpl Tug",
@@ -216,6 +385,18 @@
             "uses RW, contact guard"
           ]
         }
+      },
+      {
+        "test_id": "functional_sit_to_stand",
+        "label": "Functional: Sit-to-Stand",
+        "region": "hip",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "faber_test",
+        "label": "FABER Test",
+        "region": "hip",
+        "patient_output_script": {}
       }
     ],
     "instructions": {
@@ -625,27 +806,27 @@
       "reviewers": [],
       "last_reviewed": "2025-10-01T16:57:26Z"
     },
-    "linked_persona_id": "prsn_tha_pod0_v1",
+    "linked_persona_id": "alloy-greta-olson",
     "persona_snapshot": {
-      "id": "prsn_tha_pod0_v1",
-      "display_name": "Grace Lin",
+      "id": "alloy-greta-olson",
+      "display_name": "Greta Olson",
       "age": 30,
       "sex": "unspecified",
       "headline": null
     }
   },
   "persona": {
-    "id": "prsn_tha_pod0_v1",
+    "id": "alloy-greta-olson",
     "content_version": "1.0.0",
-    "checksum": "sha256:b6aaf1c3ab41917d6c12441d26688371306b32bbd21fb6f6ca877c2264680fbe",
-    "updated_at": "2025-10-08T14:01:00.736Z",
-    "file": "personas/shared/prsn_tha_pod0_v1.json",
+    "checksum": "sha256:4493a216466f00f9d73166348378e73497105d9e6c98c8fdee408ecf99bf7060",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
     "data": {
-      "patient_id": "prsn_tha_pod0_v1",
-      "display_name": "Grace Lin",
+      "patient_id": "alloy-greta-olson",
+      "display_name": "Greta Olson",
       "demographics": {
-        "name": "Grace Lin",
-        "preferred_name": "Grace",
+        "name": "Greta Olson",
+        "preferred_name": "Greta",
         "age": 30,
         "sex": "unspecified",
         "occupation": "Not specified",
@@ -665,17 +846,17 @@
       "dialogue_style": {
         "verbosity": "balanced",
         "tone": "friendly",
-        "voice_id": null,
+        "voice_id": "alloy",
         "speaking_rate": null
       },
       "dob_challenges": [
         {
           "style": "straightforward",
-          "example_response": "Grace Lin, 1995-01-01."
+          "example_response": "Greta Olson, 1995-01-01."
         },
         {
           "style": "clarification",
-          "example_response": "Grace Lin. Date of birth 1995-01-01."
+          "example_response": "Greta Olson. Date of birth 1995-01-01."
         }
       ]
     }

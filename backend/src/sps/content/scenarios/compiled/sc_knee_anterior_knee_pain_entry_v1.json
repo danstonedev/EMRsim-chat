@@ -1,14 +1,15 @@
 {
   "schema_version": "1.0.0",
   "generator": "sps-compiler",
-  "compiled_at": "2025-10-16T15:55:49.154Z",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
   "scenario_id": "sc_knee_anterior_knee_pain_entry_v1",
   "content_version": "1.0.0",
-  "manifest_checksum": "sha256:34985b173f3fce92e17c140260fc161400d5f1d7702e9d2f1038921fbb65595a",
-  "dependencies_checksum": "sha256:0efb6c3d07343f3370ae4043c3c3af03954990f5f5010b687fe7dd6ee1bee684",
+  "manifest_checksum": "sha256:6bf1f97ff621f8ae74a3e5dfff83cf1058a84b88611e31aba997cb78590ea43c",
+  "dependencies_checksum": "sha256:4418031c9510fa88a3000920a5488727a99ad89e3bebe2064b03b8fbadf012cf",
   "source_bundle": "scenarios/bundles_src/sc_knee_anterior_knee_pain_entry_v1",
   "scenario": {
     "scenario_id": "sc_knee_anterior_knee_pain_entry_v1",
+    "student_case_id": "C-8CGDC",
     "title": "Entry-Level: Anterior Knee Pain with Stairs",
     "region": "knee",
     "difficulty": "easy",
@@ -32,6 +33,12 @@
         "patellofemoral"
       ],
       "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
       "created_at": "2025-10-16T00:00:00Z",
       "updated_at": "2025-10-16T00:00:00Z"
     },
@@ -132,7 +139,178 @@
       ],
       "environment": "apartment with 2 flights of stairs"
     },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: anterior knee, around the kneecap",
+            "quality: ache, pressure",
+            "NRS activity: 5",
+            "aggravators: descending stairs, prolonged sitting>45min, deep squat",
+            "mechanism: Gradual onset over ~6 weeks after increasing jogging mileage and starting a new desk job.",
+            "onset: 6 weeks ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "night_pain: false",
+            "unexplained_weight_loss: false",
+            "locking: false",
+            "true_instability: false",
+            "numbness_tingling: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "work: desk job",
+            "home: apartment with 2 flights of stairs"
+          ]
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: no prior knee surgery",
+            "psh: ",
+            "meds: occasional ibuprofen"
+          ]
+        }
+      },
+      {
+        "id": "systems_review",
+        "label": "Systems review",
+        "patterns": [
+          "system review",
+          "ros",
+          "cardio",
+          "neuro"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "cardiovascular_pulmonary: {\"dyspnea\":false,\"chest_pain\":false,\"orthopnea\":false,\"edema\":false}",
+            "neuromuscular: {\"dizziness\":false,\"falls_history\":false,\"headache_neck\":false,\"paresthesia\":false}",
+            "integumentary: {\"wounds\":false,\"rash\":false,\"color_changes\":false}",
+            "other: []"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "go down stairs without pain",
+            "return to 5K without aching afterward"
+          ]
+        }
+      }
+    ],
     "objective_catalog": [
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: none to trace",
+            "ecchymosis: none",
+            "no warmth",
+            "patellar alignment normal"
+          ]
+        }
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: none to trace"
+          ]
+        }
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "structures: patellar tendon, peripatellar tissues",
+            "tenderness: mild",
+            "normal temperature",
+            "no pitting edema"
+          ]
+        }
+      },
+      {
+        "test_id": "rom",
+        "label": "Range of Motion",
+        "region": "knee",
+        "patient_output_script": {
+          "numeric": {
+            "knee_flexion_active": 135,
+            "knee_extension_active": 0,
+            "knee_flexion_passive": 140,
+            "knee_extension_passive": 0
+          },
+          "qualitative": [
+            "end-feel flexion: soft",
+            "end-feel extension: firm",
+            "knee_flexion: anterior pressure"
+          ]
+        }
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "quad: 5",
+            "hamstring: 5",
+            "hip_abduction: 4"
+          ]
+        }
+      },
       {
         "test_id": "clarke_sign",
         "label": "Clarke Sign",
@@ -171,6 +349,42 @@
             "pain at end range descent"
           ]
         }
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
       }
     ],
     "objective_guardrails": {
@@ -520,9 +734,62 @@
         "faculty_reviewer"
       ],
       "last_reviewed": "2025-10-16"
+    },
+    "linked_persona_id": "shimmer-lila-singh",
+    "persona_snapshot": {
+      "id": "shimmer-lila-singh",
+      "display_name": "Lila Singh",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
     }
   },
-  "persona": null,
+  "persona": {
+    "id": "shimmer-lila-singh",
+    "content_version": "1.0.0",
+    "checksum": "sha256:82f110e3b9db0c71326b34b2ca051e068091f1ea7b487f61da1125370f436c41",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "shimmer-lila-singh",
+      "display_name": "Lila Singh",
+      "demographics": {
+        "name": "Lila Singh",
+        "preferred_name": "Lila",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "shimmer",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Lila Singh, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Lila Singh. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
   "modules": [],
   "source_files": {
     "header": "scenarios/bundles_src/sc_knee_anterior_knee_pain_entry_v1/scenario.header.json",
