@@ -39,7 +39,7 @@ If you haven't set up a remote:
 ```powershell
 # Create repo on GitHub first, then:
 git remote add origin https://github.com/YOUR-USERNAME/EMRsim-chat.git
-git push -u origin master
+git push -u origin main
 ```
 
 If remote is already configured:

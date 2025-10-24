@@ -27,7 +27,7 @@ If you haven't already set up a GitHub repository:
 ```powershell
 # Create a new repository on GitHub first, then:
 git remote add origin https://github.com/YOUR-USERNAME/EMRsim-chat.git
-git push -u origin master
+git push -u origin main
 ```
 
 If you already have a remote configured:

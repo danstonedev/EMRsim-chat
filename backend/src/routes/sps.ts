@@ -1062,7 +1062,7 @@ exportRouter.get('/export', (req: Request, res: Response) => {
           soapObjectiveFindingsByKey.get(String(o.test_id || '').toLowerCase()) ||
           soapObjectiveFindingsByKey.get(String(o.label || '').toLowerCase()) ||
           null;
-        
+
         // Get all the data sources
         const qual = Array.isArray(o.patient_output_script?.qualitative)
           ? (o.patient_output_script!.qualitative as any[]).map(safeText).filter(Boolean)
@@ -1086,9 +1086,9 @@ exportRouter.get('/export', (req: Request, res: Response) => {
           }
           if (Object.keys(derived).length) Object.assign(bin as any, derived);
         }
-        
+
         // Format based on test type - show ACTUAL VALUES
-        
+
         // For binary tests (special tests, etc.) - show positive/negative result
         const hasPositive = Object.entries(bin).some(
           ([k, v]) =>
@@ -1100,13 +1100,13 @@ exportRouter.get('/export', (req: Request, res: Response) => {
             (k.toLowerCase().includes('negative') || k.toLowerCase().includes('absent')) &&
             (v === true || v === 1 || String(v).toLowerCase() === 'true')
         );
-        
+
         if (hasPositive) {
           findings.push('<strong style="color:#dc2626">POSITIVE</strong>');
         } else if (hasNegative) {
           findings.push('<strong style="color:#059669">Negative</strong>');
         }
-        
+
         // Show numeric values with proper formatting (ROM, strength, etc.)
         const numericEntries = Object.entries(numeric);
         if (numericEntries.length > 0) {
@@ -1125,7 +1125,7 @@ exportRouter.get('/export', (req: Request, res: Response) => {
             }
           });
         }
-        
+
         // Show qualitative findings (descriptions). If missing, derive from SOAP findings
         if (qual.length > 0) {
           qual.forEach(q => {
@@ -1148,7 +1148,7 @@ exportRouter.get('/export', (req: Request, res: Response) => {
             }
           }
         }
-        
+
         // Show other binary flags that aren't positive/negative
         Object.entries(bin).forEach(([k, v]) => {
           if (
@@ -1158,18 +1158,18 @@ exportRouter.get('/export', (req: Request, res: Response) => {
             findings.push(safeText(k));
           }
         });
-        
+
         // Faculty request: default special tests to Negative if not positive
         const hasRenderedNegative =
           hasNegative || findings.some(s => /Negative|within normal limits|WNL|normal/i.test(s));
         if (catForItem === 'Special tests' && !hasPositive && !hasRenderedNegative) {
           findings.push('<strong style="color:#059669">Negative</strong>');
         }
-        
+
         // If no specific findings, show "no data"
         const findingsHtml =
           findings.length > 0 ? findings.join(' • ') : '<span style="color:#666">No specific values recorded</span>';
-        
+
         const itemHtml = `<li><strong>${escapeHtml(safeText(o.label))}</strong><div style=\"margin-left:1.5em;margin-top:4px\">${findingsHtml}</div></li>`;
         if (!grouped[catForItem]) grouped[catForItem] = [];
         grouped[catForItem].push(itemHtml);

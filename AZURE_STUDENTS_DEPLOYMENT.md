@@ -26,7 +26,7 @@ az staticwebapp create \
   --resource-group emrsim-chat-rg \
   --source https://github.com/YOUR-USERNAME/EMRsim-chat \
   --location "East US 2" \
-  --branch master \
+  --branch main \
   --app-location "/frontend" \
   --output-location "dist" \
   --login-with-github
@@ -90,7 +90,7 @@ git init
 git add .
 git commit -m "Initial backend"
 git remote add azure https://emrsim-chat-backend.scm.azurewebsites.net:443/emrsim-chat-backend.git
-git push azure master
+git push azure main
 ```
 
 ## Step 3: Create Database

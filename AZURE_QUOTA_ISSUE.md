@@ -101,7 +101,7 @@ az staticwebapp create \
   --name emrsim-app \
   --resource-group emrsim-chat-app \
   --source https://github.com/YOUR-USER/EMRsim-chat \
-  --branch master \
+  --branch main \
   --app-location "/frontend" \
   --api-location "/api" \
   --output-location "dist"
