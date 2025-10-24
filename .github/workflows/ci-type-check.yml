@@ -1,6 +1,12 @@
 name: CI - Type Check
 
 on:
+  push:
+    branches:
+      - main
+      # Add more protected branches as needed, e.g.:
+      # - release/*
+      # - ci/*
   pull_request:
     branches: ["**"]
 

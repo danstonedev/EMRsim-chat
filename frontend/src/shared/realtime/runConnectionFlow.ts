@@ -280,7 +280,7 @@ export async function runConnectionFlow(context: ConnectionFlowContext, myOp: nu
         currentSessionId,
         willInitialize: Boolean(context.backendTranscriptMode && currentSessionId),
       });
-      
+
       if (context.backendTranscriptMode && currentSessionId) {
         context.initializeBackendSocket(currentSessionId);
       } else {

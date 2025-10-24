@@ -40,20 +40,20 @@ export interface EventDispatcherDependencies {
 
 /**
  * EventDispatcher - Handles incoming WebRTC data channel messages
- * 
+ *
  * Responsibilities:
  * - Parse incoming JSON messages from WebRTC data channel
  * - Classify events by family (session, speech, transcription, assistant, conversation-item)
  * - Route events to appropriate handler families
  * - Emit debug events for all messages (success and errors)
  * - Log unhandled event types for investigation
- * 
+ *
  * Benefits of extraction:
  * - Isolates message routing logic from ConversationController
  * - Easier to test event classification and routing
  * - Clear separation of concerns (parsing vs handling)
  * - Reduces ConversationController complexity by ~100 lines
- * 
+ *
  * Example usage:
  * ```typescript
  * const dispatcher = new EventDispatcher({
@@ -71,7 +71,7 @@ export interface EventDispatcherDependencies {
  *   debugEnabled: true,
  *   onRealtimeEvent: (payload) => console.log(payload),
  * })
- * 
+ *
  * // Handle incoming data channel message
  * dispatcher.handleMessage(rawJsonString)
  * ```
@@ -81,7 +81,7 @@ export class EventDispatcher {
 
   /**
    * Parse and route incoming WebRTC data channel message
-   * 
+   *
    * Flow:
    * 1. Parse JSON payload
    * 2. Extract event type
@@ -89,7 +89,7 @@ export class EventDispatcher {
    * 4. Classify event by family
    * 5. Route to appropriate handler
    * 6. Log unhandled events
-   * 
+   *
    * @param raw - Raw JSON string from data channel
    */
   handleMessage(raw: string): void {
@@ -114,7 +114,7 @@ export class EventDispatcher {
   /**
    * Emit debug event for incoming message
    * Detects errors/warnings and marks event kind accordingly
-   * 
+   *
    * @param type - Event type (e.g., 'session.created', 'error')
    * @param payload - Full event payload
    */
@@ -143,7 +143,7 @@ export class EventDispatcher {
 
   /**
    * Route event to appropriate handler family based on classification
-   * 
+   *
    * Event families:
    * - session: Session lifecycle events (created, updated)
    * - speech: User speech events (started, stopped)
@@ -152,7 +152,7 @@ export class EventDispatcher {
    * - conversation-item: Conversation item events (created, truncated)
    * - error: Error events (logged, not handled)
    * - unknown: Unhandled event types (logged for investigation)
-   * 
+   *
    * @param type - Event type string
    * @param payload - Event payload
    */
@@ -203,14 +203,14 @@ export class EventDispatcher {
 
   /**
    * Handle session events by delegating to session event handler
-   * 
+   *
    * Session events include:
    * - session.created
    * - session.updated
    * - input_audio_buffer.committed
    * - input_audio_buffer.speech_started
    * - input_audio_buffer.speech_stopped
-   * 
+   *
    * @param type - Event type
    * @param payload - Event payload
    * @returns true if event was handled

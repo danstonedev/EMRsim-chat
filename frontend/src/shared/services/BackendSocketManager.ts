@@ -81,13 +81,13 @@ export type BackendSocketFactory = (options: {
 /**
  * Manages WebSocket connection to backend for unified transcript broadcast.
  * Handles connection lifecycle, event routing, reconnection logic, and failure tracking.
- * 
+ *
  * @deprecated **THIS CLASS IS DEPRECATED** - Do NOT use in new code!
- * 
+ *
  * **For React components:** Use the `useBackendSocket` hook instead:
  * ```typescript
  * import { useBackendSocket } from '../hooks/useBackendSocket';
- * 
+ *
  * const backendSocket = useBackendSocket({
  *   sessionId: currentSessionId,
  *   config: { apiBaseUrl: 'http://localhost:3002', maxFailures: 3 },
@@ -97,22 +97,22 @@ export type BackendSocketFactory = (options: {
  *     onDisconnect: handleDisconnect,
  *   },
  * });
- * 
+ *
  * // State is reactive - no polling needed!
  * if (backendSocket.isConnected) {
  *   backendSocket.joinSession(newSessionId);
  * }
  * ```
- * 
+ *
  * **Why migrate?**
  * - ✅ **Reactive state**: No polling with `useState` + `useEffect`
  * - ✅ **Automatic cleanup**: Hook handles lifecycle
  * - ✅ **Fresh handlers**: No stale closures
  * - ✅ **Easier testing**: Mock hooks instead of classes
  * - ✅ **Better integration**: Follows React patterns
- * 
+ *
  * **Migration guide:** See `REFACTORING_OPPORTUNITIES.md` for detailed migration steps
- * 
+ *
  * This class remains ONLY for backward compatibility with existing code (e.g., ConversationController's ServiceInitializer).
  * New code should use `useBackendSocket` hook.
  */
@@ -122,7 +122,7 @@ export class BackendSocketManager implements BackendSocketClient {
   private lastReceivedTimestamp = 0
   private enabled: boolean
   private currentSessionId: string | null = null
-  
+
   private readonly config: Required<SocketConfig>
   private readonly handlers: SocketEventHandlers
 

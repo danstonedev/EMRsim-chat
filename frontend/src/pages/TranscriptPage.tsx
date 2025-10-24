@@ -106,8 +106,8 @@ export default function TranscriptPage() {
       <div className="wrap">
         <div className="no-print">
           <button className="btn" onClick={doPrint}>Print Transcript</button>
-          <button 
-            className="btn btn-toggle" 
+          <button
+            className="btn btn-toggle"
             onClick={() => setIsLive(!isLive)}
           >
             {isLive ? (

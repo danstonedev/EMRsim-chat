@@ -19,19 +19,19 @@ function getYouTubeEmbedUrl(url: string): string {
   if (watchMatch) {
     return `https://www.youtube.com/embed/${watchMatch[1]}`
   }
-  
+
   // Handle youtu.be/ID
   const shortMatch = url.match(/youtu\.be\/([^?]+)/)
   if (shortMatch) {
     return `https://www.youtube.com/embed/${shortMatch[1]}`
   }
-  
+
   // Handle youtube.com/embed/ID (already embed format)
   const embedMatch = url.match(/youtube\.com\/embed\/([^?]+)/)
   if (embedMatch) {
     return url
   }
-  
+
   // Fallback: assume URL is already correct
   return url
 }
@@ -40,13 +40,13 @@ function getYouTubeEmbedUrl(url: string): string {
 export function getYouTubeVideoId(url: string): string | null {
   const watchMatch = url.match(/[?&]v=([^&]+)/)
   if (watchMatch) return watchMatch[1]
-  
+
   const shortMatch = url.match(/youtu\.be\/([^?]+)/)
   if (shortMatch) return shortMatch[1]
-  
+
   const embedMatch = url.match(/youtube\.com\/embed\/([^?]+)/)
   if (embedMatch) return embedMatch[1]
-  
+
   return null
 }
 

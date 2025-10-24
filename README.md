@@ -1,5 +1,7 @@
 # EMRsim-chat
 
+[![CI - Type Check](https://github.com/danstonedev/EMRsim-chat/actions/workflows/ci-type-check.yml/badge.svg)](https://github.com/danstonedev/EMRsim-chat/actions/workflows/ci-type-check.yml)
+
 EMRsim-chat is built with a modern web architecture:
 - Frontend: React + TypeScript (Vite)
 - Backend: Node.js + Express + Socket.IO
