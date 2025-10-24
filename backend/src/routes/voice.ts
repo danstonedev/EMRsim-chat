@@ -4,7 +4,14 @@ import { config } from '../config.ts';
 import { getSessionById } from '../db.ts';
 import { spsRegistry } from '../sps/core/registry.ts';
 import { sessions as spsSessions } from '../sps/runtime/store.ts';
-import { composeRealtimeInstructions, normalizeGate, computeOutstandingGate } from '../sps/runtime/sps.service.ts';
+import {
+  composeRealtimeInstructions,
+  normalizeGate,
+  computeOutstandingGate,
+  resolveRoleProfile,
+  getAvailableRoles,
+} from '../sps/runtime/sps.service.ts';
+import { loadScenarioKit, retrieveFacts, mapScenarioToCaseId } from '../sps/runtime/kits.ts';
 import {
   broadcastUserTranscript,
   broadcastAssistantTranscript,
@@ -64,17 +71,28 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
     input_language: inputLanguage,
     model: modelOverride,
     transcription_model: transcriptionModelOverride,
-    reply_language: replyLanguage,
+    reply_language: _replyLanguage, // Prefixed with _ to indicate intentionally unused (forced to 'en' below)
+    role_id: bodyRoleId,
+    // Optional SPS context for stateless fallback (serverless)
+    persona_id: bodyPersonaId,
+    scenario_id: bodyScenarioId,
   } = req.body || {};
   if (!sessionId) return res.status(400).json({ error: 'missing_session_id' });
   const session = getSessionById(sessionId);
-  if (!session) return res.status(404).json({ error: 'session_not_found' });
-  // SPS-only: only allow realtime tokens for SPS sessions
-  if (session.mode !== 'sps') return res.status(409).json({ error: 'sps_only' });
+  // When running in serverless, requests may land on different instances.
+  // If the session isn't in memory, allow a stateless fallback using persona/scenario
+  // provided in the request. If neither session nor fallback context is available,
+  // we keep prior behavior and surface a not found error.
+  if (!session && !(bodyPersonaId && bodyScenarioId)) {
+    // No session available and no fallback context provided
+    return res.status(404).json({ error: 'session_not_found' });
+  }
+  // SPS-only: only enforce sps mode when a session exists
+  if (session && session.mode !== 'sps') return res.status(409).json({ error: 'sps_only' });
   const model =
     (modelOverride && typeof modelOverride === 'string' && modelOverride.trim()) ||
     process.env.OPENAI_REALTIME_MODEL ||
-    'gpt-realtime-2025-08-28';
+    'gpt-realtime-mini-2025-10-06';
   const allowedVoices = new Set([
     'alloy',
     'ash',
@@ -87,12 +105,60 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
     'marin',
     'cedar',
   ]);
-  // SPS-only mode: resolve context from SPS registry
-  const spsContext = resolveSpsRealtimeContext(session);
-  if (!spsContext) return res.status(404).json({ error: 'sps_context_unavailable' });
-  const instructions = composeRealtimeInstructions(spsContext);
-  const personaPayload = buildSpsPersonaPayload(spsContext.activeCase?.persona, session.persona_id);
-  const voiceContext = { phase: spsContext.phase };
+  // Resolve instructions/persona/context
+  let instructions: string | undefined;
+  let personaPayload: any | null = null;
+  let voiceContext: any = {};
+  let roleProfile: any | null = null;
+  if (session) {
+    // Preferred path: derive from existing SPS session
+    const spsContext = resolveSpsRealtimeContext(session);
+    if (!spsContext) return res.status(404).json({ error: 'sps_context_unavailable' });
+    // Resolve role (body override only for now)
+    roleProfile = resolveRoleProfile(spsContext.activeCase, bodyRoleId);
+    instructions = composeRealtimeInstructions({ ...spsContext, role_id: bodyRoleId || null });
+    const basePersona = buildSpsPersonaPayload(spsContext.activeCase?.persona, session.persona_id);
+    personaPayload = {
+      ...basePersona,
+      voice_id: roleProfile?.voice_id || basePersona.voice_id || null,
+    };
+    voiceContext = { phase: spsContext.phase, role_id: roleProfile?.id || null };
+  } else if (bodyPersonaId && bodyScenarioId) {
+    // Stateless fallback: compose directly from registry using provided IDs
+    try {
+      const activeCase = spsRegistry.composeActiveCase(bodyPersonaId, bodyScenarioId);
+      const phase = 'subjective';
+      const gate = normalizeGate(null);
+      roleProfile = resolveRoleProfile(
+        {
+          id: `${bodyPersonaId}:${bodyScenarioId}`,
+          persona: activeCase?.persona,
+          scenario: activeCase?.scenario,
+        } as any,
+        bodyRoleId
+      );
+      instructions = composeRealtimeInstructions({
+        activeCase,
+        gate,
+        phase,
+        outstandingGate: [] as any,
+        role_id: bodyRoleId || null,
+      });
+      const basePersona = buildSpsPersonaPayload(activeCase?.persona, bodyPersonaId);
+      personaPayload = { ...basePersona, voice_id: roleProfile?.voice_id || basePersona.voice_id || null };
+      voiceContext = { phase, role_id: roleProfile?.id || null };
+    } catch (e) {
+      console.warn('[voice][token] stateless SPS compose failed', {
+        personaId: bodyPersonaId,
+        scenarioId: bodyScenarioId,
+        error: String(e),
+      });
+      // As a last resort, proceed without SPS-specific instructions
+      instructions = undefined;
+      personaPayload = null;
+      voiceContext = {};
+    }
+  }
 
   // SPS-only mode: resolve context from SPS registry
   // instructions/persona/context already computed above
@@ -110,19 +176,23 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
   const vadThreshold = Math.min(1, Math.max(0, toNum(process.env.REALTIME_VAD_THRESHOLD, 0.35)));
   const vadPrefixMs = Math.max(0, Math.floor(toNum(process.env.REALTIME_VAD_PREFIX_MS, 120)));
   const vadSilenceMs = Math.max(0, Math.floor(toNum(process.env.REALTIME_VAD_SILENCE_MS, 250)));
-  const transcriptionModel =
+  let transcriptionModel =
     (transcriptionModelOverride &&
       typeof transcriptionModelOverride === 'string' &&
       transcriptionModelOverride.trim()) ||
-    process.env.OPENAI_TRANSCRIPTION_MODEL;
+    (process.env.OPENAI_TRANSCRIPTION_MODEL || '').trim();
 
-  // Fail loudly if transcription model is not configured
-  if (!transcriptionModel || !transcriptionModel.trim()) {
-    console.error('[voice] ❌ OPENAI_TRANSCRIPTION_MODEL is not configured in .env');
-    return res.status(500).json({
-      error: 'transcription_model_not_configured',
-      message: 'OPENAI_TRANSCRIPTION_MODEL must be set in backend/.env',
-    });
+  // Normalize transcription model: ensure low-latency default
+  if (!transcriptionModel) {
+    // Default to low-latency real-time model if not explicitly set
+    transcriptionModel = 'gpt-4o-mini-transcribe';
+    console.log('[voice] ℹ️ Using default transcription model: gpt-4o-mini-transcribe');
+  } else if (transcriptionModel === 'gpt-4o-transcribe') {
+    // Backward-compat mapping
+    console.warn(
+      '[voice] ⚠️ OPENAI_TRANSCRIPTION_MODEL is set to gpt-4o-transcribe; overriding to gpt-4o-mini-transcribe for better latency.'
+    );
+    transcriptionModel = 'gpt-4o-mini-transcribe';
   }
 
   try {
@@ -141,18 +211,22 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
 
     // Project API keys don't need Organization ID
 
+    // TEMPORARY: Force English until multi-language support is fully implemented
+    // TODO: Re-enable dynamic language selection after ironing out other features
+    const effectiveReplyLanguage = 'en';
+
     const r = await fetch('https://api.openai.com/v1/realtime/sessions', {
       method: 'POST',
       headers,
       body: JSON.stringify({
         model,
         voice,
-        instructions: withReplyLanguage(instructions, replyLanguage) || undefined,
+        instructions: withReplyLanguage(instructions, effectiveReplyLanguage) || undefined,
         modalities: ['text', 'audio'],
-        // Enable transcription with configured model (gpt-4o-mini-transcribe for low-latency)
+        // TEMPORARY: Force English transcription until multi-language support is ready
         input_audio_transcription: {
           model: transcriptionModel,
-          language: inputLanguage && inputLanguage !== 'auto' ? inputLanguage : null,
+          language: 'en', // Force English for now (was: inputLanguage && inputLanguage !== 'auto' ? inputLanguage : null)
         },
         // Turn detection tuning; defaults can be overridden by env:
         //   REALTIME_VAD_THRESHOLD (0.0-1.0), REALTIME_VAD_PREFIX_MS, REALTIME_VAD_SILENCE_MS
@@ -180,7 +254,7 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
     const rtcToken = json?.client_secret?.value;
     const expiresAt = json?.client_secret?.expires_at;
     if (!rtcToken) return res.status(502).json({ error: 'no_token' });
-    
+
     // Save token with 60-second TTL (tokens are short-lived for WebRTC handshake)
     // Try Redis first, fall back to in-memory if Redis unavailable
     const storedInRedis = await setWithTTL(`rtc:token:${sessionId}`, rtcToken, 60);
@@ -190,7 +264,7 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
     } else {
       console.log('[voice] ✅ Token stored in Redis');
     }
-    
+
     const t2 = Date.now();
     console.log('[voice] Token acquired', { model, ms: t1 - t0, parse_ms: t2 - t1 });
     return res.json({
@@ -208,7 +282,13 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
 
 router.post('/instructions', (req: Request, res: Response) => {
   try {
-    const { session_id: sessionId, phase: phaseOverride, gate: gateOverride } = req.body || {};
+    const {
+      session_id: sessionId,
+      phase: phaseOverride,
+      gate: gateOverride,
+      role_id: roleId,
+      audience: audienceOverride,
+    } = req.body || {};
     if (!sessionId) return res.status(400).json({ error: 'missing_session_id' });
     const session = getSessionById(sessionId);
     if (!session) return res.status(404).json({ error: 'session_not_found' });
@@ -230,9 +310,44 @@ router.post('/instructions', (req: Request, res: Response) => {
       phase,
       gate,
       outstandingGate: outstanding,
+      role_id: roleId || null,
+      audience: (audienceOverride === 'faculty' ? 'faculty' : 'student') as 'student' | 'faculty',
     });
+    const available_roles = getAvailableRoles(spsContext.activeCase);
 
-    return res.json({ instructions, phase, outstanding_gate: outstanding });
+    // Retrieved ids (debug/authoring aid)
+    let retrieved_ids: string[] | undefined;
+    let debug_info: any | undefined;
+    try {
+      const scenarioId = spsContext.activeCase?.scenario?.scenario_id || spsContext.activeCase?.id;
+      const mappedCaseId = mapScenarioToCaseId(scenarioId);
+      const kit = loadScenarioKit(mappedCaseId);
+      if (kit) {
+        const { ids } = retrieveFacts(kit, {
+          roleId: roleId || null,
+          phase,
+          topK: 3,
+          maxLen: 600,
+          audience: (audienceOverride === 'faculty' ? 'faculty' : 'student') as 'student' | 'faculty',
+        });
+        retrieved_ids = ids;
+      }
+      if (process.env.SPS_INCLUDE_DEBUG_FIELDS === '1' || process.env.DEBUG) {
+        debug_info = { scenario_id: scenarioId, mapped_case_id: mappedCaseId };
+      }
+    } catch {
+      // ignore
+    }
+
+    return res.json({
+      instructions,
+      phase,
+      outstanding_gate: outstanding,
+      role_id: roleId || null,
+      available_roles,
+      retrieved_ids,
+      debug: debug_info,
+    });
   } catch (err) {
     console.error('[voice][instructions][error]', err);
     return res.status(500).json({ error: 'internal_error' });
@@ -244,20 +359,16 @@ router.post('/sdp', async (req: Request, res: Response) => {
   if (!config.VOICE_ENABLED) return res.status(403).json({ error: 'voice_disabled' });
   const { session_id: sessionId, sdp } = req.body || {};
   if (!sessionId || !sdp) return res.status(400).json({ error: 'missing_params' });
-  const session = getSessionById(sessionId);
-  if (!session) return res.status(404).json({ error: 'session_not_found' });
-  // SPS-only: only allow SDP relay for SPS sessions
-  if (session.mode !== 'sps') return res.status(409).json({ error: 'sps_only' });
-  
+  // Do not require session presence here; rely on previously issued RTC token.
   // Retrieve token from Redis first, fall back to in-memory
   let rtcToken = await getRedis(`rtc:token:${sessionId}`);
   if (!rtcToken) {
     console.log('[voice] Token not in Redis, checking in-memory store');
     rtcToken = rtcTokenStore.get(sessionId) || null;
   }
-  
+
   if (!rtcToken) return res.status(412).json({ error: 'no_rtc_token' });
-  const model = process.env.OPENAI_REALTIME_MODEL || 'gpt-realtime-2025-08-28';
+  const model = process.env.OPENAI_REALTIME_MODEL || 'gpt-realtime-mini-2025-10-06';
   try {
     const t0 = Date.now();
     console.log('[voice] SDP relay start', { sessionId: String(sessionId).slice(-6), offerBytes: sdp?.length || 0 });
