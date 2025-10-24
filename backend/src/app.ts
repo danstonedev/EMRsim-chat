@@ -31,6 +31,11 @@ export function createApp(): Application {
         // Allow requests with no origin (like mobile apps, Postman, curl)
         if (!origin) return cb(null, true);
         if (ALLOWED_ORIGINS.has(origin)) return cb(null, true);
+        // Allow Vercel deployment URLs (*.vercel.app)
+        if (origin && origin.match(/^https:\/\/.*\.vercel\.app$/)) {
+          console.log('[cors] Allowing Vercel deployment origin:', origin);
+          return cb(null, true);
+        }
         // Log rejected origins for debugging
         console.warn('[cors] Rejected origin:', origin);
         // Return error instead of false to properly reject with CORS headers
@@ -103,6 +108,8 @@ export function createApp(): Application {
   });
 
   app.use('/api/health', healthRouter);
+  // Convenience alias for environments or checks expecting root /health
+  app.use('/health', healthRouter);
   app.use('/api/sessions', sessionsRouter);
   app.use('/api/voice', voiceRouter);
   app.use('/api/sps', spsRouter);

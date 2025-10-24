@@ -31,7 +31,7 @@ services:
       - NODE_ENV=development
       - PORT=3002
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_REALTIME_MODEL=${OPENAI_REALTIME_MODEL:-gpt-realtime-2025-08-28}
+      - OPENAI_REALTIME_MODEL=${OPENAI_REALTIME_MODEL:-gpt-realtime-mini-2025-10-06}
       - OPENAI_TEXT_MODEL=${OPENAI_TEXT_MODEL:-gpt-4o}
       - OPENAI_TTS_VOICE=${OPENAI_TTS_VOICE:-cedar}
       - VOICE_ENABLED=${VOICE_ENABLED:-true}

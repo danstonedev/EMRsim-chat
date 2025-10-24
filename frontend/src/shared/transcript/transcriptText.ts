@@ -156,7 +156,7 @@ export function mergeDelta(existing: string, addition: string): string {
 
   if (idx === 0) {
     if (import.meta.env.DEV) {
-      console.debug('[TranscriptEngine] ⚠️ No overlap detected, appending delta')
+      console.debug('[TranscriptEngine] No overlap detected, appending delta')
     }
     const merged = `${existing}${addition}`
     return normalizeFullCandidate(merged) ?? merged.trim()

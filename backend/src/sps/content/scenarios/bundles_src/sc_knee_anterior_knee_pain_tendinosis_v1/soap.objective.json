@@ -1,0 +1,30 @@
+{
+  "observation": {
+    "effusion": "none",
+    "other_findings": ["localized tenderness at proximal patellar tendon"]
+  },
+  "palpation": {
+    "structures_assessed": ["patellar tendon"],
+    "tenderness_grading": "moderate"
+  },
+  "special_tests": [
+    {
+      "test_template_id": "decline_squat_test",
+      "performed": true,
+      "findings": {
+        "qualitative": ["pain reproduced at inferior patellar pole"],
+        "binary_flags": { "pain_reproduced": true }
+      }
+    }
+  ],
+  "functional_tests": [
+    {
+      "test_template_id": "single_leg_squat",
+      "performed": true,
+      "findings": {
+        "qualitative": ["pain near end range and on deceleration"]
+      }
+    }
+  ],
+  "contraindications_precautions": ["avoid high-load jumping early; progress as tolerated"]
+}

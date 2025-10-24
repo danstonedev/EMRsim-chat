@@ -1,0 +1,23 @@
+name: "Archived: Azure Backend Deploy (Disabled)"
+
+on:
+  # Disabled: can only be invoked by another workflow (we have none)
+  workflow_call:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  ACR_NAME: emrsimacr
+  ACR_LOGIN_SERVER: emrsimacr.azurecr.io
+  RESOURCE_GROUP: emrsim-chat-prod
+  CONTAINERAPP_NAME: emrsim-api-uat6lb
+  IMAGE_NAME: backend
+  IMAGE_TAG: latest
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This workflow is archived and disabled."

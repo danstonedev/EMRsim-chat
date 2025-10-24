@@ -1,37 +1,38 @@
 # EMRsim-chat
 
-A real-time electronic medical record simulation chat application for healthcare education.
-
-## Architecture
-
-EMRsim-chat is built with a modern cloud-native architecture:
-- Frontend: React with TypeScript
+EMRsim-chat is built with a modern web architecture:
+- Frontend: React + TypeScript (Vite)
+- Backend: Node.js + Express + Socket.IO
+- Media/3D: three.js and react-three-fiber
+- Deployment: Vercel (frontend and backend)
 - Backend: Node.js with WebSocket support
 - Database: PostgreSQL (migrated from SQLite)
 - Caching: Redis
 - Deployment: Azure Cloud Services
 
-## Development Setup
+### Deployment
 
-### Prerequisites
+We deploy on Vercel. Start here:
+- `VERCEL_DEPLOYMENT_STATUS.md`
+- `DEPLOYMENT_QUICK_START.md`
+
+CI runs tests and checks on PRs. Production deploys are manual via Vercel.
 
 - Node.js 16+
 - npm 8+
-- PostgreSQL 13+ (or SQLite for local development)
-- Git
-
-### Installation
-
-1. Clone the repository
-   ```bash
-   git clone https://github.com/yourusername/EMRsim-chat.git
-   cd EMRsim-chat
-   ```
+```
+EMRsim-chat/
+├── frontend/          # React + Vite app
+├── backend/           # Node.js API + Socket.IO
+├── docs/              # Architecture and ops docs
+├── ops/               # Operational guides and archives
+├── scripts/           # Utilities (SPS tools, scanning, etc.)
+└── e2e/               # Playwright tests
+```
 
 2. Install dependencies
    ```bash
-   npm install
-   ```
+- Vercel Deployment: `VERCEL_DEPLOYMENT_STATUS.md`, `DEPLOYMENT_GUIDE.md`, `DEPLOYMENT_QUICK_START.md`
 
 3. Set up environment variables
    ```bash

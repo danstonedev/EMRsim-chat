@@ -1,0 +1,60 @@
+{
+  "objective_catalog": [
+    { "test_id": "vitals", "label": "Vitals", "template": "vitals", "findings": { "bp": "128/78", "hr": 72, "rr": 14, "spo2": 98 } },
+    {
+      "test_id": "alignment_gait",
+      "label": "Observation & Gait",
+      "template": "gait_observation",
+      "findings": { "alignment": "mild varus right", "gait": "decreased knee extension mid-stance, shortened step length" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "rom",
+      "label": "ROM (goniometer)",
+      "template": "rom",
+      "findings": {
+        "knee_ext_right_deg": -5,
+        "knee_flex_right_deg": 110,
+        "knee_ext_left_deg": 0,
+        "knee_flex_left_deg": 120,
+        "pain_end_range": "yes (right flexion)"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "strength",
+      "label": "Strength (MMT)",
+      "template": "strength_testing",
+      "findings": { "quad_right": "4/5", "quad_left": "4+/5", "hip_abd_bilateral": "4/5" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "functional_tests",
+      "label": "Functional Tests",
+      "template": "functional_task",
+      "findings": {
+        "chair_stand_30sec_reps": 10,
+        "stair_ascent_pain": 4,
+        "failure_criteria": "pain ≥3/10 or unsafe strategy"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "joint_mobility_crepitus",
+      "label": "Joint signs",
+      "template": "joint_exam",
+      "findings": { "crepitus": "present with flex/ext", "effusion": "trace", "tenderness": "medial and PF joint line" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "screening",
+      "label": "Screen for inflammatory/intra-articular red flags",
+      "template": "screening",
+      "findings": { "fever": "no", "night_pain": "no", "locking": "no true locking", "neuro": "intact" },
+      "difficulty": "easy"
+    }
+  ],
+  "contraindications_precautions": [
+    "Avoid high-impact hop testing; use pain-monitoring rule ≤3/10 during, ≤24-hr recovery."
+  ]
+}

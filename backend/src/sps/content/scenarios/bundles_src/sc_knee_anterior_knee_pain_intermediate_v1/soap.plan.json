@@ -1,0 +1,145 @@
+{
+  "frequency_duration": {
+    "visits_per_week": 2,
+    "weeks": 8,
+    "rationale": "2x/week for first 4 weeks for exercise progression and running gait retraining, then 1x/week for weeks 5-8 for continued progression and race preparation"
+  },
+  "referrals_imaging_requests": [],
+  "goals": {
+    "stg_2_4_weeks": [
+      "Reduce pain with stairs to <2/10",
+      "Single-leg squat with improved control (minimal valgus)",
+      "Hip abduction strength 5/5",
+      "Return to running 2 miles without pain >3/10"
+    ],
+    "ltg_6_12_weeks": [
+      "Complete 10K race with minimal to no pain",
+      "Return to running 4-5 days/week pain-free",
+      "Return to recreational basketball",
+      "Independent home program for long-term management"
+    ]
+  },
+  "interventions_planned": [
+    {
+      "intervention_id": "patient_education_load_management",
+      "dose": {"sessions": "ongoing"},
+      "expected_response": {
+        "rationale": "Understanding load tolerance and training error critical for preventing recurrence"
+      },
+      "content": [
+        "Explain PFPS as load intolerance, not structural damage",
+        "Discuss gradual return to running (10% rule)",
+        "Educate on theater sign and sitting breaks",
+        "Running surface and footwear considerations"
+      ]
+    },
+    {
+      "intervention_id": "hip_strengthening_progressive",
+      "dose": {
+        "phase_1": "Isometrics (week 1-2): hip abduction, external rotation, 3x30sec holds, daily",
+        "phase_2": "Isotonics (week 3-4): clamshells, side-lying abduction, 3x15, 5x/week",
+        "phase_3": "Functional (week 5-6): lateral band walks, single-leg stance, 3x20, 5x/week",
+        "phase_4": "Running-specific (week 7-8): single-leg RDL, lateral hops, 3x12, 4x/week"
+      },
+      "progression_criteria": [
+        "Pain <3/10 during and after exercise",
+        "Improved control on single-leg squat",
+        "No increase in symptoms next day"
+      ],
+      "expected_response": {
+        "rationale": "Address proximal weakness to reduce dynamic valgus and patellofemoral stress"
+      }
+    },
+    {
+      "intervention_id": "quad_strengthening_progressive",
+      "dose": {
+        "phase_1": "Quad sets, SLR (week 1-2): 3x15, daily",
+        "phase_2": "Short-arc quads, wall sits 0-45° (week 3-4): 3x15, 5x/week",
+        "phase_3": "Step-ups, eccentric step-downs (week 5-6): 3x12, 4x/week",
+        "phase_4": "Single-leg press, Bulgarian split squat (week 7-8): 3x10, 3x/week"
+      },
+      "progression_criteria": ["No increase in anterior knee pain", "Improving KOOS score"],
+      "expected_response": {
+        "rationale": "Improve quad strength to better distribute patellofemoral forces"
+      }
+    },
+    {
+      "intervention_id": "patellar_taping_mcconnell",
+      "dose": {"frequency": "as needed for symptom-provoking activities first 2-3 weeks"},
+      "expected_response": {
+        "rationale": "Short-term pain relief to facilitate exercise tolerance and motor retraining"
+      }
+    },
+    {
+      "intervention_id": "running_gait_retraining",
+      "dose": {
+        "sessions": "weeks 3-8, incorporated into PT visits",
+        "practice": "2-3x/week, 10-20 min sessions"
+      },
+      "content": [
+        "Mirror/video feedback for knee alignment",
+        "Cadence increase to 170-180 steps/min to reduce loading",
+        "Verbal cues: 'soft knees', 'hips level', 'quiet landing'",
+        "Progressive treadmill work with real-time feedback"
+      ],
+      "progression_criteria": ["Improved kinematics on visual assessment", "Reduced symptoms with running"],
+      "expected_response": {
+        "rationale": "Reduce patellofemoral joint stress through improved running mechanics"
+      }
+    },
+    {
+      "intervention_id": "ankle_mobility_gastrocnemius_stretch",
+      "dose": {"sets": 3, "hold": "30sec", "frequency_per_week": 7},
+      "expected_response": {
+        "rationale": "Improve ankle dorsiflexion to reduce compensatory knee valgus"
+      }
+    },
+    {
+      "intervention_id": "graduated_running_program",
+      "dose": {
+        "week_1_2": "2x/week, 1.5 miles easy pace, flat surfaces",
+        "week_3_4": "3x/week, 2-2.5 miles, gradually introduce gentle hills",
+        "week_5_6": "3-4x/week, 3-4 miles, mix terrain",
+        "week_7_8": "4x/week, 4-5 miles, include race-pace intervals, simulate race conditions"
+      },
+      "progression_criteria": [
+        "Pain <3/10 during running",
+        "No increase in symptoms 24hr post-run",
+        "No morning stiffness >10 minutes"
+      ],
+      "expected_response": {
+        "rationale": "Progressive tissue adaptation to running load while monitoring symptoms"
+      }
+    }
+  ],
+  "patient_education": {
+    "topics": [
+      "PFPS pathophysiology (load intolerance, not damage)",
+      "Training error and importance of gradual progression",
+      "Role of proximal hip strength in knee control",
+      "Self-management of theater sign with sitting breaks",
+      "Running gait modifications and cadence",
+      "Footwear and surface considerations",
+      "Flare-up management (relative rest, ice, temporary volume reduction)",
+      "Long-term prevention strategies"
+    ],
+    "teach_back_confirmed": true
+  },
+  "safety_netting": [
+    "If pain increases to >5/10 during running or lasts >24 hours post-run, reduce volume by 50% and contact clinic",
+    "If you develop significant swelling, locking, or true instability, contact clinic immediately",
+    "Monitor KOOS scores every 2 weeks - if plateau or worsening, reassess program",
+    "Post-race: expect some soreness, but if pain >4/10 persists >48 hours, schedule follow-up"
+  ],
+  "return_to_sport_criteria": {
+    "clearance_criteria": [
+      "Pain <2/10 with running at race pace",
+      "Single-leg squat with good control bilaterally",
+      "Hip strength 5/5 bilaterally",
+      "Able to complete practice 10K distance with minimal symptoms",
+      "KOOS score >85",
+      "Patient demonstrates understanding of load management"
+    ],
+    "timeline": "10K race clearance anticipated at 8 weeks if progression smooth"
+  }
+}

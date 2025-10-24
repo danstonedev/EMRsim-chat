@@ -275,7 +275,7 @@ export async function runConnectionFlow(context: ConnectionFlowContext, myOp: nu
         });
       }
 
-      voiceDebug('🔍 [runConnectionFlow] Checking backend socket init:', {
+      voiceDebug('[runConnectionFlow] Checking backend socket init:', {
         backendTranscriptMode: context.backendTranscriptMode,
         currentSessionId,
         willInitialize: Boolean(context.backendTranscriptMode && currentSessionId),
@@ -284,7 +284,7 @@ export async function runConnectionFlow(context: ConnectionFlowContext, myOp: nu
       if (context.backendTranscriptMode && currentSessionId) {
         context.initializeBackendSocket(currentSessionId);
       } else {
-        voiceWarn('⚠️ [runConnectionFlow] Skipping backend socket init:', {
+        voiceWarn('[runConnectionFlow] Skipping backend socket init:', {
           backendTranscriptMode: context.backendTranscriptMode,
           hasSessionId: !!currentSessionId,
         });

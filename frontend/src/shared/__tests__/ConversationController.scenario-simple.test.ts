@@ -160,14 +160,14 @@ describe('ConversationController - Scenario Accuracy Test', () => {
     expect(uniqueTexts.size).toBe(finalTranscripts.length);
 
     // Print transcript for visual verification
-    console.log('\n📋 Scenario Transcript:');
+    console.log('\nScenario Transcript:');
     console.log('═'.repeat(60));
     finalTranscripts.forEach((t, i) => {
-      const label = t.role === 'user' ? '👤 Student' : '🏥 Patient';
+      const label = t.role === 'user' ? 'Student' : 'Patient';
       console.log(`${i + 1}. ${label}: ${t.text}`);
     });
     console.log('═'.repeat(60));
-    console.log(`✅ Captured ${finalTranscripts.length} turns accurately\n`);
+    console.log(`Captured ${finalTranscripts.length} turns accurately\n`);
 
     controller.dispose();
     vi.useRealTimers();
@@ -232,7 +232,7 @@ describe('ConversationController - Scenario Accuracy Test', () => {
       expect(transcripts[i * 2 + 1].text).toBe(exchanges[i].assistant);
     }
 
-    console.log(`\n✅ All ${exchanges.length} rapid exchanges captured accurately`);
+    console.log(`\nAll ${exchanges.length} rapid exchanges captured accurately`);
 
     controller.dispose();
     vi.useRealTimers();

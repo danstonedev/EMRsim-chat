@@ -7,6 +7,10 @@ import ViewerControls from './components/viewer/ViewerControls'
 import { DEFAULT_ANIMATION_ID } from './components/viewer/animations/manifest'
 import '../styles/viewer3d.css'
 import RenderProfiler from '../shared/utils/renderProfiler'
+import ThreeSixtyIcon from '@mui/icons-material/ThreeSixty'
+import ZoomInIcon from '@mui/icons-material/ZoomIn'
+import PanToolIcon from '@mui/icons-material/PanTool'
+import SlideshowIcon from '@mui/icons-material/Slideshow'
 // Debug disabled: no viewer debug flag import
 
 /**
@@ -24,6 +28,7 @@ export default function Viewer3D({ embedded = false, initialAnimationId, onClose
   const navigate = useNavigate()
   const [isAnimating, setIsAnimating] = useState(true)
   const [animationPrompt, setAnimationPrompt] = useState<string>(initialAnimationId || DEFAULT_ANIMATION_ID)
+  const [showInstructions, setShowInstructions] = useState(true)
   // Debug disabled: remove debugEnabled state
   // Prompt result UI moved into modal; keep internal state minimal
   const cameraControlsRef = useRef<any>(null)
@@ -43,11 +48,16 @@ export default function Viewer3D({ embedded = false, initialAnimationId, onClose
 
   const handleClose = useCallback(() => {
     if (onClose) return onClose()
-    navigate('/voice')
+    navigate(-1) // Go back to previous page
   }, [onClose, navigate])
 
   const handleAnimationPrompt = useCallback((prompt: string) => {
     setAnimationPrompt(prompt)
+  }, [])
+
+  const handleAnimationChange = useCallback((id: string) => {
+    // Sync the actual playing animation back to state
+    setAnimationPrompt(id)
   }, [])
 
   const handlePromptResult = useCallback(() => {}, [])
@@ -71,6 +81,35 @@ export default function Viewer3D({ embedded = false, initialAnimationId, onClose
   return (
     <RenderProfiler id="Viewer3D">
       <div className={containerClass}>
+      {/* Navigation Instructions Popup */}
+      {showInstructions && (
+        <div className="viewer-instructions-overlay">
+          <div className="viewer-instructions-card">
+            <h2 className="viewer-instructions-title">3D Navigation Controls</h2>
+            <div className="viewer-instructions-content">
+              <div className="viewer-instruction-item">
+                <strong><ThreeSixtyIcon sx={{ fontSize: 18, verticalAlign: 'middle', mr: 0.5 }} /> Rotate:</strong> Click and drag to orbit around the model
+              </div>
+              <div className="viewer-instruction-item">
+                <strong><ZoomInIcon sx={{ fontSize: 18, verticalAlign: 'middle', mr: 0.5 }} /> Zoom:</strong> Scroll wheel or pinch to zoom in/out
+              </div>
+              <div className="viewer-instruction-item">
+                <strong><PanToolIcon sx={{ fontSize: 18, verticalAlign: 'middle', mr: 0.5 }} /> Pan:</strong> Right-click and drag to move the view
+              </div>
+              <div className="viewer-instruction-item">
+                <strong><SlideshowIcon sx={{ fontSize: 18, verticalAlign: 'middle', mr: 0.5 }} /> Controls:</strong> Use the playback panel at the bottom to select animations, adjust speed, and step through frames
+              </div>
+            </div>
+            <button 
+              className="viewer-instructions-btn"
+              onClick={() => setShowInstructions(false)}
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* UI Overlay */}
       <ViewerControls
         onClose={handleClose}
@@ -104,6 +143,7 @@ export default function Viewer3D({ embedded = false, initialAnimationId, onClose
           controlsRef={cameraControlsRef}
           onPromptResult={handlePromptResult}
           humanFigureRef={playbackRef}
+          onAnimationChange={handleAnimationChange}
         />
       </Canvas>
 
@@ -113,6 +153,7 @@ export default function Viewer3D({ embedded = false, initialAnimationId, onClose
         currentAnimation={animationPrompt}
         onSelectAnimation={(id) => handleAnimationPrompt(id)}
         apiRef={playbackRef as any}
+        onShowHelp={() => setShowInstructions(true)}
       />
       </div>
     </RenderProfiler>

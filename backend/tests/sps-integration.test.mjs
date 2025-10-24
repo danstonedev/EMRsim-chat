@@ -9,7 +9,7 @@ async function testSpsIntegration() {
   try {
     // 1. Get SPS personas
     console.log('1. Getting SPS personas...');
-    const personasRes = await fetch(`${BASE_URL}/api/sessions/sps/personas`);
+  const personasRes = await fetch(`${BASE_URL}/api/sps/personas`);
     if (!personasRes.ok) throw new Error(`Failed to get personas: ${personasRes.status}`);
     const { personas } = await personasRes.json();
     console.log(`   Found ${personas.length} SPS personas`);
@@ -17,7 +17,7 @@ async function testSpsIntegration() {
     
     // 2. Get SPS scenarios  
     console.log('2. Getting SPS scenarios...');
-    const scenariosRes = await fetch(`${BASE_URL}/api/sessions/sps/scenarios`);
+  const scenariosRes = await fetch(`${BASE_URL}/api/sps/scenarios`);
     if (!scenariosRes.ok) throw new Error(`Failed to get scenarios: ${scenariosRes.status}`);
     const { scenarios } = await scenariosRes.json();
     console.log(`   Found ${scenarios.length} SPS scenarios`);

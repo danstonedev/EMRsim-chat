@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, forwardRef, useImperativeHandle, useState } from 'react'
 import * as THREE from 'three'
 import { useGLTF, useAnimations } from '@react-three/drei'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { ANIMATIONS, MODEL } from './manifest'
 import { useBaseRigDiagnostics, usePlayback } from './hooks'
 import { useRetargetedClips } from './useModelClips'
@@ -28,6 +28,7 @@ type Props = {
 
 const Model = forwardRef<V2PlaybackAPI | null, Props>(function Model({ isAnimating, requestedId, onActiveChange, onMetrics }, apiRef) {
   const { settings } = useViewerSettings()
+  const { invalidate } = useThree()
   const BASE_URL = (import.meta as any).env?.BASE_URL || '/'
   const baseUrl = useMemo(() => `${BASE_URL}${settings.baseModelPath}`, [BASE_URL, settings.baseModelPath])
   const baseGltf = useGLTF(baseUrl) as unknown as { scene: THREE.Object3D; animations?: THREE.AnimationClip[] }
@@ -87,19 +88,21 @@ const Model = forwardRef<V2PlaybackAPI | null, Props>(function Model({ isAnimati
   // Imperative playback API for external UIs (PlaybackModal)
   useImperativeHandle(apiRef, () => ({
     getDuration: (id?: string) => {
-      const targetId = id || (current as unknown as string | null) || (allNames?.[0] as string | undefined)
+      const targetId = id || requestedId || (current as unknown as string | null) || (allNames?.[0] as string | undefined)
       if (!targetId) return null
       const clip = clips.find(c => c.name === targetId)
       return clip ? clip.duration : null
     },
     getCurrentTime: () => {
-      const cur = (current as unknown as string | null) || (allNames?.[0] as string | undefined)
+      // Always use requestedId first since that's what the user selected
+      const cur = requestedId || (current as unknown as string | null) || (allNames?.[0] as string | undefined)
       if (!cur) return 0
       const a = (actions as any)?.[cur]
       return Number(a?.time ?? 0)
     },
     setSpeed: (s: number) => {
-      const cur = (current as unknown as string | null) || (allNames?.[0] as string | undefined)
+      // Always use requestedId first since that's what the user selected
+      const cur = requestedId || (current as unknown as string | null) || (allNames?.[0] as string | undefined)
       if (!cur) return
       const a = (actions as any)?.[cur]
       try { a?.setEffectiveTimeScale?.(s) } catch { /* noop */ }
@@ -107,13 +110,15 @@ const Model = forwardRef<V2PlaybackAPI | null, Props>(function Model({ isAnimati
       try { (mixer as any)?.update?.(0) } catch { /* noop */ }
     },
     getSpeed: () => {
-      const cur = (current as unknown as string | null) || (allNames?.[0] as string | undefined)
+      // Always use requestedId first since that's what the user selected
+      const cur = requestedId || (current as unknown as string | null) || (allNames?.[0] as string | undefined)
       if (!cur) return 1
       const a = (actions as any)?.[cur]
       return Number((a as any)?.timeScale ?? 1)
     },
     seek: (t: number) => {
-      const cur = (current as unknown as string | null) || (allNames?.[0] as string | undefined)
+      // Always use requestedId first since that's what the user selected
+      const cur = requestedId || (current as unknown as string | null) || (allNames?.[0] as string | undefined)
       if (!cur) return
       
       const a = (actions as any)?.[cur]
@@ -121,15 +126,23 @@ const Model = forwardRef<V2PlaybackAPI | null, Props>(function Model({ isAnimati
       
       try { 
         (a as any).time = Math.max(0, Number(t) || 0)
+        // Force mixer to evaluate the new pose
+        ;(mixer as any)?.update?.(0)
+        // If paused, we need to trigger a frame render manually
+        // This ensures the visual updates even when frameloop is 'demand'
+        if (groupRef.current) {
+          groupRef.current.updateMatrixWorld(true)
+        }
+        // Force R3F to re-render the frame
+        invalidate()
       } catch { 
         // Ignore seek errors
       }
-      try { (mixer as any)?.update?.(0) } catch { /* noop */ }
     },
     getCurrentId: () => {
       try {
-        const cur = (current as unknown as string | null)
-        return cur ?? null
+        // Return requestedId if available, otherwise current
+        return requestedId || (current as unknown as string | null) || null
       } catch {
         return null
       }
@@ -155,7 +168,7 @@ const Model = forwardRef<V2PlaybackAPI | null, Props>(function Model({ isAnimati
       try { (a as any).setEffectiveTimeScale?.(0) } catch { /* noop */ }
       try { (mixer as any)?.update?.(0) } catch { /* noop */ }
     },
-  }), [actions, allNames, mixer, clips, current])
+  }), [actions, allNames, mixer, clips, current, requestedId, invalidate])
 
   // Emit basic metrics once base scene is ready
   useEffect(() => {

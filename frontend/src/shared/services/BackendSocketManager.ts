@@ -231,7 +231,7 @@ export class BackendSocketManager implements BackendSocketClient {
       // Default
       return { origin, path: '/socket.io/' }
     } catch (error) {
-      voiceWarn('[BackendSocketManager] ⚠️ Failed to parse API_BASE_URL:', error)
+      voiceWarn('[BackendSocketManager] Failed to parse API_BASE_URL:', error)
       return fallback
     }
   }
@@ -241,12 +241,12 @@ export class BackendSocketManager implements BackendSocketClient {
    */
   private handleFailure(label: string, error: unknown): void {
     this.failureCount += 1
-    voiceWarn(`[BackendSocketManager] ❌ Socket ${label}:`, error, 'failureCount=', this.failureCount)
+    voiceWarn(`[BackendSocketManager] Socket ${label}:`, error, 'failureCount=', this.failureCount)
 
     this.handlers.onFailure?.(label, error, this.failureCount)
 
     if (this.failureCount >= this.config.maxFailures) {
-      voiceWarn('[BackendSocketManager] 🔕 Disabling after repeated failures')
+      voiceWarn('[BackendSocketManager] Disabling after repeated failures')
       this.enabled = false
       this.disconnect()
       this.handlers.onMaxFailures?.(this.failureCount)
@@ -274,7 +274,7 @@ export class BackendSocketManager implements BackendSocketClient {
 
     // Check if we've hit max failures
     if (this.failureCount >= this.config.maxFailures) {
-      voiceWarn('[BackendSocketManager] 🚫 Max failures reached, not connecting')
+      voiceWarn('[BackendSocketManager] Max failures reached, not connecting')
       this.enabled = false
       return
     }
@@ -319,7 +319,7 @@ export class BackendSocketManager implements BackendSocketClient {
     // Connection events
     this.socket.on('connect', () => {
       if (import.meta.env.DEV) {
-        voiceDebug('[BackendSocketManager] ✅ Connected, joining session:', sessionId)
+        voiceDebug('[BackendSocketManager] Connected, joining session:', sessionId)
       }
       this.failureCount = 0
       this.socket?.emit('join-session', sessionId)
@@ -328,7 +328,7 @@ export class BackendSocketManager implements BackendSocketClient {
 
     this.socket.on('disconnect', (reason) => {
       if (import.meta.env.DEV) {
-        voiceDebug('[BackendSocketManager] 🔌 Disconnected:', reason)
+        voiceDebug('[BackendSocketManager] Disconnected:', reason)
       }
       this.handlers.onDisconnect?.(reason)
     })
@@ -339,13 +339,13 @@ export class BackendSocketManager implements BackendSocketClient {
     })
 
     this.socket.on('transcript-error', (data: TranscriptErrorData) => {
-      voiceWarn('[BackendSocketManager] ❌ Transcript error:', data.error)
+      voiceWarn('[BackendSocketManager] Transcript error:', data.error)
       this.handlers.onTranscriptError?.(data)
     })
 
     // Reconnection events
     this.socket.io.on('reconnect', () => {
-      voiceDebug('[BackendSocketManager] 🔄 Reconnected, requesting catch-up')
+      voiceDebug('[BackendSocketManager] Reconnected, requesting catch-up')
       const lastTimestamp = this.lastReceivedTimestamp || Date.now() - 60000 // Last 1 min fallback
       this.socket?.emit('request-catchup', { sessionId, since: lastTimestamp })
       this.handlers.onReconnect?.(lastTimestamp)
@@ -353,7 +353,7 @@ export class BackendSocketManager implements BackendSocketClient {
 
     // Catch-up events
     this.socket.on('catchup-transcripts', (data: CatchupData) => {
-      voiceDebug('[BackendSocketManager] 📦 Received catch-up transcripts:', data.transcripts.length)
+      voiceDebug('[BackendSocketManager] Received catch-up transcripts:', data.transcripts.length)
       this.handlers.onCatchup?.(data)
     })
 

@@ -1,0 +1,34 @@
+{
+  "chief_complaint": "Pain just below the kneecap with jumping and after intense practices.",
+  "history_present_illness": {
+    "mechanism": "Gradual onset after increasing plyometrics and tournament schedule",
+    "first_onset": "8 weeks ago",
+    "course_since_onset": "fluctuating",
+    "prior_episodes": "mild similar ache last season that resolved",
+    "red_flag_denials_affirmations": {
+      "fever": false,
+      "locking": false,
+      "true_instability": false
+    }
+  },
+  "pain": {
+    "location": ["inferior pole of patella"],
+    "quality": ["sharp with jump", "ache afterward"],
+    "irritability": "moderate",
+    "nrs_rest": 0,
+    "nrs_activity": 6,
+    "aggravators": ["jumping", "running hills", "deep squat"],
+    "easers": ["isometric quad holds", "relative rest"],
+    "24h_pattern": "stiff at start-up, warms up then aches later"
+  },
+  "social_history": { "sport_hobbies": ["basketball", "volleyball"] },
+  "goals": ["return to jumping without pain", "full practice participation"],
+  "past_medical_history": [],
+  "surgical_history": [],
+  "medications": [
+    { "name": "ibuprofen", "dose": "as needed" }
+  ],
+  "allergies": [
+    { "substance": "drug", "details": "no known drug allergies" }
+  ]
+}

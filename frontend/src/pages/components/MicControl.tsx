@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import MicIcon from '@mui/icons-material/Mic'
-import PauseIcon from '@mui/icons-material/Pause'
+import MicOffIcon from '@mui/icons-material/MicOff'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
 
@@ -34,6 +34,10 @@ export function MicControl({
   onPostStop,
 }: MicControlProps) {
   const [micActionsOpen, setMicActionsOpen] = useState(false)
+
+  // Visual state helpers
+  const isActive = voiceStatus === 'connected' && !micPaused && !micActionsOpen
+  const isMutedLike = voiceStatus === 'connected' && (micPaused || micActionsOpen)
 
   const handleMainButtonClick = () => {
     if (locked) return
@@ -73,7 +77,11 @@ export function MicControl({
     <div className="mic-popover-container">
       <button
         type="button"
-        className="icon-btn"
+        className={[
+          'icon-btn',
+          isActive ? 'icon-btn--primary' : '',
+          isMutedLike ? 'icon-btn--muted' : '',
+        ].filter(Boolean).join(' ')}
         data-voice-connected={voiceStatus === 'connected'}
         data-voice-ready={!disabled && voiceStatus !== 'connected'}
         disabled={disabled}
@@ -88,11 +96,7 @@ export function MicControl({
         title={tooltip}
         aria-haspopup="menu"
       >
-        {voiceStatus === 'connected' && micPaused ? (
-          <PauseIcon fontSize="small" />
-        ) : (
-          <MicIcon fontSize="small" />
-        )}
+        {isMutedLike ? <MicOffIcon fontSize="small" /> : <MicIcon fontSize="small" />}
       </button>
       
       {micActionsOpen && voiceStatus === 'connected' && (

@@ -18,8 +18,6 @@ const CONTENT_ROOT = path.join(__dirname, '../../sps/content');
 const SCENARIOS_SRC_PATH = path.join(CONTENT_ROOT, 'authoring/bundles_src');
 const SCENARIOS_COMPILED_PATH = path.join(CONTENT_ROOT, 'scenarios/compiled');
 const PERSONAS_REALTIME_PATH = path.join(CONTENT_ROOT, 'personas/realtime');
-const PERSONAS_SHARED_PATH = path.join(CONTENT_ROOT, 'personas/shared');
-const PERSONAS_BASE_PATH = path.join(CONTENT_ROOT, 'personas/base');
 const MODULES_PATH = path.join(CONTENT_ROOT, 'banks/modules');
 
 // Temporary build directory
@@ -145,16 +143,10 @@ async function loadScenarioBundle(scenarioId: string): Promise<ScenarioBundle> {
     bundle.module_configs[moduleId] = JSON.parse(fs.readFileSync(modulePath, 'utf8'));
   }
   
-  // Load persona if exists (optional, may reference shared persona)
+  // Load persona if exists (optional)
   if (bundle.header.persona?.persona_id) {
     const personaId = bundle.header.persona.persona_id;
-    
-    // Try to load from shared personas first, then from realtime
-    let personaPath = path.join(PERSONAS_SHARED_PATH, `${personaId}.json`);
-    if (!fs.existsSync(personaPath)) {
-      personaPath = path.join(PERSONAS_REALTIME_PATH, `${personaId}.json`);
-    }
-    
+    const personaPath = path.join(PERSONAS_REALTIME_PATH, `${personaId}.json`);
     if (fs.existsSync(personaPath)) {
       const rawPersona = JSON.parse(fs.readFileSync(personaPath, 'utf8'));
       bundle.persona = normalizePersona(rawPersona);

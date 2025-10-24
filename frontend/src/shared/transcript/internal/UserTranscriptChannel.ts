@@ -25,7 +25,7 @@ export class UserTranscriptChannel {
     // Don't reset turnStartedAt if already set (preserve first timestamp for ordering)
     if (!this.turnStartedAt) {
       this.turnStartedAt = Date.now()
-      this.logger.log('[TranscriptEngine] 🎤 User turn started, timestamp:', this.turnStartedAt)
+      this.logger.log('[TranscriptEngine] User turn started, timestamp:', this.turnStartedAt)
     }
     this.pendingFinalization = false
     this.transcriptionPending = true
@@ -38,7 +38,7 @@ export class UserTranscriptChannel {
 
     if (fullText) {
       if (fullText !== this.buffer) {
-        this.logger.log('[TranscriptEngine] 📝 User delta (full):', {
+        this.logger.log('[TranscriptEngine] User delta (full):', {
           prev: this.buffer.slice(0, 30),
           new: fullText.slice(0, 30),
           length: fullText.length,
@@ -56,7 +56,7 @@ export class UserTranscriptChannel {
 
     const next = mergeDelta(this.buffer, deltaText)
     if (next !== this.buffer) {
-      this.logger.log('[TranscriptEngine] ➕ User delta (merge):', {
+      this.logger.log('[TranscriptEngine] User delta (merge):', {
         delta: deltaText.slice(0, 20),
         bufferLen: this.buffer.length,
         newLen: next.length,
@@ -71,7 +71,7 @@ export class UserTranscriptChannel {
 
   finalize(payload: any): boolean {
     if (this.pendingFinalization) {
-      this.logger.warn('[TranscriptEngine] ⚠️ Prevented duplicate user finalization')
+      this.logger.warn('[TranscriptEngine] Prevented duplicate user finalization')
       return false
     }
 
@@ -83,7 +83,7 @@ export class UserTranscriptChannel {
     const finalizedAt = Date.now()
 
     if (finalText && finalText !== this.lastFinal) {
-      this.logger.log('[TranscriptEngine] ✅ User finalized:', {
+      this.logger.log('[TranscriptEngine] User finalized:', {
         length: finalText.length,
         preview: finalText.slice(0, 50),
         timestamp: finalizedAt,
@@ -95,9 +95,9 @@ export class UserTranscriptChannel {
       })
       this.lastFinal = finalText
     } else if (finalText === this.lastFinal) {
-      this.logger.log('[TranscriptEngine] ⏭️ Skipped duplicate user final (matches last):', finalText.slice(0, 50))
+      this.logger.log('[TranscriptEngine] Skipped duplicate user final (matches last):', finalText.slice(0, 50))
     } else if (!finalText) {
-      this.logger.warn('[TranscriptEngine] ⚠️ User finalized with empty text - check transcription')
+      this.logger.warn('[TranscriptEngine] User finalized with empty text - check transcription')
     }
 
     this.buffer = ''

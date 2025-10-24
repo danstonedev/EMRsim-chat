@@ -4,12 +4,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Fix relative imports to include file extensions
-import { spsRegistry } from '../../core/registry.js';
-import type { ClinicalScenario, PatientPersona } from '../../core/types.js';
-import { convertPersonaBundle } from './personas.js';
-import { convertScenarioBundle } from './scenarios.js';
-import { safeReadJson } from './fsUtils.js';
-import { loadContextModules } from './moduleRegistry.js';
+import { spsRegistry } from '../../core/registry.ts';
+import type { ClinicalScenario, PatientPersona } from '../../core/types.ts';
+import { convertScenarioBundle } from './scenarios.ts';
+import { safeReadJson } from './fsUtils.ts';
+import { loadContextModules } from './moduleRegistry.ts';
 
 // Handle different environments safely
 const getModulePaths = () => {
@@ -31,9 +30,27 @@ const getModulePaths = () => {
 const { filename: __filename, dirname: __dirname } = getModulePaths();
 
 // Define paths with more robust path resolution
-const BASE_CONTENT_DIR = path.resolve(__dirname, '..', '..');
+// Resolve the top-level `sps` folder robustly across dev (src) and serverless (dist)
+function resolveBaseContentDir(): string {
+  const candidates = [
+    // Expected in dev (tsx) and prod (tsup output)
+    path.resolve(__dirname, '..', '..', '..'), // src/sps or dist/sps
+    // Fallbacks for serverless packagers
+    path.resolve(process.cwd(), 'dist', 'sps'),
+    path.resolve(process.cwd(), 'sps'),
+    path.resolve(__dirname, '..', '..'), // src/sps/runtime or dist/sps/runtime
+  ];
+  const sentinel = ['content', 'personas', 'realtime', 'realtime_personas.json'];
+  for (const base of candidates) {
+    const testPath = path.resolve(base, ...sentinel);
+    if (fs.existsSync(testPath)) return base;
+  }
+  // Last resort: default to going up three levels
+  return path.resolve(__dirname, '..', '..', '..');
+}
+
+const BASE_CONTENT_DIR = resolveBaseContentDir();
 const SCENARIO_V3_ROOT = path.resolve(BASE_CONTENT_DIR, 'content', 'scenarios', 'bundles_src');
-const SCENARIO_PERSONA_ROOT = path.resolve(BASE_CONTENT_DIR, 'content', 'personas', 'shared');
 
 // Adjust loadJson to use resolved base path (no test-time skipping; tests rely on real content)
 const loadJson = <T = any>(relativePath: string): T => {
@@ -60,36 +77,7 @@ const sqShoulder = loadJson('content/banks/special_questions/shoulder.json');
 const sqSports = loadJson('content/banks/special_questions/sports_general.json');
 const realtimePersonas = loadJson('content/personas/realtime/realtime_personas.json');
 
-type ScenarioPersonaBundle = {
-  raw: any;
-  persona: PatientPersona;
-};
-
-function loadScenarioPersonasFromDisk(): Map<string, ScenarioPersonaBundle> {
-  try {
-    // Always read from disk; tests expect real content
-    const personas = new Map<string, ScenarioPersonaBundle>();
-    if (!fs.existsSync(SCENARIO_PERSONA_ROOT)) return personas;
-
-    const entries = fs.readdirSync(SCENARIO_PERSONA_ROOT, { withFileTypes: true });
-    for (const entry of entries) {
-      if (!entry.isFile() || !entry.name.endsWith('.json')) continue;
-      const filePath = path.join(SCENARIO_PERSONA_ROOT, entry.name);
-      const personaRaw = safeReadJson(filePath);
-      if (!personaRaw) continue;
-      const persona = convertPersonaBundle(personaRaw, undefined, undefined, undefined);
-      if (!persona) continue;
-      personas.set(persona.patient_id, { raw: personaRaw, persona });
-    }
-
-    return personas;
-  } catch (error) {
-    console.error('Error loading scenario personas:', error);
-    return new Map<string, ScenarioPersonaBundle>();
-  }
-}
-
-function loadScenarioBundlesFromDisk(personaBundles: Map<string, ScenarioPersonaBundle>) {
+function loadScenarioBundlesFromDisk(personaBundles: Map<string, { raw: any; persona: PatientPersona }>) {
   try {
     // Always read from disk; tests expect real content
     if (!fs.existsSync(SCENARIO_V3_ROOT)) {
@@ -108,6 +96,8 @@ function loadScenarioBundlesFromDisk(personaBundles: Map<string, ScenarioPersona
       const linkage = header.linkage || {};
       const personaId =
         typeof linkage.persona_id === 'string' && linkage.persona_id.trim() ? String(linkage.persona_id).trim() : null;
+      // In runtime-only mode we do not load scenario-specific personas into the registry.
+      // personaBundles is expected to be empty to avoid coupling personas to scenarios.
       const personaBundle = personaId ? personaBundles.get(personaId) : undefined;
       if (personaId && !personaBundle) {
         console.warn('[sps][load] persona not found for scenario', entry.name, personaId);
@@ -179,11 +169,9 @@ export function loadSPSContent(): SPSRegistry {
       console.warn('No realtime personas found or invalid format');
     }
 
-    const scenarioPersonas = loadScenarioPersonasFromDisk();
-    console.log(`Loaded ${scenarioPersonas.size} scenario personas from disk`);
-    if (scenarioPersonas.size) {
-      registry.addPersonas(Array.from(scenarioPersonas.values()).map(bundle => bundle.persona));
-    }
+    // Single-source personas: do not load scenario-specific personas
+    const scenarioPersonas = new Map<string, { raw: any; persona: PatientPersona }>();
+    console.log(`Loaded 0 scenario personas from disk (disabled)`);
 
     const scenarios = loadScenarioBundlesFromDisk(scenarioPersonas);
     console.log(`Loaded ${scenarios.length} scenarios from disk`);

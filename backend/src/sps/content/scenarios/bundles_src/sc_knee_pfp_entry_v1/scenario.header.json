@@ -1,0 +1,89 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_knee_pfp_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry: Patellofemoral Pain with Stair Descent – Runner",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": ["entry_level_dpt", "patellofemoral", "anterior_knee_pain", "running"],
+    "profession": "physical_therapy",
+    "roles": [
+      { "id": "patient", "instruction": null }
+    ],
+    "created_at": "2025-10-23T00:00:00Z",
+    "updated_at": "2025-10-23T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "ash-hana-park",
+    "suggested_personas": ["ash-hana-park", "echo-devon-brooks", "ash-luis-ortega"],
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Differentiate patellofemoral pain from patellar tendinopathy using history and functional testing.",
+        "bloom_level": "analyze",
+        "capte_refs": ["evidence_based_practice", "safety_screening", "documentation"],
+        "npte_map": { "system": "musculoskeletal", "domain": "examination", "nonsystem": "safety" },
+        "assessment_focus": ["clinical_reasoning", "differential_diagnosis"],
+        "evidence_req": "CPG"
+      },
+      {
+        "id": "LO2",
+        "text": "Formulate an exercise-led plan emphasizing hip/knee strengthening and load management at an entry level.",
+        "bloom_level": "apply",
+        "capte_refs": ["plan_of_care", "communication_education", "documentation"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional" },
+        "assessment_focus": ["plan_of_care"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": [
+      "Which findings supported PFP vs patellar tendinopathy?",
+      "How would you adapt the plan if the patient lacked access to a gym or metronome app?"
+    ]
+  },
+  "presenting_problem": {
+    "primary_dx": "Patellofemoral pain (right), load-related with stair descent and squatting",
+    "onset": "insidious",
+    "duration_weeks": 8,
+    "dominant_symptoms": ["retropatellar/peripatellar ache", "pain with stair descent", "movie sign after prolonged sitting"],
+    "pain_nrs_rest": 1,
+    "pain_nrs_activity": 7,
+    "aggravators": ["descending stairs", "deep squat past ~60°", "running downhill", "first steps after sitting"],
+    "easers": ["activity modification", "brief rest", "taping short-term"],
+    "pattern_24h": "Minimal morning symptoms; builds late day with cumulative load",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "patellofemoral pain syndrome",
+    "body_functions_structures": ["anterior knee pain with compressive load", "hip abductor/ER weakness", "quads pain-limited strength", "lateral retinacular tightness", "mild overpronation"],
+    "activities": ["descending stairs limited", "deep squat limited", "reduced running tolerance"],
+    "participation": ["reduced participation in recreational running", "difficulty with clinical rotations requiring stairs"],
+    "environmental_factors": ["prolonged sitting demands at school", "access to stairs and treadmill", "lower-drop running shoes"],
+    "personal_factors": ["motivated learner", "recent training volume increase", "mild kinesiophobia about squats"]
+  },
+  "provenance": {
+    "sources": [
+      {
+        "title": "2019 JOSPT Clinical Practice Guideline: Patellofemoral Pain",
+        "identifier": "CPG-2019-PFP",
+        "level_of_evidence": "CPG"
+      }
+    ],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-23"
+  }
+}

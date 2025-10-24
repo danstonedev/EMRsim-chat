@@ -1,13 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { spsRegistry } from '../sps/core/registry.ts';
+import { getSuggestedPersonas, loadScenarioKit, mapScenarioToCaseId, retrieveFacts } from '../sps/runtime/kits.ts';
 import {
   getGoldInstructions,
   formatPersonaSection as fmtPersona,
   formatScenarioSection as fmtScenario,
 } from '../sps/runtime/sps.service.ts';
-import { upsertScenario, getScenarioByIdFull, listScenariosLite, getStorageMode } from '../db.ts';
-import { zClinicalScenario } from '../sps/core/schemas.ts';
-import { generateScenarioWithAI } from '../services/ai_generate.ts';
+import { getStorageMode } from '../db.ts';
 import { catalogService } from '../services/catalogService.ts';
 import type {
   ClinicalScenario,
@@ -30,31 +29,22 @@ import type {
 
 export const router = Router();
 
-// Helper to generate unique scenario ID
-function generateScenarioId(scenario: any): string {
-  const region = scenario.region || 'unknown';
-  const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substring(2, 6);
-  return `sc_${region}_${timestamp}_${random}`;
+// Best-effort lazy loader in case boot-time SPS import failed
+async function ensureSPSLoaded(): Promise<void> {
+  try {
+    const hasContent = Object.keys(spsRegistry.personas).length > 0 || Object.keys(spsRegistry.scenarios).length > 0;
+    if (hasContent) return;
+    const mod = await import('../sps/runtime/session.ts');
+    if (typeof mod.loadSPSContent === 'function') {
+      mod.loadSPSContent();
+    }
+  } catch (e) {
+    console.warn('[sps][lazy-load][warn]', String(e));
+  }
 }
 
-// Helper to auto-generate test IDs for objective catalog
-function ensureTestIds(scenario: any): void {
-  if (!Array.isArray(scenario.objective_catalog)) return;
-  scenario.objective_catalog.forEach((test: any, idx: number) => {
-    if (!test.test_id || test.test_id === 'new_test') {
-      const label = test.label || `test_${idx}`;
-      const sanitized = label
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '')
-        .replace(/\s+/g, '_')
-        .slice(0, 40);
-      test.test_id = `obj_${scenario.region}_${sanitized}_${Math.random().toString(36).substring(2, 6)}`;
-    }
-    // Ensure region matches scenario
-    test.region = scenario.region;
-  });
-}
+// Helper to generate unique scenario ID
+// Authoring helpers removed in runtime-only mode
 
 // Gold standard instructions (dev/instructor aid)
 router.get('/instructions', (_req: Request, res: Response) => {
@@ -66,15 +56,8 @@ router.get('/debug', (_req: Request, res: Response) => {
   try {
     const regScenarioCount = Object.keys(spsRegistry.scenarios).length;
     const regPersonaCount = Object.keys(spsRegistry.personas).length;
-    const dbScenarios = listScenariosLite();
-    const dbScenarioCount = Array.isArray(dbScenarios) ? dbScenarios.length : 0;
-
-    // Unique merged IDs to reflect catalog endpoint behavior
-    const mergedIds = new Set<string>();
-    Object.keys(spsRegistry.scenarios).forEach(id => mergedIds.add(id));
-    (dbScenarios || []).forEach((s: any) => {
-      if (s?.scenario_id) mergedIds.add(String(s.scenario_id));
-    });
+    // DB-backed authoring is disabled for runtime catalog; report 0 to avoid confusion
+    const dbScenarioCount = 0;
 
     res.json({
       ok: true,
@@ -82,17 +65,16 @@ router.get('/debug', (_req: Request, res: Response) => {
       counts: {
         registry: { scenarios: regScenarioCount, personas: regPersonaCount },
         db: { scenarios: dbScenarioCount },
-        merged: { scenarios: mergedIds.size },
+        merged: { scenarios: regScenarioCount },
       },
       endpoints: {
         scenarios: '/api/sps/scenarios',
         personas: '/api/sps/personas',
-        sessions_scenarios_legacy: '/api/sessions/sps/scenarios',
-        sessions_personas_legacy: '/api/sessions/sps/personas',
       },
       notes: [
-        'Catalog merges registry (disk) and DB (authoring) entries; DB wins on conflicts.',
-        'Prefer /api/sps/*; /api/sessions/sps/* is maintained for compatibility and will be deprecated.',
+        'Runtime catalog now uses a single source: file-based registry only (no DB merge).',
+        'Use /api/sps/* for personas and scenarios.',
+        'Scenario-linked persona files are ignored at runtime (content/personas/shared and persona.json in bundles).',
       ],
     });
   } catch (e) {
@@ -102,11 +84,13 @@ router.get('/debug', (_req: Request, res: Response) => {
 });
 
 // Scenarios catalog (metadata only)
-router.get('/scenarios', (_req: Request, res: Response) => {
-  // Merge registry (file-based) and DB-backed list (lite) without duplicates; DB wins on conflicts
+router.get('/scenarios', async (_req: Request, res: Response) => {
+  // Single-source catalog: registry (file-based) only
   try {
-    const regLite = Object.values(spsRegistry.scenarios).map(s => ({
+    await ensureSPSLoaded();
+    const scenarios = Object.values(spsRegistry.scenarios).map(s => ({
       scenario_id: s.scenario_id,
+      student_case_id: (s as any).student_case_id || null,
       title: s.title,
       region: s.region,
       difficulty: s.difficulty,
@@ -115,12 +99,10 @@ router.get('/scenarios', (_req: Request, res: Response) => {
       persona_id: s.linked_persona_id || s.persona_snapshot?.id || null,
       persona_name: s.persona_snapshot?.display_name || null,
       persona_headline: s.persona_snapshot?.headline || null,
+      suggested_personas: getSuggestedPersonas(s.scenario_id).map(p => p.id),
+      guardrails: s.guardrails || undefined,
     }));
-    const dbLite = listScenariosLite();
-    const map = new Map();
-    regLite.forEach(x => map.set(x.scenario_id, x));
-    dbLite.forEach((x: any) => map.set(x.scenario_id, x));
-    res.json({ scenarios: Array.from(map.values()) });
+    res.json({ scenarios });
   } catch (e) {
     console.error('[sps][scenarios][error]', e);
     res.status(500).json({ error: 'internal_error' });
@@ -128,35 +110,11 @@ router.get('/scenarios', (_req: Request, res: Response) => {
 });
 
 // Generate a scenario with AI (does not auto-save unless requested)
-router.post('/generate', async (req: Request, res: Response) => {
-  try {
-    const { prompt, options, save } = req.body || {};
-    if (!prompt || typeof prompt !== 'string')
-      return res.status(400).json({ error: 'bad_request', detail: 'prompt required' });
-    if (!process.env.OPENAI_API_KEY) return res.status(503).json({ error: 'no_openai_key' });
-
-    const { scenario, sources } = await generateScenarioWithAI({ prompt, options }, req);
-
-    if (save) {
-      // upsert and add to registry for immediate availability
-      upsertScenario(scenario);
-      spsRegistry.addScenarios([scenario as any]);
-    }
-    res.status(201).json({ ok: true, scenario, sources });
-  } catch (e: any) {
-    if (e?.code === 'validation_error') {
-      return res.status(400).json({ error: 'validation_error', issues: e.issues || [] });
-    }
-    if (e?.code === 'no_openai_key') {
-      return res.status(503).json({ error: 'no_openai_key' });
-    }
-    console.error('[sps][generate][error]', e);
-    res.status(500).json({ error: 'internal_error' });
-  }
-});
+// Authoring endpoints removed: scenario generation is disabled in runtime-only mode
 
 // SPS personas (distinct from legacy /api/personas set)
-router.get('/personas', (_req: Request, res: Response) => {
+router.get('/personas', async (_req: Request, res: Response) => {
+  await ensureSPSLoaded();
   const personas = Object.values(spsRegistry.personas).map(p => ({
     id: p.patient_id,
     display_name: p.display_name || p.demographics?.preferred_name || p.demographics?.name || p.patient_id,
@@ -280,63 +238,14 @@ router.get('/catalogs/protocols', async (_req: Request, res: Response) => {
 // ============================================================================
 
 // Create or update a scenario (authoring)
-router.post('/scenarios', (req: Request, res: Response) => {
-  try {
-    const body = req.body || {};
-
-    // Auto-generate scenario_id if missing or placeholder
-    if (!body.scenario_id || body.scenario_id === 'new_scenario_id' || body.scenario_id.trim() === '') {
-      body.scenario_id = generateScenarioId(body);
-    }
-
-    // Auto-generate test IDs and ensure regions match
-    ensureTestIds(body);
-
-    const scenario = zClinicalScenario.parse(body);
-    // Persist to DB
-    upsertScenario(scenario);
-    // Update in-memory registry for immediate availability
-    spsRegistry.addScenarios([scenario as any]);
-    console.log('[sps][scenarios][save]', scenario.scenario_id);
-    res.status(201).json({ ok: true, scenario_id: scenario.scenario_id });
-  } catch (e: any) {
-    if (e?.issues) {
-      return res.status(400).json({ error: 'validation_error', issues: e.issues });
-    }
-    console.error('[sps][scenarios][save][error]', e);
-    res.status(500).json({ error: 'internal_error' });
-  }
-});
-
-router.put('/scenarios/:id', (req: Request, res: Response) => {
-  try {
-    const id = String(req.params.id || '');
-    const body = req.body || {};
-    if (!id) return res.status(400).json({ error: 'bad_request' });
-
-    // Auto-generate test IDs and ensure regions match
-    ensureTestIds(body);
-
-    const scenario = zClinicalScenario.parse(body);
-    if (scenario.scenario_id !== id) return res.status(400).json({ error: 'id_mismatch' });
-    upsertScenario(scenario);
-    spsRegistry.addScenarios([scenario as any]);
-    console.log('[sps][scenarios][update]', id);
-    res.json({ ok: true, scenario_id: id });
-  } catch (e: any) {
-    if (e?.issues) return res.status(400).json({ error: 'validation_error', issues: e.issues });
-    console.error('[sps][scenarios][update][error]', e);
-    res.status(500).json({ error: 'internal_error' });
-  }
-});
+// Authoring endpoints removed: saving/updating scenarios is disabled in runtime-only mode
 
 router.get('/scenarios/:id', (req: Request, res: Response) => {
   try {
     const id = String(req.params.id || '');
     if (!id) return res.status(400).json({ error: 'bad_request' });
-    // Prefer DB if present, otherwise fall back to registry
-    const fromDb = getScenarioByIdFull(id);
-    const scenario = fromDb || spsRegistry.scenarios[id] || null;
+    // Single source: registry only
+    const scenario = spsRegistry.scenarios[id] || null;
     if (!scenario) return res.status(404).json({ error: 'not_found' });
 
     // Add version headers for cache invalidation
@@ -361,6 +270,9 @@ exportRouter.get('/export', (req: Request, res: Response) => {
   try {
     const personaId = String(req.query.persona_id || '');
     const scenarioId = String(req.query.scenario_id || '');
+    const audienceParam = String(req.query.audience || '').toLowerCase();
+    const audience: 'student' | 'faculty' | null =
+      audienceParam === 'faculty' ? 'faculty' : audienceParam === 'student' ? 'student' : null;
     if (!personaId || !scenarioId) return res.status(400).send('Missing persona_id or scenario_id');
     const persona: PatientPersona | undefined = spsRegistry.personas[personaId];
     const scenario: ClinicalScenario | undefined = spsRegistry.scenarios[scenarioId];
@@ -370,6 +282,16 @@ exportRouter.get('/export', (req: Request, res: Response) => {
     const specials = spsRegistry.getScenarioSpecials(scenario);
     const challenges = spsRegistry.getScenarioChallenges(scenario);
     const objectives: ObjectiveFinding[] = scenario.objective_catalog ?? [];
+    // Fallback map: some compiled scenarios store concrete findings under soap.objective.objective_catalog
+    const soapObjectiveCatalog: any[] = (scenario as any)?.soap?.objective?.objective_catalog || [];
+    const soapObjectiveFindingsByKey: Map<string, any> = new Map();
+    for (const item of soapObjectiveCatalog) {
+      const findings = (item && (item.findings || {})) || {};
+      const idKey = String(item?.test_id || '').toLowerCase();
+      const labelKey = String(item?.label || '').toLowerCase();
+      if (idKey) soapObjectiveFindingsByKey.set(idKey, findings);
+      if (labelKey) soapObjectiveFindingsByKey.set(labelKey, findings);
+    }
     const objectiveGuardrails: ObjectiveGuardrails = scenario.objective_guardrails ?? {};
 
     const escapeHtml = (s: string) =>
@@ -421,8 +343,8 @@ exportRouter.get('/export', (req: Request, res: Response) => {
         : '';
     };
 
-    const personaBlock = escapeHtml(fmtPersona(persona)).replace(/\n/g, '<br/>');
-    const scenarioSummaryBlock = escapeHtml(fmtScenario(scenario)).replace(/\n/g, '<br/>');
+  const personaBlock = escapeHtml(fmtPersona(persona)).replace(/\n/g, '<br/>');
+  const scenarioSummaryBlock = escapeHtml(fmtScenario(scenario)).replace(/\n/g, '<br/>');
 
     const metaRows = [
       { label: 'Schema version', value: scenario.schema_version },
@@ -630,9 +552,17 @@ exportRouter.get('/export', (req: Request, res: Response) => {
         `<div class="card card--border"><h3>Objective guardrails</h3>${renderList(objectiveGuardItems)}</div>`
       );
     }
-    if (Array.isArray(objectiveGuardrails.deflection_lines) && objectiveGuardrails.deflection_lines.length) {
+    {
+      const deflectionIntent: string[] = [];
+      // Always emphasize behavior intent over phrasing
+      deflectionIntent.push('Require named test + side + positioning before giving findings');
+      if (objectiveGuardrails.never_volunteer_data) deflectionIntent.push('Avoid volunteering findings unprompted');
+      if (objectiveGuardrails.require_explicit_physical_consent)
+        deflectionIntent.push('Obtain explicit consent before physical contact');
+      if (typeof objectiveGuardrails.fatigue_prompt_threshold === 'number')
+        deflectionIntent.push(`Prompt fatigue at ${objectiveGuardrails.fatigue_prompt_threshold}/10`);
       guardrailCards.push(
-        `<div class="card card--border"><h3>Deflection lines</h3>${renderList(objectiveGuardrails.deflection_lines)}</div>`
+        `<div class="card card--border"><h3>Objective deflection intent</h3>${renderList(deflectionIntent)}</div>`
       );
     }
     const guardrailContent = guardrailCards.length ? `<div class="card-grid">${guardrailCards.join('')}</div>` : '';
@@ -653,7 +583,11 @@ exportRouter.get('/export', (req: Request, res: Response) => {
       hookBlocks.push(`<div><strong>Coaching cues</strong>${renderList(llmHooks.coaching_cues)}</div>`);
     }
     if (Array.isArray(llmHooks.deflection_lines) && llmHooks.deflection_lines.length) {
-      hookBlocks.push(`<div><strong>Deflection lines</strong>${renderList(llmHooks.deflection_lines)}</div>`);
+      hookBlocks.push(
+        `<div><strong>Deflection lines</strong>` +
+          `<div class="small muted">Authoring examples — SP will improvise phrasing.</div>` +
+          `${renderList(llmHooks.deflection_lines)}</div>`
+      );
     }
     const instructionsCards: string[] = [];
     if (spInstructionRows || spCueing) {
@@ -742,7 +676,11 @@ exportRouter.get('/export', (req: Request, res: Response) => {
             if (sq.patient_cue_intent)
               blocks.push(`<div><strong>Intent</strong>: ${escapeHtml(safeText(sq.patient_cue_intent))}</div>`);
             if (Array.isArray(sq.example_phrases) && sq.example_phrases.length)
-              blocks.push(`<div><strong>Example phrases</strong>${renderList(sq.example_phrases)}</div>`);
+              blocks.push(
+                `<div><strong>Example phrases</strong>` +
+                  `<div class="small muted">Authoring examples — SP will use natural phrasing.</div>` +
+                  `${renderList(sq.example_phrases)}</div>`
+              );
             if (Array.isArray(sq.delivery_guidelines) && sq.delivery_guidelines.length)
               blocks.push(`<div><strong>Delivery guidelines</strong>${renderList(sq.delivery_guidelines)}</div>`);
             if (sq.instructor_imaging_note)
@@ -763,7 +701,11 @@ exportRouter.get('/export', (req: Request, res: Response) => {
             if (ch.cue_intent)
               blocks.push(`<div><strong>Intent</strong>: ${escapeHtml(safeText(ch.cue_intent))}</div>`);
             if (Array.isArray(ch.example_phrases) && ch.example_phrases.length)
-              blocks.push(`<div><strong>Example phrases</strong>${renderList(ch.example_phrases)}</div>`);
+              blocks.push(
+                `<div><strong>Example phrases</strong>` +
+                  `<div class="small muted">Authoring examples — SP will use natural phrasing.</div>` +
+                  `${renderList(ch.example_phrases)}</div>`
+              );
             if (Array.isArray(ch.reveal_triggers) && ch.reveal_triggers.length)
               blocks.push(`<div><strong>Reveal triggers</strong>${renderList(ch.reveal_triggers)}</div>`);
             if (Array.isArray(ch.delivery_guidelines) && ch.delivery_guidelines.length)
@@ -808,7 +750,7 @@ exportRouter.get('/export', (req: Request, res: Response) => {
       .filter(Boolean);
     const soapContent = soapBlocks.length ? soapBlocks.join('') : '';
 
-    const sections: string[] = [];
+  const sections: string[] = [];
     if (metaContent) sections.push(`<div class="section"><h2>Scenario Snapshot</h2>${metaContent}</div>`);
     if (pedagogyContent)
       sections.push(`<div class="section"><h2>Pedagogy &amp; Learning Objectives</h2>${pedagogyContent}</div>`);
@@ -838,9 +780,540 @@ exportRouter.get('/export', (req: Request, res: Response) => {
     if (provenanceContent) sections.push(`<div class="section"><h2>Provenance</h2>${provenanceContent}</div>`);
     if (soapContent) sections.push(`<div class="section"><h2>SOAP Payload</h2>${soapContent}</div>`);
 
+    // Optionally include a Faculty Narrative section when requested
+    if (audience === 'faculty') {
+      // Try to load kit-linked faculty facts
+      const caseId = mapScenarioToCaseId(scenario.scenario_id);
+      const kit = loadScenarioKit(caseId);
+      let facultyFactsHtml = '';
+      if (kit) {
+        const facts = retrieveFacts(kit, { audience: 'faculty', topK: 6, maxLen: 900 });
+        if (Array.isArray(facts.texts) && facts.texts.length) {
+          facultyFactsHtml = `<ul class="plain-list">${facts.texts
+            .map(t => `<li>${escapeHtml(safeText(t))}</li>`)
+            .join('')}</ul>`;
+        }
+      }
+
+      // Build a concise narrative from scenario fields as a fallback/supplement
+      const presentingDx = safeText((scenario.presenting_problem ?? {}).primary_dx);
+      const assessmentObj = (scenario.soap ?? ({} as any)).assessment || null;
+      const planObj = (scenario.soap ?? ({} as any)).plan || null;
+      const assessmentJson =
+        assessmentObj && typeof assessmentObj === 'object' && Object.keys(assessmentObj).length
+          ? `<pre>${escapeHtml(JSON.stringify(assessmentObj, null, 2))}</pre>`
+          : '';
+      const planJson =
+        planObj && typeof planObj === 'object' && Object.keys(planObj).length
+          ? `<pre>${escapeHtml(JSON.stringify(planObj, null, 2))}</pre>`
+          : '';
+
+      // Exam highlights from objective catalog
+      const examHighlights = objectives
+        .slice(0, 8)
+        .map((o: ObjectiveFinding) => {
+          const bullets: string[] = [];
+          if (o.instructions_brief) bullets.push(`Instructions: ${safeText(o.instructions_brief)}`);
+          if (
+            Array.isArray(o.patient_output_script?.qualitative) &&
+            o.patient_output_script?.qualitative.length
+          ) {
+            bullets.push(`Expected: ${safeText(o.patient_output_script.qualitative[0])}`);
+          }
+          const bulletsHtml = bullets.length
+            ? `<ul class="plain-list">${bullets.map((b: string) => `<li>${escapeHtml(b)}</li>`).join('')}</ul>`
+            : '';
+          return `<li><strong>${escapeHtml(safeText(o.label))}</strong>${bulletsHtml}</li>`;
+        })
+        .join('');
+      const examHighlightsHtml = examHighlights ? `<ol class="card-stack">${examHighlights}</ol>` : '';
+
+      // Red flags and screening from challenges
+      const redFlags = challenges
+        .map((ch: ScreeningChallenge) => safeText(ch.flag))
+        .filter((x: string | undefined): x is string => Boolean(x));
+      const redFlagsHtml = redFlags.length
+        ? `<ul class="plain-list">${redFlags
+            .map((f: string) => `<li>${escapeHtml(f)}</li>`)
+            .join('')}</ul>`
+        : '';
+
+      const facultyBlocks = [
+        presentingDx ? `<div class="subsection"><h3>Working diagnosis</h3><p>${escapeHtml(presentingDx)}</p></div>` : '',
+        assessmentJson ? `<div class="subsection"><h3>Assessment (key points)</h3>${assessmentJson}</div>` : '',
+        examHighlightsHtml ? `<div class="subsection"><h3>Exam highlights</h3>${examHighlightsHtml}</div>` : '',
+        redFlagsHtml ? `<div class="subsection"><h3>Screening red flags</h3>${redFlagsHtml}</div>` : '',
+        planJson ? `<div class="subsection"><h3>Plan &amp; rationale</h3>${planJson}</div>` : '',
+        facultyFactsHtml ? `<div class="subsection"><h3>Case facts for faculty</h3>${facultyFactsHtml}</div>` : '',
+      ].filter(Boolean).join('');
+
+      if (facultyBlocks) {
+        sections.unshift(`<div class="section section--faculty"><h2>Faculty Narrative (Confidential)</h2>${facultyBlocks}<div class="small muted">This section is intended for instructors and is not visible to students.</div></div>`);
+      }
+    }
+
     const overviewGrid = `<div class="grid"><div class="panel"><h2>Persona Snapshot</h2><div>${personaBlock || '—'}</div></div><div class="panel"><h2>Scenario Overview</h2><div>${scenarioSummaryBlock || '—'}</div></div></div>`;
     const sectionsHtml = sections.join('');
 
+    // If faculty view, generate a lean narrative SOAP and snapshot page instead of the full export
+    if (audience === 'faculty') {
+      // Snapshot
+      const snapshotRows = [
+        { label: 'Scenario', value: scenario.title },
+        { label: 'Student Code', value: (scenario as any).student_case_id },
+        { label: 'Scenario ID', value: scenario.scenario_id },
+        { label: 'Setting', value: scenario.setting },
+        { label: 'Difficulty', value: scenario.difficulty },
+        { label: 'Patient', value: persona.demographics?.name || persona.patient_id },
+        { label: 'Age', value: persona.demographics?.age },
+        { label: 'Sex', value: persona.demographics?.sex },
+        { label: 'Working Dx', value: (scenario.presenting_problem ?? {}).primary_dx },
+      ];
+      const snapshotHtml = renderDefinitionList(snapshotRows);
+
+      // Subjective narrative
+      const pp = (scenario.presenting_problem ?? {}) as PresentingProblem;
+      const subjLines: string[] = [];
+      if (pp.onset) subjLines.push(`Onset: ${safeText(pp.onset)}${pp.onset_detail ? ` (${safeText(pp.onset_detail)})` : ''}`);
+      if (typeof pp.duration_weeks === 'number') subjLines.push(`Duration: ${pp.duration_weeks} weeks`);
+      if (Array.isArray(pp.dominant_symptoms) && pp.dominant_symptoms.length) subjLines.push(`Dominant symptoms: ${pp.dominant_symptoms.map(safeText).join(', ')}`);
+      if (Array.isArray(pp.aggravators) && pp.aggravators.length) subjLines.push(`Aggravated by: ${pp.aggravators.map(safeText).join(', ')}`);
+      if (Array.isArray(pp.easers) && pp.easers.length) subjLines.push(`Eased by: ${pp.easers.map(safeText).join(', ')}`);
+      if (pp.pattern_24h) subjLines.push(`24h pattern: ${safeText(pp.pattern_24h)}`);
+      if (typeof pp.pain_nrs_rest === 'number' || typeof pp.pain_nrs_activity === 'number') {
+        const rest = typeof pp.pain_nrs_rest === 'number' ? `${pp.pain_nrs_rest}/10 at rest` : null;
+        const act = typeof pp.pain_nrs_activity === 'number' ? `${pp.pain_nrs_activity}/10 with activity` : null;
+        subjLines.push(`Pain: ${[rest, act].filter(Boolean).join(' · ')}`);
+      }
+      const goals = Array.isArray((scenario.scenario_context ?? {}).goals) ? (scenario.scenario_context as any).goals : [];
+      if (goals && goals.length) subjLines.push(`Patient goals: ${goals.map(safeText).join(', ')}`);
+      const subjSummaryHtml = subjLines.length
+        ? `<ul class="plain-list">${subjLines.map(l => `<li>${escapeHtml(l)}</li>`).join('')}</ul>`
+        : '<div class="muted">No subjective summary available.</div>';
+
+      // Subjective catalog grouped by common history buckets
+      const subjectiveCatalog: SubjectiveItem[] = scenario.subjective_catalog ?? [];
+      const categorizeSubjective = (item: SubjectiveItem): string => {
+        const id = String(item.id || '').toLowerCase();
+        const name = String(item.label || '').toLowerCase();
+        const text = `${id} ${name}`;
+        if (/pain|hpi|history|onset|duration|aggravator|easer|24h|pattern|location|behavior|severity|opqrst/i.test(text)) {
+          return 'Pain/HPI';
+        }
+        if (/goal/i.test(text)) {
+          return 'Goals';
+        }
+        if (/med|medication|drug|allerg|pmh|psh|surgery|comorb|condition/i.test(text)) {
+          return 'PMH/PSH/Medications/Allergies';
+        }
+        if (/imaging|x[- ]?ray|mri|ct|ultra|prior (tx|treatment)|previous (care|therapy)/i.test(text)) {
+          return 'Prior imaging/treatment';
+        }
+        if (/sdoh|work|job|role|caregiv|adl|sleep|stress|transport|home|environment/i.test(text)) {
+          return 'Function & SDOH';
+        }
+        if (/system review|ros|cardio|pulmo|neuro|gi|gu|endo|psych|derm/i.test(text)) {
+          return 'Systems review';
+        }
+        if (/red *flag|night pain|weight loss|fever|cancer|cauda|saddle|incontinence/i.test(text)) {
+          return 'Red flags';
+        }
+        return 'Other subjective';
+      };
+
+      const subjOrder = [
+        'Pain/HPI',
+        'Red flags',
+        'Function & SDOH',
+        'PMH/PSH/Medications/Allergies',
+        'Prior imaging/treatment',
+        'Systems review',
+        'Goals',
+        'Other subjective',
+      ];
+
+      const subjGrouped: Record<string, string[]> = {};
+      subjectiveCatalog.slice(0, 80).forEach(item => {
+        const parts: string[] = [];
+        const script = (item.patient_response_script || ({} as any)) as any;
+        // Show qualitative responses (patient's actual answers)
+        if (Array.isArray(script.qualitative) && script.qualitative.length) {
+          const responses = script.qualitative.slice(0, 5).map(safeText).join('; ');
+          parts.push(responses);
+        }
+        // Show numeric values (pain scales, durations, etc.)
+        if (script.numeric && Object.keys(script.numeric).length) {
+          const kv = Object.entries(script.numeric)
+            .slice(0, 4)
+            .map(([k, v]) => `${k}: ${safeText(v as any)}`);
+          parts.push(kv.join(', '));
+        }
+        // Show positive flags
+        if (script.binary_flags && Object.keys(script.binary_flags).length) {
+          const flags = Object.entries(script.binary_flags)
+            .filter(([, v]) => v === true || String(v).toLowerCase() === 'true')
+            .map(([k]) => safeText(k));
+          if (flags.length) parts.push(`Positive: ${flags.join(', ')}`);
+        }
+        const sub = parts.length
+          ? `<ul class="plain-list">${parts.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul>`
+          : '';
+        const itemHtml = `<li><strong>${escapeHtml(safeText(item.label))}</strong>${sub}</li>`;
+        const cat = categorizeSubjective(item);
+        if (!subjGrouped[cat]) subjGrouped[cat] = [];
+        subjGrouped[cat].push(itemHtml);
+      });
+
+      const subjCountsLine = subjOrder
+        .filter(cat => Array.isArray(subjGrouped[cat]) && subjGrouped[cat].length)
+        .map(cat => `${cat} (${subjGrouped[cat].length})`)
+        .join(' · ');
+      const subjLegend = subjCountsLine
+        ? `<div class="small muted">Subjective coverage: ${escapeHtml(subjCountsLine)}</div>`
+        : '';
+      const subjChipsHtml = subjCountsLine
+        ? `<div class="chip-row">${subjCountsLine
+            .split(' · ')
+            .map(seg => `<span class="chip">${escapeHtml(seg)}</span>`)
+            .join('')}</div>`
+        : '';
+      const subjGroupedSections = subjOrder
+        .filter(cat => Array.isArray(subjGrouped[cat]) && subjGrouped[cat].length)
+        .map(cat => {
+          return `<div class="subsection"><h3>${escapeHtml(cat)}</h3><ul class="plain-list">${subjGrouped[cat].join('')}</ul></div>`;
+        })
+        .join('');
+      const subjHtml = `${subjSummaryHtml}${subjLegend}${subjGroupedSections}`;
+
+      // Objective section grouped by common exam categories (observations, functional, ROM, strength, special tests, neuro, etc.)
+      const categorizeObjective = (o: ObjectiveFinding): string => {
+        const id = String(o.test_id || '').toLowerCase();
+        const name = String(o.label || '').toLowerCase();
+        const text = `${id} ${name}`;
+        // Neuro
+        if (/neuro|myotome|dermatome|reflex|sensation|hoffmann|babinski|slump|slr|ulsnt|neural/i.test(text)) {
+          return 'Neurological';
+        }
+        // ROM
+        if (
+          /\brom\b|range of motion|flexion|extension|abduction|adduction|rotation|pronation|supination|dorsiflex|plantarflex/i.test(
+            text
+          )
+        ) {
+          return 'Range of motion';
+        }
+        // Strength
+        if (/strength|mmt|resisted|isometric|dynamometer|grip/i.test(text)) {
+          return 'Strength';
+        }
+        // Joint mobility
+        if (/joint mobility|accessory|glide|posterior[- ]?anterior|pa spring|arthrokinematic/i.test(text)) {
+          return 'Joint mobility';
+        }
+        // Palpation
+        if (/palpation|ttp|tenderness|edema|swelling|effusion|ecchymosis/i.test(text)) {
+          return 'Observation & palpation';
+        }
+        // Balance
+        if (/balance|y[- ]?balance|single[- ]leg balance|romberg/i.test(text)) {
+          return 'Balance';
+        }
+        // Functional movement
+        if (
+          /functional|sit[- ]?to[- ]?stand|squat|step[- ]?down|lunge|hop|jump|gait|stairs|reach|lift|carry/i.test(text)
+        ) {
+          return 'Functional movement';
+        }
+        // Special tests (fallback for known names or containing 'test')
+        if (
+          /lachman|mcmurray|valgus|varus|thompson|hawkins|kennedy|neer|empty\s?can|drop\s?arm|apprehension|relocation|spurling|faber|faddir|ober|thomas|patellar|drawer|pivot|squeeze|talar|windlass|sulcus/i.test(
+            text
+          ) ||
+          /\btest\b/.test(text)
+        ) {
+          return 'Special tests';
+        }
+        // Observations catch-all
+        if (/observation|posture|inspection|gait/i.test(text)) {
+          return 'Observation & palpation';
+        }
+        return 'Other';
+      };
+
+      const catOrder = [
+        'Observation & palpation',
+        'Functional movement',
+        'Range of motion',
+        'Strength',
+        'Joint mobility',
+        'Balance',
+        'Neurological',
+        'Special tests',
+        'Other',
+      ];
+
+      const grouped: Record<string, string[]> = {};
+      objectives.slice(0, 50).forEach((o: ObjectiveFinding) => {
+        const findings: string[] = [];
+        const catForItem = categorizeObjective(o);
+
+        // Fallback: pull concrete findings if present in SOAP objective bundle
+        const soapFindings: Record<string, any> | null =
+          soapObjectiveFindingsByKey.get(String(o.test_id || '').toLowerCase()) ||
+          soapObjectiveFindingsByKey.get(String(o.label || '').toLowerCase()) ||
+          null;
+        
+        // Get all the data sources
+        const qual = Array.isArray(o.patient_output_script?.qualitative)
+          ? (o.patient_output_script!.qualitative as any[]).map(safeText).filter(Boolean)
+          : [];
+        const numeric =
+          (o.patient_output_script as any)?.numeric ||
+          (soapFindings &&
+            Object.fromEntries(Object.entries(soapFindings).filter(([_k, v]) => typeof v === 'number'))) ||
+          {};
+        const bin = (o.patient_output_script as any)?.binary_flags || {};
+        // Derive binary flags from soap strings like "positive"/"negative"
+        if (!Object.keys(bin).length && soapFindings) {
+          const derived: Record<string, boolean> = {};
+          for (const [k, v] of Object.entries(soapFindings)) {
+            if (typeof v === 'string') {
+              const s = v.toLowerCase();
+              if (/\bpositive\b/.test(s)) derived[`${k}: positive`] = true;
+              if (/\bnegative\b/.test(s)) derived[`${k}: negative`] = true;
+              if (/\bnormal|wnl|within normal limits\b/.test(s)) derived[`${k}: normal`] = true;
+            }
+          }
+          if (Object.keys(derived).length) Object.assign(bin as any, derived);
+        }
+        
+        // Format based on test type - show ACTUAL VALUES
+        
+        // For binary tests (special tests, etc.) - show positive/negative result
+        const hasPositive = Object.entries(bin).some(
+          ([k, v]) =>
+            (k.toLowerCase().includes('positive') || k.toLowerCase().includes('present')) &&
+            (v === true || v === 1 || String(v).toLowerCase() === 'true')
+        );
+        const hasNegative = Object.entries(bin).some(
+          ([k, v]) =>
+            (k.toLowerCase().includes('negative') || k.toLowerCase().includes('absent')) &&
+            (v === true || v === 1 || String(v).toLowerCase() === 'true')
+        );
+        
+        if (hasPositive) {
+          findings.push('<strong style="color:#dc2626">POSITIVE</strong>');
+        } else if (hasNegative) {
+          findings.push('<strong style="color:#059669">Negative</strong>');
+        }
+        
+        // Show numeric values with proper formatting (ROM, strength, etc.)
+        const numericEntries = Object.entries(numeric);
+        if (numericEntries.length > 0) {
+          numericEntries.forEach(([key, value]) => {
+            const k = safeText(key);
+            const v = safeText(value as any);
+            // Format based on common clinical measures
+            if (/flexion|extension|abduction|adduction|rotation|rom/i.test(k)) {
+              findings.push(`${k}: <strong>${v}°</strong>`);
+            } else if (/strength|mmt|grade/i.test(k)) {
+              findings.push(`${k}: <strong>${v}/5</strong>`);
+            } else if (/pain|tenderness|ttp/i.test(k)) {
+              findings.push(`${k}: <strong>${v}/10</strong>`);
+            } else {
+              findings.push(`${k}: <strong>${v}</strong>`);
+            }
+          });
+        }
+        
+        // Show qualitative findings (descriptions). If missing, derive from SOAP findings
+        if (qual.length > 0) {
+          qual.forEach(q => {
+            // Check if it's a "normal" or "WNL" type response
+            if (/\b(normal|wnl|within normal limits|no abnormal|unremarkable|intact)\b/i.test(q)) {
+              findings.push(`<em style="color:#059669">${q}</em>`);
+            } else if (/\b(positive|abnormal|impaired|limited|reduced|decreased|tender|pain)\b/i.test(q)) {
+              findings.push(`<em style="color:#dc2626">${q}</em>`);
+            } else {
+              findings.push(`<em>${q}</em>`);
+            }
+          });
+        } else if (soapFindings) {
+          for (const [k, v] of Object.entries(soapFindings)) {
+            if (typeof v === 'string') {
+              const text = `${k}: ${v}`;
+              if (/\b(negative|normal|wnl|within normal limits)\b/i.test(v)) findings.push(`<em style=\"color:#059669\">${escapeHtml(text)}</em>`);
+              else if (/\b(positive|abnormal|impaired|limited|reduced|decreased|tender|pain)\b/i.test(v)) findings.push(`<em style=\"color:#dc2626\">${escapeHtml(text)}</em>`);
+              else findings.push(`<em>${escapeHtml(text)}</em>`);
+            }
+          }
+        }
+        
+        // Show other binary flags that aren't positive/negative
+        Object.entries(bin).forEach(([k, v]) => {
+          if (
+            !/positive|negative|present|absent/i.test(k) &&
+            (v === true || v === 1 || String(v).toLowerCase() === 'true')
+          ) {
+            findings.push(safeText(k));
+          }
+        });
+        
+        // Faculty request: default special tests to Negative if not positive
+        const hasRenderedNegative =
+          hasNegative || findings.some(s => /Negative|within normal limits|WNL|normal/i.test(s));
+        if (catForItem === 'Special tests' && !hasPositive && !hasRenderedNegative) {
+          findings.push('<strong style="color:#059669">Negative</strong>');
+        }
+        
+        // If no specific findings, show "no data"
+        const findingsHtml =
+          findings.length > 0 ? findings.join(' • ') : '<span style="color:#666">No specific values recorded</span>';
+        
+        const itemHtml = `<li><strong>${escapeHtml(safeText(o.label))}</strong><div style=\"margin-left:1.5em;margin-top:4px\">${findingsHtml}</div></li>`;
+        if (!grouped[catForItem]) grouped[catForItem] = [];
+        grouped[catForItem].push(itemHtml);
+      });
+
+      const objectiveCountsLine = catOrder
+        .filter(cat => Array.isArray(grouped[cat]) && grouped[cat].length)
+        .map(cat => `${cat} (${grouped[cat].length})`)
+        .join(' · ');
+      const objectiveLegend = objectiveCountsLine
+        ? `<div class="small muted">Objective basics: ${escapeHtml(objectiveCountsLine)}</div>`
+        : '';
+      const objectiveChipsHtml = objectiveCountsLine
+        ? `<div class="chip-row">${objectiveCountsLine
+            .split(' · ')
+            .map(seg => `<span class="chip">${escapeHtml(seg)}</span>`)
+            .join('')}</div>`
+        : '';
+      const objectiveSections = catOrder
+        .filter(cat => Array.isArray(grouped[cat]) && grouped[cat].length)
+        .map(cat => {
+          const items = grouped[cat].join('');
+          return `<div class="subsection"><h3>${escapeHtml(cat)}</h3><ul class="plain-list">${items}</ul></div>`;
+        })
+        .join('');
+
+      const objectiveHtml =
+        objectiveLegend || objectiveSections
+          ? objectiveLegend + objectiveSections
+          : '<div class="muted">No key objective findings recorded.</div>';
+
+      // Assessment and differentials
+      const dx = safeText((scenario.presenting_problem ?? {}).primary_dx);
+      let differentialsHtml = '';
+      const assessmentObj = (scenario.soap ?? ({} as any)).assessment || null;
+      if (assessmentObj && typeof assessmentObj === 'object') {
+        const diffs = (assessmentObj as any).differentials as any;
+        if (Array.isArray(diffs) && diffs.length) {
+          differentialsHtml = `<div class="small"><em>Diffs:</em> ${diffs.map((d: any) => safeText(d)).join(', ')}</div>`;
+        }
+      }
+      let assessmentHtml = '<div class="muted">No assessment recorded.</div>';
+      if (dx) {
+        assessmentHtml = `<p><strong>Working diagnosis:</strong> ${escapeHtml(dx)}</p>${differentialsHtml}`;
+      }
+
+      // Plan summary: flatten first-level keys into bullets
+      const planObj = (scenario.soap ?? ({} as any)).plan || null;
+      const planBullets: string[] = [];
+      if (planObj && typeof planObj === 'object') {
+        for (const [k, v] of Object.entries(planObj)) {
+          const vt = typeof v === 'object' && v !== null ? JSON.stringify(v) : safeText(v as any);
+          if (vt) planBullets.push(`${k}: ${vt}`);
+        }
+      }
+      let planHtml = '<div class="muted">No initial plan recorded.</div>';
+      if (planBullets.length) {
+        const items = planBullets.map(b => `<li>${escapeHtml(b)}</li>`).join('');
+        planHtml = `<ul class="plain-list">${items}</ul>`;
+      }
+
+      // Teaching points from pedagogy learning objectives
+      const loTexts = Array.isArray(scenario.pedagogy?.learning_objectives)
+        ? (scenario.pedagogy!.learning_objectives as any[]).map(lo => safeText((lo as any).text)).filter(Boolean)
+        : [];
+      let teachingHtml = '';
+      if (loTexts.length) {
+        const items = loTexts.map(t => `<li>${escapeHtml(t)}</li>`).join('');
+        teachingHtml = `<ul class="plain-list">${items}</ul>`;
+      }
+
+      // Compose minimal faculty page
+      const facultyHtml = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Faculty Key · ${escapeHtml(scenario.title)}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { color-scheme: light; }
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; color: #111; background: #f6f7fb; }
+    h1, h2, h3 { margin: 0 0 8px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 16px; margin-top: 20px; }
+    .btn { display:inline-block; padding:6px 12px; background:#0d6efd; color:white; border-radius:6px; text-decoration:none; }
+    .card { background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); margin: 10px 0; }
+    .muted { color: #666; }
+    .small { font-size: 12px; }
+    .detail-grid { display:grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
+    .detail-grid dt { font-weight: 600; }
+    .detail-grid dd { margin: 0 0 6px 0; }
+        .chip-row { display:flex; gap:8px; flex-wrap:wrap; margin: 4px 0 8px; }
+        .chip { display:inline-block; padding:2px 8px; border-radius:999px; background:#eef2ff; color:#1e40af; border:1px solid #dbeafe; font-size:12px; }
+        @media print {
+          body { background: white; }
+          .no-print { display:none !important; }
+          .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; page-break-inside: avoid; }
+          h2 { page-break-after: avoid; }
+        }
+  </style>
+  <script>function doPrint(){ window.print(); }</script>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="description" content="Faculty Key narrative SOAP for quick case review" />
+</head>
+<body>
+  <div class="no-print" style="margin-bottom:12px">
+    <a class="btn" href="#" onclick="doPrint();return false;">Print</a>
+  </div>
+  <h1>Faculty Key: Case Snapshot & Narrative SOAP</h1>
+  <div class="card">
+    ${snapshotHtml}
+  </div>
+  <div class="card">
+    <h2>Subjective</h2>
+    <div class="small muted">Buckets: Pain/HPI, Red flags, Function &amp; SDOH, PMH/PSH/Medications/Allergies, Prior imaging/treatment, Systems review, Goals.</div>
+    ${subjChipsHtml}
+    ${subjHtml}
+  </div>
+  <div class="card">
+    <h2>Objective</h2>
+    <div class="small muted">Categories: Observation &amp; palpation, Functional movement, ROM, Strength, Joint mobility, Balance, Neurological, Special tests.</div>
+    ${objectiveChipsHtml}
+    ${objectiveHtml}
+  </div>
+  <div class="card">
+    <h2>Assessment</h2>
+    ${assessmentHtml}
+  </div>
+  <div class="card">
+    <details>
+      <summary><h2 style="display:inline">Plan</h2> <span class="small muted">(collapsed to emphasize S/O)</span></summary>
+      ${planHtml}
+    </details>
+  </div>
+  ${teachingHtml ? `<div class="card"><h2>Teaching points</h2>${teachingHtml}</div>` : ''}
+  <div class="small muted">Generated at ${new Date().toLocaleString()} — Confidential, for instructors only.</div>
+</body>
+</html>`;
+
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(facultyHtml);
+    }
+
+    // Default (student/general) full export
     const html = `<!doctype html>
 <html>
 <head>
@@ -855,6 +1328,9 @@ exportRouter.get('/export', (req: Request, res: Response) => {
     h2 { font-size: 16px; margin-top: 20px; }
     h3 { font-size: 14px; margin-bottom: 8px; }
     .btn { display:inline-block; padding:6px 12px; background:#0d6efd; color:white; border-radius:6px; text-decoration:none; }
+    .section--faculty { background: #fff8e1; border: 1px solid #f1d08f; padding: 12px; border-radius: 8px; }
+    .muted { color: #666; }
+    .small { font-size: 12px; }
   </style>
   <script>function doPrint(){ window.print(); }</script>
 </head>

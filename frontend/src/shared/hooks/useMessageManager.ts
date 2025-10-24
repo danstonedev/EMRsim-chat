@@ -14,7 +14,7 @@ interface UseMessageManagerOptions {
   setMessages: Dispatch<SetStateAction<Message[]>>
   sessionId: string | null
   queueMessageUpdate: (update: () => void) => void
-  updateVoiceMessage: (role: 'user' | 'assistant', text: string, isFinal: boolean, timestamp: number, media?: MediaReference) => void
+  updateVoiceMessage: (role: 'user' | 'assistant', text: string, isFinal: boolean, timestamp: number, media?: MediaReference, options?: { source?: 'live' | 'catchup' }) => void
   voiceUserStartTimeRef: RefObject<number | null>
   onPersistenceError: (message: string) => void
 }
@@ -25,21 +25,21 @@ interface UseMessageManagerReturn {
   ttftMs: number | null
   setTtftMs: (ms: number | null) => void
   isInitialHistoryLoading: boolean
-  
+
   // Refs
   messagesEndRef: RefObject<HTMLDivElement | null>
   messagesContainerRef: RefObject<HTMLDivElement | null>
   firstDeltaRef: RefObject<number | null>
   textAssistantIdRef: RefObject<string | null>
   textUserStartTimeRef: RefObject<number | null>
-  
+
   // Functions
   updateAssistantTextMessage: (
     text: string,
     isFinal: boolean,
     timestamp: number,
     media?: MediaReference,
-    opts?: UpdateAssistantTextMessageOptions
+    opts?: UpdateAssistantTextMessageOptions & { source?: 'live' | 'catchup' }
   ) => void
   finalizePendingMessages: () => void
   isNearBottom: () => boolean
@@ -49,7 +49,7 @@ interface UseMessageManagerReturn {
 /**
  * Custom hook to manage message state, refs, and operations.
  * Extracts all message-related logic from App.tsx for better organization and testability.
- * 
+ *
  * Responsibilities:
  * - Message state management (messages array, sorted messages)
  * - Message refs (scroll refs, timing refs, assistant ID refs)
@@ -69,16 +69,16 @@ export function useMessageManager({
   // State
   const [ttftMs, setTtftMs] = useState<number | null>(null)
   const [isInitialHistoryLoading, setIsInitialHistoryLoading] = useState(false)
-  
+
   // Refs for scroll management
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement | null>(null)
-  
+
   // Refs for message tracking
   const firstDeltaRef = useRef<number | null>(null)
   const textAssistantIdRef = useRef<string | null>(null)
   const textUserStartTimeRef = useRef<number | null>(null)
-  
+
   // Memoized sorted messages
   const sortedMessages = useMemo(() => sortMessages(messages), [messages])
 
@@ -93,7 +93,7 @@ export function useMessageManager({
   useEffect(() => { onPersistenceErrorRef.current = onPersistenceError }, [onPersistenceError])
   const messagesLenRef = useRef<number>(messages.length)
   useEffect(() => { messagesLenRef.current = messages.length }, [messages.length])
-  
+
   /**
    * Check if the user is scrolled near the bottom of the messages container.
    * Used to determine if auto-scroll should be applied.
@@ -105,7 +105,7 @@ export function useMessageManager({
     const position = container.scrollHeight - container.scrollTop - container.clientHeight
     return position < threshold
   }, [])
-  
+
   /**
    * Update the assistant text message bubble created for typed input (DC transcripts or SSE deltas).
    * Handles both streaming updates and final messages.
@@ -116,33 +116,33 @@ export function useMessageManager({
       isFinal: boolean,
       timestamp: number,
       media?: MediaReference,
-      opts?: UpdateAssistantTextMessageOptions
+      opts?: UpdateAssistantTextMessageOptions & { source?: 'live' | 'catchup' }
     ) => {
       const id = textAssistantIdRef.current
       if (!id) {
         // No pending typed assistant bubble; fall back to voice handling (covers audio transcript cases)
-        updateVoiceMessage('assistant', text, isFinal, timestamp, media)
+        updateVoiceMessage('assistant', text, isFinal, timestamp, media, { source: opts?.source })
         return
       }
-      
+
       queueMessageUpdate(() => {
         setMessages(prev => {
           let found = false
           const updated = prev.map(msg => {
             if (msg.id !== id) return msg
             found = true
-            
+
             // Stamp timestamp/sequence on first delta
             const stampedTs = msg.timestamp && msg.timestamp > 0 ? msg.timestamp : timestamp
             const stampedSeq = msg.sequenceId && msg.sequenceId > 0 ? msg.sequenceId : nextSequenceId()
-            
+
             let nextText = text
             if (opts?.append && !isFinal) {
               nextText = (msg.text || '') + (text || '')
             } else if (isFinal && opts?.preserveOnFinalEmpty && (!text || text.length === 0)) {
               nextText = msg.text || ''
             }
-            
+
             const updatedMessage = {
               ...msg,
               text: nextText,
@@ -150,7 +150,7 @@ export function useMessageManager({
               timestamp: stampedTs,
               sequenceId: stampedSeq,
             }
-            
+
             if (media !== undefined) {
               return { ...updatedMessage, media: media ?? msg.media }
             }
@@ -159,7 +159,7 @@ export function useMessageManager({
           return sortMessages(found ? updated : prev)
         })
       })
-      
+
       // Track time to first token (TTFT)
       if (!isFinal && firstDeltaRef.current == null) {
         firstDeltaRef.current = timestamp
@@ -169,7 +169,7 @@ export function useMessageManager({
         const start = voiceStart != null ? voiceStart : typedStart
         if (start != null) setTtftMs(timestamp - start)
       }
-      
+
       // Handle finalization
       if (isFinal) {
         textAssistantIdRef.current = null
@@ -200,7 +200,7 @@ export function useMessageManager({
     },
     [sessionId, messages, queueMessageUpdate, updateVoiceMessage, voiceUserStartTimeRef, onPersistenceError, setMessages]
   )
-  
+
   /**
    * Finalize all pending messages by marking them as not pending.
    * Called when mic is paused or session ends to clean up UI state.
@@ -220,7 +220,7 @@ export function useMessageManager({
       })
     })
   }, [queueMessageUpdate, setMessages])
-  
+
   /**
    * Reset all message-related state.
    * Used when starting a new encounter or changing scenarios.
@@ -246,7 +246,7 @@ export function useMessageManager({
     timer: null,
     loaded: false,
   })
-  
+
   /**
    * Load historical turns from backend when session starts.
    * This ensures messages are displayed even after page refresh.
@@ -421,21 +421,21 @@ export function useMessageManager({
       }
     }
   }, [sessionId])
-  
+
   return {
     // State
     sortedMessages,
     ttftMs,
     setTtftMs,
     isInitialHistoryLoading,
-    
+
     // Refs
     messagesEndRef,
     messagesContainerRef,
     firstDeltaRef,
     textAssistantIdRef,
     textUserStartTimeRef,
-    
+
     // Functions
     updateAssistantTextMessage,
     finalizePendingMessages,

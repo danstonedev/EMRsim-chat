@@ -1,4 +1,14 @@
 import { nanoid } from 'nanoid';
+import {
+  connectRedis,
+  isRedisAvailable,
+  get as redisGet,
+  setWithTTL as redisSetWithTTL,
+  rpush as redisRPush,
+  ltrim as redisLTrim,
+  lrange as redisLRange,
+  setNxWithTTL as redisSetNxWithTTL,
+} from './services/redisClient.ts';
 
 // Types for better-sqlite3 (optional dependency)
 interface Database {
@@ -109,12 +119,22 @@ const mem: InMemoryStore = {
 export async function migrate(pathOrDb?: string | Database): Promise<void> {
   if (!pathOrDb) {
     console.warn('[DB] No database path provided. Using in-memory storage.');
+    // Best effort: if Redis is configured, connect for durable storage
+    if (process.env.REDIS_URL) {
+      try {
+        await connectRedis();
+      } catch (e) {
+        console.warn('[DB] Redis connect failed, continuing with in-memory:', (e as Error).message);
+      }
+    }
     return;
   }
 
   try {
     // Optional dependency: better-sqlite3
-    const mod = (await import('better-sqlite3')) as unknown as { default: new (p: string) => Database };
+    // Avoid static import to keep this optional without requiring type declarations at build time
+    const dynamicImporter = Function('m', 'return import(m)') as (m: string) => Promise<unknown>;
+    const mod = (await dynamicImporter('better-sqlite3')) as unknown as { default: new (p: string) => Database };
     const SqliteCtor = mod.default;
 
     if (typeof pathOrDb === 'string') {
@@ -214,18 +234,38 @@ export function healthCheck(): 'ok' | 'err' {
     if (usingSqlite && sqliteDb) {
       sqliteDb.prepare('SELECT 1').get();
     }
+    // If Redis configured, consider connection state
+    if (process.env.REDIS_URL && !isRedisAvailable()) {
+      // Don't fail hard, just report ok to avoid health flapping; detailed status via /api/health
+    }
     return 'ok';
   } catch {
     return 'err';
   }
 }
 
-export function getStorageMode(): 'sqlite' | 'memory' {
+export function getStorageMode(): 'sqlite' | 'redis' | 'memory' {
+  if (isRedisAvailable()) return 'redis';
   return usingSqlite && sqliteDb ? 'sqlite' : 'memory';
 }
 
 export function createSession(persona_id: string, mode: string, spsData: SpsSessionData | null = null): string {
   const id = nanoid();
+  // Redis path (durable) – prefer when available
+  if (isRedisAvailable()) {
+    const session: SessionRow = { id, persona_id, mode, started_at: new Date().toISOString() };
+    if (spsData) {
+      session.sps_session_id = spsData.sps_session_id;
+      session.sps_scenario_id = spsData.scenario_id;
+      session.sps_phase = spsData.phase;
+      session.sps_gate_json = JSON.stringify(spsData.gate);
+    }
+    // Store session JSON and set a TTL (e.g., 7 days) to avoid unbounded growth
+    const key = `session:${id}`;
+    // Fire-and-forget (sync API). Durable callers should prefer createSessionAsync.
+    void redisSetWithTTL(key, JSON.stringify(session), 60 * 60 * 24 * 7).catch(() => {});
+    return id;
+  }
   if (usingSqlite && sqliteDb) {
     if (spsData) {
       sqliteDb
@@ -400,6 +440,60 @@ export function insertTurn(
     ...payload,
   } as TurnRow);
 
+  // Best-effort mirror to Redis for durability in serverless environments
+  if (isRedisAvailable()) {
+    void (async () => {
+      try {
+        const created_at = createdAt || new Date().toISOString();
+        if (fingerprint) {
+          const fpKey = `fp:${session_id}:${fingerprint}`;
+          const exists = await redisGet(fpKey);
+          if (exists !== null) {
+            return;
+          }
+          await redisSetWithTTL(fpKey, '1', 60 * 60 * 24 * 30);
+        }
+        const listKey = `turns:${session_id}`;
+        const raw = await redisGet(listKey);
+        let arr: Array<{ id: string; role: string; text: string; created_at: string }> = [];
+        if (raw) {
+          try {
+            const parsed: unknown = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              const safe: Array<{ id: string; role: string; text: string; created_at: string }> = [];
+              for (const item of parsed) {
+                if (typeof item === 'object' && item !== null) {
+                  const o = item as Partial<{
+                    id: string;
+                    role: string;
+                    text: string;
+                    created_at: string;
+                  }>;
+                  if (
+                    typeof o?.id === 'string' &&
+                    typeof o?.role === 'string' &&
+                    typeof o?.text === 'string' &&
+                    typeof o?.created_at === 'string'
+                  ) {
+                    safe.push({ id: o.id, role: o.role, text: o.text, created_at: o.created_at });
+                  }
+                }
+              }
+              arr = safe;
+            }
+          } catch {
+            arr = [];
+          }
+        }
+        arr.push({ id, role, text, created_at });
+        if (arr.length > 2000) arr.splice(0, arr.length - 2000);
+        await redisSetWithTTL(listKey, JSON.stringify(arr), 60 * 60 * 24 * 7);
+      } catch {
+        // ignore background persistence failures
+      }
+    })();
+  }
+
   return { id, created: true };
 }
 
@@ -435,26 +529,250 @@ export function getSessionTurns(
     .map(t => ({ id: t.id, role: t.role, text: t.text, created_at: t.created_at }));
 }
 
+// Async equivalents for durable storage via Redis (fall back to sync impl when Redis/sqlite not available)
+export async function createSessionAsync(
+  persona_id: string,
+  mode: string,
+  spsData: SpsSessionData | null = null
+): Promise<string> {
+  if (process.env.REDIS_URL) {
+    try {
+      await connectRedis();
+    } catch {}
+  }
+  if (isRedisAvailable()) {
+    const id = nanoid();
+    const session: SessionRow = { id, persona_id, mode, started_at: new Date().toISOString() };
+    if (spsData) {
+      session.sps_session_id = spsData.sps_session_id;
+      session.sps_scenario_id = spsData.scenario_id;
+      session.sps_phase = spsData.phase;
+      session.sps_gate_json = JSON.stringify(spsData.gate);
+    }
+    await redisSetWithTTL(`session:${id}`, JSON.stringify(session), 60 * 60 * 24 * 7);
+    return id;
+  }
+  return createSession(persona_id, mode, spsData);
+}
+
+export async function getSessionByIdAsync(id: string): Promise<SessionRow | null> {
+  if (process.env.REDIS_URL) {
+    try {
+      await connectRedis();
+    } catch {}
+  }
+  if (isRedisAvailable()) {
+    const raw = await redisGet(`session:${id}`);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as SessionRow;
+    } catch {
+      return null;
+    }
+  }
+  return getSessionById(id);
+}
+
+export async function insertTurnAsync(
+  session_id: string,
+  role: string,
+  text: string,
+  extras: Record<string, unknown> = {}
+): Promise<TurnResult> {
+  if (process.env.REDIS_URL) {
+    try {
+      await connectRedis();
+    } catch {}
+  }
+  if (isRedisAvailable()) {
+    const id = nanoid();
+    const fingerprint = (extras.fingerprint as string | undefined) || null;
+    const coerceMs = (value: unknown): number | null => {
+      const num = typeof value === 'string' ? Number(value) : typeof value === 'number' ? value : NaN;
+      return Number.isFinite(num) && num > 0 ? Math.round(num) : null;
+    };
+    const readMs = (
+      key: 'started_timestamp_ms' | 'finalized_timestamp_ms' | 'emitted_timestamp_ms' | 'timestamp_ms'
+    ): number | null => {
+      return coerceMs((extras as Record<string, unknown>)[key]);
+    };
+    const finalizedMs = readMs('finalized_timestamp_ms');
+    const emittedMs = readMs('emitted_timestamp_ms');
+    const legacyTimestampMs = readMs('timestamp_ms');
+    const finalTimestampMs = finalizedMs ?? legacyTimestampMs ?? emittedMs;
+    let createdAt: string | null = null;
+    if (finalTimestampMs != null) {
+      try {
+        createdAt = new Date(finalTimestampMs).toISOString();
+      } catch {
+        createdAt = null;
+      }
+    }
+    const created_at = createdAt || new Date().toISOString();
+    if (fingerprint) {
+      const fpKey = `fp:${session_id}:${fingerprint}`;
+      const ok = await redisSetNxWithTTL(fpKey, '1', 60 * 60 * 24 * 30);
+      if (!ok) {
+        return { id: '', created: false };
+      }
+    }
+    const listKey = `turns:${session_id}`;
+    const payload = JSON.stringify({ id, role, text, created_at });
+    let pushed = await redisRPush(listKey, payload);
+    if (!pushed) {
+      // Fallback: try JSON array migration path
+      const raw = await redisGet(listKey);
+      let arr: Array<{ id: string; role: string; text: string; created_at: string }> = [];
+      if (raw) {
+        try {
+          const parsed: unknown = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            arr = parsed.filter(
+              (i: any) =>
+                i && typeof i.id === 'string' && typeof i.role === 'string' && typeof i.text === 'string' && typeof i.created_at === 'string'
+            );
+          }
+        } catch {}
+      }
+      arr.push({ id, role, text, created_at });
+      if (arr.length > 2000) arr.splice(0, arr.length - 2000);
+      await redisSetWithTTL(listKey, JSON.stringify(arr), 60 * 60 * 24 * 7);
+    } else {
+      // Cap list length atomically
+      await redisLTrim(listKey, -2000, -1);
+    }
+    return { id, created: true };
+  }
+  return insertTurn(session_id, role, text, extras);
+}
+
+export async function getSessionTurnsAsync(
+  sessionId: string
+): Promise<Array<{ id: string; role: string; text: string; created_at: string }>> {
+  if (process.env.REDIS_URL) {
+    try {
+      await connectRedis();
+    } catch {}
+  }
+  if (isRedisAvailable()) {
+    const listKey = `turns:${sessionId}`;
+    const items = await redisLRange(listKey, 0, -1);
+    if (Array.isArray(items) && items.length) {
+      const out: Array<{ id: string; role: string; text: string; created_at: string }> = [];
+      for (const s of items) {
+        try {
+          const o = JSON.parse(s) as Partial<{ id: string; role: string; text: string; created_at: string }>;
+          if (o && typeof o.id === 'string' && typeof o.role === 'string' && typeof o.text === 'string' && typeof o.created_at === 'string') {
+            out.push({ id: o.id, role: o.role, text: o.text, created_at: o.created_at });
+          }
+        } catch {}
+      }
+      return out;
+    }
+    // Legacy JSON array fallback
+    const raw = await redisGet(listKey);
+    if (raw) {
+      try {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) {
+          return arr.filter(
+            (i: any) => i && typeof i.id === 'string' && typeof i.role === 'string' && typeof i.text === 'string' && typeof i.created_at === 'string'
+          );
+        }
+      } catch {}
+    }
+    return [];
+  }
+  return getSessionTurns(sessionId);
+}
+
+export async function updateSpsSessionDataAsync(sessionId: string, spsData: SpsSessionData): Promise<void> {
+  if (process.env.REDIS_URL) {
+    try {
+      await connectRedis();
+    } catch {}
+  }
+  if (isRedisAvailable()) {
+    const key = `session:${sessionId}`;
+    const raw = await redisGet(key);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw) as SessionRow;
+        parsed.sps_session_id = spsData.sps_session_id;
+        parsed.sps_scenario_id = spsData.scenario_id;
+        parsed.sps_phase = spsData.phase;
+        parsed.sps_gate_json = JSON.stringify(spsData.gate);
+        await redisSetWithTTL(key, JSON.stringify(parsed), 60 * 60 * 24 * 7);
+      } catch {
+        // ignore parse errors
+      }
+    }
+    return;
+  }
+}
+
+// Sync helpers used by routes (SQLite/memory primary). Best-effort mirror to Redis when present.
 export function updateSpsSessionData(sessionId: string, spsData: SpsSessionData): void {
   if (usingSqlite && sqliteDb) {
-    sqliteDb
-      .prepare('UPDATE sessions SET sps_phase = ?, sps_gate_json = ? WHERE id = ?')
-      .run(spsData.phase, JSON.stringify(spsData.gate), sessionId);
+    const columns: string[] = ['sps_session_id = ?', 'sps_scenario_id = ?', 'sps_phase = ?', 'sps_gate_json = ?'];
+    const params: unknown[] = [
+      spsData.sps_session_id,
+      spsData.scenario_id,
+      spsData.phase,
+      JSON.stringify(spsData.gate),
+      sessionId,
+    ];
+    sqliteDb.prepare(`UPDATE sessions SET ${columns.join(', ')} WHERE id = ?`).run(...params);
   } else {
-    const s = mem.sessions.find(x => x.id === sessionId);
+    const s = mem.sessions.find(ss => ss.id === sessionId);
     if (s) {
+      s.sps_session_id = spsData.sps_session_id;
+      s.sps_scenario_id = spsData.scenario_id;
       s.sps_phase = spsData.phase;
       s.sps_gate_json = JSON.stringify(spsData.gate);
     }
   }
+  // Mirror to Redis if available (non-blocking)
+  if (isRedisAvailable()) {
+    void (async () => {
+      try {
+        const key = `session:${sessionId}`;
+        const raw = await redisGet(key);
+        if (!raw) return;
+        const parsed = JSON.parse(raw) as SessionRow;
+        parsed.sps_session_id = spsData.sps_session_id;
+        parsed.sps_scenario_id = spsData.scenario_id;
+        parsed.sps_phase = spsData.phase;
+        parsed.sps_gate_json = JSON.stringify(spsData.gate);
+        await redisSetWithTTL(key, JSON.stringify(parsed), 60 * 60 * 24 * 7);
+      } catch {
+        // ignore
+      }
+    })();
+  }
 }
 
-export function endSession(id: string): void {
+export function endSession(sessionId: string): void {
   if (usingSqlite && sqliteDb) {
-    sqliteDb.prepare("UPDATE sessions SET ended_at = datetime('now') WHERE id = ?").run(id);
+    sqliteDb.prepare('UPDATE sessions SET ended_at = CURRENT_TIMESTAMP WHERE id = ?').run(sessionId);
   } else {
-    const s = mem.sessions.find(x => x.id === id);
+    const s = mem.sessions.find(ss => ss.id === sessionId);
     if (s) s.ended_at = new Date().toISOString();
+  }
+  // Best-effort mirror to Redis if present
+  if (isRedisAvailable()) {
+    void (async () => {
+      try {
+        const key = `session:${sessionId}`;
+        const raw = await redisGet(key);
+        if (!raw) return;
+        const parsed = JSON.parse(raw) as SessionRow;
+        parsed.ended_at = new Date().toISOString();
+        await redisSetWithTTL(key, JSON.stringify(parsed), 60 * 60 * 24 * 7);
+      } catch {
+        // ignore
+      }
+    })();
   }
 }
 

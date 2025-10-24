@@ -1,0 +1,113 @@
+{
+  "history": {
+    "chief_complaint": "I hit my shin on the dashboard—now my knee feels unstable going downstairs.",
+    "mechanism": "Dashboard injury; posterior force to proximal tibia.",
+    "prior_episodes": "No prior knee injuries.",
+    "functional_impact": "Stairs descent hurts; kneeling uncomfortable.",
+    "goals": "Get back to basketball pain-free.",
+    "identity": {
+      "name": "Ryan Mitchell",
+      "dob": "1994-06-15"
+    }
+  },
+  "subjective_catalog": [
+    {
+      "id": "meds_allergies",
+      "label": "Medications & Allergies",
+      "patterns": [
+        "meds",
+        "allergies"
+      ],
+      "patient_response_script": {
+        "qualitative": [
+          "Took ibuprofen. No allergies."
+        ]
+      }
+    },
+    {
+      "id": "swelling",
+      "label": "Swelling",
+      "patterns": [
+        "swelling"
+      ],
+      "patient_response_script": {
+        "qualitative": [
+          "A bit puffy behind the knee initially."
+        ]
+      }
+    },
+    {
+      "id": "red_flags",
+      "label": "Red Flags",
+      "patterns": [
+        "locking",
+        "giving way"
+      ],
+      "patient_response_script": {
+        "qualitative": [
+          "No locking. Feels unstable sometimes on stairs."
+        ]
+      }
+    }
+  ],
+  "patient_reported_outcomes": {
+    "NPRS_worst": 4,
+    "NPRS_usual": 2,
+    "LEFS": 58
+  },
+  "media_library": [],
+  "history_present_illness": {
+    "mechanism": "dashboard injury",
+    "first_onset": "2 weeks ago",
+    "course_since_onset": "improving slowly",
+    "prior_episodes": "none",
+    "red_flag_denials_affirmations": {
+      "fever": false,
+      "locking": false,
+      "numbness": false
+    }
+  },
+  "pain": {
+    "location": [
+      "posterior knee"
+    ],
+    "quality": [
+      "ache"
+    ],
+    "irritability": "low-moderate",
+    "nrs_rest": 1,
+    "nrs_activity": 4,
+    "aggravators": [
+      "stairs descent",
+      "kneeling"
+    ],
+    "easers": [
+      "rest"
+    ],
+    "24h_pattern": "stiff morning"
+  },
+  "social_history": {
+    "sport_hobbies": [
+      "basketball"
+    ],
+    "occupation": "engineer"
+  },
+  "goals": [
+    "return to basketball",
+    "no pain descending stairs"
+  ],
+  "past_medical_history": [],
+  "surgical_history": [],
+  "medications": [
+    {
+      "name": "ibuprofen",
+      "dose": "as needed"
+    }
+  ],
+  "allergies": [
+    {
+      "substance": "drug",
+      "details": "none"
+    }
+  ]
+}

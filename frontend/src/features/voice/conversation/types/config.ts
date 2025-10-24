@@ -26,4 +26,5 @@ export interface ConversationControllerConfig {
 export interface InstructionRefreshOptions {
   phase?: string
   gate?: Record<string, unknown>
+  audience?: 'student' | 'faculty'
 }

@@ -1,4 +1,5 @@
 import { ANIMATIONS, DEFAULT_ANIMATION_ID } from './animations/manifest'
+import CloseIcon from '@mui/icons-material/Close'
 
 type ViewerControlsProps = {
   onClose: () => void
@@ -18,12 +19,11 @@ export default function ViewerControls({
 }: ViewerControlsProps) {
   return (
     <>
-      {/* Top bar with title and close button */}
+      {/* Top bar with close button */}
       <div className="viewer-header">
-        <h1 className="viewer-title">3D Anatomy Viewer</h1>
         <div className="viewer-header-actions">
           <button className="viewer-close-btn" onClick={onClose} aria-label="Close viewer">
-            ✕
+            <CloseIcon />
           </button>
         </div>
       </div>

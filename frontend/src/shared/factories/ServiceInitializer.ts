@@ -24,6 +24,7 @@ import { ConnectionHandlers } from '../handlers/ConnectionHandlers'
 import { EventDispatcher } from '../dispatchers/EventDispatcher'
 import { DataChannelConfigurator } from '../configurators/DataChannelConfigurator'
 import { BackendIntegration } from '../integration/BackendIntegration'
+import { logCatchupEvent } from '../utils/transcriptMonitoring'
 import {
   resolveAdaptiveVadDebug,
   resolveAdaptiveVadEnabled,
@@ -59,7 +60,7 @@ import {
 
 /**
  * All services and managers created by ServiceInitializer
- * 
+ *
  * This interface defines the complete set of services that make up a ConversationController.
  * By centralizing initialization, we achieve:
  * - **Cleaner Constructor:** ConversationController constructor becomes simple delegation
@@ -73,7 +74,7 @@ export interface ConversationServices {
   voiceConfig: VoiceConfigurationManager
   micControl: MicrophoneControlManager
   connectionOrchestrator: ConnectionOrchestrator
-  
+
   // Configuration
   remoteAudioElement: HTMLAudioElement | null
   debugEnabled: boolean
@@ -81,7 +82,7 @@ export interface ConversationServices {
   iceServers: RTCIceServer[] | undefined
   backendTranscriptMode: boolean
   scenarioMedia: MediaReference[]
-  
+
   // Core services
   transcriptCoordinator: TranscriptCoordinator
   transcriptEngine: TranscriptEngine
@@ -91,24 +92,24 @@ export interface ConversationServices {
   audioManager: AudioStreamManager
   socketManager: BackendSocketClient
   webrtcManager: WebRTCConnectionManager
-  
+
   // Handlers and integration
   connectionHandlers: ConnectionHandlers
   backendIntegration: BackendIntegration
   transcriptHandler: TranscriptHandler
   eventDispatcher: EventDispatcher
-  
+
   // Managers
   instructionSyncManager: InstructionSyncManager
   sessionReadyManager: SessionReadyManager
   sessionReuseHandlers: SessionReuseHandlers
-  
+
   // Event handlers
   speechHandlers: SpeechEventHandlers
   transcriptionHandlers: TranscriptionEventHandlers
   assistantHandlers: AssistantStreamHandlers
   conversationItemHandlers: ConversationItemHandlers
-  
+
   // Mutable state fields
   pingInterval: ReturnType<typeof setInterval> | null
   sessionAckTimeout: ReturnType<typeof setTimeout> | null
@@ -123,7 +124,7 @@ export interface ConversationServices {
 
 /**
  * Callbacks required by ServiceInitializer
- * 
+ *
  * These are the "this" method references that services need to call back to the controller.
  * By using dependency injection, we keep ServiceInitializer testable and decoupled.
  */
@@ -141,7 +142,7 @@ export interface ServiceInitializerCallbacks {
   releaseInitialAssistantAutoPause: (reason: string) => void
   scheduleInitialAssistantRelease: (reason: string, delayMs?: number) => void
   logDebug: (...args: unknown[]) => void
-  
+
   // Getters for mutable state
   getPingInterval: () => ReturnType<typeof setInterval> | null
   getSessionAckTimeout: () => ReturnType<typeof setTimeout> | null
@@ -153,7 +154,7 @@ export interface ServiceInitializerCallbacks {
   getRemoteVolumeBeforeGuard: () => number | null
   getRemoteAudioElement: () => HTMLAudioElement | null
   getLastRelayedItemId: () => string | null
-  
+
   // Setters for mutable state
   setPingInterval: (value: ReturnType<typeof setInterval> | null) => void
   setSessionAckTimeout: (value: ReturnType<typeof setTimeout> | null) => void
@@ -168,25 +169,25 @@ export interface ServiceInitializerCallbacks {
 
 /**
  * ServiceInitializer - Centralized service initialization for ConversationController
- * 
+ *
  * This class handles all the complex initialization logic that was previously in the
  * ConversationController constructor (411 lines). By extracting this into a dedicated
  * initializer, we achieve:
- * 
+ *
  * **Benefits:**
  * - ✅ **Reduced Constructor Size:** ConversationController constructor becomes ~20 lines
  * - ✅ **Single Responsibility:** ServiceInitializer ONLY handles initialization
  * - ✅ **Testability:** Can test initialization logic in isolation
  * - ✅ **Maintainability:** All wiring logic in one place
  * - ✅ **Clarity:** Clear separation between initialization and behavior
- * 
+ *
  * **Responsibilities:**
  * - Initialize all managers (session, voice, mic, connection)
  * - Configure all services (events, state, audio, socket, WebRTC)
  * - Set up all handlers (transcript, connection, speech, assistant)
  * - Wire all callbacks and dependencies
  * - Return complete service set
- * 
+ *
  * **Architecture:**
  * ```
  * ConversationController
@@ -197,7 +198,7 @@ export interface ServiceInitializerCallbacks {
  *     ↓ (assigned to controller)
  * ConversationController (ready to use)
  * ```
- * 
+ *
  * **Usage Example:**
  * ```typescript
  * // In ConversationController constructor:
@@ -206,11 +207,11 @@ export interface ServiceInitializerCallbacks {
  *   cleanup: () => this.cleanup(),
  *   // ... other callbacks
  * })
- * 
+ *
  * // Assign all services
  * Object.assign(this, services)
  * ```
- * 
+ *
  * **Why This Exists:**
  * - **Constructor Too Large:** Original 411-line constructor was 36% of entire file
  * - **Difficult to Test:** Initialization mixed with behavior
@@ -220,15 +221,15 @@ export interface ServiceInitializerCallbacks {
 export class ServiceInitializer {
   /**
    * Initialize all services for ConversationController
-   * 
+   *
    * This is the main entry point for service initialization. It creates all managers,
    * services, handlers, and event processors, wires them together with callbacks,
    * and returns a complete set of initialized services.
-   * 
+   *
    * @param config - Configuration from ConversationController constructor
    * @param callbacks - Controller method references for callbacks
    * @returns Complete set of initialized services
-   * 
+   *
    * @example
    * ```typescript
    * const services = ServiceInitializer.initialize(config, {
@@ -243,6 +244,51 @@ export class ServiceInitializer {
     config: ConversationControllerConfig,
     callbacks: ServiceInitializerCallbacks
   ): ConversationServices {
+    // Small sequencing buffer for backend transcript events to smooth rare out-of-order arrivals
+    const transcriptBuffer: Array<{
+      role: 'user' | 'assistant'
+      text: string
+      isFinal: boolean
+      timestamp: number
+      startedAtMs?: number | null
+      finalizedAtMs?: number | null
+      emittedAtMs?: number | null
+      itemId?: string
+      media?: MediaReference | undefined
+    }> = []
+    let transcriptFlushTimer: ReturnType<typeof setTimeout> | null = null
+    const FLUSH_MS = 80
+    const flushBufferedTranscripts = () => {
+      if (transcriptFlushTimer) {
+        clearTimeout(transcriptFlushTimer)
+        transcriptFlushTimer = null
+      }
+      if (transcriptBuffer.length === 0) return
+      const items = transcriptBuffer.splice(0, transcriptBuffer.length)
+      // Order by when speaking STARTED, otherwise finalized/emitted
+      items.sort((a, b) => {
+        const at = (typeof a.startedAtMs === 'number' && a.startedAtMs != null ? a.startedAtMs : (a.finalizedAtMs ?? a.emittedAtMs ?? a.timestamp)) as number
+        const bt = (typeof b.startedAtMs === 'number' && b.startedAtMs != null ? b.startedAtMs : (b.finalizedAtMs ?? b.emittedAtMs ?? b.timestamp)) as number
+        return at - bt
+      })
+      for (const t of items) {
+        const emittedAtMs = typeof t.emittedAtMs === 'number' ? t.emittedAtMs : t.timestamp
+        const finalizedAtMs = typeof t.finalizedAtMs === 'number' ? t.finalizedAtMs : t.isFinal ? t.timestamp : undefined
+        const startedAtMs = typeof t.startedAtMs === 'number' ? t.startedAtMs : null
+        const eventTimestamp = (startedAtMs ?? finalizedAtMs ?? emittedAtMs) as number
+        const { cleanText, media } =
+          t.role === 'assistant' ? transcriptCoordinator.parseMediaMarker(t.text) : { cleanText: t.text, media: undefined }
+        eventEmitter.emit({
+          type: 'transcript',
+          role: t.role,
+          text: cleanText,
+          isFinal: t.isFinal,
+          timestamp: eventTimestamp,
+          media: media ?? t.media,
+          timings: { startedAtMs, emittedAtMs, finalizedAtMs },
+        })
+      }
+    }
     // Phase 1: Initialize managers
     const sessionLifecycle = new SessionLifecycleManager({
       personaId: config.personaId,
@@ -260,7 +306,7 @@ export class ServiceInitializer {
 
     // Initialize state manager first (needed by many other services)
     const stateManager = new ConversationStateManager()
-    
+
     // Initialize event emitter
     const debugEnabled = config.debugEnabled ?? resolveDebug()
     const eventEmitter = new ConversationEventEmitter(debugEnabled)
@@ -375,34 +421,23 @@ export class ServiceInitializer {
           finalizedAtMs: data.finalizedAtMs,
         })
         if (!backendTranscriptMode) {
-          console.warn('⚠️ [ConversationController] backendTranscriptMode is disabled, ignoring transcript')
+          console.warn('[ConversationController] backendTranscriptMode is disabled, ignoring transcript')
           return
         }
-
-        const emittedAtMs = typeof data.emittedAtMs === 'number' ? data.emittedAtMs : data.timestamp
-        const finalizedAtMs =
-          typeof data.finalizedAtMs === 'number' ? data.finalizedAtMs : data.isFinal ? data.timestamp : undefined
-        const startedAtMs = typeof data.startedAtMs === 'number' ? data.startedAtMs : null
-        const eventTimestamp = finalizedAtMs ?? emittedAtMs
-
-        const { cleanText, media } =
-          data.role === 'assistant'
-            ? transcriptCoordinator.parseMediaMarker(data.text)
-            : { cleanText: data.text, media: undefined }
-
-        eventEmitter.emit({
-          type: 'transcript',
+        // Buffer briefly to smooth rare out-of-order arrivals
+        transcriptBuffer.push({
           role: data.role,
-          text: cleanText,
+          text: data.text,
           isFinal: data.isFinal,
-          timestamp: eventTimestamp,
-          media: media ?? data.media,
-          timings: {
-            startedAtMs,
-            emittedAtMs,
-            finalizedAtMs,
-          },
+          timestamp: data.timestamp,
+          startedAtMs: typeof data.startedAtMs === 'number' ? data.startedAtMs : undefined,
+          finalizedAtMs: typeof data.finalizedAtMs === 'number' ? data.finalizedAtMs : undefined,
+          emittedAtMs: typeof data.emittedAtMs === 'number' ? data.emittedAtMs : undefined,
+          media: data.media,
         })
+        if (!transcriptFlushTimer) {
+          transcriptFlushTimer = setTimeout(flushBufferedTranscripts, FLUSH_MS)
+        }
       },
       onTranscriptError: (data: TranscriptErrorData) => {
         console.error('[BackendSocket] Transcript error:', data)
@@ -412,18 +447,37 @@ export class ServiceInitializer {
       },
       onCatchup: (data: CatchupData) => {
         callbacks.logDebug('[BackendSocket] Caught up', data.transcripts.length, 'transcripts')
+
+        // Log catchup event for monitoring
+        const timestamps = data.transcripts.map(t => t.timestamp).filter(Boolean)
+        logCatchupEvent({
+          transcriptCount: data.transcripts.length,
+          oldestTimestamp: timestamps.length > 0 ? Math.min(...timestamps) : undefined,
+          newestTimestamp: timestamps.length > 0 ? Math.max(...timestamps) : undefined,
+        })
+
         data.transcripts.forEach(t => {
           const emittedAtMs = typeof t.emittedAtMs === 'number' ? t.emittedAtMs : t.timestamp
           const finalizedAtMs =
             typeof t.finalizedAtMs === 'number' ? t.finalizedAtMs : t.isFinal ? t.timestamp : undefined
           const startedAtMs = typeof t.startedAtMs === 'number' ? t.startedAtMs : null
-          const eventTimestamp = finalizedAtMs ?? emittedAtMs
+          // Prefer startedAt for historical ordering if available
+          const eventTimestamp = (startedAtMs ?? null) ?? finalizedAtMs ?? emittedAtMs
+
+          // Parse media markers for assistant roles on catch-up as well
+          const { cleanText, media } =
+            t.role === 'assistant'
+              ? transcriptCoordinator.parseMediaMarker(t.text)
+              : { cleanText: t.text, media: undefined }
+
           eventEmitter.emit({
             type: 'transcript',
             role: t.role,
-            text: t.text,
+            text: cleanText,
             isFinal: t.isFinal,
             timestamp: eventTimestamp,
+            media,
+            source: 'catchup', // Mark as catchup for wider deduplication window
             timings: {
               startedAtMs,
               emittedAtMs,
@@ -470,7 +524,7 @@ export class ServiceInitializer {
               }),
             };
           }
-          
+
           throw new Error(
             '[ServiceInitializer] No socketFactory provided! ' +
             'BackendSocketManager has been removed. ' +
@@ -568,6 +622,7 @@ export class ServiceInitializer {
     const backendIntegration = new BackendIntegration({
       socketManager,
       getSessionId: () => sessionLifecycle.getSessionId(),
+      // Backend mode stays enabled even if sockets fail so we continue relaying transcripts via REST.
       isBackendMode: () => backendTranscriptMode,
       logDebug: (...args) => callbacks.logDebug(...args),
     })
@@ -627,9 +682,16 @@ export class ServiceInitializer {
       transcriptCoordinator,
       eventEmitter,
       logDebug: (...args) => callbacks.logDebug(...args),
-      relayTranscriptToBackend: (role, text, isFinal, timestamp, timings) =>
-        backendIntegration.relayTranscriptToBackend(role, text, isFinal, timestamp, timings),
+      relayTranscriptToBackend: (role, text, isFinal, timestamp, timings, itemId, options) =>
+        backendIntegration.relayTranscriptToBackend(role, text, isFinal, timestamp, timings, itemId, options),
       isBackendMode: () => backendTranscriptMode,
+      isSocketConnected: () => {
+        try {
+          return Boolean(socketManager.getSnapshot?.().isConnected)
+        } catch {
+          return false
+        }
+      },
     })
 
     const eventDispatcher = new EventDispatcher({
@@ -659,7 +721,7 @@ export class ServiceInitializer {
       voiceConfig,
       micControl,
       connectionOrchestrator,
-      
+
       // Configuration
       remoteAudioElement,
       debugEnabled,
@@ -667,7 +729,7 @@ export class ServiceInitializer {
       iceServers,
       backendTranscriptMode,
       scenarioMedia,
-      
+
       // Core services
       transcriptCoordinator,
       transcriptEngine,
@@ -677,24 +739,24 @@ export class ServiceInitializer {
       audioManager,
       socketManager,
       webrtcManager,
-      
+
       // Handlers and integration
       connectionHandlers,
       backendIntegration,
       transcriptHandler,
       eventDispatcher,
-      
+
       // Managers
       instructionSyncManager,
       sessionReadyManager,
       sessionReuseHandlers,
-      
+
       // Event handlers
       speechHandlers,
       transcriptionHandlers,
       assistantHandlers,
       conversationItemHandlers,
-      
+
       // Mutable state fields (initialized to default values)
       pingInterval: null,
       sessionAckTimeout: null,

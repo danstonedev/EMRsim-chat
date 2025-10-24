@@ -2,6 +2,10 @@ import type { MediaReference } from './types';
 import type { ClinicalScenarioV3, ScenarioSourceLite } from './types/scenario';
 
 const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002';
+if (typeof window !== 'undefined') {
+  // Lightweight visibility to confirm which backend the build is targeting
+  console.info('[API] Using API base URL:', BASE);
+}
 export const API_BASE_URL = BASE;
 
 // Dev-time guardrail: warn if BASE appears to target a different common dev port
@@ -55,13 +59,47 @@ export const api = {
     if (!r.ok) throw new Error(`health_http_${r.status}`);
   return (await r.json()) as HealthResponse;
   },
+  async waitForTranscriptReady(sessionId: string, opts?: { timeoutMs?: number; pollMs?: number }): Promise<boolean> {
+    const url = `${BASE}/api/sessions/${encodeURIComponent(sessionId)}/transcript`;
+    const timeoutMs = typeof opts?.timeoutMs === 'number' ? opts.timeoutMs : 8000;
+    const pollMs = typeof opts?.pollMs === 'number' ? opts.pollMs : 600;
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      try {
+        // Prefer a cheap HEAD probe
+        const head = await fetchWithTimeout(url, { method: 'HEAD', timeoutMs: Math.min(2500, pollMs + 500) });
+        if (head.ok) return true;
+        // Some servers do not implement HEAD; consider it effectively ready and let the GET/open proceed
+        if (head.status === 405) return true;
+        // If HEAD is implemented but not ready (404/409), fall through to wait and retry
+      } catch {
+        // If HEAD fails (405, CORS, or network), try a very short GET fallback without caching
+        try {
+          const getProbe = await fetchWithTimeout(url, {
+            method: 'GET',
+            cache: 'no-store' as RequestCache,
+            // short timeout to avoid downloading the whole file if large
+            timeoutMs: Math.min(2000, pollMs + 800),
+          });
+          if (getProbe.ok) return true;
+          // Treat 302/301 as ready (some servers redirect to a signed URL)
+          if (getProbe.status === 301 || getProbe.status === 302) return true;
+        } catch {
+          // swallow and retry
+        }
+      }
+      await new Promise(res => setTimeout(res, pollMs));
+    }
+    return false;
+  },
   async getVoiceInstructions(
     sessionId: string,
-    options?: { phase?: string | null; gate?: Record<string, unknown> | null }
+    options?: { phase?: string | null; gate?: Record<string, unknown> | null; audience?: 'student' | 'faculty' }
   ): Promise<{ instructions: string; phase?: string; outstanding_gate?: string[] }> {
     const body: any = { session_id: sessionId };
     if (options && Object.prototype.hasOwnProperty.call(options, 'phase')) body.phase = options.phase;
     if (options && Object.prototype.hasOwnProperty.call(options, 'gate')) body.gate = options.gate;
+    if (options && Object.prototype.hasOwnProperty.call(options, 'audience')) body.audience = options.audience;
     const r = await fetchWithTimeout(`${BASE}/api/voice/instructions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -142,6 +180,7 @@ export const api = {
       model?: string;
       transcription_model?: string;
       reply_language?: string;
+      role_id?: string;
     }
   ): Promise<{
     rtc_token: string;
@@ -153,7 +192,7 @@ export const api = {
     const r = await fetchWithTimeout(`${BASE}/api/voice/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: sessionId, ...overrides }),
+  body: JSON.stringify({ session_id: sessionId, ...overrides }),
     });
     if (!r.ok) {
       const txt = await r.text().catch(() => '');
@@ -181,6 +220,10 @@ export const api = {
   }>> {
     const r = await fetchWithTimeout(`${BASE}/api/sessions/${encodeURIComponent(sessionId)}/turns`);
     if (!r.ok) {
+      // Treat 404 (session not found) as empty history in stateless/serverless deployments
+      if (r.status === 404) {
+        return [];
+      }
       const txt = await r.text().catch(() => '');
       // Optional debug logging when enabled via env or localStorage
       try {
@@ -188,7 +231,6 @@ export const api = {
         // Avoid accessing window in SSR; guard with typeof
         const dbgStorage = typeof window !== 'undefined' ? window.localStorage?.getItem('DEBUG_HISTORY_FETCH') : null;
         if ((dbgEnv && String(dbgEnv).toLowerCase() !== 'false') || dbgStorage === '1' || dbgStorage === 'true') {
-          // eslint-disable-next-line no-console
           console.warn('[api.getSessionTurns] Non-200 response', {
             status: r.status,
             statusText: r.statusText,
@@ -319,6 +361,7 @@ export const api = {
   async listSpsScenarios(): Promise<
     Array<{
       scenario_id: string;
+      student_case_id?: string | null;
       title: string;
       region: string;
       difficulty?: string | null;
@@ -331,12 +374,13 @@ export const api = {
   > {
     const r = await fetchWithTimeout(`${BASE}/api/sps/scenarios`);
     if (!r.ok) throw new Error(`sps_list_http_${r.status}`);
-  const data = (await r.json()) as { scenarios?: Array<{ scenario_id: string; title: string; region: string; difficulty?: string | null; setting?: string | null; tags?: string[]; persona_id?: string | null; persona_name?: string | null; persona_headline?: string | null }>; };
+  const data = (await r.json()) as { scenarios?: Array<{ scenario_id: string; student_case_id?: string | null; title: string; region: string; difficulty?: string | null; setting?: string | null; tags?: string[]; persona_id?: string | null; persona_name?: string | null; persona_headline?: string | null }>; };
     return Array.isArray(data?.scenarios) ? data.scenarios : [];
   },
   async getSpsScenarios(): Promise<
     Array<{
       scenario_id: string;
+      student_case_id?: string | null;
       title: string;
       region: string;
       difficulty?: string | null;
@@ -382,18 +426,63 @@ export const api = {
     if (!personaId || !scenarioId) return;
     const url = `${BASE}/api/sps/export?persona_id=${encodeURIComponent(personaId)}&scenario_id=${encodeURIComponent(scenarioId)}`;
     try {
-      window.open(url, '_blank', 'noopener,noreferrer');
+      // Prefer anchor click to better satisfy popup blocker heuristics tied to user gesture
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      // Some browsers require the node to be in the DOM for click() to register as a user gesture
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     } catch {
-      window.location.href = url;
+      try {
+        const win = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!win) window.location.href = url;
+      } catch {
+        window.location.href = url;
+      }
+    }
+  },
+  openSpsExportWithAudience(personaId: string | null, scenarioId: string | null, audience: 'student' | 'faculty'): void {
+    if (!personaId || !scenarioId) return;
+    const url = `${BASE}/api/sps/export?persona_id=${encodeURIComponent(personaId)}&scenario_id=${encodeURIComponent(scenarioId)}&audience=${encodeURIComponent(audience)}`;
+    try {
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch {
+      try {
+        const win = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!win) window.location.href = url;
+      } catch {
+        window.location.href = url;
+      }
     }
   },
   openTranscriptExport(sessionId: string | null): void {
     if (!sessionId) return;
     const url = `${BASE}/api/sessions/${encodeURIComponent(sessionId)}/transcript`;
     try {
-      window.open(url, '_blank', 'noopener,noreferrer');
+      // Prefer anchor click to better satisfy popup blocker heuristics tied to user gesture
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     } catch {
-      window.location.href = url;
+      try {
+        const win = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!win) window.location.href = url;
+      } catch {
+        window.location.href = url;
+      }
     }
   },
 };

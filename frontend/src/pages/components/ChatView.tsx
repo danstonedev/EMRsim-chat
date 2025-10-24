@@ -22,6 +22,8 @@ export interface ChatViewProps {
     voiceDebug: boolean
   }
   renderMicControl: () => ReactElement
+  renderPlayPause: () => ReactElement
+  renderTransportRight: () => ReactElement
   personas: PersonaLite[]
   personaId: string | null
   selectedPersona: PersonaLite | null
@@ -30,12 +32,15 @@ export interface ChatViewProps {
   scenarioId: string
   selectedScenario: ScenarioLite | null
   setScenarioId: (id: string) => void
-  setSettingsOpen: (open: boolean) => void
-  printDropdownOpen: boolean
-  setPrintDropdownOpen: (open: boolean) => void
-  onPrintScenario: () => boolean
+  audience: 'student' | 'faculty'
+  onAudienceChange: (audience: 'student' | 'faculty') => void
   onPrintTranscript: () => boolean
-  onContinueAfterStop?: () => void
+  onPrintTranscriptAsync?: () => Promise<boolean>
+  onOpenFacultyKey?: () => boolean
+  // Restart same scenario immediately and auto-start voice
+  onResetAndStart?: () => void | Promise<void>
+  // Return to setup without auto-restart
+  onReturnToSetup?: () => void | Promise<void>
   postStopOpen: boolean
   setPostStopOpen: (open: boolean) => void
   sessionId: string | null
@@ -59,6 +64,8 @@ export function ChatView({
   voiceErrorMessage,
   runtimeFeatures,
   renderMicControl,
+  renderPlayPause,
+  renderTransportRight,
   personas,
   personaId,
   selectedPersona,
@@ -67,11 +74,13 @@ export function ChatView({
   scenarioId,
   selectedScenario,
   setScenarioId,
-  setSettingsOpen,
-  printDropdownOpen,
-  setPrintDropdownOpen,
-  onPrintScenario,
+  audience,
+  onAudienceChange,
   onPrintTranscript,
+  onPrintTranscriptAsync,
+  onOpenFacultyKey,
+  onResetAndStart,
+  onReturnToSetup,
   postStopOpen,
   setPostStopOpen,
   sessionId,
@@ -83,6 +92,7 @@ export function ChatView({
 }: ChatViewProps) {
   const showVoiceDisabledBanner = !runtimeFeatures.voiceEnabled || !runtimeFeatures.spsEnabled
   const isActivelyListening = voiceSession.status === 'connected' && !voiceSession.micPaused
+  const showEndMarker = !isComposing && !isVoiceConnecting && voiceSession.status !== 'connected' && sortedMessages.length > 0
 
   const handleImageLoad = () => {
     // Scroll to bottom when images load (they change container height)
@@ -107,19 +117,27 @@ export function ChatView({
             onMediaClick={onMediaClick}
             onImageLoad={handleImageLoad}
             selectedMedia={selectedMedia}
+            endText={showEndMarker ? 'End of Encounter' : undefined}
           />
 
-          <VoiceStatusPanel voiceSession={voiceSession} renderMicControl={renderMicControl} />
+          {voiceSession.status === 'connected' && (
+            <VoiceStatusPanel
+              voiceSession={voiceSession}
+              renderMicControl={renderMicControl}
+              renderPlayPause={renderPlayPause}
+              renderTransportRight={renderTransportRight}
+            />
+          )}
 
           {voiceErrorMessage && (
             <div className="voice-error-banner" role="alert">
               {voiceErrorMessage}
             </div>
           )}
-          <audio 
-            ref={voiceSession.remoteAudioRef as any} 
-            autoPlay 
-            playsInline 
+          <audio
+            ref={voiceSession.remoteAudioRef as any}
+            autoPlay
+            playsInline
             hidden
             onPlay={() => console.log('[Audio] Started playing')}
             onPause={() => console.log('[Audio] Paused')}
@@ -151,23 +169,23 @@ export function ChatView({
           scenarioId={scenarioId}
           selectedScenario={selectedScenario}
           setScenarioId={setScenarioId}
-          renderMicControl={renderMicControl}
-          isComposing={isComposing}
+          audience={audience}
+          onAudienceChange={onAudienceChange}
           isVoiceConnecting={isVoiceConnecting}
           connectionProgress={connectionProgress}
           voiceSession={voiceSession}
-          setSettingsOpen={setSettingsOpen}
-          printDropdownOpen={printDropdownOpen}
-          setPrintDropdownOpen={setPrintDropdownOpen}
-          onPrintScenario={onPrintScenario}
           onPrintTranscript={onPrintTranscript}
-          onContinueAfterStop={onReset}
+          onPrintTranscriptAsync={onPrintTranscriptAsync}
+          onOpenFacultyKey={onOpenFacultyKey}
+          onRestartNow={onResetAndStart ?? onReset}
+          onReturnToSetup={onReturnToSetup}
           postStopOpen={postStopOpen}
           setPostStopOpen={setPostStopOpen}
           sessionId={sessionId}
           spsError={spsError}
           backendOk={backendOk}
           caseSetupIds={caseSetupIds}
+          hasMessages={sortedMessages.length > 0}
         />
       )}
       </>

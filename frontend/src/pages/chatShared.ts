@@ -10,6 +10,7 @@ export type PersonaLite = {
 
 export type ScenarioLite = {
   scenario_id: string
+  student_case_id?: string | null
   title: string
   region?: string | null
   difficulty?: string | null
@@ -18,6 +19,15 @@ export type ScenarioLite = {
   persona_id?: string | null
   persona_name?: string | null
   persona_headline?: string | null
+  suggested_personas?: string[]
+  guardrails?: {
+    min_age?: number
+    max_age?: number
+    sex_required?: string
+    impact_testing_unsafe?: boolean
+    strict?: boolean
+    [key: string]: any
+  }
 }
 
 export interface MediaReference {

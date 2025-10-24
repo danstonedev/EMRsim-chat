@@ -16,7 +16,7 @@
 @import './chat/messages.css' layer(features);
 @import './chat/buttons.css' layer(features);
 @import './chat/drawer.css' layer(features);
-@import './chat/casebuilder.css' layer(features);
+/* Case Builder removed: purge styles */
 @import './chat/case-setup.css' layer(features);
 @import './chat/media.css' layer(features);
 @import './voice.css' layer(features);
@@ -25,3 +25,4 @@
 @import './sps.css' layer(features);
 @import './viewer3d.css' layer(features);
 @import './animations.css' layer(animations);
+@import './demo.css';

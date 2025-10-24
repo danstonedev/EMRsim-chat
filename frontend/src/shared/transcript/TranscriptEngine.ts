@@ -53,7 +53,7 @@ export class TranscriptEngine {
     const processed = this.userChannel.finalize(payload)
     if (!processed) return
 
-    this.logger.log('[TranscriptEngine] 🔄 Flushing buffered events after user finalization')
+    this.logger.log('[TranscriptEngine] Flushing buffered events after user finalization')
     this.flushBufferedAssistantEvents()
   }
 

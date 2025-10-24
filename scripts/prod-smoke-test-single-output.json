@@ -1,0 +1,294 @@
+﻿{
+  "when": "2025-10-23T04:31:53.083Z",
+  "result": {
+    "base": "https://backend-rolvpi90w-dan-stones-projects-04854ae1.vercel.app",
+    "health": {
+      "ok": true,
+      "status": 200,
+      "headers": {
+        "access-control-allow-credentials": "true",
+        "age": "0",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-length": "178",
+        "content-type": "application/json; charset=utf-8",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "date": "Thu, 23 Oct 2025 04:31:52 GMT",
+        "etag": "W/\"b2-T/uY1litTpEzzHOUrUsYi06OUhc\"",
+        "origin-agent-cluster": "?1",
+        "ratelimit-limit": "500",
+        "ratelimit-policy": "500;w=60",
+        "ratelimit-remaining": "499",
+        "ratelimit-reset": "60",
+        "referrer-policy": "no-referrer",
+        "server": "Vercel",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "vary": "Origin",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-ratelimit-limit": "500",
+        "x-ratelimit-remaining": "499",
+        "x-ratelimit-reset": "1761193973",
+        "x-request-id": "5e715ad3-a898-4dd2-8ec2-30f9aeee438f",
+        "x-robots-tag": "noindex",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::jgkgl-1761193912554-1436ea0405fe",
+        "x-xss-protection": "0"
+      },
+      "body": {
+        "ok": true,
+        "uptime_s": 210,
+        "db": "ok",
+        "openai": "ok",
+        "storage": "memory",
+        "warnings": [
+          "using_in_memory_storage"
+        ],
+        "features": {
+          "voiceEnabled": true,
+          "spsEnabled": true,
+          "voiceDebug": false
+        }
+      }
+    },
+    "session": {
+      "ok": true,
+      "status": 201,
+      "headers": {
+        "access-control-allow-credentials": "true",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-length": "291",
+        "content-type": "application/json; charset=utf-8",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "date": "Thu, 23 Oct 2025 04:31:53 GMT",
+        "etag": "W/\"123-CNqIG2ogESIBmluD5uiI7ns/NG4\"",
+        "origin-agent-cluster": "?1",
+        "ratelimit-limit": "10",
+        "ratelimit-policy": "10;w=300",
+        "ratelimit-remaining": "9",
+        "ratelimit-reset": "300",
+        "referrer-policy": "no-referrer",
+        "server": "Vercel",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "vary": "Origin",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-ratelimit-limit": "10",
+        "x-ratelimit-remaining": "9",
+        "x-ratelimit-reset": "1761194214",
+        "x-request-id": "f7fc0b2f-0cec-45fb-be54-25d563bee5ab",
+        "x-robots-tag": "noindex",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::m8b9r-1761193912919-e8df4f8745c1",
+        "x-xss-protection": "0"
+      },
+      "body": {
+        "session_id": "snKm4j09EmIWNAsJo0ATm",
+        "sps_session_id": "54106f22-62f6-4d7e-9e74-459a34add8d4",
+        "phase": "subjective",
+        "gate": {
+          "greeting_done": false,
+          "intro_done": false,
+          "consent_done": false,
+          "identity_verified": false,
+          "locked_pressure_count": 0,
+          "supervisor_escalated": false
+        },
+        "gate_state": "UNLOCKED"
+      }
+    },
+    "save": {
+      "ok": true,
+      "status": 201,
+      "headers": {
+        "access-control-allow-credentials": "true",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-length": "67",
+        "content-type": "application/json; charset=utf-8",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "date": "Thu, 23 Oct 2025 04:31:53 GMT",
+        "etag": "W/\"43-JE9GZueV3J1wJ9ug5vlz1smZPTE\"",
+        "origin-agent-cluster": "?1",
+        "ratelimit-limit": "500",
+        "ratelimit-policy": "500;w=60",
+        "ratelimit-remaining": "497",
+        "ratelimit-reset": "60",
+        "referrer-policy": "no-referrer",
+        "server": "Vercel",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "vary": "Origin",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-ratelimit-limit": "500",
+        "x-ratelimit-remaining": "497",
+        "x-ratelimit-reset": "1761193973",
+        "x-request-id": "1a07e280-a92f-4a3e-9e91-c6ffb960f59d",
+        "x-robots-tag": "noindex",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::879vn-1761193913126-3403c99d75d2",
+        "x-xss-protection": "0"
+      },
+      "body": {
+        "ok": true,
+        "received": 2,
+        "saved": 2,
+        "duplicates": 0,
+        "stateless": false
+      }
+    },
+    "turns": {
+      "ok": true,
+      "status": 200,
+      "headers": {
+        "access-control-allow-credentials": "true",
+        "age": "0",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-length": "381",
+        "content-type": "application/json; charset=utf-8",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "date": "Thu, 23 Oct 2025 04:31:53 GMT",
+        "etag": "W/\"17d-CvGvp8hjygTdRsRJGC/BUctLmT0\"",
+        "origin-agent-cluster": "?1",
+        "ratelimit-limit": "500",
+        "ratelimit-policy": "500;w=60",
+        "ratelimit-remaining": "496",
+        "ratelimit-reset": "60",
+        "referrer-policy": "no-referrer",
+        "server": "Vercel",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "vary": "Origin",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-ratelimit-limit": "500",
+        "x-ratelimit-remaining": "496",
+        "x-ratelimit-reset": "1761193973",
+        "x-request-id": "caf9a40f-7972-443c-897b-48181d787f9d",
+        "x-robots-tag": "noindex",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::4285f-1761193913259-91ab188a809c",
+        "x-xss-protection": "0"
+      },
+      "body": {
+        "turns": [
+          {
+            "id": "T4nj8NJF-epfQP81HYLwr",
+            "role": "user",
+            "text": "Hi, I am having hip pain when walking.",
+            "created_at": "2025-10-23T04:31:52.435Z",
+            "timestamp": 1761193912435
+          },
+          {
+            "id": "IWGHlSAPda9uheLDNo1_Q",
+            "role": "assistant",
+            "text": "Thanks for sharing. Can you tell me where the pain is most intense?",
+            "created_at": "2025-10-23T04:31:57.435Z",
+            "timestamp": 1761193917435
+          }
+        ],
+        "stateless": false
+      }
+    },
+    "transcript": {
+      "ok": true,
+      "status": 200,
+      "length": 2269
+    },
+    "persona": {
+      "ok": true,
+      "status": 200,
+      "headers": {
+        "access-control-allow-credentials": "true",
+        "age": "0",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-length": "769",
+        "content-type": "application/json; charset=utf-8",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "date": "Thu, 23 Oct 2025 04:31:53 GMT",
+        "etag": "W/\"301-xbkToEupTwaGvKCDl3oH4VRO9LE\"",
+        "origin-agent-cluster": "?1",
+        "ratelimit-limit": "500",
+        "ratelimit-policy": "500;w=60",
+        "ratelimit-remaining": "494",
+        "ratelimit-reset": "60",
+        "referrer-policy": "no-referrer",
+        "server": "Vercel",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "vary": "Origin",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-ratelimit-limit": "500",
+        "x-ratelimit-remaining": "494",
+        "x-ratelimit-reset": "1761193973",
+        "x-request-id": "3be243c0-f364-489a-899f-31b1ac40a679",
+        "x-robots-tag": "noindex",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::jzb46-1761193913602-21b0ad6885a7",
+        "x-xss-protection": "0"
+      },
+      "body": {
+        "persona": {
+          "patient_id": "echo-beatrice-king",
+          "display_name": "Beatrice King",
+          "headline": "expects precision",
+          "voice_id": "echo",
+          "tags": [],
+          "demographics": {
+            "name": "Beatrice King",
+            "preferred_name": "Beatrice",
+            "pronouns": "she/her",
+            "age": 37,
+            "sex": "female",
+            "occupation": "Not specified",
+            "education_health_literacy": "high",
+            "primary_language": "Broadcast-neutral American",
+            "dob": "1988-05-22"
+          },
+          "beliefs_affect": {
+            "mood": "friendly"
+          },
+          "dialogue_style": {
+            "verbosity": "balanced",
+            "tone": "friendly",
+            "voice_id": "echo",
+            "quirks": [
+              "KPIs",
+              "timelines"
+            ],
+            "privacy_hesitations": [
+              "verbal checklist before each step"
+            ]
+          },
+          "dob_challenges": [
+            {
+              "style": "straightforward",
+              "example_response": "Beatrice King, 1988-05-22."
+            },
+            {
+              "style": "clarification",
+              "example_response": "Beatrice King. Date of birth 1988-05-22."
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -11,6 +11,7 @@ type MessagesListProps = {
   onMediaClick?: (media: MediaReference) => void
   onImageLoad?: () => void
   selectedMedia?: MediaReference | null
+  endText?: string
 }
 
 export function MessagesList({
@@ -20,6 +21,7 @@ export function MessagesList({
   onMediaClick,
   onImageLoad,
   selectedMedia,
+  endText,
 }: MessagesListProps) {
   return (
     <RenderProfiler id="MessagesList">
@@ -27,13 +29,13 @@ export function MessagesList({
       {messages.map((message) => {
         // Check if this message's media is currently open in the modal
         const isMediaOpenInModal = Boolean(
-          selectedMedia && 
-          message.media && 
-          selectedMedia.type === 'animation' && 
+          selectedMedia &&
+          message.media &&
+          selectedMedia.type === 'animation' &&
           message.media.type === 'animation' &&
           selectedMedia.animationId === message.media.animationId
         )
-        
+
         return (
           <MessageItem
             key={message.id}
@@ -44,6 +46,11 @@ export function MessagesList({
           />
         )
       })}
+      {endText && messages.length > 0 && (
+        <div className="messages-end-marker" role="note" aria-label={endText}>
+          {endText}
+        </div>
+      )}
       <div ref={messagesEndRef} className="messages-scroll-anchor" />
       </div>
     </RenderProfiler>

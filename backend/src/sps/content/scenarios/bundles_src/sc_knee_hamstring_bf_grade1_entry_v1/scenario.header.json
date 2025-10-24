@@ -1,0 +1,78 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_knee_hamstring_bf_grade1_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry: Hamstring Strain—Biceps Femoris Grade I (Sprinting)",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "sports_medicine_outpatient",
+    "tags": ["entry_level_dpt", "hamstring", "strain", "sprinting"],
+    "profession": "physical_therapy",
+    "roles": [{ "id": "patient", "instruction": null }],
+    "created_at": "2025-10-24T00:00:00Z",
+    "updated_at": "2025-10-24T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "sage-jonah-mensah",
+    "suggested_personas": ["sage-jonah-mensah", "ash-luis-ortega", "coral-julián-rivera"],
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Identify Grade I hamstring strain characteristics and rule out more severe injury or avulsion.",
+        "bloom_level": "analyze",
+        "capte_refs": ["safety_screening", "evidence_based_practice"],
+        "npte_map": { "system": "musculoskeletal", "domain": "examination", "nonsystem": "safety" },
+        "assessment_focus": ["differential_diagnosis"],
+        "evidence_req": "CPG"
+      },
+      {
+        "id": "LO2",
+        "text": "Design a progressive hamstring rehab program emphasizing eccentric loading per CPG.",
+        "bloom_level": "apply",
+        "capte_refs": ["plan_of_care"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional" },
+        "assessment_focus": ["plan_of_care"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": ["What criteria suggest a Grade I vs Grade II or III hamstring strain?", "Why is eccentric loading emphasized in hamstring rehab?"]
+  },
+  "presenting_problem": {
+    "primary_dx": "Acute Grade I biceps femoris strain (sprinting mechanism)",
+    "onset": "acute",
+    "duration_weeks": 1,
+    "dominant_symptoms": ["posterior thigh pain with sprinting", "tender to palpation", "pain with resisted knee flexion"],
+    "pain_nrs_rest": 2,
+    "pain_nrs_activity": 6,
+    "aggravators": ["sprinting", "acceleration", "eccentric loading"],
+    "easers": ["rest", "ice"],
+    "pattern_24h": "Stiff morning, improves with gentle movement",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "Grade I biceps femoris strain",
+    "body_functions_structures": ["posterior thigh tenderness", "pain with resisted flexion", "no palpable defect"],
+    "activities": ["sprinting limited", "reduced training intensity"],
+    "participation": ["modified track practice"],
+    "environmental_factors": ["sprint training demands"],
+    "personal_factors": ["23-year-old sprinter", "first hamstring injury"]
+  },
+  "provenance": {
+    "sources": [{ "title": "Hamstring Strain Injury Rehabilitation CPG", "identifier": "CPG-Hamstring-2022", "level_of_evidence": "CPG" }],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-24"
+  }
+}

@@ -1,4 +1,5 @@
-import { api } from '../api'
+import { api, API_BASE_URL } from '../api'
+import type { MediaReference } from '../types'
 import type { BackendSocketClient } from '../types/backendSocket'
 import { voiceDebug, voiceWarn } from '../utils/voiceLogging'
 import type { TranscriptTimings } from '../../features/voice/conversation/types/transcript'
@@ -86,6 +87,7 @@ export interface BackendIntegrationDependencies {
  * @see api.relayTranscript - REST API method for relaying transcripts
  */
 export class BackendIntegration {
+  private lastRelay: { key: string; at: number } | null = null
   constructor(private readonly deps: BackendIntegrationDependencies) {}
 
   /**
@@ -114,7 +116,7 @@ export class BackendIntegration {
    * @param sessionId - OpenAI Realtime session ID (used for WebSocket room identification)
    */
   initializeBackendSocket(sessionId: string): void {
-    voiceDebug('🔌 [BackendIntegration] initializeBackendSocket called:', {
+    voiceDebug('[BackendIntegration] initializeBackendSocket called:', {
       sessionId,
       isEnabled: this.deps.socketManager.isEnabled(),
       backendMode: this.deps.isBackendMode(),
@@ -173,16 +175,17 @@ export class BackendIntegration {
     isFinal: boolean,
     timestamp: number,
     timings?: TranscriptTimings,
-    itemId?: string
+    itemId?: string,
+    options?: { media?: MediaReference | null; source?: string }
   ): Promise<void> {
     const sessionId = this.deps.getSessionId()
 
     if (!sessionId) {
-      voiceWarn('[BackendIntegration] ❌ Cannot relay - no sessionId!')
+      voiceWarn('[BackendIntegration] Cannot relay - no sessionId!')
       return
     }
 
-    this.deps.logDebug('[BackendIntegration] 📤 Relaying transcript to backend:', {
+    this.deps.logDebug('[BackendIntegration] Relaying transcript to backend:', {
       sessionId: sessionId.slice(-6),
       fullSessionId: sessionId,
       role,
@@ -190,11 +193,20 @@ export class BackendIntegration {
       textLength: text.length,
       preview: text.slice(0, 50),
       itemId: itemId?.slice(-8),
-      url: `http://localhost:3002/api/transcript/relay/${sessionId}`,
+      url: `${API_BASE_URL}/api/transcript/relay/${sessionId}`,
       timings,
     })
 
     try {
+      // Dedup guard: avoid relaying identical final messages twice within a short window
+      const normalized = (text || '').trim()
+      const key = `${role}|${isFinal ? 'final' : 'partial'}|${normalized}`
+      const now = Date.now()
+      if (isFinal && normalized.length > 0 && this.lastRelay && this.lastRelay.key === key && now - this.lastRelay.at < 2000) {
+        this.deps.logDebug('[BackendIntegration] ⏭️ Skipping duplicate relay within 2s window')
+        return
+      }
+
       const result = await api.relayTranscript(sessionId, {
         role,
         text,
@@ -204,10 +216,15 @@ export class BackendIntegration {
         finalizedAt: timings?.finalizedAtMs ?? (isFinal ? timestamp : undefined),
         emittedAt: timings?.emittedAtMs ?? timestamp,
         itemId,
+        media: options?.media ?? null,
+        source: options?.source,
       })
-      this.deps.logDebug('[BackendIntegration] ✅ Relay successful:', result)
+      if (isFinal && normalized.length > 0) {
+        this.lastRelay = { key, at: now }
+      }
+      this.deps.logDebug('[BackendIntegration] Relay successful:', result)
     } catch (error) {
-      console.error('[BackendIntegration] ❌ Relay failed:', {
+      console.error('[BackendIntegration] Relay failed:', {
         error,
         errorMessage: error instanceof Error ? error.message : String(error),
         errorStack: error instanceof Error ? error.stack : undefined,

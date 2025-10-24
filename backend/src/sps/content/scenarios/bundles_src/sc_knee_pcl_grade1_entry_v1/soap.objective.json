@@ -1,0 +1,93 @@
+{
+  "objective_catalog": [
+    {
+      "test_id": "vitals",
+      "label": "Vitals",
+      "template": "vitals",
+      "findings": {
+        "bp": "122/74",
+        "hr": 66,
+        "rr": 14,
+        "spo2": 99
+      }
+    },
+    {
+      "test_id": "inspection",
+      "label": "Inspection",
+      "template": "inspection",
+      "findings": {
+        "effusion": "mild posterior",
+        "ecchymosis": "resolved",
+        "gait": "normal"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "rom",
+      "label": "ROM",
+      "template": "rom",
+      "findings": {
+        "knee_ext_right_deg": 0,
+        "knee_flex_right_deg": 130,
+        "knee_ext_left_deg": 0,
+        "knee_flex_left_deg": 135,
+        "pain_end_range": "mild posterior discomfort flexion"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "posterior_drawer",
+      "label": "Posterior Drawer",
+      "template": "ligament_test",
+      "findings": {
+        "posterior_translation": "increased vs contralateral (Grade I)",
+        "end_feel": "soft"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "posterior_sag",
+      "label": "Posterior Sag (Godfrey)",
+      "template": "ligament_test",
+      "findings": {
+        "sag": "mild positive",
+        "comparison": "vs contralateral"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "other_tests",
+      "label": "Other Ligament Screen",
+      "template": "screening",
+      "findings": {
+        "lachman": "negative",
+        "valgus": "negative",
+        "varus": "negative"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "palpation",
+      "label": "Palpation",
+      "template": "palpation",
+      "findings": {
+        "posterior_knee_tenderness": "positive",
+        "joint_line": "none"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "functional",
+      "label": "Functional",
+      "template": "functional_task",
+      "findings": {
+        "step_down_pain": 3,
+        "squat_pain": 2
+      },
+      "difficulty": "easy"
+    }
+  ],
+  "contraindications_precautions": [
+    "Avoid posterior tibial forces; emphasize quad strengthening."
+  ]
+}

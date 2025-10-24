@@ -1,0 +1,230 @@
+/* Home Page Layout */
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #000000 0%, #2d2d2d 100%);
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.home-page__container {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.home-page__header {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: white;
+}
+
+.home-page__title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.home-page__brand {
+  font-size: 4rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.home-page__subtitle {
+  font-size: 1.5rem;
+  font-weight: 300;
+  font-family: system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.02em;
+  opacity: 0.95;
+}
+
+.home-page__intro {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+  opacity: 0.9;
+}
+
+/* Mode Cards Grid */
+.mode-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 768px) {
+  .mode-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Individual Mode Card */
+.mode-card {
+  background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  text-decoration: none;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--card-accent, #667eea);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.mode-card:hover::before {
+  transform: scaleX(1);
+}
+
+.mode-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  border-color: var(--card-accent, #667eea);
+}
+
+.mode-card:active {
+  transform: translateY(-4px);
+}
+
+/* Card Variants */
+.mode-card--primary {
+  --card-accent: #009a44;
+}
+
+.mode-card--secondary {
+  --card-accent: #00b851;
+}
+
+.mode-card--accent {
+  --card-accent: #009a44;
+}
+
+/* Card Elements */
+.mode-card__icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.mode-card__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  color: #ffffff;
+}
+
+.mode-card__description {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #d1d1d1;
+  margin: 0 0 1.5rem;
+  flex: 1;
+}
+
+.mode-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--card-accent, #009a44);
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.mode-card:hover .mode-card__cta {
+  background: var(--card-accent, #667eea);
+  color: white;
+  transform: translateX(4px);
+}
+
+/* Footer */
+.home-page__footer {
+  text-align: center;
+  color: white;
+  opacity: 0.85;
+}
+
+.home-page__note {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin: 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+  .home-page {
+    padding: 1rem;
+  }
+
+  .home-page__brand {
+    font-size: 2.5rem;
+  }
+
+  .home-page__subtitle {
+    font-size: 1.125rem;
+  }
+
+  .home-page__intro {
+    font-size: 1rem;
+  }
+
+  .mode-cards {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .mode-card__icon {
+    font-size: 3rem;
+  }
+
+  .mode-card__title {
+    font-size: 1.25rem;
+  }
+}
+
+/* Dark mode support (if implemented) */
+@media (prefers-color-scheme: dark) {
+  .mode-card {
+    background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+  }
+
+  .mode-card__title {
+    color: #ffffff;
+  }
+
+  .mode-card__description {
+    color: #d1d1d1;
+  }
+}

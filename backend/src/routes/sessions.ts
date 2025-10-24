@@ -1,6 +1,14 @@
 import { Router, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
-import { createSession, getSessionById, insertTurn, getSessionTurns, endSession, updateSpsSessionData } from '../db.ts';
+import {
+  createSession,
+  getSessionById,
+  insertTurn,
+  getSessionTurns,
+  endSession,
+  updateSpsSessionData,
+  getSessionTurnsAsync,
+} from '../db.ts';
 import { spsRegistry } from '../sps/core/registry.ts';
 import crypto from 'node:crypto';
 import { sessions as spsSessions } from '../sps/runtime/store.ts';
@@ -122,50 +130,7 @@ router.post('/', sessionCreationLimiter, async (req: Request, res: Response) => 
   }
 });
 
-// SPS personas endpoint (for unified persona selection)
-router.get('/sps/personas', (_req: Request, res: Response) => {
-  try {
-    const personas = Object.values(spsRegistry.personas).map(p => ({
-      id: p.patient_id,
-      display_name: p.display_name || p.demographics?.preferred_name || p.demographics?.name || p.patient_id,
-      headline: (() => {
-        if (p.headline) return p.headline;
-        const goals = Array.isArray(p.function_context?.goals) ? p.function_context.goals : [];
-        return goals && goals.length ? goals[0] : null;
-      })(),
-      age: p.demographics?.age,
-      sex: p.demographics?.sex,
-      voice: p.voice_id || p.dialogue_style?.voice_id || null,
-      tags: Array.isArray(p.tags) ? p.tags : undefined,
-      type: 'sps',
-    }));
-    res.json({ personas });
-  } catch (e) {
-    console.error('[sessions][sps-personas][error]', e);
-    res.status(500).json({ error: 'internal_error' });
-  }
-});
-
-// SPS scenarios endpoint
-router.get('/sps/scenarios', (_req: Request, res: Response) => {
-  try {
-    const scenarios = Object.values(spsRegistry.scenarios).map(s => ({
-      scenario_id: s.scenario_id,
-      title: s.title,
-      region: s.region,
-      difficulty: s.difficulty,
-      setting: s.setting,
-      tags: s.tags || [],
-      persona_id: s.linked_persona_id || s.persona_snapshot?.id || null,
-      persona_name: s.persona_snapshot?.display_name || null,
-      persona_headline: s.persona_snapshot?.headline || null,
-    }));
-    res.json({ scenarios });
-  } catch (e) {
-    console.error('[sessions][sps-scenarios][error]', e);
-    res.status(500).json({ error: 'internal_error' });
-  }
-});
+// Removed legacy SPS catalog routes under /api/sessions/sps/* to avoid confusion.
 
 // Get single persona by ID
 router.get('/sps/personas/:id', (req: Request, res: Response) => {
@@ -220,10 +185,16 @@ router.post('/:id/sps/phase', async (req: Request, res: Response) => {
 });
 
 // End session
-router.post('/:id/end', (req: Request, res: Response) => {
+router.post('/:id/end', async (req: Request, res: Response) => {
   const sessionId = req.params.id;
   const session = getSessionById(sessionId);
   if (!session) return res.status(404).json({ error: 'session_not_found' });
+
+  // PHASE 1.3: Add 500ms grace period for final transcript operations
+  // This allows in-flight transcript relay requests to complete before cleanup
+  console.log('[sessions][end] Starting 500ms grace period for session:', sessionId);
+  await new Promise(resolve => setTimeout(resolve, 500));
+  console.log('[sessions][end] Grace period complete, cleaning up');
 
   // Clean up SPS session if it exists
   if (session.mode === 'sps' && session.sps_session_id) {
@@ -236,15 +207,26 @@ router.post('/:id/end', (req: Request, res: Response) => {
 });
 
 // GET /api/sessions/:id/turns - Fetch all turns for a session as JSON
-router.get('/:id/turns', (req: Request, res: Response) => {
+router.get('/:id/turns', async (req: Request, res: Response) => {
   try {
     const sessionId = String(req.params.id || '');
     if (!sessionId) return res.status(400).json({ error: 'bad_request' });
 
     const session = getSessionById(sessionId);
-    if (!session) return res.status(404).json({ error: 'session_not_found' });
-
-    const turns = getSessionTurns(sessionId);
+    let turns = getSessionTurns(sessionId);
+    // If no turns found in memory/sqlite (e.g., serverless cold start), try durable async path
+    if (!turns || turns.length === 0) {
+      try {
+        turns = await getSessionTurnsAsync(sessionId);
+      } catch (e) {
+        console.warn('[sessions] /turns durable fetch failed:', e);
+      }
+    }
+    // In serverless/stateless environments, the session record may not be materialized in-memory.
+    // If we have turns, return them even if the session isn't found.
+    if (!session && (!turns || !turns.length)) {
+      return res.status(404).json({ error: 'session_not_found' });
+    }
 
     // Return turns with timestamps converted to milliseconds
     const turnsWithTimestamps = turns.map(turn => ({
@@ -255,7 +237,7 @@ router.get('/:id/turns', (req: Request, res: Response) => {
       timestamp: turn.created_at ? new Date(turn.created_at).getTime() : Date.now(),
     }));
 
-    res.json({ turns: turnsWithTimestamps });
+    res.json({ turns: turnsWithTimestamps, stateless: !session });
   } catch (error) {
     console.error('[sessions] GET /turns error:', error);
     res.status(500).json({ error: 'internal_error' });
@@ -270,8 +252,8 @@ router.post('/:id/sps/turns', (req: Request, res: Response) => {
     const sessionId = String(req.params.id || '');
     if (!sessionId) return res.status(400).json({ error: 'bad_request' });
     const session = getSessionById(sessionId);
-    if (!session) return res.status(404).json({ error: 'session_not_found' });
-    if (session.mode !== 'sps') return res.status(400).json({ error: 'not_sps_session' });
+    const stateless = !session; // Vercel/serverless: allow saving turns even if session not materialized in memory
+    if (session && session.mode !== 'sps') return res.status(400).json({ error: 'not_sps_session' });
     const body = req.body || {};
     const turns = Array.isArray(body.turns) ? body.turns : [];
     if (!turns.length) return res.status(400).json({ error: 'no_turns' });
@@ -355,7 +337,14 @@ router.post('/:id/sps/turns', (req: Request, res: Response) => {
       }
     }
 
-    return res.status(201).json({ ok: true, received: turns.length, saved, duplicates });
+    if (stateless) {
+      console.log('[sessions][sps][turns] Saved turns in stateless mode for session', sessionId, {
+        received: turns.length,
+        saved,
+        duplicates,
+      });
+    }
+    return res.status(201).json({ ok: true, received: turns.length, saved, duplicates, stateless });
   } catch (e) {
     console.error('[sessions][sps][turns][error]', e);
     return res.status(500).json({ error: 'internal_error' });
@@ -364,25 +353,35 @@ router.post('/:id/sps/turns', (req: Request, res: Response) => {
 
 // Get transcript for a session (printable HTML format)
 // GET /api/sessions/:id/transcript
-router.get('/:id/transcript', (req: Request, res: Response) => {
+router.get('/:id/transcript', async (req: Request, res: Response) => {
   try {
     const sessionId = String(req.params.id || '');
     if (!sessionId) return res.status(400).json({ error: 'bad_request' });
 
     const session = getSessionById(sessionId);
-    if (!session) return res.status(404).json({ error: 'session_not_found' });
-
-    const turns = getSessionTurns(sessionId);
+    let turns = getSessionTurns(sessionId);
+    if (!turns || turns.length === 0) {
+      try {
+        turns = await getSessionTurnsAsync(sessionId);
+      } catch (e) {
+        console.warn('[sessions] /transcript durable fetch failed:', e);
+      }
+    }
+    const stateless = !session;
+    if (!session && (!turns || !turns.length)) {
+      return res.status(404).json({ error: 'session_not_found' });
+    }
     const escapeHtml = (s: string) =>
       String(s || '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c as '&' | '<' | '>'] || c);
 
     // Get persona and scenario info for the header (SPS sessions only)
-    const persona = session.mode === 'sps' ? spsRegistry.personas[session.persona_id] : null;
-    const scenario = session.sps_scenario_id ? spsRegistry.scenarios[session.sps_scenario_id] : null;
+    const persona = session?.mode === 'sps' ? spsRegistry.personas[session.persona_id] : null;
+    const scenario = session?.sps_scenario_id ? spsRegistry.scenarios[session.sps_scenario_id] : null;
 
-    const personaName = persona?.display_name || persona?.demographics?.preferred_name || session.persona_id;
+    const personaName =
+      persona?.display_name || persona?.demographics?.preferred_name || session?.persona_id || 'Unknown Patient';
     const scenarioTitle = scenario?.title || 'Unknown Scenario';
-    const sessionDate = new Date(session.started_at || Date.now()).toLocaleDateString();
+    const sessionDate = new Date(session?.started_at || Date.now()).toLocaleDateString();
 
     // Build compact, script-style HTML: Role label + text in a single line/grid
     const turnsHtml = turns
@@ -440,7 +439,7 @@ router.get('/:id/transcript', (req: Request, res: Response) => {
     <a class="btn" href="#" onclick="doPrint();return false;">Print Transcript</a>
   </div>
   <h1>Encounter Transcript</h1>
-  <div class="meta">Patient: ${escapeHtml(personaName)} · Scenario: ${escapeHtml(scenarioTitle)} · Date: ${sessionDate} · Session ID: ${escapeHtml(sessionId)}</div>
+  <div class="meta">Patient: ${escapeHtml(personaName)} · Scenario: ${escapeHtml(scenarioTitle)} · Date: ${sessionDate} · Session ID: ${escapeHtml(sessionId)}${stateless ? ' · Mode: stateless' : ''}</div>
 
   <div class="transcript" role="list">
     ${turnsHtml || '<p><em>No conversation recorded yet.</em></p>'}

@@ -42,3 +42,31 @@ export const ANIMATIONS: AnimationSpec[] = (filesJson?.files ?? []).map((id: str
 }))
 
 export const DEFAULT_ANIMATION_ID = 'Stand.glb'
+
+/**
+ * Format animation ID for display in UI
+ * Removes .glb extension and cleans up naming conventions
+ */
+export const formatAnimationName = (id: string): string => {
+  return id
+    .replace(/\.glb$/i, '') // Remove .glb extension
+    .replace(/_/g, ' ') // Replace underscores with spaces
+    .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize first letter of each word
+}
+
+/**
+ * Get display name for an animation
+ */
+export const getAnimationDisplayName = (id: string): string => {
+  // Check for custom display names
+  const customNames: Record<string, string> = {
+    'Sit_Lknee_ex.glb': 'Sit - Left Knee Extension',
+    'Sit_Rknee_ex.glb': 'Sit - Right Knee Extension',
+    'Kick_pass.glb': 'Kick Pass',
+    'LongSit.glb': 'Long Sit',
+    'Manny_Kick.glb': 'Kick',
+    'Manny_Swim.glb': 'Swim',
+  }
+
+  return customNames[id] || formatAnimationName(id)
+}

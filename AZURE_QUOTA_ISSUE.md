@@ -128,10 +128,11 @@ Use platforms that have better free tiers for students:
 - PostgreSQL add-on
 - Redis add-on
 
-**Railway**:
-- $5/month credit free
-- Supports Node.js, PostgreSQL, Redis
+**Vercel**:
+- Free tier available
+- Supports Node.js deployments
 - GitHub integration
+- Easy frontend + backend deployment
 
 **Render**:
 - Free tier for web services
@@ -147,7 +148,7 @@ Use platforms that have better free tiers for students:
 
 ### Immediate: Option 1 + Option 6
 1. **Request quota increase** (do this NOW - takes 1-3 days)
-2. **Deploy to Railway/Render/Fly.io** (works within 30 minutes) for immediate testing
+2. **Deploy to Vercel/Render/Fly.io** (works within 30 minutes) for immediate testing
 3. **Migrate to Azure** once quota is approved
 
 ### Commands to Request Quota:
@@ -197,7 +198,7 @@ az support tickets create \
 4. Learn Azure-specific technologies
 
 **Path B - Deploy Elsewhere Immediately**
-1. Choose platform (Railway recommended - easiest)
+1. Choose platform (Vercel recommended - easiest)
 2. Deploy frontend + backend in 30 minutes
 3. Get app running today
 4. Migrate to Azure later if desired
@@ -214,7 +215,7 @@ az support tickets create \
 |----------|-------------|----------------|-----------|
 | Azure (B1 tier) | ~$41/month | $8.33/month | $32.67 out-of-pocket |
 | Azure (after quota) | ~$41/month | $8.33/month | $32.67 out-of-pocket |
-| Railway | $5/month | $5 free | $0 (stays in free tier for small apps) |
+| Vercel | $0 (free tier) | N/A | $0 |
 | Render | $0 (free tier) | N/A | $0 |
 | Fly.io | $0 (free tier) | N/A | $0 |
 | Heroku | $0 (free tier being phased out) | N/A | Varies |
@@ -224,7 +225,7 @@ az support tickets create \
 What would you like to do?
 
 1. **Request Azure quota increase and wait** - Best for learning Azure
-2. **Deploy to Railway/Render immediately** - Best for getting it working NOW
+2. **Deploy to Vercel/Render immediately** - Best for getting it working NOW
 3. **Redesign for Azure Functions** - Best for staying in Azure with no quota issues
 
 Let me know and I'll help you proceed with whichever option you prefer!

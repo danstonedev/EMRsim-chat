@@ -1,11 +1,26 @@
-import { createClient, RedisClientType } from 'redis';
+import { createClient } from 'redis';
 
 /**
  * Redis client singleton for session state management
  * Enables horizontal backend scaling and persistent session state
  */
 
-let redisClient: RedisClientType | null = null;
+type SafeRedisClient = {
+  on: (event: string, listener: (...args: unknown[]) => void) => void;
+  connect: () => Promise<void>;
+  quit: () => Promise<void>;
+  disconnect: () => Promise<void>;
+  isOpen: boolean;
+  setEx: (key: string, ttlSeconds: number, value: string) => Promise<void>;
+  get: (key: string) => Promise<string | null>;
+  del: (key: string) => Promise<number>;
+  rPush: (key: string, value: string) => Promise<number>;
+  lTrim: (key: string, start: number, stop: number) => Promise<string>;
+  lRange: (key: string, start: number, stop: number) => Promise<string[]>;
+  set: (key: string, value: string, options?: { NX?: boolean; EX?: number }) => Promise<string | null>;
+};
+
+let redisClient: SafeRedisClient | null = null;
 let isConnecting = false;
 let connectionFailed = false;
 
@@ -19,24 +34,25 @@ function getRedisUrl(): string {
 /**
  * Create and configure Redis client
  */
-function createRedisClient(): RedisClientType {
+function createRedisClient(): SafeRedisClient {
   const url = getRedisUrl();
   
   const client = createClient({
     url,
     socket: {
-      reconnectStrategy: (retries) => {
+      reconnectStrategy: retries => {
         // Exponential backoff with max 5 seconds
         const delay = Math.min(retries * 50, 5000);
         console.log(`[redis] Reconnection attempt ${retries}, waiting ${delay}ms...`);
         return delay;
       },
     },
-  }) as RedisClientType;
+  }) as unknown as SafeRedisClient;
 
   // Event handlers
-  client.on('error', (err) => {
-    console.error('[redis] ❌ Redis Client Error:', err.message);
+  client.on('error', (err: unknown) => {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[redis] ❌ Redis Client Error:', msg);
     connectionFailed = true;
   });
 
@@ -77,7 +93,7 @@ export async function connectRedis(): Promise<void> {
     console.log('[redis] Connection already in progress, waiting...');
     // Wait for connection to complete
     while (isConnecting) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
     return;
   }
@@ -138,7 +154,7 @@ export async function disconnectRedis(): Promise<void> {
  * Get the Redis client instance
  * Returns null if not connected
  */
-export function getRedisClient(): RedisClientType | null {
+export function getRedisClient(): SafeRedisClient | null {
   if (!redisClient?.isOpen) {
     return null;
   }
@@ -170,17 +186,13 @@ export function getRedisStatus(): {
 /**
  * Safely set a value in Redis with TTL
  * Falls back to in-memory if Redis unavailable
- * 
+ *
  * @param key - Redis key
  * @param value - Value to store
  * @param ttlSeconds - Time to live in seconds
  * @returns true if stored in Redis, false if fallback used
  */
-export async function setWithTTL(
-  key: string,
-  value: string,
-  ttlSeconds: number
-): Promise<boolean> {
+export async function setWithTTL(key: string, value: string, ttlSeconds: number): Promise<boolean> {
   const client = getRedisClient();
   
   if (!client) {
@@ -200,7 +212,7 @@ export async function setWithTTL(
 /**
  * Safely get a value from Redis
  * Returns null if Redis unavailable or key not found
- * 
+ *
  * @param key - Redis key
  * @returns Value or null
  */
@@ -222,7 +234,7 @@ export async function get(key: string): Promise<string | null> {
 
 /**
  * Safely delete a key from Redis
- * 
+ *
  * @param key - Redis key
  * @returns true if deleted, false otherwise
  */
@@ -238,6 +250,65 @@ export async function del(key: string): Promise<boolean> {
     return true;
   } catch (error) {
     console.error(`[redis] ❌ Error deleting key ${key}:`, error);
+    return false;
+  }
+}
+
+/**
+ * Atomically append an item to a Redis list (RPUSH)
+ */
+export async function rpush(key: string, value: string): Promise<boolean> {
+  const client = getRedisClient();
+  if (!client) return false;
+  try {
+    await client.rPush(key, value);
+    return true;
+  } catch (error) {
+    console.error(`[redis] ❌ Error RPUSH ${key}:`, error);
+    return false;
+  }
+}
+
+/**
+ * Trim a Redis list to a specific range (LTRIM)
+ */
+export async function ltrim(key: string, start: number, stop: number): Promise<boolean> {
+  const client = getRedisClient();
+  if (!client) return false;
+  try {
+    await client.lTrim(key, start, stop);
+    return true;
+  } catch (error) {
+    console.error(`[redis] ❌ Error LTRIM ${key}:`, error);
+    return false;
+  }
+}
+
+/**
+ * Read a range from a Redis list (LRANGE)
+ */
+export async function lrange(key: string, start: number, stop: number): Promise<string[] | null> {
+  const client = getRedisClient();
+  if (!client) return null;
+  try {
+    return await client.lRange(key, start, stop);
+  } catch (error) {
+    console.error(`[redis] ❌ Error LRANGE ${key}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Set key if not exists with TTL (SET NX EX)
+ */
+export async function setNxWithTTL(key: string, value: string, ttlSeconds: number): Promise<boolean> {
+  const client = getRedisClient();
+  if (!client) return false;
+  try {
+    const res = await client.set(key, value, { NX: true, EX: ttlSeconds });
+    return res === 'OK';
+  } catch (error) {
+    console.error(`[redis] ❌ Error SET NX ${key}:`, error);
     return false;
   }
 }

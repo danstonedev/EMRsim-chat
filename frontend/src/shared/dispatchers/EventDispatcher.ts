@@ -196,7 +196,7 @@ export class EventDispatcher {
 
       case 'unknown':
         // Log unhandled event types for future investigation
-        this.deps.sessionHandlers.logDebug('[EventDispatcher] ⚠️ Unhandled event type:', type)
+        this.deps.sessionHandlers.logDebug('[EventDispatcher] Unhandled event type:', type)
         return
     }
   }

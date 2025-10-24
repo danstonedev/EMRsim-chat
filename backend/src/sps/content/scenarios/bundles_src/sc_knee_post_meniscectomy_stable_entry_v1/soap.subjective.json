@@ -1,0 +1,64 @@
+{
+  "history": {
+    "chief_complaint": "I had arthroscopic surgery two weeks ago to clean up my meniscus—my PT wants me moving more.",
+    "mechanism": "Surgical intervention for medial meniscus tear.",
+    "prior_episodes": "Pre-op knee pain for several months.",
+    "functional_impact": "Stairs are challenging; desk work is okay but knee gets stiff.",
+    "goals": "Get full motion back and return to cycling.",
+    "identity": { "name": "David Chen", "dob": "1986-09-22" }
+  },
+  "subjective_catalog": [
+    {
+      "id": "surgery_details",
+      "label": "Surgery Details",
+      "patterns": ["surgery", "procedure", "what was done"],
+      "patient_response_script": { "qualitative": ["Arthroscopic partial meniscectomy on the medial side. Surgeon said it went well, stable."] }
+    },
+    {
+      "id": "meds_allergies",
+      "label": "Medications & Allergies",
+      "patterns": ["meds", "pain meds", "allergies"],
+      "patient_response_script": { "qualitative": ["Was on hydrocodone first few days; now just acetaminophen. No allergies."] }
+    },
+    {
+      "id": "swelling_complications",
+      "label": "Swelling/Complications",
+      "patterns": ["swelling", "infection", "redness"],
+      "patient_response_script": { "qualitative": ["A little swelling but improving. No redness or warmth. Incisions look good."] }
+    },
+    {
+      "id": "pain_level",
+      "label": "Pain Level",
+      "patterns": ["pain", "how much pain"],
+      "patient_response_script": { "qualitative": ["Minimal pain, maybe 1-2 at rest, 3 with stairs. Much better than before surgery."] }
+    }
+  ],
+  "patient_reported_outcomes": { "NPRS_worst": 3, "NPRS_usual": 1, "LEFS": 48 },
+  "media_library": [],
+  "history_present_illness": {
+    "mechanism": "arthroscopic partial meniscectomy 2 weeks prior",
+    "first_onset": "post-operative",
+    "course_since_onset": "steady improvement",
+    "prior_episodes": "pre-op meniscus symptoms",
+    "red_flag_denials_affirmations": { "fever": false, "infection_signs": false, "DVT_signs": false }
+  },
+  "pain": {
+    "location": ["anterior knee", "incision sites"],
+    "quality": ["mild ache", "surgical site tenderness"],
+    "irritability": "low",
+    "nrs_rest": 1,
+    "nrs_activity": 3,
+    "aggravators": ["stairs", "prolonged sitting"],
+    "easers": ["ice", "gentle movement"],
+    "24h_pattern": "minimal pain, stiff after sitting"
+  },
+  "social_history": {
+    "occupation": "software engineer",
+    "sport_hobbies": ["cycling", "hiking"]
+  },
+  "goals": ["full ROM", "return to cycling", "no pain with stairs"],
+  "past_medical_history": [],
+  "surgical_history": [{ "procedure": "arthroscopic partial meniscectomy", "date": "2 weeks ago", "surgeon": "Dr. Anderson" }],
+  "medications": [{ "name": "acetaminophen", "dose": "500mg as needed" }],
+  "allergies": [{ "substance": "drug", "details": "none" }]
+}

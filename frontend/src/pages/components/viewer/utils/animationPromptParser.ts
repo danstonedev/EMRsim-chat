@@ -162,7 +162,7 @@ export function parseAnimationPrompt(prompt: string): AnimationCommand {
   return {
     type: 'unknown',
     poses: [],
-    description: `❌ Unknown command: "${prompt}". Try: wave, walk, point, sit, idle, or pose-based commands.`,
+    description: `Unknown command: "${prompt}". Try: wave, walk, point, sit, idle, or pose-based commands.`,
   }
 }
 

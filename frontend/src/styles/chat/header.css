@@ -5,7 +5,8 @@
     align-items: center;
     justify-content: space-between;
     padding-block: calc(var(--space-lg) + 4px);
-    padding-inline: var(--space-xl);
+    padding-inline: clamp(var(--space-lg), 4vw, var(--space-2xl));
+    padding-block-start: calc(var(--space-lg) + 4px + env(safe-area-inset-top, 0px));
     background: linear-gradient(120deg, rgba(0, 154, 68, 0.92), rgba(8, 64, 40, 0.85));
     color: var(--color-white);
     border-block-end: 1px solid rgba(255, 255, 255, 0.18);
@@ -16,6 +17,9 @@
     z-index: 12;
     box-shadow: 0 20px 40px -26px rgba(0, 0, 0, 0.45);
     font-family: var(--font-sans);
+    /* Create its own compositing layer to reduce jitter on mobile when viewport resizes */
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
 
   .app-nav {
@@ -34,22 +38,20 @@
     max-inline-size: 1280px;
     margin-inline: auto;
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: var(--space-xl);
     inline-size: 100%;
   }
 
   .nav-brand { justify-self: start; }
-  .header-nav { justify-self: center; }
-  .nav-spacer { justify-self: end; }
-
-  .nav-tabs {
-    list-style: none;
+  .nav-spacer { justify-self: stretch; }
+  .header-nav {
+    justify-self: end;
     display: flex;
-    gap: clamp(0.75rem, 2vw, 2rem);
-    margin: 0;
-    padding: 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-sm);
   }
 
   .nav-pill {
@@ -67,6 +69,13 @@
     box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
     transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
     font-family: inherit;
+  }
+
+  .nav-pill--icon {
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 0;
+    justify-content: center;
   }
 
   .nav-pill:hover {
@@ -174,5 +183,57 @@
   .drawer-title {
     font-family: var(--font-sans);
     text-transform: none;
+  }
+
+  @container (max-width: 720px) {
+    /* Keep brand and actions on a single row on small screens */
+    .nav-inner {
+      grid-template-columns: auto 1fr auto;
+      justify-items: stretch;
+      gap: var(--space-md);
+    }
+
+    .header-nav {
+      justify-self: end;
+      justify-content: flex-end;
+    }
+
+    /* Allow middle spacer to flex but keep it visible so columns remain on one line */
+    .nav-spacer {
+      display: block;
+    }
+  }
+
+  @container (max-width: 520px) {
+    .header {
+      padding-inline: clamp(var(--space-md), 5vw, var(--space-xl));
+    }
+
+    .nav-inner {
+      gap: var(--space-md);
+    }
+
+    .nav-pill {
+      block-size: 38px;
+      font-size: 0.95rem;
+      min-inline-size: 0;
+    }
+
+    .nav-pill--icon {
+      inline-size: 40px;
+      block-size: 40px;
+    }
+  }
+
+  .sr-only {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 }

@@ -1,6 +1,8 @@
 @layer layout {
   .app-root {
     min-block-size: 100vh;
+    min-block-size: 100svh;
+    min-block-size: 100dvh;
     background: var(--surface-bg);
     color: var(--text-primary);
     font-family: var(--font-sans);
@@ -10,6 +12,8 @@
 
   .app-container {
     min-block-size: 100vh;
+    min-block-size: 100svh;
+    min-block-size: 100dvh;
     background: var(--surface-bg);
     color: var(--text-primary);
   }

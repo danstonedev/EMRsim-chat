@@ -11,6 +11,14 @@ import { getSessionTurns } from '../db.ts';
 
 type TranscriptRole = 'user' | 'assistant';
 
+// Minimal media reference passed through from frontend
+export interface MediaRef {
+  id: string;
+  url?: string | null;
+  type?: string | null;
+  title?: string | null;
+}
+
 export interface TranscriptHistoryEntry {
   role: TranscriptRole;
   text: string;
@@ -20,6 +28,7 @@ export interface TranscriptHistoryEntry {
   finalizedAtMs?: number | null;
   emittedAtMs?: number | null;
   itemId?: string;
+  media?: MediaRef | null;
   source?: string;
 }
 
@@ -35,6 +44,7 @@ export interface TranscriptPayload {
   startedAtMs?: number | null;
   finalizedAtMs?: number | null;
   emittedAtMs?: number | null;
+  media?: MediaRef | null;
 }
 
 function appendTranscriptHistory(sessionId: string, role: TranscriptRole, payload: TranscriptPayload): void {
@@ -55,6 +65,7 @@ function appendTranscriptHistory(sessionId: string, role: TranscriptRole, payloa
     finalizedAtMs: finalizedAt,
     emittedAtMs: emittedAt,
     itemId: payload.itemId,
+    media: payload.media ?? null,
     source: 'backend',
   });
   if (bucket.length > MAX_HISTORY_PER_SESSION) {
@@ -143,6 +154,7 @@ export function broadcastUserTranscript(sessionId: string, payload: TranscriptPa
     finalizedAtMs: finalizedAt,
     emittedAtMs: emittedAt,
     itemId,
+    media: payload.media ?? null,
   });
 
   io.to(`session:${sessionId}`).emit('transcript', {
@@ -154,6 +166,7 @@ export function broadcastUserTranscript(sessionId: string, payload: TranscriptPa
     finalizedAtMs: finalizedAt,
     emittedAtMs: emittedAt,
     itemId,
+    media: payload.media ?? null,
     source: 'backend',
   });
 }
@@ -197,6 +210,7 @@ export function broadcastAssistantTranscript(sessionId: string, payload: Transcr
     finalizedAtMs: finalizedAt,
     emittedAtMs: emittedAt,
     itemId,
+    media: payload.media ?? null,
     source: 'backend',
   });
 
@@ -208,6 +222,7 @@ export function broadcastAssistantTranscript(sessionId: string, payload: Transcr
     finalizedAtMs: finalizedAt,
     emittedAtMs: emittedAt,
     itemId,
+    media: payload.media ?? null,
   });
 }
 

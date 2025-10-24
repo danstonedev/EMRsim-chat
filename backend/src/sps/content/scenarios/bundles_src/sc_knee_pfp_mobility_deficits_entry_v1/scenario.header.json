@@ -1,0 +1,78 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_knee_pfp_mobility_deficits_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry: Patellofemoral Pain—Mobility Deficits",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": ["entry_level_dpt", "pfp", "mobility", "anterior_knee_pain"],
+    "profession": "physical_therapy",
+    "roles": [{ "id": "patient", "instruction": null }],
+    "created_at": "2025-10-24T00:00:00Z",
+    "updated_at": "2025-10-24T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "sage-marisol-vega",
+    "suggested_personas": ["sage-marisol-vega", "ash-riley-summers", "shimmer-lila-singh"],
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Identify mobility impairments (ankle DF, hip flexor/ITB tightness) contributing to PFP.",
+        "bloom_level": "analyze",
+        "capte_refs": ["evidence_based_practice"],
+        "npte_map": { "system": "musculoskeletal", "domain": "examination", "nonsystem": "safety" },
+        "assessment_focus": ["clinical_reasoning"],
+        "evidence_req": "CPG"
+      },
+      {
+        "id": "LO2",
+        "text": "Design a treatment plan combining mobility interventions with strengthening per PFP CPG.",
+        "bloom_level": "apply",
+        "capte_refs": ["plan_of_care"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional" },
+        "assessment_focus": ["plan_of_care"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": ["How do ankle DF restrictions and lateral structures contribute to PFP?", "What evidence supports mobility work vs strengthening alone for PFP?"]
+  },
+  "presenting_problem": {
+    "primary_dx": "Patellofemoral pain with mobility deficits (limited ankle DF, tight lateral structures)",
+    "onset": "gradual",
+    "duration_weeks": 10,
+    "dominant_symptoms": ["anterior knee pain with stairs", "pain after sitting", "tight lateral knee"],
+    "pain_nrs_rest": 1,
+    "pain_nrs_activity": 6,
+    "aggravators": ["descending stairs", "deep squat", "prolonged sitting"],
+    "easers": ["stretching", "foam rolling"],
+    "pattern_24h": "Stiff morning, worse with cumulative load",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "PFP with mobility impairments",
+    "body_functions_structures": ["limited ankle DF", "tight ITB/lateral retinaculum", "hip flexor tightness"],
+    "activities": ["stairs limited", "squat depth reduced"],
+    "participation": ["reduced running", "avoiding gym leg exercises"],
+    "environmental_factors": ["student lifestyle with prolonged sitting"],
+    "personal_factors": ["20-year-old college student", "previously active in dance"]
+  },
+  "provenance": {
+    "sources": [{ "title": "2019 JOSPT Patellofemoral Pain CPG", "identifier": "CPG-PFP-2019", "level_of_evidence": "CPG" }],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-24"
+  }
+}

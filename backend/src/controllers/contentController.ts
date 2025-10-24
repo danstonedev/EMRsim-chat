@@ -6,7 +6,6 @@ import { Request, Response } from 'express';
 const CONTENT_ROOT = path.join(__dirname, '../../sps/content');
 const SCENARIOS_PATH = path.join(CONTENT_ROOT, 'scenarios/compiled');
 const PERSONAS_REALTIME_PATH = path.join(CONTENT_ROOT, 'personas/realtime');
-const PERSONAS_SHARED_PATH = path.join(CONTENT_ROOT, 'personas/shared');
 const CHALLENGES_PATH = path.join(CONTENT_ROOT, 'banks/challenges');
 const SPECIAL_QUESTIONS_PATH = path.join(CONTENT_ROOT, 'banks/special_questions');
 const CATALOGS_PATH = path.join(CONTENT_ROOT, 'banks/catalogs');
@@ -43,22 +42,13 @@ export const getScenarios = async (req: Request, res: Response) => {
 
 export const getPersonas = async (req: Request, res: Response) => {
   try {
-    // Load from both realtime and shared directories
+    // Load from realtime directory only (shared/base deprecated)
     const realtimeFiles = fs.readdirSync(PERSONAS_REALTIME_PATH).filter(file => file.endsWith('.json'));
-    const sharedFiles = fs.readdirSync(PERSONAS_SHARED_PATH).filter(file => file.endsWith('.json'));
-
-    const personas = [
-      ...realtimeFiles.map(file => {
-        const personaData = JSON.parse(fs.readFileSync(path.join(PERSONAS_REALTIME_PATH, file), 'utf8'));
-        // Use the normalization utility instead of inline conversion
-        return normalizePersona(personaData);
-      }),
-      ...sharedFiles.map(file => {
-        const personaData = JSON.parse(fs.readFileSync(path.join(PERSONAS_SHARED_PATH, file), 'utf8'));
-        // Use the normalization utility instead of inline conversion
-        return normalizePersona(personaData);
-      }),
-    ];
+    const personas = realtimeFiles.map(file => {
+      const personaData = JSON.parse(fs.readFileSync(path.join(PERSONAS_REALTIME_PATH, file), 'utf8'));
+      // Use the normalization utility instead of inline conversion
+      return normalizePersona(personaData);
+    });
 
     // Add version information from manifest (manifest is loaded lazily by resolver)
     const personasWithVersions = personas.map(persona => {

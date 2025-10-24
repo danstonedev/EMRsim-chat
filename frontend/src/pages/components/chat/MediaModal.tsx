@@ -1,5 +1,8 @@
 import { useEffect, useRef } from 'react'
 import type { MediaReference } from '../../../shared/types'
+import YouTubeIcon from '@mui/icons-material/YouTube'
+import VideocamIcon from '@mui/icons-material/Videocam'
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 // Re-export MediaReference so other modules importing from this file can resolve the type
 export type { MediaReference } from '../../../shared/types'
 
@@ -153,7 +156,13 @@ export function MediaModal({ media, isOpen, onClose }: MediaModalProps) {
         {media.caption && media.type !== 'animation' && (
           <div className="media-modal-caption">
             <span className="media-modal-caption-icon">
-              {media.type === 'youtube' ? '📺' : media.type === 'video' ? '🎥' : '📷'}
+              {media.type === 'youtube' ? (
+                <YouTubeIcon sx={{ fontSize: 18 }} />
+              ) : media.type === 'video' ? (
+                <VideocamIcon sx={{ fontSize: 18 }} />
+              ) : (
+                <PhotoCameraIcon sx={{ fontSize: 18 }} />
+              )}
             </span>
             {media.caption}
           </div>

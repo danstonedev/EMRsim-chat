@@ -9,38 +9,43 @@ import type { MediaReference } from '../types'
 export interface TranscriptHandlerDependencies {
   /** Coordinates transcript state and media parsing */
   transcriptCoordinator: TranscriptCoordinator
-  
+
   /** Emits transcript events to UI listeners */
   eventEmitter: ConversationEventEmitter
-  
+
   /** Debug logging function */
   logDebug: (...args: unknown[]) => void
-  
+
   /** Backend relay function for unified transcript broadcast */
   relayTranscriptToBackend: (
     role: 'user' | 'assistant',
     text: string,
     isFinal: boolean,
     timestamp: number,
-    timings?: TranscriptTimings
+    timings?: TranscriptTimings,
+    itemId?: string,
+    options?: { media?: MediaReference | null; source?: string }
   ) => Promise<void>
-  
+
   /** Whether backend transcript mode is enabled */
   isBackendMode: () => boolean
+
+  /** Optional hook to detect active socket connectivity */
+  isSocketConnected?: () => boolean
 }
 
 /**
  * TranscriptHandler
- * 
+ *
  * Handles user and assistant transcript processing, including:
  * - Timestamp resolution (user start time vs assistant finalized time)
  * - Backend relay coordination
  * - Event emission to UI listeners
  * - Media marker parsing for assistant responses
  * - Partial/final state management
- * 
+ *
  * Extracted from ConversationController.ts to improve debuggability and testability.
- * 
+ *
  * @example
  * ```typescript
  * const handler = new TranscriptHandler({
@@ -52,7 +57,7 @@ export interface TranscriptHandlerDependencies {
  *   },
  *   isBackendMode: () => true
  * })
- * 
+ *
  * // Handle user transcript
  * handler.handleUserTranscript('Hello doctor', true, {
  *   startedAtMs: Date.now() - 1000,
@@ -66,22 +71,22 @@ export class TranscriptHandler {
 
   /**
    * Handle user transcript (student/clinician speaking)
-   * 
+   *
    * Behavior:
    * - Backend mode + final: Clears partial, returns (backend will broadcast)
    * - Backend mode + partial: Emits partial for typing animation
    * - Non-backend mode: Emits all transcripts locally
-   * 
+   *
    * Timestamp logic:
    * - Always use startedAtMs (when user STARTED speaking) for correct chronological ordering
    * - This ensures messages appear in order they were spoken, not finalized
-   * 
+   *
    * @param text - Transcript text
    * @param isFinal - Whether transcript is finalized
    * @param timings - Timestamp metadata (startedAtMs, emittedAtMs, finalizedAtMs)
    */
   handleUserTranscript(text: string, isFinal: boolean, timings: TranscriptTimings): void {
-    const { transcriptCoordinator, eventEmitter, logDebug, isBackendMode } = this.deps
+    const { transcriptCoordinator, eventEmitter, logDebug, isBackendMode, isSocketConnected } = this.deps
 
     // Resolve timestamps - ALWAYS use startedAtMs for user transcripts (when mic detected words)
     const startedAtMs = typeof timings?.startedAtMs === 'number' ? timings.startedAtMs : null
@@ -89,23 +94,47 @@ export class TranscriptHandler {
     const finalizedAtMs =
       typeof timings?.finalizedAtMs === 'number' ? timings.finalizedAtMs : isFinal ? emittedAtMs : null
     const eventTimestamp = startedAtMs ?? emittedAtMs
+    const socketConnected = typeof isSocketConnected === 'function' ? isSocketConnected() : true
+    const backendMode = isBackendMode()
 
-    logDebug('[TranscriptHandler] 📤 handleUserTranscript:', {
+    logDebug('[TranscriptHandler] handleUserTranscript:', {
       isFinal,
       textLength: text.length,
       preview: text.slice(0, 50),
       listenerCount: eventEmitter.getListenerCount(),
-      backendMode: isBackendMode(),
+      backendMode,
+      socketConnected,
       timings: { startedAtMs, emittedAtMs, finalizedAtMs },
       eventTimestamp,
     })
 
     // Backend mode: relay finals to backend, emit partials locally for typing animation
-    if (isBackendMode()) {
-      logDebug('[TranscriptHandler] 🔄 Backend mode - emitting partial, finals come from backend')
+    if (backendMode) {
+      logDebug('[TranscriptHandler] Backend mode - emitting partial, finals come from backend')
       if (isFinal) {
         transcriptCoordinator.clearUserPartial()
-        return // Backend will broadcast final transcript
+        if (!socketConnected) {
+          logDebug('[TranscriptHandler] Socket disconnected - emitting user final locally as fallback')
+          eventEmitter.emit({
+            type: 'transcript',
+            role: 'user' as TranscriptRole,
+            text,
+            isFinal,
+            timestamp: eventTimestamp,
+            timings,
+          })
+          eventEmitter.emitDebug({
+            t: new Date().toISOString(),
+            kind: 'event',
+            src: 'app',
+            msg: 'transcript.user.final.fallback',
+            data: {
+              length: text.length,
+              preview: text.length > 120 ? `${text.slice(0, 117)}...` : text,
+            },
+          })
+        }
+        return // Backend will broadcast final transcript (or fallback did)
       } else {
         transcriptCoordinator.setUserPartial(text)
         eventEmitter.emit({
@@ -123,7 +152,7 @@ export class TranscriptHandler {
     // Non-backend mode: emit all transcripts locally
     if (isFinal) {
       transcriptCoordinator.clearUserPartial()
-      logDebug('[TranscriptHandler] 🎯 EMITTING FINAL USER TRANSCRIPT:', text.slice(0, 100))
+      logDebug('[TranscriptHandler] EMITTING FINAL USER TRANSCRIPT:', text.slice(0, 100))
       eventEmitter.emit({
         type: 'transcript',
         role: 'user' as TranscriptRole,
@@ -168,16 +197,16 @@ export class TranscriptHandler {
 
   /**
    * Handle assistant transcript (AI/patient responding)
-   * 
+   *
    * Behavior:
    * - Backend mode + final: Relays to backend for broadcast
    * - Backend mode + partial: Updates internal state only
    * - Non-backend mode: Parses media markers, emits all transcripts locally
-   * 
+   *
    * Timestamp logic:
    * - Always use startedAtMs (when AI STARTED speaking/audio playback began) for correct chronological ordering
    * - This ensures messages appear in order they started, not when finalized
-   * 
+   *
    * @param text - Transcript text (may contain media markers like [[MEDIA:123]])
    * @param isFinal - Whether transcript is finalized
    * @param timings - Timestamp metadata
@@ -188,6 +217,8 @@ export class TranscriptHandler {
       eventEmitter,
       relayTranscriptToBackend,
       isBackendMode,
+      logDebug,
+      isSocketConnected,
     } = this.deps
 
     // Resolve timestamps - ALWAYS use startedAtMs for assistant transcripts (when speakers started)
@@ -197,22 +228,37 @@ export class TranscriptHandler {
     const finalizedAtMs =
       typeof timings?.finalizedAtMs === 'number' ? timings.finalizedAtMs : isFinal ? emittedAtMs : null
     const eventTimestamp = startedAtMs ?? emittedAtMs
-    
+    const socketConnected = typeof isSocketConnected === 'function' ? isSocketConnected() : true
+    const backendMode = isBackendMode()
+    const backendFallback = backendMode && !socketConnected
+
     // Suppress lint warning: finalizedAtMs is used in timings object passed to relay/events
     void finalizedAtMs
 
     // Backend mode: transcripts are broadcast from backend, skip local emission
-    if (isBackendMode()) {
+    if (backendMode) {
       if (isFinal) {
         transcriptCoordinator.clearAssistantPartial()
         // Relay final assistant transcript to backend for unified broadcast
-        relayTranscriptToBackend('assistant', text, true, eventTimestamp, timings).catch(err => {
+        // Parse media to include a structured reference while preserving marker in text
+        const parsed = transcriptCoordinator.parseMediaMarker(text)
+        relayTranscriptToBackend('assistant', text, true, eventTimestamp, timings, undefined, {
+          media: parsed.media ?? null,
+          source: 'frontend',
+        }).catch(err => {
           console.error('[TranscriptHandler] Failed to relay assistant transcript:', err)
         })
+        if (socketConnected) {
+          return
+        }
+        logDebug('[TranscriptHandler] Socket disconnected - emitting assistant final locally as fallback')
       } else {
         transcriptCoordinator.setAssistantPartial(text)
+        if (socketConnected) {
+          return
+        }
+        logDebug('[TranscriptHandler] Socket disconnected - emitting assistant partial locally as fallback')
       }
-      return
     }
 
     // Non-backend mode: parse media markers and emit locally
@@ -233,7 +279,7 @@ export class TranscriptHandler {
         t: new Date().toISOString(),
         kind: 'event',
         src: 'app',
-        msg: 'transcript.assistant.final',
+        msg: backendFallback ? 'transcript.assistant.final.fallback' : 'transcript.assistant.final',
         data: {
           length: cleanText.length,
           preview: cleanText.length > 120 ? `${cleanText.slice(0, 117)}...` : cleanText,
@@ -256,7 +302,7 @@ export class TranscriptHandler {
         t: new Date().toISOString(),
         kind: 'event',
         src: 'app',
-        msg: 'transcript.assistant.delta',
+        msg: backendFallback ? 'transcript.assistant.delta.fallback' : 'transcript.assistant.delta',
         data: {
           length: cleanText.length,
           preview: cleanText.length > 120 ? `${cleanText.slice(0, 117)}...` : cleanText,

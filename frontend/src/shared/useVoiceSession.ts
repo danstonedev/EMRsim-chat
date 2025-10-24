@@ -17,14 +17,16 @@ export interface VoiceSessionOptions {
     isFinal: boolean,
     timestamp: number,
     timings?: TranscriptTimings,
-    media?: MediaReference
+    media?: MediaReference,
+    source?: 'live' | 'catchup'
   ) => void;
   onAssistantTranscript?: (
     text: string,
     isFinal: boolean,
     timestamp: number,
     timings?: TranscriptTimings,
-    media?: MediaReference
+    media?: MediaReference,
+    source?: 'live' | 'catchup'
   ) => void;
   onEvent?: (payload: unknown) => void;
   debugEnabled?: boolean;
@@ -180,24 +182,11 @@ export function useVoiceSession(options: VoiceSessionOptions): VoiceSessionHandl
     controller.setScenarioMedia?.(config.scenarioMedia);
     controller.setExternalSessionId(config.sessionId);
     dispatch({ type: 'SESSION_ID_CONFIGURED', sessionId: config.sessionId });
-    
+
     // Advanced overrides
     controller.setVoiceOverride(config.voice);
     controller.setInputLanguage(config.inputLanguage);
     controller.setReplyLanguage(config.replyLanguage);
-
-    // Consolidated debug logging
-    if (import.meta.env.DEV) {
-      console.debug('[useVoiceSession] Configuration updated:', {
-        personaId: config.personaId,
-        scenarioId: config.scenarioId,
-        mediaCount: config.scenarioMedia.length,
-        sessionId: config.sessionId,
-        voice: config.voice,
-        inputLanguage: config.inputLanguage,
-        replyLanguage: config.replyLanguage,
-      });
-    }
   }, [
     controller,
     options.personaId,
@@ -280,7 +269,8 @@ export function useVoiceSession(options: VoiceSessionOptions): VoiceSessionHandl
             });
           }
           const callback = event.role === 'user' ? onUserTranscriptRef.current : onAssistantTranscriptRef.current;
-          callback?.(event.text, event.isFinal, event.timestamp, event.timings, event.media);
+          // Pass source through to handler (will be used for deduplication window adjustment)
+          callback?.(event.text, event.isFinal, event.timestamp, event.timings, event.media, event.source);
           if (event.isFinal) {
             recordVoiceEvent({
               type: 'transcript',

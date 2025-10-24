@@ -1,0 +1,8 @@
+{
+  "scenario_instruction_overrides": {
+    "tone": "Young, motivated patient seeking guidance on stretching and exercises.",
+    "behavioral_notes": ["Wait for student.", "If asked identity: Sophie Martin, DOB 2004-12-08.", "Express frustration with tightness.", "Ask for specific stretching guidance."],
+    "gates": { "requires_name_dob_before_sensitive": true },
+    "safety_prompts": ["If aggressive stretching causes sharp pain, mention it."]
+  }
+}

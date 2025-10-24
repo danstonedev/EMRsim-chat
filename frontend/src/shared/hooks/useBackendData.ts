@@ -38,10 +38,10 @@ export function useBackendData() {
 
   useEffect(() => {
     let cancelled = false
-    
+
     Promise.allSettled([
-      api.getSpsPersonas(), 
-      api.getSpsScenarios(), 
+      api.getSpsPersonas(),
+      api.getSpsScenarios(),
       api.getHealth()
     ])
       .then(results => {
@@ -57,12 +57,12 @@ export function useBackendData() {
             age: typeof p.age === 'number' ? p.age : null,
             sex: typeof p.sex === 'string' ? p.sex : null,
             voice: typeof p.voice === 'string' && p.voice.trim() ? p.voice.trim() : null,
-            tags: Array.isArray(p.tags) 
+            tags: Array.isArray(p.tags)
               ? p.tags
-                  .filter((tag: unknown): tag is string => 
+                  .filter((tag: unknown): tag is string =>
                     typeof tag === 'string' && tag.trim().length > 0
                   )
-                  .map(tag => tag.trim()) 
+                  .map(tag => tag.trim())
               : [],
           })))
         } else {
@@ -74,6 +74,7 @@ export function useBackendData() {
           const raw = Array.isArray(scenariosRes.value) ? scenariosRes.value : []
           setScenarios(raw.map((s: any) => ({
             scenario_id: s.scenario_id,
+            student_case_id: typeof s.student_case_id === 'string' ? s.student_case_id : null,
             title: s.title,
             region: s.region ?? null,
             difficulty: s.difficulty ?? null,
@@ -82,6 +83,7 @@ export function useBackendData() {
             persona_id: s.persona_id ?? null,
             persona_name: s.persona_name ?? null,
             persona_headline: s.persona_headline ?? null,
+            suggested_personas: Array.isArray(s.suggested_personas) ? s.suggested_personas : undefined,
           })))
         } else {
           setScenarios([])
@@ -119,9 +121,9 @@ export function useBackendData() {
           }))
         }
       })
-    
-    return () => { 
-      cancelled = true 
+
+    return () => {
+      cancelled = true
     }
   }, [])
 

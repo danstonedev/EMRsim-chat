@@ -1,6 +1,6 @@
 # 📚 EMRsim-chat Documentation Index
 
-**Last Updated:** October 17, 2025
+**Last Updated:** October 23, 2025
 
 This is the single source of truth for navigating all project documentation. All documents are categorized by purpose and kept current.
 
@@ -13,7 +13,6 @@ This is the single source of truth for navigating all project documentation. All
 1. **[README.md](README.md)** - Quick start and local development setup
 2. **[ops/docs/README.md](ops/docs/README.md)** - Framework overview and architecture
 3. **[ops/docs/BUILD_GUIDE.md](ops/docs/BUILD_GUIDE.md)** - Detailed build and deployment instructions
-4. **[DOCKER.md](DOCKER.md)** - Docker setup and containerization
 
 ---
 
@@ -44,7 +43,6 @@ This is the single source of truth for navigating all project documentation. All
 ### Mixamo Integration
 
 - **[TEAM_QUICK_START_MIXAMO.md](TEAM_QUICK_START_MIXAMO.md)** - Quick start guide for Mixamo
-- **[MIXAMO_INTEGRATION_COMPLETE.md](MIXAMO_INTEGRATION_COMPLETE.md)** - Integration completion summary
 - **[frontend/docs/MIXAMO_ASSET_GUIDE.md](frontend/docs/MIXAMO_ASSET_GUIDE.md)** - Asset management guide
 - **[frontend/docs/ANIMATION_BINDING_AND_TESTING.md](frontend/docs/ANIMATION_BINDING_AND_TESTING.md)** - Testing animations
 
@@ -59,13 +57,10 @@ This is the single source of truth for navigating all project documentation. All
 
 **Voice session management and conversation flow:**
 
-### Modularization (Complete ✅)
+### Modularization
 
 - **[CONVERSATION_CONTROLLER_REFERENCE.md](CONVERSATION_CONTROLLER_REFERENCE.md)** ⭐ - **START HERE** - Complete navigation guide
 - **[CONVERSATION_CONTROLLER_MODULARIZATION.md](CONVERSATION_CONTROLLER_MODULARIZATION.md)** - Master plan and results
-- **[PHASE9_SUMMARY.md](PHASE9_SUMMARY.md)** - Phase 9 completion summary (latest)
-- **[MODULARIZATION_PHASE9_COMPLETE.md](MODULARIZATION_PHASE9_COMPLETE.md)** - Phase 9 detailed documentation
-- **Phase completion docs**: MODULARIZATION_PHASE[1-9]_COMPLETE.md - Individual phase details
 
 ### Architecture & Implementation
 
@@ -84,10 +79,20 @@ This is the single source of truth for navigating all project documentation. All
 
 **Creating clinical scenarios for training:**
 
-- **[ops/docs/SPS_CONTENT_AUTHORING.md](ops/docs/SPS_CONTENT_AUTHORING.md)** ⭐ - Complete authoring workflow
+- **[FACULTY_KEY.md](FACULTY_KEY.md)** ⭐ - Instructor-facing print view with S/O-first emphasis and coverage counts
+- **[ops/docs/SCENARIO_AUTHORING_GUIDE.md](ops/docs/SCENARIO_AUTHORING_GUIDE.md)** 📘 - **COMPLETE GUIDE FOR AUTHORING PARTNERS** (all-in-one reference)
+- **[ops/docs/SPS_CONTENT_AUTHORING.md](ops/docs/SPS_CONTENT_AUTHORING.md)** ⭐ - Technical authoring workflow
+- **[ops/docs/SCENARIO_AUTHORING_CHECKLIST.md](ops/docs/SCENARIO_AUTHORING_CHECKLIST.md)** ✅ - Required elements checklist
 - **[ops/docs/LLM_CASE_GENERATION_PROMPT_KIT.md](ops/docs/LLM_CASE_GENERATION_PROMPT_KIT.md)** - AI-assisted case generation prompts
 - **[ops/docs/CASE_BUILDER_SIMPLIFICATION_RECOMMENDATIONS.md](ops/docs/CASE_BUILDER_SIMPLIFICATION_RECOMMENDATIONS.md)** - Case builder improvements
 - **[ops/docs/SPS_CONTENT_REFACTOR_PLAN.md](ops/docs/SPS_CONTENT_REFACTOR_PLAN.md)** - Content system refactor plan
+- **[SPS_KITS_AND_AUDIENCE_GUIDE.md](SPS_KITS_AND_AUDIENCE_GUIDE.md)** - Kits, audience separation (student vs faculty), mapping, validator, and API
+
+### Instruction Pipeline & Roles
+
+- **[SPS_INSTRUCTION_PIPELINE.md](SPS_INSTRUCTION_PIPELINE.md)** - How instructions are composed and injected
+- **[SPS_ROLES_EXTENSIBILITY.md](SPS_ROLES_EXTENSIBILITY.md)** - Multi-role design (translator, family, clinician) and schema-light extensions
+- **[SPS_AGENTIC_HYBRID_IMPLEMENTATION_PLAN.md](SPS_AGENTIC_HYBRID_IMPLEMENTATION_PLAN.md)** - Agentic hybrid implementation plan and rollout
 
 ---
 
@@ -106,8 +111,8 @@ This is the single source of truth for navigating all project documentation. All
 **Deployment and monitoring:**
 
 - **[PRODUCTION_READINESS.md](PRODUCTION_READINESS.md)** ⭐ - Production checklist
-- **[ops/docs/PHASE4_IMPLEMENTATION.md](ops/docs/PHASE4_IMPLEMENTATION.md)** - Phase 4 deployment
-- **[ops/docs/PHASE4_TASK4_COMPLETE.md](ops/docs/PHASE4_TASK4_COMPLETE.md)** - Task completion summary
+- **[VERCEL_DEPLOYMENT_STATUS.md](VERCEL_DEPLOYMENT_STATUS.md)** - Vercel deployment status
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Full deployment guide
 
 ---
 
@@ -138,7 +143,7 @@ This is the single source of truth for navigating all project documentation. All
 - **[RESULTS.md](RESULTS.md)** - Performance results and benchmarks
 - **[docs/README.md](docs/README.md)** - Complete document index (legacy)
 
-**Historical documents are archived in:** `ops/archive/`
+Historical docs and completion summaries have been removed for the first production cut to reduce noise. Use Git history if you need to reference them.
 
 ---
 

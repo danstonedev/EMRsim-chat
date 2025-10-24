@@ -10,6 +10,12 @@
     "setting": "primary_care_pt|sports_rehab|post_op|acute|telehealth|outpatient_pt|sports_pt_outpatient|sports_medicine_outpatient|sports_rehab_clinic",
     "tags": [],
     "profession": "physical_therapy|occupational_therapy|athletic_training|other",
+    "roles": [
+      {
+        "id": "patient",
+        "instruction": null
+      }
+    ],
     "created_at": "",
     "updated_at": ""
   },

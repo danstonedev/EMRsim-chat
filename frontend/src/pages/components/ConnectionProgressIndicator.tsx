@@ -13,7 +13,8 @@ interface ConnectionProgressProps {
   placeholder?: boolean
 }
 
-const stepOrder: ConnectionStep[] = ['mic', 'session', 'token', 'webrtc', 'complete']
+// Displayed steps in the modal (exclude the final "Connected!" line)
+const stepOrder: ConnectionStep[] = ['mic', 'session', 'token', 'webrtc']
 
 // UND Brand Colors
 const UND_GREEN = '#009A44'
@@ -55,16 +56,13 @@ type StepStatus = 'done' | 'active' | 'pending'
 
 export function ConnectionProgressIndicator({ step, progress, estimatedMs, placeholder = false }: ConnectionProgressProps) {
   const activeIndex = stepOrder.indexOf(step)
-  const clampedActiveIndex = activeIndex === -1 ? 0 : activeIndex
+  const currentIndex = activeIndex === -1 ? 0 : activeIndex
   const statuses: StepStatus[] = stepOrder.map((_, idx) => {
-    if (placeholder) {
-      return idx === 0 ? 'active' : 'pending'
-    }
-    if (step === 'complete') {
-      return idx <= clampedActiveIndex ? 'done' : 'pending'
-    }
-    if (idx < clampedActiveIndex) return 'done'
-    if (idx === clampedActiveIndex) return 'active'
+    if (placeholder) return idx === 0 ? 'active' : 'pending'
+    // When overall step is complete, mark all visible steps as done
+    if (step === 'complete') return 'done'
+    if (idx < currentIndex) return 'done'
+    if (idx === currentIndex) return 'active'
     return 'pending'
   })
 

@@ -33,11 +33,11 @@ export function routeAnimationPrompt(
         fadeIn: 0.5,
         fadeOut: 0.5,
         onComplete: () => {
-          log(`✅ Movement complete: ${command.movement}`)
-          onPromptResult?.(`✅ Completed: ${command.description}`)
+          log(`Movement complete: ${command.movement}`)
+          onPromptResult?.(`Completed: ${command.description}`)
         },
       })
-      onPromptResult?.(`▶️ Playing: ${command.description}`)
+      onPromptResult?.(`Playing: ${command.description}`)
     } else {
       animationError('MovementController not initialized')
     }
@@ -46,11 +46,11 @@ export function routeAnimationPrompt(
 
   if (command.type === 'pose' && command.poses.length > 0) {
     if (animator) {
-      log('🎬 Playing pose animation')
+      log('Playing pose animation')
       const pose = command.poses[0]
       animator.transitionToPose(pose, 0.5, () => {
-        log('✅ Pose animation complete')
-        onPromptResult?.(`✅ ${command.description}`)
+        log('Pose animation complete')
+        onPromptResult?.(command.description)
       })
     } else {
       animationError('ProceduralAnimator not initialized')
@@ -60,10 +60,10 @@ export function routeAnimationPrompt(
 
   if (command.type === 'reset') {
     if (movement) {
-      log('🔄 Resetting to idle')
+      log('Resetting to idle')
       movement.stop()
       movement.playMovement('idle', { fadeIn: 0.5 })
     }
-    onPromptResult?.('✅ Reset to idle position')
+    onPromptResult?.('Reset to idle position')
   }
 }

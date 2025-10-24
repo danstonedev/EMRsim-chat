@@ -14,8 +14,6 @@ const CONTENT_ROOT = path.join(__dirname, '../src/sps/content');
 const SCENARIOS_SRC_PATH = path.join(CONTENT_ROOT, 'authoring/bundles_src');
 const SCENARIOS_COMPILED_PATH = path.join(CONTENT_ROOT, 'scenarios/compiled');
 const PERSONAS_REALTIME_PATH = path.join(CONTENT_ROOT, 'personas/realtime');
-const PERSONAS_SHARED_PATH = path.join(CONTENT_ROOT, 'personas/shared');
-const PERSONAS_BASE_PATH = path.join(CONTENT_ROOT, 'personas/base');
 const MODULES_PATH = path.join(CONTENT_ROOT, 'banks/modules');
 const CHALLENGES_PATH = path.join(CONTENT_ROOT, 'banks/challenges');
 const SPECIAL_QUESTIONS_PATH = path.join(CONTENT_ROOT, 'banks/special_questions');
@@ -145,15 +143,10 @@ async function extractScenarioDependencies(
         }
       }
       
-      // Extract personas (main)
+      // Extract personas (main) - realtime only
       if (header.persona && header.persona.persona_id) {
         const personaId = header.persona.persona_id;
-        // Try shared first, then realtime
-        let personaPath = path.join(PERSONAS_SHARED_PATH, `${personaId}.json`);
-        if (!fs.existsSync(personaPath)) {
-          personaPath = path.join(PERSONAS_REALTIME_PATH, `${personaId}.json`);
-        }
-        
+        const personaPath = path.join(PERSONAS_REALTIME_PATH, `${personaId}.json`);
         if (fs.existsSync(personaPath)) {
           const personaContent = JSON.parse(fs.readFileSync(personaPath, 'utf8'));
           dependencies.personas[personaId] = generateChecksum(personaContent);
@@ -258,12 +251,9 @@ async function generateManifests() {
     (_, content) => content.patient_id
   );
   
-  const personasShared = await scanDirectoryVersions(
-    PERSONAS_SHARED_PATH, 
-    '*.json', 
-    (_, content) => content.patient_id
-  );
-  
+  // Shared/base personas deprecated: do not scan
+  const personasShared: Record<string, ContentVersionEntry> = {};
+
   const modules = await scanDirectoryVersions(
     MODULES_PATH, 
     '*.json', 
@@ -301,7 +291,7 @@ async function generateManifests() {
     version: '1.0.0',
     generated_at: new Date().toISOString(),
     content: {
-      personas: { ...personasRealtime, ...personasShared },
+  personas: { ...personasRealtime },
       scenarios,
       modules,
       catalogs,
@@ -375,7 +365,8 @@ async function generateManifests() {
   if (Object.keys(catalogReport.duplicate_sets).length > 0) {
     console.log('\nWarning: Duplicate catalogs detected!');
     Object.entries(catalogReport.duplicate_sets).forEach(([primary, duplicates]) => {
-      console.log(`- Catalog '${primary}' has duplicates: ${duplicates.join(', ')}`);
+      const dupList = duplicates as string[];
+      console.log(`- Catalog '${primary}' has duplicates: ${dupList.join(', ')}`);
     });
   }
 }

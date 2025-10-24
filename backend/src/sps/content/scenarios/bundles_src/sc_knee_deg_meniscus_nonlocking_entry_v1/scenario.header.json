@@ -1,0 +1,78 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_knee_deg_meniscus_nonlocking_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry: Degenerative Medial Meniscus Tear (Non-locking)",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": ["entry_level_dpt", "meniscus", "degenerative", "knee"],
+    "profession": "physical_therapy",
+    "roles": [{ "id": "patient", "instruction": null }],
+    "created_at": "2025-10-24T00:00:00Z",
+    "updated_at": "2025-10-24T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "echo-owen-carter",
+    "suggested_personas": ["echo-owen-carter", "ballad-moira-mckenzie", "alloy-samuel-lee"],
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Differentiate degenerative meniscus pathology from acute tear or early OA using history and examination.",
+        "bloom_level": "analyze",
+        "capte_refs": ["safety_screening", "evidence_based_practice"],
+        "npte_map": { "system": "musculoskeletal", "domain": "examination", "nonsystem": "safety" },
+        "assessment_focus": ["differential_diagnosis"],
+        "evidence_req": "CPG"
+      },
+      {
+        "id": "LO2",
+        "text": "Design an exercise-based treatment plan consistent with meniscus/articular cartilage CPG recommendations.",
+        "bloom_level": "apply",
+        "capte_refs": ["plan_of_care"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional" },
+        "assessment_focus": ["plan_of_care"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": ["When is imaging or surgical referral indicated for meniscus pathology?", "How does exercise therapy compare to arthroscopic partial meniscectomy for degenerative tears?"]
+  },
+  "presenting_problem": {
+    "primary_dx": "Degenerative medial meniscus pathology (non-locking)",
+    "onset": "gradual",
+    "duration_weeks": 12,
+    "dominant_symptoms": ["medial joint line pain", "intermittent swelling", "pain with squatting"],
+    "pain_nrs_rest": 2,
+    "pain_nrs_activity": 5,
+    "aggravators": ["squatting", "stairs", "prolonged walking"],
+    "easers": ["rest", "anti-inflammatories"],
+    "pattern_24h": "Stiff in morning <20 min, worse after activity",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "Degenerative medial meniscus pathology",
+    "body_functions_structures": ["joint line tenderness", "mild effusion", "limited squat depth"],
+    "activities": ["reduced walking tolerance", "limited squatting"],
+    "participation": ["reduced yard work", "difficulty with recreational hiking"],
+    "environmental_factors": ["physical job demands"],
+    "personal_factors": ["52-year-old warehouse worker", "wants to avoid surgery"]
+  },
+  "provenance": {
+    "sources": [{ "title": "Meniscus and Articular Cartilage Lesions CPG", "identifier": "CPG-Meniscus-2018", "level_of_evidence": "CPG" }],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-24"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "primary_diagnosis": "Tricompartmental knee osteoarthritis (right > left)",
+  "differential_diagnoses": [
+    "Degenerative meniscal tear (coexistent but not primary driver)",
+    "Inflammatory arthropathy (less likely—stiffness <30 min, no systemic features)"
+  ],
+  "clinical_reasoning": [
+    "Gradual onset, age >60, radiographic OA, crepitus, reduced ROM and strength, activity-related pain.",
+    "No inflammatory red flags; no mechanical locking or acute ligament signs."
+  ],
+  "prognosis": "Fair to good with exercise and weight management; likely functional gains in 6–8 weeks."
+}

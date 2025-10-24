@@ -11,7 +11,7 @@ Files:
 
 - `scenario.header.json`
 - `instructions.json`
-- `persona.json`
+- (Deprecated) `persona.json` — ignored by runtime loader
 - `soap.subjective.json`
 - `soap.objective.json`
 - `soap.assessment.json`

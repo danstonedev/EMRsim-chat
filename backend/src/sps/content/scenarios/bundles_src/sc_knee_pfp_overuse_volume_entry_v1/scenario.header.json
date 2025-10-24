@@ -1,0 +1,78 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_knee_pfp_overuse_volume_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry: Patellofemoral Pain—Overuse/Volume Error",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": ["entry_level_dpt", "pfp", "overuse", "training_error"],
+    "profession": "physical_therapy",
+    "roles": [{ "id": "patient", "instruction": null }],
+    "created_at": "2025-10-24T00:00:00Z",
+    "updated_at": "2025-10-24T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "echo-devon-brooks",
+    "suggested_personas": ["echo-devon-brooks", "ash-hana-park", "coral-julián-rivera"],
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Recognize training error/volume increase as a primary driver of PFP and counsel on load management.",
+        "bloom_level": "analyze",
+        "capte_refs": ["evidence_based_practice", "communication_education"],
+        "npte_map": { "system": "musculoskeletal", "domain": "examination", "nonsystem": "professional" },
+        "assessment_focus": ["patient_education"],
+        "evidence_req": "CPG"
+      },
+      {
+        "id": "LO2",
+        "text": "Design a graded return-to-activity plan with appropriate volume progression per PFP CPG.",
+        "bloom_level": "apply",
+        "capte_refs": ["plan_of_care"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional" },
+        "assessment_focus": ["plan_of_care"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": ["How do you counsel patients on appropriate training volume progression?", "What role does load management play in PFP recovery?"]
+  },
+  "presenting_problem": {
+    "primary_dx": "Patellofemoral pain due to rapid training volume increase",
+    "onset": "gradual",
+    "duration_weeks": 6,
+    "dominant_symptoms": ["anterior knee pain with running", "pain after runs", "difficulty with stairs post-run"],
+    "pain_nrs_rest": 1,
+    "pain_nrs_activity": 7,
+    "aggravators": ["running", "stairs after running", "long runs"],
+    "easers": ["rest days", "reduced mileage"],
+    "pattern_24h": "Minimal morning pain, builds during/after runs",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "PFP due to training volume error",
+    "body_functions_structures": ["anterior knee pain", "mild quad weakness", "no structural deficits"],
+    "activities": ["running tolerance reduced", "stairs post-run painful"],
+    "participation": ["unable to maintain training schedule for upcoming race"],
+    "environmental_factors": ["training for first half-marathon"],
+    "personal_factors": ["28-year-old recreational runner", "increased mileage 50% in 3 weeks"]
+  },
+  "provenance": {
+    "sources": [{ "title": "2019 JOSPT Patellofemoral Pain CPG", "identifier": "CPG-PFP-2019", "level_of_evidence": "CPG" }],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-24"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "objective_catalog": [
+    { "test_id": "vitals", "label": "Vitals", "template": "vitals", "findings": { "bp": "118/70", "hr": 64, "rr": 14, "spo2": 99 } },
+    {
+      "test_id": "inspection",
+      "label": "Inspection",
+      "template": "inspection",
+      "findings": { "effusion": "mild", "ecchymosis": "resolved", "gait": "normal straight-line, guarded with pivoting" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "rom",
+      "label": "ROM (goniometer)",
+      "template": "rom",
+      "findings": {
+        "knee_ext_right_deg": 0,
+        "knee_flex_right_deg": 132,
+        "knee_ext_left_deg": 0,
+        "knee_flex_left_deg": 135,
+        "pain_end_range": "minimal"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "lachman",
+      "label": "Lachman Test",
+      "template": "ligament_test",
+      "findings": { "anterior_translation": "increased vs contralateral (Grade I-II laxity)", "end_feel": "soft", "pain": "minimal" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "anterior_drawer",
+      "label": "Anterior Drawer",
+      "template": "ligament_test",
+      "findings": { "anterior_translation": "increased vs contralateral", "end_feel": "soft" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "pivot_shift",
+      "label": "Pivot Shift",
+      "template": "ligament_test",
+      "findings": { "result": "trace positive (patient guarding)", "note": "deferred aggressive testing per patient comfort" },
+      "difficulty": "intermediate"
+    },
+    {
+      "test_id": "other_ligament_tests",
+      "label": "Other Ligament Screen",
+      "template": "screening",
+      "findings": { "valgus": "negative", "varus": "negative", "posterior_drawer": "negative", "mcmurray": "negative" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "palpation",
+      "label": "Palpation",
+      "template": "palpation",
+      "findings": { "joint_line_tenderness": "none", "diffuse_anterior_tenderness": "minimal" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "strength",
+      "label": "Manual Muscle Testing",
+      "template": "strength",
+      "findings": { "quad_right": "4/5 (weakness noted)", "quad_left": "5/5", "hamstring_right": "4+/5", "hamstring_left": "5/5" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "functional",
+      "label": "Functional",
+      "template": "functional_task",
+      "findings": {
+        "single_leg_hop_right_cm": 85,
+        "single_leg_hop_left_cm": 110,
+        "limb_symmetry_index": 77,
+        "crossover_hop_pain": 2,
+        "failure_criteria": "LSI <90% and patient apprehension noted"
+      },
+      "difficulty": "easy"
+    }
+  ],
+  "contraindications_precautions": [
+    "Avoid high-risk pivoting and cutting until neuromuscular control improves.",
+    "Progress functional activities based on quadriceps strength, hop symmetry, and patient confidence.",
+    "Consider surgical referral if recurrent instability episodes or failure to progress."
+  ]
+}

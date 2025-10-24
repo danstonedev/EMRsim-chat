@@ -23,6 +23,7 @@ type SceneProps = {
   controlsRef?: MutableRefObject<OrbitControlsImpl | null>
   onPromptResult?: (result: string) => void
   humanFigureRef?: React.Ref<unknown>
+  onAnimationChange?: (id: string) => void
 }
 
 /**
@@ -61,7 +62,7 @@ class LocalErrorBoundary extends React.Component<React.PropsWithChildren<object>
   }
 }
 
-export default function Scene({ isAnimating, animationPrompt, controlsRef, humanFigureRef }: SceneProps) {
+export default function Scene({ isAnimating, animationPrompt, controlsRef, humanFigureRef, onAnimationChange }: SceneProps) {
   
   const internalControlsRef = useRef<OrbitControlsImpl>(null)
   const orbitRef = controlsRef ?? internalControlsRef
@@ -171,28 +172,16 @@ export default function Scene({ isAnimating, animationPrompt, controlsRef, human
         position={[0, 0, 0]}
       />
 
-      {/* Placeholder figure so the scene is never empty while model loads */}
-      {!metrics && (
-        <mesh position={[0, 1, 0]}>
-          <capsuleGeometry args={[0.25, 1.3, 6, 12]} />
-          <meshStandardMaterial color="#c9c9c9" metalness={0.1} roughness={0.9} />
-        </mesh>
-      )}
+      {/* No placeholder - keep scene clean during load */}
 
       {/* v2 Model viewer */}
       <LocalErrorBoundary>
-        <Suspense
-          fallback={
-            <Html center>
-              <div className="viewer-loading">Loading Mannequin...</div>
-            </Html>
-          }
-        >
+        <Suspense fallback={null}>
           <V2Model
             ref={humanFigureRef as any}
             isAnimating={isAnimating}
             requestedId={animationPrompt}
-            onActiveChange={() => { /* noop */ }}
+            onActiveChange={onAnimationChange}
             onMetrics={handleMetrics}
           />
         </Suspense>

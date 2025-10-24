@@ -1,5 +1,6 @@
 import type { ConversationEvent } from '../../../../shared/types'
 import type { TranscriptRole } from '../types/transcript'
+import { logMissingItemId } from '../../../../shared/utils/transcriptMonitoring'
 
 export interface TranscriptionEventDependencies {
   logDebug: (...args: unknown[]) => void
@@ -75,21 +76,31 @@ export function createTranscriptionEventHandlers(deps: TranscriptionEventDepende
       // Always relay from completion event (single source of truth)
       const itemId = payload.item_id
       if (deps.backendTranscriptMode) {
+        // Generate fallback itemId if missing to ensure deduplication still works
+        const effectiveItemId = itemId || `generated-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+
         if (!itemId) {
-          console.error('[TranscriptionEventHandlers] ❌ Missing item_id in completion event - cannot relay!', payload)
-        } else if (deps.relay.getLastRelayedItemId() === itemId) {
-          deps.logDebug('[TranscriptionEventHandlers] ⏭️ Skipping relay - item_id already relayed:', itemId)
+          console.warn('[TranscriptionEventHandlers] ⚠️ Missing item_id from OpenAI - using generated fallback:', effectiveItemId)
+          logMissingItemId({
+            role: 'user',
+            textLength: transcript.length,
+            generatedId: effectiveItemId,
+          })
+        }
+
+        if (deps.relay.getLastRelayedItemId() === effectiveItemId) {
+          deps.logDebug('[TranscriptionEventHandlers] ⏭️ Skipping relay - item_id already relayed:', effectiveItemId)
         } else {
           deps.logDebug(
             '[TranscriptionEventHandlers] 📡 Relaying user transcript from completion event:',
             transcript.slice(0, 50),
             'item_id:',
-            itemId
+            effectiveItemId
           )
-          deps.relay.relayTranscriptToBackend('user', transcript, true, Date.now(), undefined, itemId).catch(err => {
+          deps.relay.relayTranscriptToBackend('user', transcript, true, Date.now(), undefined, effectiveItemId).catch(err => {
             console.error('[TranscriptionEventHandlers] Failed to relay user transcript:', err)
           })
-          deps.relay.setLastRelayedItemId(itemId)
+          deps.relay.setLastRelayedItemId(effectiveItemId)
         }
       }
 

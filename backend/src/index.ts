@@ -158,18 +158,7 @@ function sqlitePathFromDatabaseUrl(url?: string | null): string | null {
       personas: Object.keys(registry.personas).length,
       scenarios: Object.keys(registry.scenarios).length,
     };
-    // Also load any DB-persisted scenarios and register them
-    try {
-      const { getAllScenariosFull } = await import('./db.ts');
-      const extra = getAllScenariosFull();
-      if (Array.isArray(extra) && extra.length) {
-        const { spsRegistry } = await import('./sps/core/registry.ts');
-        spsRegistry.addScenarios(extra);
-        counts.scenarios = Object.keys(spsRegistry.scenarios).length;
-      }
-    } catch (e) {
-      console.warn('[sps] failed to load DB-backed scenarios', String(e));
-    }
+    // Runtime catalog is single-source (file-based registry). DB-backed scenarios are no longer injected at boot.
     if (isPersistenceEnabled()) {
       const { restored } = restorePersistedSessions(registry);
       console.log('[sps] content loaded', { ...counts, restored_sessions: restored });
@@ -259,6 +248,9 @@ mark('websocket initialized');
 
 // Export io instance for use in routes/services
 export { io };
+
+// Export createApp for Vercel serverless
+export { createApp } from './app.ts';
 
 // Heartbeat (diagnostic) – logs every 15s by default, configurable via HEARTBEAT_INTERVAL_MS
 const HEARTBEAT_INTERVAL_MS = Number(process.env.HEARTBEAT_INTERVAL_MS || 15000);

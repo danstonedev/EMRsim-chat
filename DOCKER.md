@@ -2,7 +2,9 @@
 
 This project includes Docker configurations for both development and production environments.
 
-## Prerequisites
+## Archived: Docker (Not Used in Production)
+
+Docker files remain only as historical reference and are not used. Our production and staging run on Vercel. You can safely ignore all Docker-related files.
 
 - Docker Engine 20.10 or higher
 - Docker Compose 2.0 or higher
@@ -56,7 +58,7 @@ Required environment variables (set in backend `.env` file or docker-compose):
 
 ```bash
 OPENAI_API_KEY=your_api_key_here
-OPENAI_REALTIME_MODEL=gpt-realtime-2025-08-28
+OPENAI_REALTIME_MODEL=gpt-realtime-mini-2025-10-06
 OPENAI_TEXT_MODEL=gpt-4o
 OPENAI_TTS_VOICE=cedar
 VOICE_ENABLED=true

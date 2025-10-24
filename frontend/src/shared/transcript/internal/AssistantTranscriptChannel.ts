@@ -18,7 +18,7 @@ export class AssistantTranscriptChannel {
     // Don't reset turnStartedAt if already set (preserve first timestamp for ordering)
     if (!this.turnStartedAt) {
       this.turnStartedAt = Date.now()
-      this.logger.log('[TranscriptEngine] 🤖 Assistant turn started, timestamp:', this.turnStartedAt)
+      this.logger.log('[TranscriptEngine] Assistant turn started, timestamp:', this.turnStartedAt)
     }
     this.active = true
     this.buffer = ''

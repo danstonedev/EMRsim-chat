@@ -30,7 +30,7 @@ const envSchema = z.object({
 
   // OpenAI Configuration
   OPENAI_API_KEY: z.string().min(1, 'OPENAI_API_KEY is required'),
-  OPENAI_REALTIME_MODEL: z.string().default('gpt-realtime-2025-08-28'),
+  OPENAI_REALTIME_MODEL: z.string().default('gpt-realtime-mini-2025-10-06'),
   OPENAI_TEXT_MODEL: z.string().default('gpt-4o'),
   OPENAI_TTS_VOICE: z
     .enum(['alloy', 'ash', 'ballad', 'coral', 'echo', 'sage', 'shimmer', 'verse', 'marin', 'cedar'])

@@ -1,0 +1,64 @@
+{
+  "history": {
+    "chief_complaint": "My knees started hurting after I ramped up my running mileage for a half-marathon.",
+    "mechanism": "Gradual onset with increased training volume.",
+    "prior_episodes": "No prior knee pain.",
+    "functional_impact": "Can't maintain my training schedule; stairs hurt after long runs.",
+    "goals": "Complete my half-marathon training pain-free.",
+    "identity": { "name": "Alex Rivera", "dob": "1996-07-30" }
+  },
+  "subjective_catalog": [
+    {
+      "id": "training_history",
+      "label": "Training History",
+      "patterns": ["training", "running", "mileage", "volume"],
+      "patient_response_script": { "qualitative": ["I was running about 15 miles/week, then jumped to 25 miles in like 3 weeks. That's when it started."] }
+    },
+    {
+      "id": "meds_allergies",
+      "label": "Medications & Allergies",
+      "patterns": ["meds", "allergies"],
+      "patient_response_script": { "qualitative": ["Taking ibuprofen after runs. No allergies."] }
+    },
+    {
+      "id": "pain_pattern",
+      "label": "Pain Pattern",
+      "patterns": ["when", "pain", "timing"],
+      "patient_response_script": { "qualitative": ["Starts around mile 4-5. Worse the day after long runs. Stairs kill me after running."] }
+    },
+    {
+      "id": "red_flags",
+      "label": "Red Flags",
+      "patterns": ["locking", "swelling", "giving way"],
+      "patient_response_script": { "qualitative": ["No locking or giving way. A bit puffy after long runs."] }
+    }
+  ],
+  "patient_reported_outcomes": { "NPRS_worst": 7, "NPRS_usual": 2, "LEFS": 58, "AKPS": 64 },
+  "media_library": [],
+  "history_present_illness": {
+    "mechanism": "training volume increase (67% in 3 weeks)",
+    "first_onset": "6 weeks ago",
+    "course_since_onset": "persistent with training, improves with rest",
+    "prior_episodes": "no prior knee pain",
+    "red_flag_denials_affirmations": { "fever": false, "locking": false, "instability": false }
+  },
+  "pain": {
+    "location": ["anterior knee bilateral"],
+    "quality": ["ache during run", "throb after"],
+    "irritability": "moderate-high",
+    "nrs_rest": 1,
+    "nrs_activity": 7,
+    "aggravators": ["running >4 miles", "stairs post-run", "hills"],
+    "easers": ["rest days", "reduced mileage"],
+    "24h_pattern": "minimal morning, builds during/after runs"
+  },
+  "social_history": {
+    "occupation": "accountant",
+    "sport_hobbies": ["running", "first half-marathon training"]
+  },
+  "goals": ["complete half-marathon", "train pain-free", "understand proper progression"],
+  "past_medical_history": [],
+  "surgical_history": [],
+  "medications": [{ "name": "ibuprofen", "dose": "after runs" }],
+  "allergies": [{ "substance": "drug", "details": "none" }]
+}

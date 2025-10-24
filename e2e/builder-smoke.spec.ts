@@ -8,7 +8,8 @@ import { test, expect } from '@playwright/test'
  * - Opens the Generate Scenario modal and closes it
  */
 
-test.describe('Case Builder smoke', () => {
+// Legacy Case Builder route was removed; skip this suite to avoid failures.
+test.describe.skip('Case Builder smoke (removed)', () => {
   test('renders and scrolls', async ({ page }) => {
     await page.goto('/builder')
 

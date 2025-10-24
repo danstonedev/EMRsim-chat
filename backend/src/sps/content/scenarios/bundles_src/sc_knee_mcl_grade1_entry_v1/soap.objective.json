@@ -1,0 +1,68 @@
+{
+  "objective_catalog": [
+    { "test_id": "vitals", "label": "Vitals", "template": "vitals", "findings": { "bp": "116/68", "hr": 70, "rr": 12, "spo2": 99 } },
+    {
+      "test_id": "inspection",
+      "label": "Inspection",
+      "template": "inspection",
+      "findings": { "effusion": "trace medial", "ecchymosis": "none", "gait": "slight antalgia first few steps" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "rom",
+      "label": "ROM (goniometer)",
+      "template": "rom",
+      "findings": {
+        "knee_ext_right_deg": 0,
+        "knee_flex_right_deg": 130,
+        "knee_ext_left_deg": 0,
+        "knee_flex_left_deg": 135,
+        "pain_end_range": "mild medial discomfort with deep flexion"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "valgus_stress_30",
+      "label": "Valgus Stress at 30° Flexion",
+      "template": "ligament_test",
+      "findings": { "pain_medial": "yes", "laxity": "none vs contralateral", "end_feel": "firm" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "valgus_stress_0",
+      "label": "Valgus Stress at 0°",
+      "template": "ligament_test",
+      "findings": { "pain_medial": "mild", "laxity": "none", "end_feel": "firm" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "other_ligament_tests",
+      "label": "Other Ligament/Meniscus Screen",
+      "template": "screening",
+      "findings": { "lachman": "negative", "varus": "negative", "posterior_drawer": "negative", "mcmurray": "negative" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "palpation",
+      "label": "Palpation",
+      "template": "palpation",
+      "findings": { "mcl_tenderness": "positive along proximal to mid MCL", "joint_line_tenderness": "none" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "functional",
+      "label": "Functional",
+      "template": "functional_task",
+      "findings": {
+        "step_down_20cm_pain": 2,
+        "side_step_lunge_pain": 3,
+        "failure_criteria": "pain ≥3/10 or valgus collapse observed"
+      },
+      "difficulty": "easy"
+    }
+  ],
+  "contraindications_precautions": [
+    "Avoid pivoting/cutting and valgus loads in week 1–2.",
+    "Brace or sleeve may be used for comfort; no aggressive varus/valgus mobilizations."
+  ]
+}

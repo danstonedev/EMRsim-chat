@@ -55,10 +55,6 @@ vi.mock('../shared/flags.ts', () => ({
   FLAGS: { VOICE_ENABLED: false, VOICE_AUTOSTART: false }
 }))
 
-vi.mock('./CaseBuilder', () => ({
-  default: () => <div data-testid="case-builder" />
-}))
-
 beforeAll(() => {
   Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
     configurable: true,

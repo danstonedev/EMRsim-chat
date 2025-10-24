@@ -16,7 +16,7 @@ npm run dev
 ## Env
 
 - `OPENAI_API_KEY` (optional for v0.1; mock used if absent)
-- `OPENAI_REALTIME_MODEL` (default `gpt-realtime-2025-08-28`)
+- `OPENAI_REALTIME_MODEL` (default `gpt-realtime-mini-2025-10-06`)
 - `OPENAI_TEXT_MODEL` (default `gpt-4o-mini`)
 - `OPENAI_TTS_VOICE` (defaults to `alloy`; unsupported values automatically fall back to `alloy`)
 - `OPENAI_TRANSCRIPTION_MODEL` (default `gpt-4o-mini-transcribe` for low-latency streaming)

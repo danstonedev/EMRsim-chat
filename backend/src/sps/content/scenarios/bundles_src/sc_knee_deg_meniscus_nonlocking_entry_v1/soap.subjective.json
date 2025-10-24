@@ -1,0 +1,64 @@
+{
+  "history": {
+    "chief_complaint": "My knee hurts on the inside, especially when I squat down at work.",
+    "mechanism": "Gradual onset, no specific injury recalled.",
+    "prior_episodes": "Had similar symptoms 6 months ago that improved.",
+    "functional_impact": "Hard to squat, kneel, or walk long distances without pain.",
+    "goals": "Get back to work without pain; avoid surgery if possible.",
+    "identity": { "name": "Robert Wagner", "dob": "1972-04-18" }
+  },
+  "subjective_catalog": [
+    {
+      "id": "meds_allergies",
+      "label": "Medications & Allergies",
+      "patterns": ["meds", "ibuprofen", "allergies"],
+      "patient_response_script": { "qualitative": ["Taking ibuprofen daily. No allergies."] }
+    },
+    {
+      "id": "swelling_locking",
+      "label": "Swelling/Locking",
+      "patterns": ["swelling", "locking", "catching"],
+      "patient_response_script": { "qualitative": ["Swells up sometimes after work. No true locking, but feels like it catches occasionally."] }
+    },
+    {
+      "id": "red_flags",
+      "label": "Red Flags",
+      "patterns": ["giving way", "numb", "tingle"],
+      "patient_response_script": { "qualitative": ["No giving way. No numbness or tingling."] }
+    },
+    {
+      "id": "pain_location",
+      "label": "Pain Location",
+      "patterns": ["where", "point to pain"],
+      "patient_response_script": { "qualitative": ["Right on the inside of my knee, along the joint line."] }
+    }
+  ],
+  "patient_reported_outcomes": { "NPRS_worst": 5, "NPRS_usual": 3, "LEFS": 52 },
+  "media_library": [],
+  "history_present_illness": {
+    "mechanism": "gradual onset, no acute injury",
+    "first_onset": "12 weeks ago",
+    "course_since_onset": "fluctuating, worse with activity",
+    "prior_episodes": "similar symptoms 6 months prior",
+    "red_flag_denials_affirmations": { "fever": false, "true_locking": false, "instability": false, "numbness": false }
+  },
+  "pain": {
+    "location": ["medial joint line"],
+    "quality": ["ache", "sharp with squat"],
+    "irritability": "moderate",
+    "nrs_rest": 2,
+    "nrs_activity": 5,
+    "aggravators": ["squatting", "stairs", "prolonged walking"],
+    "easers": ["rest", "ibuprofen"],
+    "24h_pattern": "morning stiffness <20 min, worse late day"
+  },
+  "social_history": {
+    "occupation": "warehouse worker",
+    "sport_hobbies": ["hiking"]
+  },
+  "goals": ["return to full work duties", "avoid surgery", "resume hiking"],
+  "past_medical_history": [{ "condition": "hypertension", "status": "controlled" }],
+  "surgical_history": [],
+  "medications": [{ "name": "ibuprofen", "dose": "400mg daily" }, { "name": "lisinopril", "dose": "10mg daily" }],
+  "allergies": [{ "substance": "drug", "details": "none" }]
+}

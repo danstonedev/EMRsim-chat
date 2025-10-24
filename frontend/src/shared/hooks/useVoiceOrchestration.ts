@@ -26,8 +26,8 @@ interface UseVoiceOrchestrationOptions {
 }
 
 interface UseVoiceOrchestrationHandlersOptions {
-  updateVoiceMessage: (role: 'user' | 'assistant', text: string, isFinal: boolean, timestamp: number, media?: MediaReference) => void;
-  updateAssistantTextMessage: (text: string, isFinal: boolean, timestamp: number, media?: MediaReference) => void;
+  updateVoiceMessage: (role: 'user' | 'assistant', text: string, isFinal: boolean, timestamp: number, media?: MediaReference, options?: { source?: 'live' | 'catchup' }) => void;
+  updateAssistantTextMessage: (text: string, isFinal: boolean, timestamp: number, media?: MediaReference, options?: { source?: 'live' | 'catchup' }) => void;
   showVoiceReadyToast: boolean;
   dismissVoiceReadyToast: () => void;
 }
@@ -41,8 +41,8 @@ export function useVoiceTranscriptHandlers(options: UseVoiceOrchestrationHandler
 
   // Handle user transcript updates from voice session
   const handleUserTranscript = useCallback(
-    (text: string, isFinal: boolean, timestamp: number, _timings?: unknown, media?: MediaReference) => {
-      updateVoiceMessage('user', text, isFinal, timestamp, media);
+    (text: string, isFinal: boolean, timestamp: number, _timings?: unknown, media?: MediaReference, source?: 'live' | 'catchup') => {
+      updateVoiceMessage('user', text, isFinal, timestamp, media, { source });
 
       // Dismiss voice ready toast when user starts speaking
       if (showVoiceReadyToast) {
@@ -54,8 +54,8 @@ export function useVoiceTranscriptHandlers(options: UseVoiceOrchestrationHandler
 
   // Handle assistant transcript updates from voice session
   const handleAssistantTranscript = useCallback(
-    (text: string, isFinal: boolean, timestamp: number, _timings?: unknown, media?: MediaReference) => {
-      updateAssistantTextMessage(text, isFinal, timestamp, media);
+    (text: string, isFinal: boolean, timestamp: number, _timings?: unknown, media?: MediaReference, source?: 'live' | 'catchup') => {
+      updateAssistantTextMessage(text, isFinal, timestamp, media, { source });
     },
     [updateAssistantTextMessage]
   );

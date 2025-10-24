@@ -48,6 +48,7 @@ export function DiagnosticsDrawer({
         </div>
       </header>
       <div className="drawer-metrics" aria-live="polite">
+
         <div className="metric-group">
           <div className="metric-label">Voice</div>
           <span className={statusClass}>

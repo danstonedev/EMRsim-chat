@@ -1,0 +1,120 @@
+{
+  "history": {
+    "chief_complaint": "Deep ache around the front of my right knee—worse going downstairs and after long lectures.",
+    "mechanism": "No single injury; worse after I increased weekly miles and added hills.",
+    "prior_episodes": "Happened once in college; settled with cross-training.",
+    "functional_impact": "I avoid stairs and cut my runs short, especially on downhills.",
+    "goals": "Run a 10K in 6 weeks and take stairs without wincing.",
+    "identity": { "name": "Mariah Sanchez", "dob": "2001-07-14" }
+  },
+  "subjective_catalog": [
+    {
+      "id": "meds_allergies",
+      "label": "Medications & Allergies",
+      "patterns": ["meds", "medications", "ibuprofen", "allergies"],
+      "patient_response_script": { "qualitative": ["I take ibuprofen now and then. No medication or tape allergies."] }
+    },
+    {
+      "id": "training_load",
+      "label": "Training & Equipment",
+      "patterns": ["training", "running", "miles", "hills", "cadence", "shoes"],
+      "patient_response_script": {
+        "qualitative": [
+          "I went from about 12 to 22 miles a week and added hills.",
+          "My watch shows cadence around 162. [MEDIA:run_watch_ss]",
+          "I switched to lighter, lower-drop shoes a month ago. [MEDIA:shoe_profile]"
+        ]
+      }
+    },
+    {
+      "id": "aggravators_easers",
+      "label": "Aggravators & Easers",
+      "patterns": ["worse", "better", "aggravates", "relieves"],
+      "patient_response_script": {
+        "qualitative": [
+          "Downstairs and squatting past halfway hurt the most.",
+          "Changing my route and short breaks help. Taping helped a bit once."
+        ]
+      }
+    },
+    {
+      "id": "red_flags",
+      "label": "Red Flags",
+      "patterns": ["locking", "giving way", "night pain", "fever", "numbness"],
+      "patient_response_script": {
+        "qualitative": [
+          "No locking or giving way, no swelling I can tell, no numbness or fever."
+        ]
+      }
+    },
+    {
+      "id": "pain_location",
+      "label": "Pain Location",
+      "patterns": ["where", "point to pain", "body chart"],
+      "patient_response_script": {
+        "qualitative": ["It feels behind and around the kneecap—not one spot. [MEDIA:pfp_bodychart]"]
+      }
+    }
+  ],
+  "patient_reported_outcomes": { "AKPS": 74, "NPRS_worst": 7, "NPRS_usual": 4 },
+  "media_library": [
+    {
+      "id": "run_watch_ss",
+      "type": "image",
+      "url": "/media/scenarios/pfp/run-watch-cadence-162.png",
+      "caption": "Recent runs showing cadence ~162 spm"
+    },
+    {
+      "id": "shoe_profile",
+      "type": "image",
+      "url": "/media/scenarios/pfp/low-drop-trainer.png",
+      "caption": "Lightweight, lower-drop neutral trainer"
+    },
+    {
+      "id": "pfp_bodychart",
+      "type": "image",
+      "url": "/media/scenarios/pfp/patellofemoral-bodychart.png",
+      "caption": "Retropatellar/peripatellar shading—right knee"
+    }
+  ],
+  "history_present_illness": {
+    "mechanism": "training load increase and hills",
+    "first_onset": "6–8 weeks ago",
+    "course_since_onset": "worse with hills/volume, better with rest",
+    "prior_episodes": "similar episode in college resolved with cross-training",
+    "red_flag_denials_affirmations": {
+      "fever": false,
+      "locking": false,
+      "true_instability": false,
+      "numbness": false
+    }
+  },
+  "pain": {
+    "location": ["retropatellar", "peripatellar"],
+    "quality": ["ache", "sharp with deep squat/downstairs"],
+    "irritability": "moderate",
+    "nrs_rest": 1,
+    "nrs_activity": 7,
+    "aggravators": ["downstairs", "deep squat", "hills", "long lectures then standing"],
+    "easers": ["route changes", "short breaks", "taping helped a bit"],
+    "24h_pattern": "worse after longer activity, eases with rest"
+  },
+  "social_history": {
+    "sport_hobbies": ["running"],
+    "typical_weekly_mileage": 22,
+    "shoes": "lightweight, lower-drop",
+    "cadence": 162
+  },
+  "goals": [
+    "run a 10K in ~6 weeks",
+    "take stairs without wincing"
+  ],
+  "past_medical_history": [],
+  "surgical_history": [],
+  "medications": [
+    { "name": "ibuprofen", "dose": "as needed" }
+  ],
+  "allergies": [
+    { "substance": "drug", "details": "no known drug or tape allergies" }
+  ]
+}

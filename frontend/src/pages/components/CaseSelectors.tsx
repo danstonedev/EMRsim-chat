@@ -3,7 +3,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import type { PersonaLite, ScenarioLite } from '../chatShared'
 import { newId } from '../chatShared'
 
-export function ScenarioPicker({ scenarios, selectedId, selectedScenario, onSelect }: { scenarios: ScenarioLite[]; selectedId: string; selectedScenario: ScenarioLite | null; onSelect: (id: string) => void }) {
+export function ScenarioPicker({ scenarios, selectedId, selectedScenario, onSelect, inputRef, audience = 'student' }: { scenarios: ScenarioLite[]; selectedId: string; selectedScenario: ScenarioLite | null; onSelect: (id: string) => void; inputRef?: React.RefObject<HTMLInputElement>; audience?: 'student' | 'faculty' }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState<number>(-1)
@@ -104,7 +104,11 @@ export function ScenarioPicker({ scenarios, selectedId, selectedScenario, onSele
     }
   }, [activeIndex, filteredScenarios, handleSelect, isOpen])
 
-  const displayValue = isOpen ? searchTerm : (selectedScenario?.title ?? '')
+  const displayValue = isOpen
+    ? searchTerm
+    : (audience === 'student'
+        ? (selectedScenario?.student_case_id ?? '')
+        : (selectedScenario?.title ?? ''))
 
   return (
     <div className="persona-panel scenario-panel">
@@ -120,6 +124,7 @@ export function ScenarioPicker({ scenarios, selectedId, selectedScenario, onSele
             placeholder={selectedScenario ? 'Search scenarios…' : 'Select scenario…'}
             aria-label="Scenario search"
             value={displayValue}
+            ref={inputRef as any}
             onFocus={() => {
               setIsOpen(true)
               setSearchTerm('')
@@ -158,15 +163,7 @@ export function ScenarioPicker({ scenarios, selectedId, selectedScenario, onSele
               const isSelected = scenario.scenario_id === selectedId
               const isActive = idx === activeIndex
               const optionAriaProps = isSelected ? { 'aria-selected': true as const } : {}
-              const metaParts: string[] = []
-              if (scenario.persona_name) metaParts.push(`Persona: ${scenario.persona_name}`)
-              if (scenario.region) metaParts.push(scenario.region)
-              if (scenario.setting) metaParts.push(scenario.setting)
-              if (scenario.difficulty) metaParts.push(`Difficulty: ${scenario.difficulty}`)
-              if (scenario.tags && scenario.tags.length) {
-                metaParts.push(scenario.tags.slice(0, 2).join(', '))
-              }
-              const metaText = metaParts.join(' · ')
+              // Display student-safe ID for students, full title for faculty
               return (
                 <button
                   type="button"
@@ -179,8 +176,7 @@ export function ScenarioPicker({ scenarios, selectedId, selectedScenario, onSele
                   onMouseEnter={() => setActiveIndex(idx)}
                   {...optionAriaProps}
                 >
-                  <span className="scenario-option__title">{scenario.title}</span>
-                  {metaText && <span className="scenario-option__meta">{metaText}</span>}
+                  <span className="scenario-option__title">{audience === 'student' ? (scenario.student_case_id ?? scenario.scenario_id) : scenario.title}</span>
                 </button>
               )
             })}
@@ -191,7 +187,7 @@ export function ScenarioPicker({ scenarios, selectedId, selectedScenario, onSele
   )
 }
 
-export function PersonaPicker({ personas, selectedId, selectedPersona, onSelect }: { personas: PersonaLite[]; selectedId: string | null; selectedPersona: PersonaLite | null; onSelect: (id: string | null) => void }) {
+export function PersonaPicker({ personas, selectedId, selectedPersona, onSelect, onPicked, inputRef }: { personas: PersonaLite[]; selectedId: string | null; selectedPersona: PersonaLite | null; onSelect: (id: string | null) => void; onPicked?: (id: string) => void; inputRef?: React.RefObject<HTMLInputElement> }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState<number>(-1)
@@ -245,7 +241,8 @@ export function PersonaPicker({ personas, selectedId, selectedPersona, onSelect 
     onSelect(persona.id)
     setIsOpen(false)
     setSearchTerm('')
-  }, [onSelect])
+    try { onPicked?.(persona.id) } catch { /* noop */ }
+  }, [onSelect, onPicked])
 
   const handleKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'ArrowDown') {
@@ -303,6 +300,7 @@ export function PersonaPicker({ personas, selectedId, selectedPersona, onSelect 
             placeholder={selectedPersona ? 'Search personas…' : 'Select persona…'}
             aria-label="Persona search"
             value={displayValue}
+            ref={inputRef as any}
             onFocus={() => {
               setIsOpen(true)
               setSearchTerm('')
@@ -341,10 +339,7 @@ export function PersonaPicker({ personas, selectedId, selectedPersona, onSelect 
               const isSelected = persona.id === selectedId
               const isActive = idx === activeIndex
               const optionAriaProps = isSelected ? { 'aria-selected': true as const } : {}
-              const headline = persona.headline ? persona.headline.trim() : ''
-              const metaParts: string[] = []
-              if (persona.voice) metaParts.push(`Voice: ${persona.voice}`)
-              if (persona.tags && persona.tags.length) metaParts.push(persona.tags.slice(0, 3).join(', '))
+              // Simplified display: show only the main persona name
               return (
                 <button
                   type="button"
@@ -358,10 +353,6 @@ export function PersonaPicker({ personas, selectedId, selectedPersona, onSelect 
                   {...optionAriaProps}
                 >
                   <span className="persona-option__name">{persona.display_name}</span>
-                  {headline && <span className="persona-option__headline">{headline}</span>}
-                  {metaParts.length > 0 && (
-                    <span className="persona-option__meta">{metaParts.join(' · ')}</span>
-                  )}
                 </button>
               )
             })}

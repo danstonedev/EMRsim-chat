@@ -22,7 +22,7 @@ body: JSON.stringify({
   voice,
   instructions: ...,
   modalities: ['text', 'audio'],
-  // Note: For gpt-realtime-2025-08-28, input_audio_transcription should be configured
+  // Note: For gpt-realtime-mini-2025-10-06, input_audio_transcription should be configured
   // via session.update WebSocket command after connecting, not in the ephemeral token.
   // Omitting it here to let client configure via session.update.  ← WRONG!
   turn_detection: { ... }
@@ -116,7 +116,7 @@ OPENAI_TRANSCRIPTION_MODEL=gpt-4o-mini-transcribe
 ``` text
 POST https://api.openai.com/v1/realtime/sessions
 {
-  model: "gpt-realtime-2025-08-28",
+  model: "gpt-realtime-mini-2025-10-06",
   modalities: ["text", "audio"],
   input_audio_transcription: {        ← MUST BE HERE
     model: "gpt-4o-mini-transcribe",  ← Configured from .env

@@ -7,11 +7,11 @@ $ErrorActionPreference = 'Stop'
 Write-Host "[test] BaseUrl=$BaseUrl"
 
 function Get-Personas {
-    return Invoke-RestMethod -Uri ($BaseUrl + '/api/sessions/sps/personas') -Method Get
+    return Invoke-RestMethod -Uri ($BaseUrl + '/api/sps/personas') -Method Get
 }
 
 function Get-Scenarios {
-    return Invoke-RestMethod -Uri ($BaseUrl + '/api/sessions/sps/scenarios') -Method Get
+    return Invoke-RestMethod -Uri ($BaseUrl + '/api/sps/scenarios') -Method Get
 }
 
 function New-Session([string]$personaId, [string]$scenarioId) {

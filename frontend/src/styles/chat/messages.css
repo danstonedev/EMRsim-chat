@@ -21,6 +21,20 @@
     flex-shrink: 0;
   }
 
+  /* End-of-encounter marker */
+  .messages-end-marker {
+    align-self: center;
+    margin-block: var(--space-lg) var(--space-md);
+    color: rgba(36, 53, 43, 0.6);
+    font-size: 0.875rem;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-align: center;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
   .sps-phase-chip {
     align-self: flex-start;
     margin-block-end: var(--space-md);

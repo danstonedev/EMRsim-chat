@@ -29,7 +29,7 @@ export interface TranscriptTimings {
 export type ConversationEvent =
   | { type: 'status'; status: VoiceStatus; error: string | null }
   | { type: 'session'; sessionId: string | null }
-  | { type: 'transcript'; role: 'user' | 'assistant'; text: string; isFinal: boolean; timestamp: number; media?: MediaReference; timings?: TranscriptTimings }
+  | { type: 'transcript'; role: 'user' | 'assistant'; text: string; isFinal: boolean; timestamp: number; media?: MediaReference; timings?: TranscriptTimings; source?: 'live' | 'catchup' }
   | { type: 'partial'; role: 'user' | 'assistant'; text: string }
   | { type: 'mic-level'; level: number }
   | { type: 'pause'; paused: boolean }

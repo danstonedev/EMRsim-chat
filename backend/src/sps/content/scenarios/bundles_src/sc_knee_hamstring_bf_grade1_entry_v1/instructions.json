@@ -1,0 +1,8 @@
+{
+  "scenario_instruction_overrides": {
+    "tone": "Acute sports injury; patient eager to return quickly but respectful of guidance.",
+    "behavioral_notes": ["Wait for student.", "If asked identity: Jordan Hayes, DOB 2001-05-14.", "Express eagerness to return to sprinting.", "If student suggests immediate return to full speed, express concern about re-injury."],
+    "gates": { "requires_name_dob_before_sensitive": true },
+    "safety_prompts": ["If aggressive stretching or testing causes sharp pain, ask to stop."]
+  }
+}

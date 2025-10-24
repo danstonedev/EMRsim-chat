@@ -64,7 +64,7 @@ describe('TranscriptEngine', () => {
 
     engine.finalizeUser({ fullText: 'alpha' })
     expect(userEvents.filter(event => event.isFinal)).toHaveLength(1)
-    expect(logger.warn).toHaveBeenCalledWith('[TranscriptEngine] ⚠️ Prevented duplicate user finalization')
+    expect(logger.warn).toHaveBeenCalledWith('[TranscriptEngine] Prevented duplicate user finalization')
   })
 
   it('suppresses audio finalization after textual final', () => {
@@ -87,7 +87,7 @@ describe('TranscriptEngine', () => {
 
     engine.finalizeAssistant({ fullText: 'answer final (audio)' }, true)
     expect(assistantEvents.length).toBe(emittedCount)
-    expect(logger.warn).not.toHaveBeenCalledWith('[TranscriptEngine] ⚠️ Prevented duplicate user finalization')
+    expect(logger.warn).not.toHaveBeenCalledWith('[TranscriptEngine] Prevented duplicate user finalization')
     expect(userEvents.filter(event => event.isFinal)).toHaveLength(1)
   })
 })

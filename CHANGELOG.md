@@ -1,5 +1,21 @@
 # Changelog
 
+## 2025-10-23
+
+- Added three entry-level SPS scenarios (compiled and live):
+  - `sc_knee_pfp_entry_v1` – Entry: Patellofemoral Pain with Stair Descent – Runner
+  - `sc_knee_tcoa_entry_v1` – Entry: Tricompartmental Knee OA—Mobility and Function Limits
+  - `sc_knee_mcl_grade1_entry_v1` – Entry: MCL Sprain—Grade I
+- Kits added under content-first path for serverless packaging:
+  - New: `knee_oa_tricompartmental_v1`, `mcl_grade1_sprain_v1`
+  - Mirrored: `patellofemoral_pain_v1`, `patellar_tendinosis_v1`
+- Updated kit mapping (`backend/src/sps/config/kit-mapping.json`) with suggested personas:
+  - `sc_knee_pfp_entry_v1` → `patellofemoral_pain_v1`
+  - `sc_knee_tcoa_entry_v1` → `knee_oa_tricompartmental_v1`
+  - `sc_knee_mcl_grade1_entry_v1` → `mcl_grade1_sprain_v1`
+- Validation/build: Kits + mapping validators PASS; backend type-check/build PASS.
+- Deployment: Backend and frontend redeployed to Vercel; latest URLs noted in `VERCEL_DEPLOYMENT_STATUS.md`.
+
 ## Unreleased
 
 ### BackendSocketManager Complete Removal (Jan 21, 2025)

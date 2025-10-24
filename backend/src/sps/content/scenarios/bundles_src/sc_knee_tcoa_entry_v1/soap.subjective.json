@@ -1,0 +1,96 @@
+{
+  "history": {
+    "chief_complaint": "My right knee is stiff and achy—stairs and long walks are tough.",
+    "mechanism": "No big injury—just gradually worse over a few years.",
+    "prior_episodes": "Both knees ache, but the right is worse the past year.",
+    "functional_impact": "I pause on stairs and limit grocery trips.",
+    "goals": "Walk 30–40 minutes and do church steps without stopping.",
+    "identity": { "name": "Leonard Price", "dob": "1962-03-02" }
+  },
+  "subjective_catalog": [
+    {
+      "id": "meds_allergies",
+      "label": "Medications & Allergies",
+      "patterns": ["meds", "NSAIDs", "acetaminophen", "allergies"],
+      "patient_response_script": { "qualitative": ["Tylenol most days; occasional ibuprofen. No drug allergies."] }
+    },
+    {
+      "id": "imaging",
+      "label": "Imaging",
+      "patterns": ["x-ray", "imaging", "radiograph"],
+      "patient_response_script": {
+        "qualitative": ["The doctor showed me X-rays—said I have arthritis in all parts of the knee. [MEDIA:knee_oa_xray]"]
+      }
+    },
+    {
+      "id": "red_flags",
+      "label": "Red Flags",
+      "patterns": ["night pain", "fever", "weight loss", "locking", "giving way"],
+      "patient_response_script": {
+        "qualitative": ["No night pain that wakes me, no fever or weight loss. It doesn’t lock or give out."]
+      }
+    },
+    {
+      "id": "pain_timing",
+      "label": "Pain timing",
+      "patterns": ["morning", "stiff", "after sitting"],
+      "patient_response_script": {
+        "qualitative": ["Stiff in the morning for maybe 15–20 minutes and after sitting; loosens up when I move."]
+      }
+    }
+  ],
+  "patient_reported_outcomes": { "KOOS_JR": 60, "NPRS_worst": 6, "NPRS_usual": 3, "LEFS": 48 },
+  "media_library": [
+    {
+      "id": "knee_oa_xray",
+      "type": "image",
+      "url": "/media/scenarios/oa/knee-oa-tricompartmental-ap-lat.png",
+      "caption": "Radiographs with joint space narrowing med/lat and patellofemoral osteophytes"
+    }
+  ],
+  "history_present_illness": {
+    "onset": "gradual",
+    "first_onset": "3 years ago",
+    "course_since_onset": "progressive with flare-ups",
+    "mechanism": "degenerative—no single injury",
+    "prior_episodes": "intermittent stiffness for years",
+    "red_flag_denials_affirmations": {
+      "fever": false,
+      "night_pain": false,
+      "locking": false,
+      "true_instability": false,
+      "unexplained_weight_loss": false
+    }
+  },
+  "pain": {
+    "location": ["anterior knee", "medial joint line", "lateral joint line", "peripatellar"],
+    "quality": ["achy", "stiff"],
+    "irritability": "low-moderate",
+    "nrs_rest": 1,
+    "nrs_activity": 6,
+    "aggravators": ["stairs", "long walks", "prolonged sitting"],
+    "easers": ["short rests", "gentle movement"],
+    "24h_pattern": "morning stiffness ~15–20 minutes; loosens with movement"
+  },
+  "social_history": {
+    "living_situation": "two-story home; sleeps upstairs",
+    "occupational_demands": "desk job, occasional site walks",
+    "activity": ["light walking"],
+    "supports": ["spouse"]
+  },
+  "goals": [
+    "walk 30–40 minutes without significant knee pain",
+    "climb church steps without stopping"
+  ],
+  "past_medical_history": [
+    "hypertension—well controlled"
+  ],
+  "surgical_history": [],
+  "medications": [
+    { "name": "acetaminophen", "dose": "as needed" },
+    { "name": "ibuprofen", "dose": "occasional, as needed" }
+  ],
+  "allergies": [
+    { "substance": "drug", "details": "no known drug allergies" }
+  ]
+}

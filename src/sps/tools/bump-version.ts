@@ -32,13 +32,9 @@ const options = program.opts();
 function resolveContentPath(type: ContentType, id: string): string | null {
   switch (type) {
     case 'persona':
-      // Try realtime first, then shared
+      // Realtime only (shared/base deprecated)
       const realtimePath = path.join(CONTENT_PATHS.personas.realtime, `${id}.json`);
       if (fs.existsSync(realtimePath)) return realtimePath;
-      
-      const sharedPath = path.join(CONTENT_PATHS.personas.shared, `${id}.json`);
-      if (fs.existsSync(sharedPath)) return sharedPath;
-      
       return null;
       
     case 'scenario':

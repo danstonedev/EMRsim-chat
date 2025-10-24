@@ -1,5 +1,6 @@
-import { GOLD_STANDARD_SPS_INSTRUCTIONS } from '../core/instructions';
-import { ActiveCase, EncounterPhase, GateFlags } from '../core/types';
+import { GOLD_STANDARD_SPS_INSTRUCTIONS } from '../core/instructions.ts';
+import { loadScenarioKit, retrieveFacts, formatRetrievedFacts, mapScenarioToCaseId } from './kits.ts';
+import { ActiveCase, EncounterPhase, GateFlags } from '../core/types.ts';
 
 export function getGoldInstructions() {
   return GOLD_STANDARD_SPS_INSTRUCTIONS;
@@ -30,7 +31,7 @@ const PHASE_GUIDANCE: Record<'subjective' | 'objective' | 'treatment_plan' | 'de
   subjective:
     'Stay in the subjective history lane. Offer relevant symptom details, timelines, and contextual factors but avoid volunteering objective findings or treatment plans until asked within this phase.',
   objective:
-    'Respond as a patient experiencing the examination. Describe sensations, limits, and guardrails tied to each maneuver. Do not invent tests not requested by the student.',
+    'Respond as a patient during the examination. Before giving results, require the learner to name the specific test (and side) and how you should be positioned; if vague, ask them to clarify the test and positioning. Describe only what that maneuver elicits. Default to qualitative descriptors; provide exact numbers (e.g., 0–10 pain, ROM degrees, MMT 0–5) only when explicitly asked or provided by the objective script for a performed test. Do not invent or volunteer additional tests. If physical contact is implied and consent has not been covered, ask briefly for consent first. For special tests, treat them as negative unless the scenario specifies a positive finding.',
   treatment_plan:
     'Collaborate on planning. Share preferences, daily realities, and reasonable goals. Ask clarifying questions if the plan feels unclear or unrealistic.',
   default: 'Respond naturally while respecting the encounter structure and prior guidance.',
@@ -90,13 +91,13 @@ function buildScenarioSection(scenario?: ActiveCase['scenario'] | null): string 
   // Include subjective catalog responses with media markers
   if (scenario.subjective_catalog && scenario.subjective_catalog.length > 0) {
     lines.push('\nYour prepared responses to common questions:');
-    scenario.subjective_catalog.forEach(item => {
+    scenario.subjective_catalog.forEach((item: any) => {
       const label = item.label || item.id;
       const patterns = item.patterns?.slice(0, 3).join(', ') || '';
       const responses = item.patient_response_script?.qualitative || [];
       if (responses.length > 0) {
         lines.push(`\nWhen asked about "${label}" (${patterns}):`);
-        responses.forEach(response => {
+        responses.forEach((response: string) => {
           lines.push(`  → "${response}"`);
         });
         // Add media marker hint if there's a note about media
@@ -136,6 +137,115 @@ export function computeOutstandingGate(gate: GateFlags): string[] {
   return out;
 }
 
+// --- Role resolution (schema-light) ---
+// Roles can come from scenario.meta?.roles (if present) or fall back to built-in templates.
+// This keeps the system flexible without changing core types.
+
+type RoleProfile = {
+  id: string;
+  instruction: string;
+  voice_id?: string | null;
+  reply_language?: string | null;
+  gate_overrides?: Partial<GateFlags> | null;
+};
+
+const BUILTIN_ROLE_TEMPLATES: Record<string, (ac?: ActiveCase | null) => RoleProfile> = {
+  patient: ac => ({
+    id: 'patient',
+    instruction: [
+      'Patient Role Directive',
+      '',
+      '- Speak only as the patient in this encounter. Do not reveal that you are simulated or mention internal guidance.',
+      '- Turn-taking: wait for the learner to speak first; when greeted, you may respond with a brief greeting, but do not initiate the encounter.',
+      '- Identity verification: provide full legal name and date of birth ONLY when explicitly asked. Format: "My name is <Full Name>, date of birth <MM-DD-YYYY>." If persona includes mild privacy hesitation, one softening line is allowed before complying fully.',
+      '- Conversational length: adapt to question type and persona verbosity:',
+      '  • Closed/single fact → 1 short sentence/fragment',
+      '  • Focused open (e.g., "Tell me about the pain") → brief 2–3 / balanced 2–4 / talkative 3–5 sentences',
+      '  • Narrative/emotional/functional story → up to ~6 sentences (no unnecessary monologues)',
+      '- Clarification: if a prompt is vague/ambiguous or jargon is unexplained, ask for clarification in varied phrasing; if you truly don’t know, say so and do not invent.',
+      '- Subjective history: keep stable values for onset, location, quality, qualitative severity, aggravators, easers, 24‑hour pattern, functional limits, goals, prior care, comorbidities. Use everyday language (no test names, no diagnoses). Hidden agenda items (if defined) reveal at most once when triggered, as a subtle clause in a relevant answer.',
+      '- Objective exam: do not provide findings until the learner names the specific test (and side) and how you should be positioned. If the request is vague, ask briefly for clarification and proceed after it is clarified and consented (if needed). Describe only what that named test elicits. Default to qualitative descriptors; provide exact numbers (ROM degrees, pain 0–10, MMT 0–5) only when explicitly elicited or when the objective script supplies them for a performed test. For special tests, return a negative result unless the scenario indicates a specific positive. If a test is unsafe per guardrails, decline politely once without proposing alternatives.',
+      '- Treatment/education/plan: do not diagnose, prescribe, or set the plan. You may share preferences, feasibility, and concerns. Provide teach‑back only when requested.',
+      '- Tone & rapport: start from persona tone; rapport may improve one step with clear empathy (no multi‑step jumps in one turn). Use at most one mild disfluency when hesitating.',
+      '- Variation: avoid repeating the same opener across consecutive turns; rotate refusal/clarification phrases (avoid repeating within 3 turns).',
+      '- Numbers: provide numeric values (including ROM degrees, MMT grades, pain ratings) only when explicitly elicited or when provided by the objective script for a performed test.',
+      '- Challenge behaviors (if defined): at most one DOB challenge; after restatement, provide correct DOB. Misunderstanding pattern at most once every 3 turns; resolve promptly after clarification.',
+      '- Output: exactly one natural patient utterance per turn; plain English; minimal inline non‑verbal cues only when essential (e.g., "[hesitates]").',
+    ].join('\n'),
+    voice_id: ac?.persona?.dialogue_style?.voice_id || null,
+    reply_language: null,
+    gate_overrides: null,
+  }),
+  translator: _ac => ({
+    id: 'translator',
+    instruction:
+      'You are a medical interpreter. Translate faithfully between the patient and clinician. Do not add advice or change meaning. Maintain confidentiality. If asked for literal translation, preserve word order; otherwise prefer natural phrasing.',
+    voice_id: null,
+    reply_language: null,
+    gate_overrides: { consent_done: false },
+  }),
+  family: _ac => ({
+    id: 'family',
+    instruction:
+      'You are a family member accompanying the patient. Provide context you know, but avoid speaking over the patient. Defer to the patient when questions are directed to them.',
+    voice_id: null,
+    reply_language: null,
+    gate_overrides: null,
+  }),
+  clinician: _ac => ({
+    id: 'clinician',
+    instruction:
+      'You are a consulting health professional speaking to the student clinician. Offer succinct professional guidance, avoid giving away assessment answers unless explicitly requested.',
+    voice_id: null,
+    reply_language: 'en',
+    gate_overrides: null,
+  }),
+  scribe: _ac => ({
+    id: 'scribe',
+    instruction:
+      'You are a medical scribe. Summarize the interaction in neutral, concise language. Do not initiate new content; only reflect what was said.',
+    voice_id: null,
+    reply_language: 'en',
+    gate_overrides: null,
+  }),
+};
+
+export function getAvailableRoles(activeCase?: ActiveCase | null): string[] {
+  // Try scenario-provided roles (schema-light: scenario.meta?.roles)
+  const scenario: any = activeCase?.scenario || null;
+  const metaRoles: string[] | null = Array.isArray(scenario?.meta?.roles)
+    ? (scenario.meta.roles as any[]).map((r: any) => (typeof r?.id === 'string' ? r.id.trim() : '')).filter(Boolean)
+    : null;
+  if (metaRoles && metaRoles.length) return metaRoles;
+  // Built-in defaults
+  return ['patient', 'translator'];
+}
+
+export function resolveRoleProfile(activeCase?: ActiveCase | null, roleId?: string | null): RoleProfile | null {
+  if (!roleId) return null;
+  const id = String(roleId).trim();
+  if (!id) return null;
+  const scenario: any = activeCase?.scenario || null;
+  // Scenario-provided roles take precedence if present
+  const scenarioRoles: any[] | null = Array.isArray(scenario?.meta?.roles) ? scenario.meta.roles : null;
+  if (scenarioRoles) {
+    const match = scenarioRoles.find(r => typeof r?.id === 'string' && r.id === id);
+    if (match) {
+      return {
+        id,
+        instruction: String(match.instruction || '').trim() || BUILTIN_ROLE_TEMPLATES.patient(activeCase).instruction,
+        voice_id: match.voice_id ?? null,
+        reply_language: match.reply_language ?? null,
+        gate_overrides: (typeof match.gate_overrides === 'object' && match.gate_overrides) || null,
+      };
+    }
+  }
+  // Fallback to built-in template if recognized
+  const tpl = BUILTIN_ROLE_TEMPLATES[id];
+  if (tpl) return tpl(activeCase);
+  return null;
+}
+
 function buildMediaGuidance(scenario: ActiveCase['scenario']): string {
   if (!scenario.media_library || scenario.media_library.length === 0) return '';
 
@@ -144,6 +254,10 @@ function buildMediaGuidance(scenario: ActiveCase['scenario']): string {
     'You can display images and videos to the student by including [MEDIA:media_id] anywhere in your spoken response.'
   );
   lines.push('The [MEDIA:...] marker will NOT be spoken aloud - it silently triggers the visual display.');
+  lines.push('');
+  lines.push('Speak in natural, varied phrasing; do not copy any example wording verbatim.');
+  lines.push('Focus on following the pattern (affirm, optionally offer, include [MEDIA:...]).');
+  lines.push('Prefer your own natural phrasing instead of any exact wordings.');
   lines.push('');
   lines.push('WHEN TO USE MEDIA:');
   lines.push(
@@ -156,11 +270,11 @@ function buildMediaGuidance(scenario: ActiveCase['scenario']): string {
   );
   lines.push('');
   lines.push('Available media assets:');
-  scenario.media_library.forEach(media => {
+  scenario.media_library.forEach((media: any) => {
     lines.push(`  [MEDIA:${media.id}] - ${media.type}: ${media.caption}`);
   });
   lines.push('');
-  lines.push('CRITICAL EXAMPLES - Follow these patterns exactly:');
+  lines.push('Examples (follow the pattern; do not copy phrasing verbatim):');
   lines.push('');
   lines.push('Student: "Did you get any X-rays?"');
   lines.push(
@@ -205,6 +319,8 @@ export function composeRealtimeInstructions(context: {
   phase?: EncounterPhase | null;
   gate?: Partial<GateFlags> | null;
   outstandingGate?: string[] | null;
+  role_id?: string | null;
+  audience?: 'student' | 'faculty' | null;
 }): string {
   const sections: string[] = [];
   const gold = getGoldInstructions()?.trim?.() || '';
@@ -216,6 +332,33 @@ export function composeRealtimeInstructions(context: {
 
     const scenarioSection = buildScenarioSection(context.activeCase.scenario);
     if (scenarioSection) sections.push(scenarioSection);
+
+    // Role directive (default to 'patient' if not specified)
+    const effectiveRoleId = context.role_id || 'patient';
+    const role = resolveRoleProfile(context.activeCase, effectiveRoleId);
+    if (role?.instruction) {
+      sections.push(`Role directive (${role.id.toUpperCase()}):\n${role.instruction}`);
+    }
+
+    // Retrieved facts (Stage 1: static injection)
+    try {
+      const scenarioId = context.activeCase.scenario?.scenario_id || context.activeCase.id;
+      const mappedCaseId = mapScenarioToCaseId(scenarioId);
+      const kit = loadScenarioKit(mappedCaseId);
+      if (kit) {
+        const { texts } = retrieveFacts(kit, {
+          roleId: role?.id || null,
+          phase: context.phase || null,
+          topK: 3,
+          maxLen: 600,
+          audience: context.audience || 'student',
+        });
+        const factsSection = formatRetrievedFacts(texts);
+        if (factsSection) sections.push(factsSection);
+      }
+    } catch (e) {
+      if (process.env.DEBUG) console.warn('[sps][compose] retrieve facts failed', e);
+    }
 
     // Add media guidance if media library exists
     if (context.activeCase.scenario.media_library && context.activeCase.scenario.media_library.length > 0) {

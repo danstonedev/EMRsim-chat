@@ -41,7 +41,7 @@ logs/
 *.md
 docs/
 
-# Exclude authoring content (Phase 3)
+# Exclude authoring tools and source bundles (keep compiled scenarios)
 src/sps/authoring/
 src/sps/content/scenarios/bundles_src/
 src/sps/data/

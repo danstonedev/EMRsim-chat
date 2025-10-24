@@ -35,6 +35,37 @@ Scenarios are authored as bundle files in `authoring/bundles_src/<scenario_id>/`
 - `<scenario_id>.content.json` - Scenario-specific content
 - `<scenario_id>.module.<module_id>.json` - Module-specific configuration
 
+#### Required: Patient Role Declaration
+
+All scenarios MUST include a patient role in the `meta.roles` array:
+
+```json
+{
+  "meta": {
+    "title": "Your Scenario Title",
+    "region": "knee",
+    "difficulty": "moderate",
+    "roles": [
+      {
+        "id": "patient",
+        "instruction": null
+      }
+    ]
+  }
+}
+```
+
+Setting `instruction: null` uses the comprehensive built-in patient role directive from `BUILTIN_ROLE_TEMPLATES.patient`, which includes:
+
+- Turn-taking behavior (wait for student to speak first)
+- Identity verification protocols
+- Conversational pacing guidelines
+- Boundary setting for scope
+- Tone and rapport maintenance
+- All 17 standard patient behavior rules
+
+You can override the instruction with custom text for scenario-specific patient behavior, but this is rarely needed.
+
 After making changes, compile the scenario:
 
 ```bash

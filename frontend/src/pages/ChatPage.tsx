@@ -6,13 +6,13 @@ import { api } from '../shared/api.ts';
 import { featureFlags, FLAGS } from '../shared/flags.ts';
 
 import { useVoiceSession } from '../shared/useVoiceSession';
-import CaseBuilder from './CaseBuilder';
 import { Message, newId } from './chatShared';
 import type { MediaReference } from '../shared/types';
 import { useAdvancedSettings } from '../shared/settingsContext';
 import AdvancedSettingsDrawer from './components/AdvancedSettingsDrawer';
 import { ChatView } from './components/ChatView';
 import { DiagnosticsDrawer } from './components/DiagnosticsDrawer';
+import SessionEvaluationModal from './components/chat/SessionEvaluationModal';
 import { VoiceReadyToast } from './components/VoiceReadyToast';
 import { MediaModal } from './components/chat/MediaModal';
 import Viewer3D from './Viewer3D';
@@ -35,7 +35,6 @@ import {
 } from '../shared/hooks';
 
 export default function ChatPage() {
-  const [view, setView] = useState<'chat' | 'builder'>('chat');
 
   // Backend data (personas, scenarios, health) managed by custom hook
   const { personas, scenarios, backendOk, health, runtimeFeatures } = useBackendData();
@@ -44,6 +43,7 @@ export default function ChatPage() {
   const [scenarioId, setScenarioId] = useState<string>('');
   const [spsError, setSpsError] = useState<string | null>(null);
   const [latestInstructions, setLatestInstructions] = useState('');
+  const [audience, setAudience] = useState<'student' | 'faculty'>('student');
 
   // UI state (drawers, dropdowns, modals) managed by custom hook
   const uiState = useUIState();
@@ -76,14 +76,25 @@ export default function ChatPage() {
   );
 
   // Session state (TODO: will be managed by useSessionLifecycle)
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  // IMPORTANT: activeSessionId tracks the currently running session (cleared on stop)
+  // exportSessionId is preserved for transcript export after session ends
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [exportSessionId, setExportSessionId] = useState<string | null>(null);
   const [isComposing, setIsComposing] = useState(false);
   const compositionScheduledRef = useRef(false);
+
+  // Sync effect: Always preserve active session ID for export
+  // This ensures exportSessionId is available even after activeSessionId is cleared on stop
+  useEffect(() => {
+    if (activeSessionId) {
+      setExportSessionId(activeSessionId);
+    }
+  }, [activeSessionId]);
 
   // Initialize message state first (needed by both hooks)
   const [messages, setMessages] = useState<Message[]>([]);
   const { updateVoiceMessage, resetVoiceTrackingState, voiceUserStartTimeRef } = useVoiceTranscripts({
-    sessionId,
+    sessionId: activeSessionId,
     queueMessageUpdate,
     setMessages,
     setPersistenceError: handlePersistenceError,
@@ -104,7 +115,7 @@ export default function ChatPage() {
   } = useMessageManager({
     messages,
     setMessages,
-    sessionId,
+    sessionId: activeSessionId,
     queueMessageUpdate,
     updateVoiceMessage,
     voiceUserStartTimeRef,
@@ -140,7 +151,7 @@ export default function ChatPage() {
   // Defer loading until session is created to avoid premature media display
   // isLoading is available but not currently used in UI
   const { scenarioMedia } = useScenarioMedia({
-    scenarioId: sessionId ? scenarioId : null, // Only load media after session created
+    scenarioId: activeSessionId ? scenarioId : null, // Only load media after session created
     closeMedia: uiState.closeMedia,
   });
 
@@ -163,7 +174,7 @@ export default function ChatPage() {
   const voiceSession = useVoiceSession({
     personaId,
     scenarioId: scenarioId || null,
-    sessionId,
+    sessionId: activeSessionId,
     scenarioMedia,
     onUserTranscript: handleUserTranscript,
     onAssistantTranscript: handleAssistantTranscript,
@@ -193,11 +204,25 @@ export default function ChatPage() {
     showVoiceReady,
   });
 
+  // Sync voice session ID to exportSessionId for transcript access after session ends
+  useEffect(() => {
+    if (voiceSession.sessionId) {
+      setExportSessionId(voiceSession.sessionId);
+    }
+  }, [voiceSession.sessionId]);
+
+  // When audience changes, refresh instructions with the selected audience.
+  useEffect(() => {
+    // Fire-and-forget; the instruction sync manager will defer until session is ready.
+    void voiceSession.refreshInstructions('audience.changed', { audience });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refreshInstructions is stable (useCallback with controller ref)
+  }, [audience, voiceSession.refreshInstructions]);
+
   // Print/export actions managed by custom hook
-  const { handlePrintScenario, handlePrintTranscript } = usePrintActions({
+  const { handleViewTranscriptPage, handlePrintTranscriptAsync, handleOpenFacultyKey } = usePrintActions({
     personaId,
     scenarioId,
-    sessionId,
+    sessionId: exportSessionId ?? activeSessionId,
     printDropdownOpen: uiState.printDropdownOpen,
     closePrintDropdown: uiState.closePrintDropdown,
   });
@@ -207,7 +232,7 @@ export default function ChatPage() {
     voiceEnabled: runtimeFeatures.voiceEnabled,
     spsEnabled: runtimeFeatures.spsEnabled,
     autostartSetting: settings.autostart,
-    sessionId,
+    sessionId: activeSessionId,
     isComposing,
     voiceStatus: voiceSession.status,
     startVoiceSession: voiceSession.start,
@@ -265,10 +290,12 @@ export default function ChatPage() {
     setMessages([]);
     setTtftMs(null);
     setLatestInstructions('');
+    // New encounter: clear previous export session id
+    setExportSessionId(null);
   try { (firstDeltaRef as unknown as { current: number | null }).current = null } catch { /* ignore */ }
     try {
       const result = await api.createSession(personaId, scenarioId);
-      setSessionId(result.session_id);
+      setActiveSessionId(result.session_id);
       const nextPhase = typeof result.phase === 'string' ? result.phase : null;
       const nextGate =
         result && typeof result.gate === 'object' && result.gate !== null
@@ -276,7 +303,7 @@ export default function ChatPage() {
           : null;
       updateEncounterStateRef({ phase: nextPhase, gate: nextGate }, 'encounter.composed');
     } catch (err) {
-      setSessionId(null);
+      setActiveSessionId(null);
       setSpsError(err instanceof Error ? err.message : String(err));
       updateEncounterStateRef({ phase: null, gate: null }, 'encounter.composed.error');
     } finally {
@@ -289,7 +316,8 @@ export default function ChatPage() {
   // Replaces 4 separate effects: personaId reset, sessionId reset, encounter reset, auto-compose
   useEffect(() => {
     // Reset all state when persona or scenario changes
-    setSessionId(null);
+    setActiveSessionId(null);
+    setExportSessionId(null);
     setMessages([]);
     setSpsError(null);
     setTtftMs(null);
@@ -300,9 +328,9 @@ export default function ChatPage() {
 
     // Session creation is now deferred until voice session starts
     // This prevents creating sessions before the user activates the mic
-    
+
     // Note: Auto-compose removed - session will be created when user starts voice session
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps -- State setters and callbacks are stable
   }, [
     personaId,
@@ -312,7 +340,8 @@ export default function ChatPage() {
 
   const resetEncounter = useCallback(async () => {
     // Reset all state
-    setSessionId(null);
+    setActiveSessionId(null);
+    setExportSessionId(null);
     setMessages([]);
     setSpsError(null);
     setTtftMs(null);
@@ -337,6 +366,30 @@ export default function ChatPage() {
     setTtftMs,
   ]);
 
+  // Restart same scenario and auto-start voice so the user gets the voice-ready toast and mic pill
+  const restartNowWithAutoVoice = useCallback(async () => {
+    await resetEncounter();
+    try {
+      await voiceSession.start();
+    } catch {
+      // Let overlay/error banners handle failures
+    }
+  }, [resetEncounter, voiceSession]);
+
+  // Reset to setup pickers without auto-restarting a new session
+  const resetToSetup = useCallback(() => {
+    setActiveSessionId(null);
+    setExportSessionId(null);
+    setMessages([]);
+    setSpsError(null);
+    setTtftMs(null);
+    setLatestInstructions('');
+    try { (firstDeltaRef as unknown as { current: number | null }).current = null } catch { /* ignore */ }
+    resetAllTrackingState({ clearQueue: true, resetFirstDelta: true });
+    updateEncounterStateRef({ phase: null, gate: null }, 'encounter.reset.to_setup');
+    // Do not compose here; user will choose a scenario and press Start
+  }, [resetAllTrackingState, updateEncounterStateRef, firstDeltaRef, setTtftMs, setLatestInstructions]);
+
   useEffect(() => {
     if (import.meta.env.DEV) {
       console.debug('[voice] feature flag VOICE_ENABLED =', runtimeFeatures.voiceEnabled);
@@ -347,7 +400,7 @@ export default function ChatPage() {
   }, [runtimeFeatures.voiceEnabled, runtimeFeatures.spsEnabled]);
 
   const isVoiceConnecting = voiceSession.status === 'connecting';
-  
+
   let voiceDisabledReason: string | null = null;
   if (!runtimeFeatures.voiceEnabled) {
     voiceDisabledReason =
@@ -443,21 +496,125 @@ export default function ChatPage() {
   // Wrapper to create session before starting voice (deferred session creation)
   const handleStartVoice = useCallback(async () => {
     // Only create session if we don't have one yet
-    if (!sessionId && personaId && scenarioId) {
+    if (!activeSessionId && personaId && scenarioId) {
       await composeEncounter();
     }
-    // Start voice session (will use the newly created sessionId)
+    // Start voice session (will use the newly created activeSessionId)
     return voiceSession.start();
-  }, [sessionId, personaId, scenarioId, composeEncounter, voiceSession]);
+  }, [activeSessionId, personaId, scenarioId, composeEncounter, voiceSession]);
 
   const renderMicControl = () => (
     <VoiceControls
+      mode="mic-only"
       status={voiceSession.status}
       micPaused={voiceSession.micPaused}
       start={handleStartVoice}
       pause={() => voiceSession.pause()}
       resume={() => voiceSession.resume()}
-      stop={() => voiceSession.stop()}
+      stop={async () => {
+        // CRITICAL FIX: Capture session ID BEFORE stop() clears it
+        // This prevents race condition where exportSessionId becomes null
+        const sessionToFinalize = activeSessionId;
+
+        try {
+          // Stop voice session (will clear internal session state)
+          voiceSession.stop();
+
+          // PHASE 1.3: Graceful shutdown with drain period
+          // Wait 2 seconds for pending transcript operations to complete
+          // This prevents message loss from in-flight transcript relays
+          console.log('[ChatPage] Starting 2-second drain period for pending operations...');
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          console.log('[ChatPage] Drain period complete');
+        } finally {
+          // Finalize backend session if we had one
+          if (sessionToFinalize) {
+            try {
+              console.log('[ChatPage] Finalizing session:', sessionToFinalize);
+              await api.endSession(sessionToFinalize);
+            } catch (error) {
+              console.error('[ChatPage] Session finalization failed:', error);
+              // Non-fatal; export may still work, and UI should remain responsive
+            }
+          }
+          // Clear active session (exportSessionId already preserved by useEffect)
+          setActiveSessionId(null);
+        }
+      }}
+      voiceLocked={!!voiceLocked}
+      voiceButtonDisabled={voiceButtonDisabled}
+      voiceButtonTooltip={voiceButtonTooltip}
+      micActionsOpen={uiState.micActionsOpen}
+      openMicActions={uiState.openMicActions}
+      closeMicActions={uiState.closeMicActions}
+      openPostStop={uiState.openPostStop}
+    />
+  );
+
+  const renderPlayPause = () => (
+    <VoiceControls
+      mode="playpause-only"
+      status={voiceSession.status}
+      micPaused={voiceSession.micPaused}
+      start={handleStartVoice}
+      pause={() => voiceSession.pause()}
+      resume={() => voiceSession.resume()}
+      stop={async () => {
+        const sessionToFinalize = activeSessionId;
+        try {
+          voiceSession.stop();
+          console.log('[ChatPage] Starting 2-second drain period for pending operations...');
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          console.log('[ChatPage] Drain period complete');
+        } finally {
+          if (sessionToFinalize) {
+            try {
+              console.log('[ChatPage] Finalizing session:', sessionToFinalize);
+              await api.endSession(sessionToFinalize);
+            } catch (error) {
+              console.error('[ChatPage] Session finalization failed:', error);
+            }
+          }
+          setActiveSessionId(null);
+        }
+      }}
+      voiceLocked={!!voiceLocked}
+      voiceButtonDisabled={voiceButtonDisabled}
+      voiceButtonTooltip={voiceButtonTooltip}
+      micActionsOpen={uiState.micActionsOpen}
+      openMicActions={uiState.openMicActions}
+      closeMicActions={uiState.closeMicActions}
+      openPostStop={uiState.openPostStop}
+    />
+  );
+
+  const renderTransportRight = () => (
+    <VoiceControls
+      mode="restart-stop-only"
+      status={voiceSession.status}
+      micPaused={voiceSession.micPaused}
+      start={handleStartVoice}
+      pause={() => voiceSession.pause()}
+      resume={() => voiceSession.resume()}
+      stop={async () => {
+        const sessionToFinalize = activeSessionId;
+        try {
+          voiceSession.stop();
+          console.log('[ChatPage] Starting 2-second drain period for pending operations...');
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          console.log('[ChatPage] Drain period complete');
+        } finally {
+          if (sessionToFinalize) {
+            try {
+              console.log('[ChatPage] Finalizing session:', sessionToFinalize);
+              await api.endSession(sessionToFinalize);
+            } catch (error) {
+              console.error('[ChatPage] Session finalization failed:', error);
+            }
+          }
+          setActiveSessionId(null);
+        }
+      }}
       voiceLocked={!!voiceLocked}
       voiceButtonDisabled={voiceButtonDisabled}
       voiceButtonTooltip={voiceButtonTooltip}
@@ -470,10 +627,13 @@ export default function ChatPage() {
 
   return (
     <div className="app-root app-shell" data-scenario-media-count={scenarioMedia.length}>
-      <CaseSetupHeader view={view} setView={(v) => setView(v)} logOpen={uiState.logOpen} openLog={uiState.openLog} />
+      <CaseSetupHeader
+        logOpen={uiState.logOpen}
+        openLog={uiState.openLog}
+        sessionId={voiceSession.sessionId ?? exportSessionId}
+      />
       <div className="app-body-row">
-        <main className={`main ${view === 'chat' ? 'main--chat' : 'main--builder'}`}>
-          {view === 'chat' ? (
+        <main className={`main main--chat`}>
             <>
               <ChatView
                 isComposing={isComposing}
@@ -486,6 +646,8 @@ export default function ChatPage() {
                 voiceErrorMessage={voiceErrorMessage}
                 runtimeFeatures={runtimeFeatures}
                 renderMicControl={renderMicControl}
+                renderPlayPause={renderPlayPause}
+                renderTransportRight={renderTransportRight}
                 personas={personas}
                 personaId={personaId}
                 selectedPersona={selectedPersona}
@@ -494,15 +656,17 @@ export default function ChatPage() {
                 scenarioId={scenarioId}
                 selectedScenario={selectedScenario}
                 setScenarioId={setScenarioId}
-                setSettingsOpen={uiState.setSettingsOpen}
-                printDropdownOpen={uiState.printDropdownOpen}
-                setPrintDropdownOpen={uiState.setPrintDropdownOpen}
-                onPrintScenario={handlePrintScenario}
-                onPrintTranscript={handlePrintTranscript}
+                  audience={audience}
+                  onAudienceChange={setAudience}
+                onPrintTranscript={handleViewTranscriptPage}
+                onPrintTranscriptAsync={handlePrintTranscriptAsync}
+                onOpenFacultyKey={handleOpenFacultyKey}
                 postStopOpen={uiState.postStopOpen}
                 setPostStopOpen={uiState.setPostStopOpen}
                 onReset={resetEncounter}
-                sessionId={sessionId}
+                onResetAndStart={restartNowWithAutoVoice}
+                onReturnToSetup={resetToSetup}
+                sessionId={exportSessionId ?? activeSessionId}
                 spsError={spsError}
                 backendOk={backendOk}
                 caseSetupIds={caseSetupIds}
@@ -515,9 +679,6 @@ export default function ChatPage() {
                 onReconnectRequest={requestReconnect}
               />
             </>
-          ) : (
-            <CaseBuilder />
-          )}
         </main>
       </div>
 
@@ -551,6 +712,14 @@ export default function ChatPage() {
 
       {/* Media modal */}
       <MediaModal media={uiState.selectedMedia} isOpen={!!uiState.selectedMedia} onClose={() => uiState.closeMedia()} />
+
+      {/* Session Evaluation modal */}
+      <SessionEvaluationModal
+        open={uiState.evaluationOpen}
+        onClose={uiState.closeEvaluation}
+        sessionId={activeSessionId}
+        onRestart={resetEncounter}
+      />
 
       {/* Full-screen 3D overlay */}
       {uiState.viewerOverlay.open && (

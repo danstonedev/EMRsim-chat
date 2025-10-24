@@ -19,6 +19,8 @@ export type RecordingPillProps = {
   bars?: number
   disabled?: boolean
   mode?: 'interactive' | 'passive'
+  startSlot?: ReactNode
+  centerLeftSlot?: ReactNode
   endSlot?: ReactNode
 }
 
@@ -135,6 +137,8 @@ export function RecordingPill(props: RecordingPillProps) {
     bars,
     disabled = false,
     mode = 'interactive',
+    startSlot,
+    centerLeftSlot,
     endSlot,
   } = props
 
@@ -404,9 +408,13 @@ export function RecordingPill(props: RecordingPillProps) {
   const content = (
     <>
       <span className="recording-pill__surface">
-        {showTimer && (
-          <span className="recording-pill__timer" aria-live="off">
-            {isRecording ? fmtTime(elapsedMs) : '00:00'}
+        {startSlot && (
+          <span
+            className="recording-pill__start"
+            onClick={(event) => event.stopPropagation()}
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            {startSlot}
           </span>
         )}
         <span className="recording-pill__waveform" aria-hidden="true">
@@ -425,6 +433,20 @@ export function RecordingPill(props: RecordingPillProps) {
             </span>
           )}
         </span>
+        {centerLeftSlot && (
+          <span
+            className="recording-pill__center-left"
+            onClick={(event) => event.stopPropagation()}
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            {centerLeftSlot}
+          </span>
+        )}
+        {showTimer && (
+          <span className="recording-pill__timer" aria-live="off">
+            {isRecording ? fmtTime(elapsedMs) : '00:00'}
+          </span>
+        )}
         {endSlot && (
           <span
             className="recording-pill__control"
@@ -435,9 +457,7 @@ export function RecordingPill(props: RecordingPillProps) {
           </span>
         )}
       </span>
-      <span className="sr-only" aria-live="polite">
-        {isRecording ? 'Recording started' : 'Recording stopped'}
-      </span>
+      {/* Removed live status text per request */}
       {allowPause && isRecording && (
         <span className="recording-pill__pause-indicator">{isPaused ? 'Paused' : 'Recording'}</span>
       )}

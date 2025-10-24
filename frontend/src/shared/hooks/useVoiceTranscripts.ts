@@ -4,14 +4,22 @@ import type { MediaReference } from '../../pages/chatShared'
 import { api } from '../api'
 import { recordVoiceEvent } from '../telemetry'
 import { voiceDebug } from '../utils/voiceLogging'
+import { logDeduplication } from '../utils/transcriptMonitoring'
 
-const VOICE_DUPLICATE_WINDOW_MS = 4000
+// Allow generous window so backend rebroadcasts (finalized vs started timestamps) don't create duplicates
+const VOICE_DUPLICATE_WINDOW_MS = 15000
+// Wider window for catchup messages to handle socket reconnection duplicates
+const CATCHUP_DUPLICATE_WINDOW_MS = 30000
 
 interface UseVoiceTranscriptsOptions {
   sessionId: string | null
   queueMessageUpdate: (updateFn: () => void) => void
   setMessages: Dispatch<SetStateAction<Message[]>>
   setPersistenceError: Dispatch<SetStateAction<{ message: string; timestamp: number } | null>>
+}
+
+interface VoiceMessageOptions {
+  source?: 'live' | 'catchup'
 }
 
 /**
@@ -62,7 +70,8 @@ export function useVoiceTranscripts({
     text: string,
     isFinal: boolean,
     timestamp: number,
-    media?: MediaReference
+    media?: MediaReference,
+    options?: VoiceMessageOptions
   ) => {
     voiceDebug('[useVoiceTranscripts] updateVoiceMessage invoked', {
       role,
@@ -71,11 +80,17 @@ export function useVoiceTranscripts({
       timestamp,
       voiceUserId: voiceUserIdRef.current,
       voiceAssistantId: voiceAssistantIdRef.current,
+      source: options?.source || 'live',
     })
     const ref = role === 'user' ? voiceUserIdRef : voiceAssistantIdRef
     const lastFinalRef = role === 'user' ? lastVoiceFinalUserRef : lastVoiceFinalAssistantRef
     const lastFinalTsRef = role === 'user' ? lastVoiceFinalUserTsRef : lastVoiceFinalAssistantTsRef
     const safeTimestamp = Number.isFinite(timestamp) ? timestamp : Date.now()
+
+    // Use wider window for catchup messages to handle reconnection duplicates
+    const duplicateWindow = options?.source === 'catchup'
+      ? CATCHUP_DUPLICATE_WINDOW_MS
+      : VOICE_DUPLICATE_WINDOW_MS
 
     // Track if we actually processed this message (to avoid setting lastFinalRef on skipped duplicates)
     let messageProcessed = false
@@ -134,7 +149,7 @@ export function useVoiceTranscripts({
                 m.channel === 'voice' &&
                 m.text === text &&
                 !m.pending &&
-                Math.abs(m.timestamp - safeTimestamp) <= 2000 // Within 2 seconds
+                Math.abs(m.timestamp - safeTimestamp) <= duplicateWindow // Use dynamic window
             )
             if (existingMessage) {
               // Skip duplicate - message already exists
@@ -142,6 +157,14 @@ export function useVoiceTranscripts({
                 role,
                 safeTimestamp,
                 existingMessageId: existingMessage.id,
+                source: options?.source || 'live',
+              })
+              logDeduplication({
+                role,
+                text,
+                source: options?.source || 'live',
+                dedupeMethod: 'existingMessage',
+                windowMs: duplicateWindow,
               })
               messageProcessed = false
               return sortMessages(prev)
@@ -151,12 +174,20 @@ export function useVoiceTranscripts({
           // Check for duplicate finals within a short time window
           if (isFinal && text && lastFinalRef.current && text === lastFinalRef.current) {
             const lastTs = lastFinalTsRef.current
-            if (typeof lastTs === 'number' && Math.abs(safeTimestamp - lastTs) <= VOICE_DUPLICATE_WINDOW_MS) {
+            if (typeof lastTs === 'number' && Math.abs(safeTimestamp - lastTs) <= duplicateWindow) {
               // Skip duplicate - already processed this text recently
               voiceDebug('[useVoiceTranscripts] skipped final voice bubble - duplicate within window', {
                 role,
                 safeTimestamp,
                 lastTimestamp: lastTs,
+                source: options?.source || 'live',
+              })
+              logDeduplication({
+                role,
+                text,
+                source: options?.source || 'live',
+                dedupeMethod: 'lastFinal',
+                windowMs: duplicateWindow,
               })
               messageProcessed = false
               return sortMessages(prev)

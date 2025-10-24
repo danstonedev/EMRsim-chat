@@ -1,0 +1,64 @@
+{
+  "history": {
+    "chief_complaint": "I pulled my hamstring during a sprint—it grabbed me right away.",
+    "mechanism": "Acute during maximal sprint acceleration.",
+    "prior_episodes": "No prior hamstring injuries.",
+    "functional_impact": "Can jog lightly but can't sprint; hurts to push off hard.",
+    "goals": "Get back to full speed training for track season.",
+    "identity": { "name": "Jordan Hayes", "dob": "2001-05-14" }
+  },
+  "subjective_catalog": [
+    {
+      "id": "injury_mechanism",
+      "label": "Injury Mechanism",
+      "patterns": ["how", "happened", "mechanism"],
+      "patient_response_script": { "qualitative": ["Was doing sprint repeats. About 40 meters in, felt a sharp grab in the back of my thigh."] }
+    },
+    {
+      "id": "meds_allergies",
+      "label": "Medications & Allergies",
+      "patterns": ["meds", "allergies"],
+      "patient_response_script": { "qualitative": ["Took ibuprofen. No allergies."] }
+    },
+    {
+      "id": "bruising_swelling",
+      "label": "Bruising/Swelling",
+      "patterns": ["bruise", "swelling", "discoloration"],
+      "patient_response_script": { "qualitative": ["A little tender but no big bruise or swelling."] }
+    },
+    {
+      "id": "red_flags",
+      "label": "Red Flags",
+      "patterns": ["defect", "gap", "pop", "numb"],
+      "patient_response_script": { "qualitative": ["No big pop sound. No gap I can feel. No numbness."] }
+    }
+  ],
+  "patient_reported_outcomes": { "NPRS_worst": 6, "NPRS_usual": 2, "LEFS": 60 },
+  "media_library": [],
+  "history_present_illness": {
+    "mechanism": "maximal sprint acceleration",
+    "first_onset": "1 week ago",
+    "course_since_onset": "improving with rest",
+    "prior_episodes": "no prior hamstring injuries",
+    "red_flag_denials_affirmations": { "avulsion_suspected": false, "complete_tear": false, "numbness": false }
+  },
+  "pain": {
+    "location": ["posterior thigh, mid-distal BF"],
+    "quality": ["sharp with sprint", "tender to touch"],
+    "irritability": "moderate",
+    "nrs_rest": 2,
+    "nrs_activity": 6,
+    "aggravators": ["sprinting", "acceleration", "eccentric loading"],
+    "easers": ["rest", "ice"],
+    "24h_pattern": "stiff morning, improves with movement"
+  },
+  "social_history": {
+    "sport_hobbies": ["track sprinting"],
+    "school_level": "college"
+  },
+  "goals": ["return to full sprint training", "prevent re-injury"],
+  "past_medical_history": [],
+  "surgical_history": [],
+  "medications": [{ "name": "ibuprofen", "dose": "as needed" }],
+  "allergies": [{ "substance": "drug", "details": "none" }]
+}

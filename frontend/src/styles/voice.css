@@ -103,11 +103,12 @@
 
 /* Voice Status Panel */
 .voice-status-panel {
-  position: absolute;
-  inset-block-end: var(--space-lg);
+  /* Make control bar stick to the viewport for mobile accessibility */
+  position: fixed;
+  inset-block-end: calc(env(safe-area-inset-bottom, 0px) + var(--space-lg));
   inset-inline-start: 50%;
   transform: translateX(-50%);
-  z-index: 10;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -263,8 +264,8 @@
  * ======================================== */
 
 .recording-pill {
-  --rp-height: 48px;
-  --rp-pad-x: 16px;
+  --rp-height: 52px; /* Increased height for better proportions */
+  --rp-pad-x: 18px; /* More horizontal padding */
   --rp-radius: 999px;
   --rp-shell-bg: transparent;
   --rp-shell-shadow: none;
@@ -283,7 +284,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-inline-size: 220px;
+  min-inline-size: 280px; /* Wider for professional spacing */
   padding: 0;
   block-size: var(--rp-height);
   border: none;
@@ -318,14 +319,15 @@
 .recording-pill__surface {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 18px; /* Increased for professional spacing between controls */
   inline-size: 100%;
   padding-block: 8px;
-  padding-inline: var(--rp-pad-x);
+  padding-inline: 18px; /* Increased for better breathing room */
   border-radius: var(--rp-radius);
   background: var(--rp-idle-bg);
   color: var(--rp-text-idle);
   transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+  position: relative;
 }
 
 .recording-pill[data-state='recording'] .recording-pill__surface {
@@ -335,8 +337,12 @@
 }
 
 .recording-pill[data-speaking='true'] .recording-pill__surface {
-  background: var(--rp-recording-bg);
-  color: var(--rp-text-recording);
+  /* Keep gray background; show a red outline when speaking */
+  /* Preserve subtle inner border from the recording state and add a red ring */
+  box-shadow:
+    inset 0 0 0 2px var(--rp-recording-bg),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  /* Do not override color so text stays readable on gray */
 }
 
 .recording-pill[data-state='paused'] .recording-pill__surface {
@@ -347,35 +353,79 @@
   font-weight: 600;
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-size: 0.875rem;
+  font-size: 1.3125rem; /* 50% larger than 0.875rem */
   letter-spacing: 0.01em;
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+  margin-block-start: -8px; /* Shift up slightly to account for waveform below */
+  color: #eaeaea; /* Improve contrast on dark pill */
 }
 
 .recording-pill__waveform {
+  /* Underline-style waveform placed just below the centered timer */
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, calc(-50% + 18px)); /* Center vertically then shift down */
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  flex: 1;
+  justify-content: center;
+  pointer-events: none;
 }
 
 .recording-pill__bars {
   display: inline-flex;
   align-items: flex-end;
-  gap: 2px;
-  block-size: calc(var(--rp-height) - 20px);
-  min-inline-size: 60px;
+  gap: 1.5px;
+  block-size: 12px;
+  min-inline-size: 120px;
+}
+.recording-pill__center-left {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Use container gap for spacing to avoid double-padding */
 }
 
 .recording-pill__control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 16px; /* Increased spacing between restart and stop buttons */
   margin-inline-start: auto;
 }
 
 .recording-pill__control > * {
   pointer-events: auto;
+}
+
+/* Left-side slot for mic control */
+.recording-pill__start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Use container gap for spacing to avoid double-padding */
+}
+
+/* Ensure professional button sizing inside pill */
+.recording-pill .icon-btn {
+  --_size: 42px; /* Larger for better visibility and professional spacing */
+  flex-shrink: 0;
+}
+
+/* Solid green active mic style for the pill button (consistent with header mic) */
+.recording-pill .mic-btn--active {
+  background-color: var(--color-und-green);
+  color: #ffffff;
+  border-color: var(--color-und-green);
+  box-shadow: 0 0 0 1px rgba(0, 154, 68, 0.35), 0 6px 14px rgba(0, 154, 68, 0.28);
+}
+
+.recording-pill .mic-btn--active:hover:not(:disabled) {
+  background-color: #007a38;
+  border-color: #007a38;
 }
 
 .recording-pill__bar {
@@ -417,8 +467,12 @@
 
 @media (max-width: 640px) {
   .recording-pill {
-    min-inline-size: 180px;
+    min-inline-size: 160px;
+    --rp-height: 44px;
   }
+  /* Ensure minimum 44x44 touch targets */
+  .icon-btn { --_size: 44px; }
+  .recording-pill__bars { block-size: 10px; min-inline-size: 84px; }
 }
 
 @media (max-width: 600px) {

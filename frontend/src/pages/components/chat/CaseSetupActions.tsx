@@ -1,12 +1,10 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PrintIcon from '@mui/icons-material/Print'
-import SettingsIcon from '@mui/icons-material/Settings'
 import type { ReactElement } from 'react'
 
 type CaseSetupActionsProps = {
   shouldShowMicControl: boolean
   renderMicControl: () => ReactElement
-  onOpenSettings: () => void
   personaId: string | null
   scenarioId: string
   printDropdownOpen: boolean
@@ -19,7 +17,6 @@ type CaseSetupActionsProps = {
 export function CaseSetupActions({
   shouldShowMicControl,
   renderMicControl,
-  onOpenSettings,
   personaId,
   scenarioId,
   printDropdownOpen,
@@ -29,21 +26,11 @@ export function CaseSetupActions({
   sessionId,
 }: CaseSetupActionsProps) {
   const canPrint = Boolean(personaId && scenarioId)
-  const printTitle = canPrint ? 'Print options' : 'Select persona and scenario to print'
+  const printTitle = canPrint ? 'View & Print' : 'Select persona and scenario to enable printing'
 
   return (
     <div className="case-setup-inline__icon-actions">
       {shouldShowMicControl && renderMicControl()}
-
-      <button
-        type="button"
-        className="icon-btn"
-        onClick={onOpenSettings}
-        aria-label="Advanced settings"
-        title="Advanced settings"
-      >
-        <SettingsIcon />
-      </button>
 
       <div className="print-dropdown-container">
         <button
@@ -51,7 +38,7 @@ export function CaseSetupActions({
           className="icon-btn"
           onClick={() => setPrintDropdownOpen(!printDropdownOpen)}
           disabled={!canPrint}
-          aria-label="Print options"
+          aria-label="View & Print"
           aria-haspopup="menu"
           title={printTitle}
         >

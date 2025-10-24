@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { broadcastAssistantTranscript, broadcastUserTranscript } from '../services/transcript_broadcast.ts';
+import { insertTurn } from '../db.ts';
 
 interface TranscriptRelayBody {
   role?: string;
@@ -26,10 +27,10 @@ function toSafeMillis(value: unknown): number | null {
  * broadcast path to populate chat bubbles while `backendTranscriptMode`
  * suppresses local emission, so skipping the broadcast results in an empty UI.
  */
-export function relayTranscript(
+export async function relayTranscript(
   req: Request<{ sessionId: string }, any, TranscriptRelayBody>,
   res: Response
-): Response {
+): Promise<Response> {
   const { sessionId } = req.params;
   const {
     role,
@@ -96,12 +97,51 @@ export function relayTranscript(
     emittedAt: safeEmittedAt,
   });
 
-  if (role === 'user') {
-    broadcastUserTranscript(sessionId, payload);
-  } else {
-    broadcastAssistantTranscript(sessionId, payload);
+  // Coordinate broadcast and persistence - run both in parallel
+  const broadcastPromise =
+    role === 'user' ? broadcastUserTranscript(sessionId, payload) : broadcastAssistantTranscript(sessionId, payload);
+
+  // Prepare persistence (only for meaningful text)
+  const trimmed = String(text || '').trim();
+  const persistencePromise = trimmed
+    ? (async () => {
+        const extras: Record<string, unknown> = {
+          // Prefer finalized timestamp as the event time for ordering
+          finalized_timestamp_ms: safeFinalizedAt,
+          emitted_timestamp_ms: safeEmittedAt,
+        };
+        if (safeStartedAt != null) extras.started_timestamp_ms = safeStartedAt;
+        if (itemId) extras.fingerprint = String(itemId);
+
+        return insertTurn(sessionId, role, trimmed, extras);
+      })()
+    : Promise.resolve();
+
+  // Wait for both operations to complete
+  const results = await Promise.allSettled([broadcastPromise, persistencePromise]);
+
+  const broadcastResult = results[0];
+  const persistResult = results[1];
+
+  // Log any failures but don't fail the request
+  if (broadcastResult.status === 'rejected') {
+    console.error('[TranscriptRelay] ❌ Broadcast failed:', broadcastResult.reason);
   }
 
-  console.log('[TranscriptRelay] ✅ Broadcast complete');
+  if (persistResult.status === 'rejected') {
+    console.warn(
+      '[TranscriptRelay] ⚠️ Persistence failed (message delivered to UI but not saved):',
+      persistResult.reason
+    );
+  }
+
+  if (broadcastResult.status === 'fulfilled' && persistResult.status === 'fulfilled') {
+    console.log('[TranscriptRelay] ✅ Broadcast and persistence complete');
+  } else if (broadcastResult.status === 'fulfilled') {
+    console.log('[TranscriptRelay] ⚠️ Broadcast complete but persistence failed');
+  } else {
+    console.error('[TranscriptRelay] ❌ Broadcast failed - UI may not show message');
+  }
+
   return res.sendStatus(204);
 }

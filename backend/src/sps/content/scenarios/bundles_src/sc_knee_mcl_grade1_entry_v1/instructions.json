@@ -1,0 +1,14 @@
+{
+  "scenario_instruction_overrides": {
+    "tone": "Acute sports injury; patient is cooperative but impatient to return.",
+    "behavioral_notes": [
+      "Wait for student to start.",
+      "If asked for identity: Name Tiana Brooks, DOB 2006-08-19.",
+      "If tests are aggressive early, ask whether that is safe for a fresh sprain."
+    ],
+    "gates": { "requires_name_dob_before_sensitive": true },
+    "safety_prompts": [
+      "If pain exceeds 3/10 during tests or lingers >24 hours, request scaling or rest."
+    ]
+  }
+}

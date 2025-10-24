@@ -39,8 +39,41 @@ const getRuntimeOverrides = (): Partial<FeatureFlagConfig> => {
     return { ...overrides } as Partial<FeatureFlagConfig>
   }
 
-  if (import.meta.env?.DEV && win.__APP_FEATURE_FLAGS__ && typeof win.__APP_FEATURE_FLAGS__ === 'object') {
-    console.warn('[flags] Ignoring legacy __APP_FEATURE_FLAGS__ override. Prefer __SPS_RUNTIME_FEATURE_OVERRIDES__ to avoid collisions.', win.__APP_FEATURE_FLAGS__)
+  // Legacy support: allow __APP_FEATURE_FLAGS__ as a fallback for a minimal subset
+  // This preserves older integrations that set window.__APP_FEATURE_FLAGS__.
+  // Prefer __SPS_RUNTIME_FEATURE_OVERRIDES__ going forward.
+  const legacy = win.__APP_FEATURE_FLAGS__
+  if (legacy && typeof legacy === 'object') {
+    // Map known legacy keys to the new config shape safely
+    const mapped: Partial<FeatureFlagConfig> = {}
+
+    try {
+      // Common legacy flags
+      if ('VOICE_ENABLED' in legacy) mapped.voiceEnabled = Boolean(legacy.VOICE_ENABLED)
+      if ('VOICE_AUTOSTART' in legacy) mapped.voiceAutostart = Boolean(legacy.VOICE_AUTOSTART)
+      if ('BANNERS_ENABLED' in legacy) mapped.bannersEnabled = Boolean(legacy.BANNERS_ENABLED)
+
+      // Best-effort extras if present
+      if ('SPS_ENABLED' in legacy) mapped.spsEnabled = Boolean(legacy.SPS_ENABLED)
+      if ('VOICE_DEBUG' in legacy) mapped.voiceDebug = Boolean(legacy.VOICE_DEBUG)
+      if ('CHAT_ANIMATIONS_ENABLED' in legacy) mapped.chatAnimationsEnabled = Boolean(legacy.CHAT_ANIMATIONS_ENABLED)
+      if ('STT_FALLBACK_MS' in legacy) {
+        const n = Number(legacy.STT_FALLBACK_MS)
+        if (Number.isFinite(n) && n >= 0) mapped.sttFallbackMs = n
+      }
+      if ('STT_EXTENDED_MS' in legacy) {
+        const n = Number(legacy.STT_EXTENDED_MS)
+        if (Number.isFinite(n) && n >= 0) mapped.sttExtendedMs = n
+      }
+    } catch {
+      // If mapping fails, fall back to empty to avoid breaking runtime
+    }
+
+    if (import.meta.env?.DEV) {
+      console.warn('[flags] Using legacy __APP_FEATURE_FLAGS__ overrides. Prefer __SPS_RUNTIME_FEATURE_OVERRIDES__ going forward.', legacy)
+    }
+
+    return mapped
   }
 
   return {}

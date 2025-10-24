@@ -24,8 +24,17 @@
     "test:watch": "vitest",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "analyze": "node scripts/analyze-bundle.js",
-    "build": "webpack --mode production",
-    "build:analyze": "npm run analyze"
+    "build:analyze": "npm run analyze",
+    "setup-env": "node scripts/setup-env.js",
+    "deps:check": "node scripts/manage-deps.js check",
+    "deps:install-all": "node scripts/manage-deps.js install-all",
+    "build:all": "cd backend && npm run build && cd ../frontend && npm run build",
+    "start:prod": "powershell -ExecutionPolicy Bypass -File scripts/start-production.ps1",
+    "secrets:scan": "node scripts/scan-secrets.mjs",
+    "report:personas:languages": "node scripts/persona-language-report.mjs",
+    "content:audit": "cd backend && npm run sps:audit",
+    "content:gate": "cd backend && npm run sps:gate",
+    "content:audit:todos": "cd backend && npm run sps:audit:todos"
   },
   "lint-staged": {
     "backend/src/**/*.{ts,js}": [

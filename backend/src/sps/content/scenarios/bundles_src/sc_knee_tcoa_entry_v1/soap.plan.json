@@ -1,0 +1,32 @@
+{
+  "goals": [
+    { "timeframe": "2 weeks", "goal": "KOOS JR +5, NPRS worst ≤4/10, knee extension to 0° right", "measurable": true },
+    { "timeframe": "4 weeks", "goal": "30-sec chair stand ≥12 reps; walk 20 minutes with pain ≤3/10", "measurable": true },
+    { "timeframe": "6 weeks", "goal": "Walk 40 minutes community pace; ascend one flight reciprocally with pain ≤2/10; LEFS +9", "measurable": true }
+  ],
+  "interventions": [
+    { "category": "therapeutic_exercise", "name": "Flexibility: heel slides, quad stretch, calf stretch", "dosage": "Daily 2–3 sets of 30–45s holds" },
+    { "category": "therapeutic_exercise", "name": "Strength: sit-to-stand, step-ups (low), mini-squats, TKE", "dosage": "3x/week; 2–3 sets of 8–12; RPE 5–6/10" },
+    { "category": "aerobic_conditioning", "name": "Walking or bike (low impact)", "dosage": "3–5x/week; 10–30 min; progress 10%/week" },
+    { "category": "neuromotor", "name": "Gait & stair strategy (handrail/cane as needed)", "dosage": "Practice stairs 2–3x/week; cue controlled descent" },
+    { "category": "education", "name": "Joint protection, pacing, weight management support, pain-monitoring rule (≤3/10 during, ≤24-hr recovery)", "dosage": "Discuss each visit; written plan" }
+  ],
+  "education": [
+    "Short, frequent bouts beat long, painful sessions.",
+    "On cold days, warm-up inside with gentle cycling or marching first."
+  ],
+  "disrecommended_items": ["Passive modalities as stand-alone interventions", "High-impact plyometrics early in care"],
+  "follow_up": {
+    "frequency": "1x/week for 6–8 weeks",
+    "reassessment": [
+      "KOOS JR (+5 at 2 weeks; +10 by 6 weeks)",
+      "LEFS (+9 by 6 weeks)",
+      "Chair stand (≥12 reps)",
+      "Goniometry (0–115° target by 6 weeks)"
+    ],
+    "resource_limited_alternatives": [
+      "Use sturdy chair and household step for exercises.",
+      "Walking program with phone timer; no gym required."
+    ]
+  }
+}

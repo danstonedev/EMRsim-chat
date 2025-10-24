@@ -14,7 +14,7 @@ export type UseAnimationAutoTriggerArgs = {
 export function useAnimationAutoTrigger({ sortedMessages, onInsertAssistantMedia }: UseAnimationAutoTriggerArgs) {
   const enabled = featureFlags.chatAnimationsEnabled
   const processedIds = useRef<Set<string>>(new Set())
-  const pending = useRef<null | { userId: string; userTs: number; match: ReturnType<typeof matchAnimation> }>(null)
+  const pending = useRef<null | { userId: string; userTs: number; match: ReturnType<typeof matchAnimation>, timer?: ReturnType<typeof setTimeout> | null }>(null)
 
   const lastUserMessage = useMemo(() => {
     for (let i = sortedMessages.length - 1; i >= 0; i--) {
@@ -34,12 +34,36 @@ export function useAnimationAutoTrigger({ sortedMessages, onInsertAssistantMedia
     processedIds.current.add(lastUserMessage.id)
     if (!match) return
 
-    pending.current = { userId: lastUserMessage.id, userTs: lastUserMessage.timestamp, match }
-    animationDebug('Queued animation preview until assistant reply', {
+    // Queue request; prefer inserting after the next assistant message.
+    // Also set a fallback timer to insert if no assistant reply arrives within a short window.
+    // This helps voice-only or delayed-text scenarios.
+    const entry = { userId: lastUserMessage.id, userTs: lastUserMessage.timestamp, match, timer: null as ReturnType<typeof setTimeout> | null }
+    // Fallback after 6s if no assistant message detected
+    entry.timer = setTimeout(() => {
+      if (!pending.current || pending.current.userId !== entry.userId) return
+      const media: MediaReference = {
+        id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+        type: 'animation',
+        url: '',
+        thumbnail: undefined,
+        caption: entry.match?.caption || '3D Demonstration',
+        animationId: entry.match?.id,
+        options: undefined,
+      }
+      onInsertAssistantMedia(media)
+      animationDebug('Inserted 3D preview via timeout fallback (no assistant reply)', {
+        animationId: entry.match?.id,
+      })
+      try { if (entry.timer) clearTimeout(entry.timer) } catch {}
+      pending.current = null
+    }, 6000)
+
+    pending.current = entry
+    animationDebug('Queued animation preview until assistant reply (with timeout fallback)', {
       userId: lastUserMessage.id,
       match,
     })
-  }, [enabled, lastUserMessage])
+  }, [enabled, lastUserMessage, onInsertAssistantMedia])
 
   // When an assistant finalized text arrives after the triggering user message, insert the preview right after
   useEffect(() => {
@@ -48,7 +72,7 @@ export function useAnimationAutoTrigger({ sortedMessages, onInsertAssistantMedia
     if (!p) return
 
     // Find the first assistant message that is after the user message and has text
-    const assistant = [...sortedMessages].find(m => m.role === 'assistant' && !m.pending && m.timestamp >= p.userTs && (m.text?.trim()?.length ?? 0) > 0)
+    const assistant = [...sortedMessages].find(m => m.role === 'assistant' && !m.pending && m.timestamp >= p.userTs)
     if (!assistant) return
 
     const media: MediaReference = {
@@ -64,6 +88,7 @@ export function useAnimationAutoTrigger({ sortedMessages, onInsertAssistantMedia
     animationDebug('Inserted 3D preview after assistant message', {
       animationId: p.match?.id,
     })
+    try { if (p.timer) clearTimeout(p.timer) } catch {}
     pending.current = null
   }, [enabled, sortedMessages, onInsertAssistantMedia])
 }

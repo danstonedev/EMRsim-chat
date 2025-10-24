@@ -220,6 +220,8 @@ export interface MediaAsset {
 
 export interface ClinicalScenario {
   scenario_id: string;
+  // Non-revealing code shown to students in selection UI; stable and unique per scenario
+  student_case_id?: string;
   title: string;
   region: Region;
   setting?:

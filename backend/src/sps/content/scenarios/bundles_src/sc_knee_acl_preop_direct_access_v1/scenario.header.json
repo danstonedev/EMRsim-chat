@@ -16,11 +16,17 @@
       "sports_pt"
     ],
     "profession": "physical_therapy",
+    "roles": [
+      {
+        "id": "patient",
+        "instruction": null
+      }
+    ],
     "created_at": "2025-10-01T16:57:26Z",
     "updated_at": "2025-10-01T16:57:26Z"
   },
   "linkage": {
-    "persona_id": "prsn_acl_preop_v1",
+    "persona_id": "ash-riley-summers",
     "instructions_file": "./instructions.json",
     "soap_subjective_file": "./soap.subjective.json",
     "soap_objective_file": "./soap.objective.json",

@@ -1,0 +1,114 @@
+{
+  "chief_complaint": "Right knee pain with running that's getting worse, especially going downhill.",
+  "history_present_illness": {
+    "mechanism": "Gradual onset over 3 months after increasing weekly mileage from 15 to 25 miles and adding hill training.",
+    "first_onset": "12 weeks ago",
+    "course_since_onset": "progressively worsening",
+    "prior_episodes": "Similar episode 2 years ago that self-resolved with rest over 6 weeks.",
+    "prior_treatment_response": [
+      "rest helps temporarily but symptoms return with running",
+      "ice provides short-term relief",
+      "tried patella strap with minimal benefit"
+    ],
+    "red_flag_denials_affirmations": {
+      "fever": false,
+      "night_pain": false,
+      "unexplained_weight_loss": false,
+      "locking": false,
+      "true_instability": false,
+      "numbness_tingling": false,
+      "significant_swelling": false
+    }
+  },
+  "pain": {
+    "location": ["diffuse anterior knee", "around and behind kneecap", "sometimes medial retinaculum"],
+    "quality": ["deep ache", "pressure behind kneecap", "occasional sharp catch"],
+    "irritability": "moderate",
+    "nrs_rest": 2,
+    "nrs_activity": 6,
+    "nrs_best": 0,
+    "nrs_worst": 7,
+    "aggravators": [
+      "running >3 miles",
+      "downhill running",
+      "stairs (especially descent)",
+      "prolonged sitting >30 min (theater sign)",
+      "deep squatting",
+      "getting up from low chair"
+    ],
+    "easers": [
+      "rest",
+      "ice",
+      "reducing running volume",
+      "walking breaks from desk",
+      "extending knee when seated"
+    ],
+    "24h_pattern": "morning stiffness 10-15 min, tolerable with walking, increases with running, worst in evening after run",
+    "sleep_disturbance": "occasionally wakes if rolls onto right knee"
+  },
+  "past_medical_history": [
+    "no prior knee surgery",
+    "similar knee pain 2 years ago (self-resolved)"
+  ],
+  "surgical_history": [],
+  "medications": ["ibuprofen 400mg as needed (2-3x/week)"],
+  "allergies": [],
+  "imaging": {
+    "available": false,
+    "modality": "none",
+    "date": "",
+    "body_region": "knee",
+    "summary_patient_facing": "No imaging obtained yet",
+    "clinical_interpretation": "N/A - clinically not indicated at this stage"
+  },
+  "social_history": {
+    "tobacco": "never",
+    "alcohol": "1-2 drinks/week",
+    "sleep_hours": 7,
+    "diet_notes": "balanced, adequate hydration",
+    "work_demands": "desk job with prolonged sitting",
+    "sport_hobbies": [
+      "recreational running (training for 10K)",
+      "basketball 1x/week (currently avoiding)",
+      "hiking on weekends"
+    ]
+  },
+  "sdoh": {
+    "home_environment": "house with stairs to second floor",
+    "transportation": "reliable",
+    "financial_barriers": "none reported",
+    "caregiving_roles": []
+  },
+  "goals": [
+    "return to running 4-5 days/week pain-free",
+    "complete upcoming 10K race in 8 weeks",
+    "go down stairs without pain",
+    "return to playing basketball"
+  ],
+  "systems_review": {
+    "cardiovascular_pulmonary": {
+      "dyspnea": false,
+      "chest_pain": false,
+      "orthopnea": false,
+      "edema": false
+    },
+    "neuromuscular": {
+      "dizziness": false,
+      "falls_history": false,
+      "headache_neck": false,
+      "paresthesia": false
+    },
+    "integumentary": {
+      "wounds": false,
+      "rash": false,
+      "color_changes": false
+    },
+    "other": []
+  },
+  "special_questions_region_specific": [
+    "Any popping, clicking, or catching? - Occasional catching sensation but no true locking",
+    "Any giving way or instability? - No true giving way, feels stable",
+    "Any swelling? - Mild puffiness sometimes after long runs",
+    "Training history? - Increased mileage 30% over 6 weeks, added hills 3 weeks ago"
+  ]
+}

@@ -5,6 +5,8 @@ import type { VoiceSessionHandle } from '../../../shared/useVoiceSession'
 type VoiceStatusPanelProps = {
   voiceSession: VoiceSessionHandle
   renderMicControl: () => ReactElement
+  renderPlayPause: () => ReactElement
+  renderTransportRight: () => ReactElement
 }
 
 const shouldShowAdaptiveBadge = () => {
@@ -22,6 +24,8 @@ const shouldShowAdaptiveBadge = () => {
 export const VoiceStatusPanel = memo(function VoiceStatusPanel({
   voiceSession,
   renderMicControl,
+  renderPlayPause,
+  renderTransportRight,
 }: VoiceStatusPanelProps) {
   if (voiceSession.status !== 'connected') {
     return null
@@ -53,7 +57,9 @@ export const VoiceStatusPanel = memo(function VoiceStatusPanel({
           levelSmoothing={0.4}
           bars={22}
           mode="passive"
-          endSlot={renderMicControl()}
+          startSlot={renderMicControl()}
+          centerLeftSlot={renderPlayPause()}
+          endSlot={renderTransportRight()}
         />
       </div>
     </div>

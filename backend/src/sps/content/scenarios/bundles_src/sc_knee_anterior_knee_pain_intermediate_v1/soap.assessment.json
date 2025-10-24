@@ -1,0 +1,25 @@
+{
+  "problem_list": [
+    "anterior knee pain limiting running >3 miles",
+    "dynamic knee valgus with functional tasks",
+    "hip abductor weakness",
+    "limited ankle dorsiflexion",
+    "pain with prolonged sitting (theater sign)",
+    "pain with stairs especially descent"
+  ],
+  "working_diagnoses": [
+    "patellofemoral pain syndrome with proximal kinematic contributions"
+  ],
+  "clinical_impression": "28-year-old recreational runner presenting with gradual-onset anterior knee pain consistent with PFPS, exacerbated by increased training volume and hill running. Key positives: diffuse anterior/retropatellar pain, theater sign, pain with squatting/stairs, positive patellar compression tests, dynamic valgus, proximal weakness. Key negatives: no locking, no true instability, negative meniscal tests, stable patella. Proximal impairments (hip weakness, dynamic valgus) likely contributing to increased patellofemoral joint stress. Irritability moderate; prognosis good with appropriate load management and progressive strengthening.",
+  "irritability_severity": "moderate",
+  "staging_subgrouping": "patellofemoral pain with kinematic dysfunction",
+  "prognosis": "good with 8-12 weeks of progressive rehabilitation",
+  "icd10_codes": ["M22.2X1", "M25.561"],
+  "differential_diagnoses_considered": [
+    "patellar tendinopathy (less likely - no inferior pole tenderness, no pain with resisted extension)",
+    "early chondromalacia patella (cannot rule out without imaging, but clinical presentation favors PFPS)",
+    "meniscal injury (unlikely - negative Thessaly, negative McMurray, no joint line tenderness, no locking)",
+    "plica syndrome (possible contributing factor but not primary driver)",
+    "iliotibial band syndrome (lateral symptoms minimal, no lateral knee pain with running)"
+  ]
+}

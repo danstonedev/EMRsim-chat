@@ -167,19 +167,22 @@ export class TranscriptCoordinator {
    * Returns { cleanText, media }
    */
   parseMediaMarker(text: string): { cleanText: string; media: MediaReference | undefined } {
-    const mediaMatch = text.match(/\[MEDIA:([^\]]+)\]/)
-    if (!mediaMatch) {
+    // Support multiple markers by capturing all, but return the first mapped media for current UI schema
+    const allMatches = Array.from(text.matchAll(/\[MEDIA:([^\]]+)\]/g))
+    if (allMatches.length === 0) {
       return { cleanText: text, media: undefined }
     }
 
-    const mediaId = mediaMatch[1]
-    const cleanText = text.replace(mediaMatch[0], '').trim()
+    const firstId = allMatches[0][1]
+    // Remove all markers from visible text
+    const cleanText = text.replace(/\[MEDIA:[^\]]+\]/g, '').trim()
 
     // Find media by ID in scenario media library
-    const media = this.scenarioMedia.find(m => m.id === mediaId)
+    const media = this.scenarioMedia.find(m => m.id === firstId)
 
-    voiceDebug('TranscriptCoordinator media marker found', {
-      mediaId,
+    voiceDebug('TranscriptCoordinator media marker(s) found', {
+      firstId,
+      count: allMatches.length,
       scenarioMediaCount: this.scenarioMedia.length,
       found: !!media,
       mediaUrl: media?.url,

@@ -10,12 +10,19 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "dev:debug": "NODE_OPTIONS='--inspect' tsx watch src/index.ts",
-    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap",
+  "build": "tsup src/index.ts --format esm,cjs --sourcemap && node scripts/copy-sps-content.mjs",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "sps:validate": "node scripts/generateManifest.ts --validate"
+    "sps:compile": "tsx src/sps/tools/compile-content.ts",
+    "sps:validate": "node scripts/generateManifest.ts --validate",
+  "sps:gate": "tsx src/sps/tools/validate-content.ts --strict",
+  "sps:audit:todos": "tsx src/sps/tools/generate-fix-todos.ts",
+  "sps:audit": "tsx src/sps/tools/audit-report.ts --out-md ../../../../scripts/content-audit-report.md --out-json ../../../../scripts/content-audit-report.json",
+    "sps:kits:validate": "tsx src/sps/runtime/validation/validate-kits.ts",
+    "sps:mapping:validate": "tsx src/sps/runtime/validation/validate-mapping.ts",
+    "sps:validate:content": "npm run -s sps:kits:validate && npm run -s sps:mapping:validate"
   },
   "dependencies": {
     "@types/redis": "^4.0.10",

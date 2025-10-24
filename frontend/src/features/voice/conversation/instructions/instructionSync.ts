@@ -36,6 +36,7 @@ export function createInstructionSyncManager(deps: InstructionSyncDependencies):
   let encounterPhase: string | null = null
   let encounterGate: Record<string, unknown> | null = null
   let outstandingGate: string[] = []
+  let currentAudience: 'student' | 'faculty' = 'student'
 
   let instructionSyncInFlight = false
   let instructionSyncPending: PendingInstructionSync | null = null
@@ -52,6 +53,12 @@ export function createInstructionSyncManager(deps: InstructionSyncDependencies):
     if (options && Object.prototype.hasOwnProperty.call(options, 'gate')) {
       nextGate = options.gate ? { ...options.gate } : null
     }
+    if (options && Object.prototype.hasOwnProperty.call(options, 'audience')) {
+      const a = options.audience
+      if (a === 'student' || a === 'faculty') {
+        currentAudience = a
+      }
+    }
 
     encounterPhase = nextPhase
     encounterGate = nextGate
@@ -59,6 +66,7 @@ export function createInstructionSyncManager(deps: InstructionSyncDependencies):
     const result: InstructionRefreshOptions = {}
     if (nextPhase) result.phase = nextPhase
     if (nextGate) result.gate = nextGate
+    // Do not include audience here; we'll always merge the current value when calling the API
 
     return Object.keys(result).length ? result : undefined
   }
@@ -108,7 +116,7 @@ export function createInstructionSyncManager(deps: InstructionSyncDependencies):
         instructions,
         phase: returnedPhase,
         outstanding_gate: nextOutstandingGate,
-      } = await api.getVoiceInstructions(sessionId, options)
+  } = await api.getVoiceInstructions(sessionId, { ...(options || {}), audience: currentAudience })
       if (seq !== instructionRefreshSeq) return
 
       const normalized = typeof instructions === 'string' ? instructions.trim() : ''

@@ -32,7 +32,7 @@ services:
       - PORT=3002
       # Mount these from .env file or set them here
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_REALTIME_MODEL=${OPENAI_REALTIME_MODEL:-gpt-realtime-2025-08-28}
+      - OPENAI_REALTIME_MODEL=${OPENAI_REALTIME_MODEL:-gpt-realtime-mini-2025-10-06}
       - OPENAI_TEXT_MODEL=${OPENAI_TEXT_MODEL:-gpt-4o}
       - OPENAI_TTS_VOICE=${OPENAI_TTS_VOICE:-cedar}
       - OPENAI_TRANSCRIPTION_MODEL=${OPENAI_TRANSCRIPTION_MODEL:-gpt-4o-mini-transcribe}

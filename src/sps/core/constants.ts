@@ -18,8 +18,7 @@ export const CONTENT_PATHS = {
   root: CONTENT_ROOT,
   personas: {
     realtime: path.join(CONTENT_ROOT, 'personas/realtime'),
-    shared: path.join(CONTENT_ROOT, 'personas/shared'),
-    base: path.join(CONTENT_ROOT, 'personas/base'),
+    // shared/base deprecated and removed from runtime
   },
   scenarios: {
     compiled: path.join(CONTENT_ROOT, 'scenarios/compiled'),

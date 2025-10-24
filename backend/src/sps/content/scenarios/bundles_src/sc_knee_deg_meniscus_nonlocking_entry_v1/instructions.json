@@ -1,0 +1,8 @@
+{
+  "scenario_instruction_overrides": {
+    "tone": "Chronic work-related pain; patient pragmatic and wants to avoid surgery.",
+    "behavioral_notes": ["Wait for student.", "If asked identity: Robert Wagner, DOB 1972-04-18.", "Express concern about surgery and time off work.", "If student recommends surgery immediately, ask about PT options first."],
+    "gates": { "requires_name_dob_before_sensitive": true },
+    "safety_prompts": ["If deep squat tests are too aggressive early, mention increased pain afterward."]
+  }
+}

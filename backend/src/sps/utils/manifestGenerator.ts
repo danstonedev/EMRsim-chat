@@ -289,14 +289,15 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
 
   const catalogAccumulator = ensureCatalogAccumulator();
 
-  const personaDirectories = ['personas/base', 'personas/shared', 'personas/realtime'];
+  // Runtime uses realtime personas only; base/shared are deprecated and not scanned
+  const personaDirectories = ['personas/realtime'];
 
   personaDirectories.forEach(subPath => {
     const personasDir = path.join(contentRoot, subPath);
     if (!fs.existsSync(personasDir)) {
       return;
     }
-    const personaFiles = fs.readdirSync(personasDir).filter(f => f.endsWith('.json'));
+  const personaFiles = fs.readdirSync(personasDir).filter(f => f.endsWith('.json'));
 
     for (const file of personaFiles) {
       const filePath = path.join(personasDir, file);
@@ -306,24 +307,41 @@ export function generateContentArtifacts(contentRoot: string): ContentArtifacts 
       } catch (error) {
         console.warn(`[manifest] Failed to parse persona file ${subPath}/${file}: ${error}`);
       }
-      const personaKey = path.basename(file, '.json');
 
-      if (manifest.content.personas[personaKey]) {
-        console.warn(`[manifest] Duplicate persona id detected: ${personaKey}. Overwriting previous entry.`);
+      const baseKey = path.basename(file, '.json');
+
+      // Special handling: realtime_personas.json contains an array of personas; index each by patient_id
+      if (baseKey === 'realtime_personas' && Array.isArray(data)) {
+        data.forEach((p: any, idx: number) => {
+          const pid = typeof p?.patient_id === 'string' && p.patient_id.trim() ? p.patient_id.trim() : `realtime_${idx}`;
+          if (manifest.content.personas[pid]) {
+            console.warn(`[manifest] Duplicate persona id detected in realtime bundle: ${pid}. Overwriting previous entry.`);
+          }
+          manifest.content.personas[pid] = {
+            content_version: typeof p.content_version === 'string' && p.content_version.trim() ? p.content_version.trim() : '1.0.0',
+            file: `${subPath}/${file}`,
+            checksum: formatChecksum(generateObjectChecksum(p)),
+            updated_at: typeof p.updated_at === 'string' && p.updated_at.trim() ? p.updated_at.trim() : generatedAt,
+            patient_id: pid,
+          };
+          manifest.statistics.total_personas++;
+        });
+      } else {
+        // Fallback: one persona per file (scenario-specific or legacy)
+        const personaKey = baseKey;
+        if (manifest.content.personas[personaKey]) {
+          console.warn(`[manifest] Duplicate persona id detected: ${personaKey}. Overwriting previous entry.`);
+        }
+        manifest.content.personas[personaKey] = {
+          content_version:
+            typeof data.content_version === 'string' && data.content_version.trim() ? data.content_version.trim() : '1.0.0',
+          file: `${subPath}/${file}`,
+          checksum: formatChecksum(generateFileChecksum(filePath)),
+          updated_at: typeof data.updated_at === 'string' && data.updated_at.trim() ? data.updated_at.trim() : generatedAt,
+          patient_id: data.patient_id,
+        };
+        manifest.statistics.total_personas++;
       }
-
-      manifest.content.personas[personaKey] = {
-        content_version:
-          typeof data.content_version === 'string' && data.content_version.trim()
-            ? data.content_version.trim()
-            : '1.0.0',
-        file: `${subPath}/${file}`,
-        checksum: formatChecksum(generateFileChecksum(filePath)),
-        updated_at:
-          typeof data.updated_at === 'string' && data.updated_at.trim() ? data.updated_at.trim() : generatedAt,
-        patient_id: data.patient_id,
-      };
-      manifest.statistics.total_personas++;
     }
   });
 
