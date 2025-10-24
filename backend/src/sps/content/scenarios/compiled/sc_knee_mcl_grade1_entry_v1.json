@@ -1,0 +1,763 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_mcl_grade1_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:fd5665194520de0fb15bc76fea97efa0e01bdab331658e6c8a8e4bf345bb76bc",
+  "dependencies_checksum": "sha256:c4468c760221c488d0d7ee67c79bb90d08b57bbbcd86097101721a2b4abd4a70",
+  "source_bundle": "scenarios/bundles_src/sc_knee_mcl_grade1_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_mcl_grade1_entry_v1",
+    "student_case_id": "C-1HPOW",
+    "title": "Entry: Medial Collateral Ligament Sprain—Grade I",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "sports_medicine_outpatient",
+    "tags": [
+      "entry_level_dpt",
+      "mcl_sprain",
+      "ligament",
+      "acute_knee"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry: Medial Collateral Ligament Sprain—Grade I",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "sports_medicine_outpatient",
+      "tags": [
+        "entry_level_dpt",
+        "mcl_sprain",
+        "ligament",
+        "acute_knee"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-23T00:00:00Z",
+      "updated_at": "2025-10-23T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Identify clinical features of Grade I MCL sprain and rule out concomitant injuries requiring referral.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "safety_screening",
+            "evidence_based_practice",
+            "documentation"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "triage",
+            "differential_diagnosis"
+          ],
+          "evidence_req": "CPG|systematic_review"
+        },
+        {
+          "id": "LO2",
+          "text": "Create a phased rehab plan (acute → subacute) emphasizing protection, ROM, and progressive loading.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care",
+            "communication_education",
+            "documentation"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "plan_of_care"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "When is imaging indicated for acute valgus knee injuries?",
+        "Which activities are safe to begin in week 1 vs week 2?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Right knee MCL sprain, Grade I",
+      "onset": "acute",
+      "duration_weeks": 1,
+      "dominant_symptoms": [
+        "medial knee pain with valgus stress",
+        "tenderness along MCL",
+        "mild swelling/stiffness after activity"
+      ],
+      "pain_nrs_rest": 1,
+      "pain_nrs_activity": 5,
+      "aggravators": [
+        "cutting/lateral movements",
+        "valgus stress (side-step)",
+        "descending stairs fast"
+      ],
+      "easers": [
+        "rest",
+        "compression sleeve",
+        "ice"
+      ],
+      "pattern_24h": "Soreness after practice; eases overnight; mild morning stiffness <15 min",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "MCL sprain Grade I (right)",
+      "body_functions_structures": [
+        "medial joint line tenderness",
+        "pain with valgus stress at 30° without laxity",
+        "mild effusion"
+      ],
+      "activities": [
+        "reduced tolerance to side-steps and stairs descent",
+        "limited cutting maneuvers"
+      ],
+      "participation": [
+        "limited practice participation (soccer winger)"
+      ],
+      "environmental_factors": [
+        "practice field access",
+        "elastic knee sleeve available"
+      ],
+      "personal_factors": [
+        "19-year-old collegiate club athlete",
+        "high motivation to return in 2–3 weeks"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: medial knee",
+            "quality: tender, sting with lateral moves",
+            "NRS activity: 5",
+            "aggravators: side-steps, quick cuts",
+            "mechanism: valgus injury during soccer drill",
+            "onset: 2 days ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "locking: false",
+            "true_instability: false",
+            "numbness: false",
+            "loud_pop: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: ",
+            "psh: ",
+            "meds: [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "clearance for non-contact practice",
+            "return to full drills without pain"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "vitals",
+        "label": "Vitals",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "rom",
+        "label": "ROM (goniometer)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_30",
+        "label": "Valgus Stress at 30° Flexion",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_0",
+        "label": "Valgus Stress at 0°",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "other_ligament_tests",
+        "label": "Other Ligament/Meniscus Screen",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional",
+        "label": "Functional",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "instructions": {
+      "scenario_instruction_overrides": {
+        "tone": "Acute sports injury; patient is cooperative but impatient to return.",
+        "behavioral_notes": [
+          "Wait for student to start.",
+          "If asked for identity: Name Tiana Brooks, DOB 2006-08-19.",
+          "If tests are aggressive early, ask whether that is safe for a fresh sprain."
+        ],
+        "gates": {
+          "requires_name_dob_before_sensitive": true
+        },
+        "safety_prompts": [
+          "If pain exceeds 3/10 during tests or lingers >24 hours, request scaling or rest."
+        ]
+      }
+    },
+    "soap": {
+      "subjective": {
+        "history": {
+          "chief_complaint": "I felt a tweak on the inside of my right knee when I planted and got bumped—now sideways moves sting.",
+          "mechanism": "Valgus force during a soccer drill; knee slightly flexed.",
+          "prior_episodes": "No prior knee sprains.",
+          "functional_impact": "Side-steps and quick cuts hurt; stairs are okay if I go slow.",
+          "goals": "Get cleared for non-contact practice soon.",
+          "identity": {
+            "name": "Tiana Brooks",
+            "dob": "2006-08-19"
+          }
+        },
+        "subjective_catalog": [
+          {
+            "id": "meds_allergies",
+            "label": "Medications & Allergies",
+            "patterns": [
+              "meds",
+              "ibuprofen",
+              "allergies"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Took ibuprofen twice. No drug or tape allergies."
+              ]
+            }
+          },
+          {
+            "id": "swelling_brace",
+            "label": "Swelling/Support",
+            "patterns": [
+              "swelling",
+              "brace",
+              "sleeve",
+              "wrap"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "It puffed up a little the first day; I’ve been using a sleeve. [MEDIA:knee_sleeve_photo]"
+              ]
+            }
+          },
+          {
+            "id": "red_flags",
+            "label": "Red Flags",
+            "patterns": [
+              "locking",
+              "giving way",
+              "numb",
+              "tingle",
+              "pop"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "I didn't hear a loud pop. No locking or giving way. No numbness or tingling."
+              ]
+            }
+          },
+          {
+            "id": "pain_location",
+            "label": "Pain Location",
+            "patterns": [
+              "where",
+              "point to pain",
+              "body chart"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Right along the inside of the knee. [MEDIA:mcl_bodychart]"
+              ]
+            }
+          }
+        ],
+        "patient_reported_outcomes": {
+          "NPRS_worst": 5,
+          "NPRS_usual": 2,
+          "LEFS": 62
+        },
+        "media_library": [
+          {
+            "id": "knee_sleeve_photo",
+            "type": "image",
+            "url": "/media/scenarios/mcl/elastic-sleeve.png",
+            "caption": "Elastic knee sleeve used post-injury"
+          },
+          {
+            "id": "mcl_bodychart",
+            "type": "image",
+            "url": "/media/scenarios/mcl/mcl-medial-bodychart.png",
+            "caption": "Medial knee pain region—right"
+          }
+        ],
+        "history_present_illness": {
+          "mechanism": "valgus injury during soccer drill",
+          "first_onset": "2 days ago",
+          "course_since_onset": "improving with sleeve and relative rest",
+          "prior_episodes": "denies prior knee sprains",
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "locking": false,
+            "true_instability": false,
+            "numbness": false,
+            "loud_pop": false
+          }
+        },
+        "pain": {
+          "location": [
+            "medial knee"
+          ],
+          "quality": [
+            "tender",
+            "sting with lateral moves"
+          ],
+          "irritability": "low-moderate",
+          "nrs_rest": 0,
+          "nrs_activity": 5,
+          "aggravators": [
+            "side-steps",
+            "quick cuts"
+          ],
+          "easers": [
+            "elastic sleeve",
+            "relative rest"
+          ],
+          "24h_pattern": "better in the morning, sore after practice drills"
+        },
+        "social_history": {
+          "sport_hobbies": [
+            "soccer"
+          ],
+          "school_level": "high school"
+        },
+        "goals": [
+          "clearance for non-contact practice",
+          "return to full drills without pain"
+        ],
+        "past_medical_history": [],
+        "surgical_history": [],
+        "medications": [
+          {
+            "name": "ibuprofen",
+            "dose": "taken twice since injury"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "no known drug or tape allergies"
+          }
+        ]
+      },
+      "objective": {
+        "objective_catalog": [
+          {
+            "test_id": "vitals",
+            "label": "Vitals",
+            "template": "vitals",
+            "findings": {
+              "bp": "116/68",
+              "hr": 70,
+              "rr": 12,
+              "spo2": 99
+            }
+          },
+          {
+            "test_id": "inspection",
+            "label": "Inspection",
+            "template": "inspection",
+            "findings": {
+              "effusion": "trace medial",
+              "ecchymosis": "none",
+              "gait": "slight antalgia first few steps"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "rom",
+            "label": "ROM (goniometer)",
+            "template": "rom",
+            "findings": {
+              "knee_ext_right_deg": 0,
+              "knee_flex_right_deg": 130,
+              "knee_ext_left_deg": 0,
+              "knee_flex_left_deg": 135,
+              "pain_end_range": "mild medial discomfort with deep flexion"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "valgus_stress_30",
+            "label": "Valgus Stress at 30° Flexion",
+            "template": "ligament_test",
+            "findings": {
+              "pain_medial": "yes",
+              "laxity": "none vs contralateral",
+              "end_feel": "firm"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "valgus_stress_0",
+            "label": "Valgus Stress at 0°",
+            "template": "ligament_test",
+            "findings": {
+              "pain_medial": "mild",
+              "laxity": "none",
+              "end_feel": "firm"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "other_ligament_tests",
+            "label": "Other Ligament/Meniscus Screen",
+            "template": "screening",
+            "findings": {
+              "lachman": "negative",
+              "varus": "negative",
+              "posterior_drawer": "negative",
+              "mcmurray": "negative"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "palpation",
+            "label": "Palpation",
+            "template": "palpation",
+            "findings": {
+              "mcl_tenderness": "positive along proximal to mid MCL",
+              "joint_line_tenderness": "none"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "functional",
+            "label": "Functional",
+            "template": "functional_task",
+            "findings": {
+              "step_down_20cm_pain": 2,
+              "side_step_lunge_pain": 3,
+              "failure_criteria": "pain ≥3/10 or valgus collapse observed"
+            },
+            "difficulty": "easy"
+          }
+        ],
+        "contraindications_precautions": [
+          "Avoid pivoting/cutting and valgus loads in week 1–2.",
+          "Brace or sleeve may be used for comfort; no aggressive varus/valgus mobilizations."
+        ]
+      },
+      "assessment": {
+        "primary_diagnosis": "Right knee MCL sprain—Grade I",
+        "differential_diagnoses": [
+          "Medial meniscal irritation (less likely—no joint-line tenderness, negative McMurray)",
+          "ACL involvement (unlikely—negative Lachman, no pop/instability)"
+        ],
+        "clinical_reasoning": [
+          "Acute valgus mechanism with medial tenderness and pain on valgus stress at 30° without laxity.",
+          "ROM near full; stability preserved; other ligament tests negative."
+        ],
+        "prognosis": "Good; expected return to non-contact drills in 1–2 weeks and full play by ~3–4 weeks if criteria met."
+      },
+      "plan": {
+        "goals": [
+          {
+            "timeframe": "1 week",
+            "goal": "NPRS worst ≤3/10; full pain-free ROM; minimal tenderness",
+            "measurable": true
+          },
+          {
+            "timeframe": "2 weeks",
+            "goal": "Perform side-steps and 20 cm step-downs with pain ≤2/10; valgus control maintained",
+            "measurable": true
+          },
+          {
+            "timeframe": "3–4 weeks",
+            "goal": "Return to practice with cutting drills pain ≤2/10; LEFS +9 from baseline",
+            "measurable": true
+          }
+        ],
+        "interventions": [
+          {
+            "category": "protection",
+            "name": "Activity modification; sleeve/bracing for comfort",
+            "dosage": "Wear during daily activity/sport drills as needed first 1–2 weeks"
+          },
+          {
+            "category": "therapeutic_exercise",
+            "name": "Early: quad sets, straight-leg raises, heel slides, calf raises",
+            "dosage": "Daily; 2–3 sets of 10–15"
+          },
+          {
+            "category": "therapeutic_exercise",
+            "name": "Progression: mini-squats, step-ups, side-steps with band (no valgus collapse)",
+            "dosage": "3x/week; 2–3 sets of 10–12; RPE 5–6/10"
+          },
+          {
+            "category": "neuromotor_retraining",
+            "name": "Frontal-plane knee control drills",
+            "dosage": "Every other day; 3×30–45s holds (wall press/monster walk)"
+          },
+          {
+            "category": "return_to_run_cut",
+            "name": "Walk-jog → straight-line run → gentle cutting",
+            "dosage": "Advance when pain ≤2/10 and no next-day increase; add 10–20% volume weekly"
+          },
+          {
+            "category": "education",
+            "name": "Healing timeline, pain-monitoring rule (≤3/10 during; ≤24-hr recovery), signs to report",
+            "dosage": "Discuss each visit; written guidance"
+          }
+        ],
+        "education": [
+          "Avoid valgus-loaded drills until week 2; add gradually once pain is ≤2/10 and control is good."
+        ],
+        "disrecommended_items": [
+          "Aggressive valgus stress testing repeatedly in early phase",
+          "High-impact/pivoting in week 1"
+        ],
+        "follow_up": {
+          "frequency": "1–2x/week for 3–4 weeks",
+          "reassessment": [
+            "NPRS worst (≤3/10 by week 1; ≤2/10 by week 2)",
+            "Valgus stress pain only, no laxity maintained",
+            "Step-down 20 cm with no valgus collapse",
+            "LEFS (+9 by week 3–4)"
+          ],
+          "resource_limited_alternatives": [
+            "Use household steps/chairs; bands from campus rec or low-cost set.",
+            "Cone drills with water bottles; lines on field for cutting patterns."
+          ]
+        }
+      }
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "Knee Ligament Sprain CPG (non-operative MCL management)",
+          "identifier": "CPG-Knee-Ligament-2017+",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-23"
+    },
+    "linked_persona_id": "ash-hana-park",
+    "persona_snapshot": {
+      "id": "ash-hana-park",
+      "display_name": "Hana Park",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "ash-hana-park",
+    "content_version": "1.0.0",
+    "checksum": "sha256:fdd047bf69ae19c372b2a35219485e3a18ceaf0d0fca4bac1aa31041ce559d3c",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "ash-hana-park",
+      "display_name": "Hana Park",
+      "demographics": {
+        "name": "Hana Park",
+        "preferred_name": "Hana",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "ash",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Hana Park, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Hana Park. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_mcl_grade1_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_mcl_grade1_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_mcl_grade1_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_mcl_grade1_entry_v1/soap.objective.json",
+    "soap_assessment": "scenarios/bundles_src/sc_knee_mcl_grade1_entry_v1/soap.assessment.json",
+    "soap_plan": "scenarios/bundles_src/sc_knee_mcl_grade1_entry_v1/soap.plan.json"
+  }
+}

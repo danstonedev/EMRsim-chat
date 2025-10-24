@@ -1,0 +1,48 @@
+{
+  "objective_catalog": [
+    { "test_id": "vitals", "label": "Vitals", "template": "vitals", "findings": { "bp": "116/70", "hr": 68, "rr": 14, "spo2": 99 } },
+    {
+      "test_id": "inspection",
+      "label": "Inspection",
+      "template": "inspection",
+      "findings": { "effusion": "trace bilateral", "alignment": "normal", "gait": "normal" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "rom",
+      "label": "ROM",
+      "template": "rom",
+      "findings": { "knee_ext_right_deg": 0, "knee_flex_right_deg": 135, "knee_ext_left_deg": 0, "knee_flex_left_deg": 135, "pain_end_range": "anterior knee ache with flexion >120°" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "strength",
+      "label": "Strength",
+      "template": "strength",
+      "findings": { "quad_bilateral": "4+/5", "hip_abduction_right": "4/5", "hip_ER_right": "4/5" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "patellar_mobility",
+      "label": "Patellar Mobility",
+      "template": "mobility",
+      "findings": { "medial_lateral": "within normal", "superior_inferior": "within normal" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "special_tests",
+      "label": "Special Tests",
+      "template": "screening",
+      "findings": { "clarkes_test": "negative", "patellar_grind": "trace positive with pain" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "functional",
+      "label": "Functional",
+      "template": "functional_task",
+      "findings": { "single_leg_squat": "good control bilateral", "step_down_pain": 2, "run_walk_tolerance": "pain starts mile 4-5" },
+      "difficulty": "easy"
+    }
+  ],
+  "contraindications_precautions": ["Reduce training volume initially; follow 10% rule for progression.", "Monitor for symptom provocation during graded return."]
+}

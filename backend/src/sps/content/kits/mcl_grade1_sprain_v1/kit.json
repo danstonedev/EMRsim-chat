@@ -1,0 +1,23 @@
+{
+  "case_id": "mcl_grade1_sprain_v1",
+  "version": 1,
+  "provenance": {
+    "sources": [
+      "Clinical guidelines for non-operative MCL sprain management (e.g., AAOS, sports medicine CPGs)"
+    ],
+    "reviewers": ["clinician_placeholder"],
+    "last_reviewed": "2025-10-23"
+  },
+  "chunks": [
+    {"id":"mcl_overview","text":"Grade I MCL sprain presents with medial knee pain after valgus mechanism; stability preserved with firm end-feel.","tags":["presenting_problem"],"roles":["patient","clinician"],"phases":["subjective","objective"],"weight":0.95},
+    {"id":"mcl_mechanism","text":"Mechanism often involves valgus force to a slightly flexed knee (cutting/side-step or contact).","tags":["mechanism"],"phases":["subjective"],"weight":0.8},
+    {"id":"mcl_exam","text":"Valgus stress at 30° flexion reproduces medial pain without increased laxity; at 0° may be mildly painful but stable.","tags":["objective","ligament_test"],"phases":["objective"],"weight":0.85},
+    {"id":"mcl_screen","text":"Screen for concomitant injuries: negative Lachman/varus/posterior drawer/McMurray argues against ACL/LCL/PCL/meniscal involvement.","tags":["objective","screening"],"phases":["objective"],"weight":0.8},
+    {"id":"mcl_early_protect","text":"Early management: activity modification, sleeve/bracing for comfort; avoid pivoting/cutting and valgus loads in week 1–2.","tags":["management","protection"],"phases":["treatment_plan"],"weight":0.85},
+    {"id":"mcl_exercise_progression","text":"Progress exercises from quad sets/SLR/heel slides to mini-squats, step-ups, and banded side-steps as pain allows (RPE 5–6/10).","tags":["exercise","management"],"phases":["treatment_plan"],"weight":0.85},
+    {"id":"mcl_neuromotor","text":"Neuromotor: frontal-plane knee control drills (wall press, monster walk) focusing on avoiding valgus collapse.","tags":["neuromotor","management"],"phases":["treatment_plan"],"weight":0.75},
+    {"id":"mcl_rtr","text":"Return-to-run/cut progression: walk-jog → straight-line run → gentle cutting when pain ≤2/10 with no next-day increase; add 10–20% volume weekly.","tags":["management","sport"],"phases":["treatment_plan"],"weight":0.8},
+    {"id":"mcl_guardrail","text":"Guardrail: stop tests/exercises if pain exceeds 3/10 or soreness lasts >24 hours; reassess plan.","tags":["guardrail"],"phases":["objective","treatment_plan"],"weight":0.8},
+    {"id":"mcl_faculty_truth","text":"Ground truth (faculty): Grade I MCL sprain without laxity; negative other ligament tests; good prognosis for return in ~2–4 weeks with criteria-based progression. For grading only.","tags":["ground_truth","spoiler"],"phases":["meta"],"weight":0.99,"audiences":["faculty"]}
+  ]
+}

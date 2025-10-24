@@ -1,0 +1,717 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_acl_coper_nonop_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:92b988d350cc294c5c326e6924325bf9571a2efbeaeae9ba7df963e8ee25eb86",
+  "dependencies_checksum": "sha256:c4468c760221c488d0d7ee67c79bb90d08b57bbbcd86097101721a2b4abd4a70",
+  "source_bundle": "scenarios/bundles_src/sc_knee_acl_coper_nonop_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_acl_coper_nonop_entry_v1",
+    "student_case_id": "C-14IVZ",
+    "title": "Entry: ACL Sprain—Nonoperative Coper Profile",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "sports_medicine_outpatient",
+    "tags": [
+      "entry_level_dpt",
+      "acl_coper",
+      "ligament",
+      "nonoperative"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry: ACL Sprain—Nonoperative Coper Profile",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "sports_medicine_outpatient",
+      "tags": [
+        "entry_level_dpt",
+        "acl_coper",
+        "ligament",
+        "nonoperative"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-24T00:00:00Z",
+      "updated_at": "2025-10-24T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Identify clinical features of ACL sprain coper profile and determine appropriateness for nonoperative management.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "safety_screening",
+            "evidence_based_practice",
+            "documentation"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "triage",
+            "differential_diagnosis"
+          ],
+          "evidence_req": "CPG|systematic_review"
+        },
+        {
+          "id": "LO2",
+          "text": "Design a progressive neuromuscular control and strengthening program for ACL coper rehabilitation.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care",
+            "communication_education",
+            "documentation"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "plan_of_care"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "What criteria distinguish a coper from a non-coper ACL profile?",
+        "When would you recommend surgical consultation despite initial coper presentation?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Right knee ACL sprain, nonoperative coper profile",
+      "onset": "acute",
+      "duration_weeks": 4,
+      "dominant_symptoms": [
+        "anterior knee instability with pivoting",
+        "intermittent swelling",
+        "decreased confidence in knee"
+      ],
+      "pain_nrs_rest": 1,
+      "pain_nrs_activity": 3,
+      "aggravators": [
+        "cutting",
+        "pivoting",
+        "deceleration"
+      ],
+      "easers": [
+        "functional brace",
+        "controlled activities"
+      ],
+      "pattern_24h": "Minimal morning symptoms; instability episodes with sports activities",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "ACL sprain (right), coper profile pursuing nonoperative rehab",
+      "body_functions_structures": [
+        "positive Lachman test",
+        "mild effusion",
+        "quadriceps weakness",
+        "proprioceptive deficits"
+      ],
+      "activities": [
+        "limited cutting and pivoting sports",
+        "reduced single-leg hop performance"
+      ],
+      "participation": [
+        "modified soccer participation",
+        "avoiding high-risk pivoting"
+      ],
+      "environmental_factors": [
+        "functional knee brace available",
+        "access to sports performance facility"
+      ],
+      "personal_factors": [
+        "25-year-old recreational athlete",
+        "motivated for nonoperative approach",
+        "no prior knee injuries"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: anterior knee",
+            "quality: ache, instability sensation",
+            "NRS activity: 3",
+            "aggravators: cutting, pivoting, deceleration",
+            "mechanism: noncontact pivot/deceleration injury",
+            "onset: 4 weeks ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "locking: false",
+            "true_instability: occasional episodes with cutting",
+            "numbness: false",
+            "audible_pop: true"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: ",
+            "psh: ",
+            "meds: [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "return to recreational soccer",
+            "improve confidence in knee stability",
+            "avoid surgery if possible"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "vitals",
+        "label": "Vitals",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "rom",
+        "label": "ROM (goniometer)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer",
+        "label": "Anterior Drawer",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "pivot_shift",
+        "label": "Pivot Shift",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "other_ligament_tests",
+        "label": "Other Ligament Screen",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "strength",
+        "label": "Manual Muscle Testing",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional",
+        "label": "Functional",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "guardrails": {
+      "impact_testing_unsafe": true
+    },
+    "instructions": {
+      "scenario_instruction_overrides": {
+        "tone": "Subacute sports injury; patient is motivated but nervous about instability.",
+        "behavioral_notes": [
+          "Wait for student to start.",
+          "If asked for identity: Name Emma Rodriguez, DOB 1999-03-12.",
+          "Express concern about instability during functional tests; ask if it's normal to feel unstable.",
+          "If student is overly aggressive with pivot shift, express discomfort."
+        ],
+        "gates": {
+          "requires_name_dob_before_sensitive": true
+        },
+        "safety_prompts": [
+          "If instability occurs during testing, ask whether you should stop or continue.",
+          "If surgical referral not mentioned and instability persists, ask about surgical options."
+        ]
+      }
+    },
+    "soap": {
+      "subjective": {
+        "history": {
+          "chief_complaint": "I felt my knee give out during soccer—it's better now but I don't fully trust it on quick turns.",
+          "mechanism": "Noncontact pivot with deceleration during soccer match 4 weeks ago.",
+          "prior_episodes": "No prior knee injuries.",
+          "functional_impact": "Can jog straight but nervous about cutting; occasional giving-way sensation.",
+          "goals": "Return to recreational soccer without surgery if possible.",
+          "identity": {
+            "name": "Emma Rodriguez",
+            "dob": "1999-03-12"
+          }
+        },
+        "subjective_catalog": [
+          {
+            "id": "meds_allergies",
+            "label": "Medications & Allergies",
+            "patterns": [
+              "meds",
+              "ibuprofen",
+              "allergies"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Took ibuprofen initially. No allergies."
+              ]
+            }
+          },
+          {
+            "id": "swelling_instability",
+            "label": "Swelling/Instability",
+            "patterns": [
+              "swelling",
+              "giving way",
+              "instability",
+              "brace"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "It swelled up after the injury. Had a couple episodes where it felt unstable. Using a brace now."
+              ]
+            }
+          },
+          {
+            "id": "red_flags",
+            "label": "Red Flags",
+            "patterns": [
+              "locking",
+              "numb",
+              "tingle",
+              "pop"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Heard/felt a pop initially. No locking. No numbness or tingling."
+              ]
+            }
+          },
+          {
+            "id": "pain_location",
+            "label": "Pain Location",
+            "patterns": [
+              "where",
+              "point to pain"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "General front of the knee, not super specific."
+              ]
+            }
+          },
+          {
+            "id": "surgery_consideration",
+            "label": "Surgery Consideration",
+            "patterns": [
+              "surgery",
+              "operation",
+              "repair"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Saw an orthopedist—they said I might do okay without surgery if I'm careful. Want to try PT first."
+              ]
+            }
+          }
+        ],
+        "patient_reported_outcomes": {
+          "NPRS_worst": 3,
+          "NPRS_usual": 1,
+          "LEFS": 54,
+          "IKDC": 62
+        },
+        "media_library": [],
+        "history_present_illness": {
+          "mechanism": "noncontact pivot/deceleration injury",
+          "first_onset": "4 weeks ago",
+          "course_since_onset": "initial swelling resolved, intermittent instability episodes",
+          "prior_episodes": "denies prior knee injuries",
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "locking": false,
+            "true_instability": "occasional episodes with cutting",
+            "numbness": false,
+            "audible_pop": true
+          }
+        },
+        "pain": {
+          "location": [
+            "anterior knee"
+          ],
+          "quality": [
+            "ache",
+            "instability sensation"
+          ],
+          "irritability": "low",
+          "nrs_rest": 0,
+          "nrs_activity": 3,
+          "aggravators": [
+            "cutting",
+            "pivoting",
+            "deceleration"
+          ],
+          "easers": [
+            "functional brace",
+            "avoiding pivoting"
+          ],
+          "24h_pattern": "minimal pain, more concern about instability"
+        },
+        "social_history": {
+          "sport_hobbies": [
+            "soccer",
+            "running"
+          ],
+          "occupation": "marketing coordinator"
+        },
+        "goals": [
+          "return to recreational soccer",
+          "improve confidence in knee stability",
+          "avoid surgery if possible"
+        ],
+        "past_medical_history": [],
+        "surgical_history": [],
+        "medications": [
+          {
+            "name": "ibuprofen",
+            "dose": "taken initially, no longer using"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "no known allergies"
+          }
+        ]
+      },
+      "objective": {
+        "objective_catalog": [
+          {
+            "test_id": "vitals",
+            "label": "Vitals",
+            "template": "vitals",
+            "findings": {
+              "bp": "118/70",
+              "hr": 64,
+              "rr": 14,
+              "spo2": 99
+            }
+          },
+          {
+            "test_id": "inspection",
+            "label": "Inspection",
+            "template": "inspection",
+            "findings": {
+              "effusion": "mild",
+              "ecchymosis": "resolved",
+              "gait": "normal straight-line, guarded with pivoting"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "rom",
+            "label": "ROM (goniometer)",
+            "template": "rom",
+            "findings": {
+              "knee_ext_right_deg": 0,
+              "knee_flex_right_deg": 132,
+              "knee_ext_left_deg": 0,
+              "knee_flex_left_deg": 135,
+              "pain_end_range": "minimal"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "lachman",
+            "label": "Lachman Test",
+            "template": "ligament_test",
+            "findings": {
+              "anterior_translation": "increased vs contralateral (Grade I-II laxity)",
+              "end_feel": "soft",
+              "pain": "minimal"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "anterior_drawer",
+            "label": "Anterior Drawer",
+            "template": "ligament_test",
+            "findings": {
+              "anterior_translation": "increased vs contralateral",
+              "end_feel": "soft"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "pivot_shift",
+            "label": "Pivot Shift",
+            "template": "ligament_test",
+            "findings": {
+              "result": "trace positive (patient guarding)",
+              "note": "deferred aggressive testing per patient comfort"
+            },
+            "difficulty": "intermediate"
+          },
+          {
+            "test_id": "other_ligament_tests",
+            "label": "Other Ligament Screen",
+            "template": "screening",
+            "findings": {
+              "valgus": "negative",
+              "varus": "negative",
+              "posterior_drawer": "negative",
+              "mcmurray": "negative"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "palpation",
+            "label": "Palpation",
+            "template": "palpation",
+            "findings": {
+              "joint_line_tenderness": "none",
+              "diffuse_anterior_tenderness": "minimal"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "strength",
+            "label": "Manual Muscle Testing",
+            "template": "strength",
+            "findings": {
+              "quad_right": "4/5 (weakness noted)",
+              "quad_left": "5/5",
+              "hamstring_right": "4+/5",
+              "hamstring_left": "5/5"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "functional",
+            "label": "Functional",
+            "template": "functional_task",
+            "findings": {
+              "single_leg_hop_right_cm": 85,
+              "single_leg_hop_left_cm": 110,
+              "limb_symmetry_index": 77,
+              "crossover_hop_pain": 2,
+              "failure_criteria": "LSI <90% and patient apprehension noted"
+            },
+            "difficulty": "easy"
+          }
+        ],
+        "contraindications_precautions": [
+          "Avoid high-risk pivoting and cutting until neuromuscular control improves.",
+          "Progress functional activities based on quadriceps strength, hop symmetry, and patient confidence.",
+          "Consider surgical referral if recurrent instability episodes or failure to progress."
+        ]
+      },
+      "assessment": {},
+      "plan": {}
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "Knee Ligament Sprain CPG (ACL nonoperative coper management)",
+          "identifier": "CPG-Knee-Ligament-2017",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-24"
+    },
+    "linked_persona_id": "ash-hana-park",
+    "persona_snapshot": {
+      "id": "ash-hana-park",
+      "display_name": "Hana Park",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "ash-hana-park",
+    "content_version": "1.0.0",
+    "checksum": "sha256:fdd047bf69ae19c372b2a35219485e3a18ceaf0d0fca4bac1aa31041ce559d3c",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "ash-hana-park",
+      "display_name": "Hana Park",
+      "demographics": {
+        "name": "Hana Park",
+        "preferred_name": "Hana",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "ash",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Hana Park, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Hana Park. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_acl_coper_nonop_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_acl_coper_nonop_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_acl_coper_nonop_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_acl_coper_nonop_entry_v1/soap.objective.json",
+    "soap_assessment": null,
+    "soap_plan": null
+  }
+}

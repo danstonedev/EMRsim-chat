@@ -1,0 +1,11 @@
+{
+  "problem_list": [],
+  "working_diagnoses": [],
+  "clinical_impression": "",
+  "irritability_severity": "low|moderate|high",
+  "staging_subgrouping": "",
+  "prognosis": "good|fair|poor",
+  "icd10_codes": [],
+  "differential_diagnoses_considered": [],
+  "rationale_evidence_links": []
+}

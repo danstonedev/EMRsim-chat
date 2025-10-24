@@ -1,0 +1,32 @@
+{
+  "goals": [
+    { "timeframe": "1 week", "goal": "NPRS worst ≤3/10; full pain-free ROM; minimal tenderness", "measurable": true },
+    { "timeframe": "2 weeks", "goal": "Perform side-steps and 20 cm step-downs with pain ≤2/10; valgus control maintained", "measurable": true },
+    { "timeframe": "3–4 weeks", "goal": "Return to practice with cutting drills pain ≤2/10; LEFS +9 from baseline", "measurable": true }
+  ],
+  "interventions": [
+    { "category": "protection", "name": "Activity modification; sleeve/bracing for comfort", "dosage": "Wear during daily activity/sport drills as needed first 1–2 weeks" },
+    { "category": "therapeutic_exercise", "name": "Early: quad sets, straight-leg raises, heel slides, calf raises", "dosage": "Daily; 2–3 sets of 10–15" },
+    { "category": "therapeutic_exercise", "name": "Progression: mini-squats, step-ups, side-steps with band (no valgus collapse)", "dosage": "3x/week; 2–3 sets of 10–12; RPE 5–6/10" },
+    { "category": "neuromotor_retraining", "name": "Frontal-plane knee control drills", "dosage": "Every other day; 3×30–45s holds (wall press/monster walk)" },
+    { "category": "return_to_run_cut", "name": "Walk-jog → straight-line run → gentle cutting", "dosage": "Advance when pain ≤2/10 and no next-day increase; add 10–20% volume weekly" },
+    { "category": "education", "name": "Healing timeline, pain-monitoring rule (≤3/10 during; ≤24-hr recovery), signs to report", "dosage": "Discuss each visit; written guidance" }
+  ],
+  "education": [
+    "Avoid valgus-loaded drills until week 2; add gradually once pain is ≤2/10 and control is good."
+  ],
+  "disrecommended_items": ["Aggressive valgus stress testing repeatedly in early phase", "High-impact/pivoting in week 1"],
+  "follow_up": {
+    "frequency": "1–2x/week for 3–4 weeks",
+    "reassessment": [
+      "NPRS worst (≤3/10 by week 1; ≤2/10 by week 2)",
+      "Valgus stress pain only, no laxity maintained",
+      "Step-down 20 cm with no valgus collapse",
+      "LEFS (+9 by week 3–4)"
+    ],
+    "resource_limited_alternatives": [
+      "Use household steps/chairs; bands from campus rec or low-cost set.",
+      "Cone drills with water bottles; lines on field for cutting patterns."
+    ]
+  }
+}

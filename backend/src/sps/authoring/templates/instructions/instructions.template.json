@@ -1,0 +1,22 @@
+{
+  "sp_instructions": {
+    "affect": "calm|anxious|frustrated|guarded",
+    "pain_behavior": "grimace_with_end_range|guarding|minimal",
+    "cueing_rules": [
+      "do_not_volunteer_diagnosis",
+      "answer_only_what_is_asked",
+      "use_patient_words"
+    ]
+  },
+  "llm_prompt_hooks": {
+    "coaching_cues": [
+      "Tie each test to a functional hypothesis.",
+      "Link outcome measures to patient-centered goals.",
+      "Summarize safety netting and return-to-care triggers at the end."
+    ],
+    "deflection_lines": [
+      "If asked for unavailable labs: 'I don’t have those results available.'"
+    ]
+  },
+  "authoring_notes": "Populate numeric units explicitly; attach evidence in provenance for prescriptive content."
+}

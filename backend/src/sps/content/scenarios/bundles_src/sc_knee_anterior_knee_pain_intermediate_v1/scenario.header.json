@@ -1,0 +1,141 @@
+{
+  "schema_version": "3.1.0",
+  "scenario_id": "sc_knee_anterior_knee_pain_intermediate_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Intermediate: Anterior Knee Pain with Running",
+    "region": "knee",
+    "difficulty": "moderate",
+    "setting": "outpatient_pt",
+    "tags": ["intermediate_dpt", "anterior_knee_pain", "patellofemoral", "running"],
+    "profession": "physical_therapy",
+    "roles": [
+      {
+        "id": "patient",
+        "instruction": null
+      }
+    ],
+    "created_at": "2025-10-23T00:00:00Z",
+    "updated_at": "2025-10-23T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "",
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Differentiate patellofemoral pain from other anterior knee pathologies using clinical examination.",
+        "bloom_level": "analyze",
+        "capte_refs": ["7D1", "7D2", "7D4"],
+        "npte_map": {"system": "musculoskeletal", "domain": "examination", "nonsystem": "safety"},
+        "assessment_focus": ["clinical_reasoning", "differential_diagnosis"],
+        "evidence_req": "CPG"
+      },
+      {
+        "id": "LO2",
+        "text": "Design a progressive loading program for a runner with patellofemoral pain.",
+        "bloom_level": "create",
+        "capte_refs": ["7D3", "7D5"],
+        "npte_map": {"system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional"},
+        "assessment_focus": ["treatment_planning", "patient_education"],
+        "evidence_req": "CPG"
+      },
+      {
+        "id": "LO3",
+        "text": "Evaluate kinematic factors contributing to patellofemoral stress during running gait.",
+        "bloom_level": "evaluate",
+        "capte_refs": ["7D2"],
+        "npte_map": {"system": "musculoskeletal", "domain": "examination", "nonsystem": "safety"},
+        "assessment_focus": ["clinical_reasoning", "movement_analysis"],
+        "evidence_req": "research"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": [
+      "What findings helped differentiate PFPS from patellar tendinopathy or meniscal injury?",
+      "How would you progress this patient's running volume safely?",
+      "What proximal factors might contribute to this patient's symptoms?"
+    ]
+  },
+  "presenting_problem": {
+    "primary_dx": "Patellofemoral pain syndrome with running-related exacerbation",
+    "onset": "gradual",
+    "duration_weeks": 12,
+    "dominant_symptoms": [
+      "diffuse anterior knee pain",
+      "pain with running (especially downhill)",
+      "pain with prolonged sitting",
+      "occasional catching sensation"
+    ],
+    "pain_nrs_rest": 2,
+    "pain_nrs_activity": 6,
+    "aggravators": [
+      "running >3 miles",
+      "downhill running",
+      "stairs (especially descending)",
+      "prolonged sitting >30 min",
+      "deep squatting"
+    ],
+    "easers": ["rest", "ice", "reducing running volume"],
+    "pattern_24h": "morning stiffness 10-15 min, increases with activity, worse evening after running",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "PFPS limiting running tolerance and recreational sports",
+    "body_functions_structures": [
+      "peripatellar tenderness",
+      "dynamic knee valgus",
+      "hip abductor weakness",
+      "reduced ankle dorsiflexion"
+    ],
+    "activities": [
+      "running limited to <3 miles",
+      "stair descent painful",
+      "squatting limited by pain"
+    ],
+    "participation": [
+      "unable to train for upcoming 10K race",
+      "avoiding recreational basketball"
+    ],
+    "environmental_factors": [
+      "training on hills and uneven surfaces",
+      "desk job with prolonged sitting"
+    ],
+    "personal_factors": [
+      "recently increased running mileage 30%",
+      "motivated to return to racing",
+      "history of similar symptoms 2 years ago (self-resolved)"
+    ]
+  },
+  "guardrails": {
+    "min_age": 18,
+    "max_age": 45,
+    "strict": false
+  },
+  "provenance": {
+    "sources": [
+      {
+        "title": "2019 CPG: Patellofemoral Pain",
+        "identifier": "CPG-2019-PFPS",
+        "level_of_evidence": "CPG"
+      },
+      {
+        "title": "Willy RW et al. Running-Related Biomechanics and PFP",
+        "identifier": "DOI:10.2519/jospt.2019.8825",
+        "level_of_evidence": "research"
+      }
+    ],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-23"
+  }
+}

@@ -1,0 +1,1174 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_anterior_knee_pain_intermediate_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:533ffa4b58dc14c1febf8f46924ff7bfa91a277b244bb2249a00a5feed6afa91",
+  "dependencies_checksum": "sha256:7193e70430f939b25ce421006858fe95b450827b58ecc048c4be9ad889364525",
+  "source_bundle": "scenarios/bundles_src/sc_knee_anterior_knee_pain_intermediate_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_anterior_knee_pain_intermediate_v1",
+    "student_case_id": "C-1N72T",
+    "title": "Intermediate: Anterior Knee Pain with Running",
+    "region": "knee",
+    "difficulty": "moderate",
+    "setting": "outpatient_pt",
+    "tags": [
+      "intermediate_dpt",
+      "anterior_knee_pain",
+      "patellofemoral",
+      "running"
+    ],
+    "schema_version": "3.1.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Intermediate: Anterior Knee Pain with Running",
+      "region": "knee",
+      "difficulty": "moderate",
+      "setting": "outpatient_pt",
+      "tags": [
+        "intermediate_dpt",
+        "anterior_knee_pain",
+        "patellofemoral",
+        "running"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-23T00:00:00Z",
+      "updated_at": "2025-10-23T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Differentiate patellofemoral pain from other anterior knee pathologies using clinical examination.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "7D1",
+            "7D2",
+            "7D4"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "clinical_reasoning",
+            "differential_diagnosis"
+          ],
+          "evidence_req": "CPG"
+        },
+        {
+          "id": "LO2",
+          "text": "Design a progressive loading program for a runner with patellofemoral pain.",
+          "bloom_level": "create",
+          "capte_refs": [
+            "7D3",
+            "7D5"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "treatment_planning",
+            "patient_education"
+          ],
+          "evidence_req": "CPG"
+        },
+        {
+          "id": "LO3",
+          "text": "Evaluate kinematic factors contributing to patellofemoral stress during running gait.",
+          "bloom_level": "evaluate",
+          "capte_refs": [
+            "7D2"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "clinical_reasoning",
+            "movement_analysis"
+          ],
+          "evidence_req": "research"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "What findings helped differentiate PFPS from patellar tendinopathy or meniscal injury?",
+        "How would you progress this patient's running volume safely?",
+        "What proximal factors might contribute to this patient's symptoms?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Patellofemoral pain syndrome with running-related exacerbation",
+      "onset": "gradual",
+      "duration_weeks": 12,
+      "dominant_symptoms": [
+        "diffuse anterior knee pain",
+        "pain with running (especially downhill)",
+        "pain with prolonged sitting",
+        "occasional catching sensation"
+      ],
+      "pain_nrs_rest": 2,
+      "pain_nrs_activity": 6,
+      "aggravators": [
+        "running >3 miles",
+        "downhill running",
+        "stairs (especially descending)",
+        "prolonged sitting >30 min",
+        "deep squatting"
+      ],
+      "easers": [
+        "rest",
+        "ice",
+        "reducing running volume"
+      ],
+      "pattern_24h": "morning stiffness 10-15 min, increases with activity, worse evening after running",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "PFPS limiting running tolerance and recreational sports",
+      "body_functions_structures": [
+        "peripatellar tenderness",
+        "dynamic knee valgus",
+        "hip abductor weakness",
+        "reduced ankle dorsiflexion"
+      ],
+      "activities": [
+        "running limited to <3 miles",
+        "stair descent painful",
+        "squatting limited by pain"
+      ],
+      "participation": [
+        "unable to train for upcoming 10K race",
+        "avoiding recreational basketball"
+      ],
+      "environmental_factors": [
+        "training on hills and uneven surfaces",
+        "desk job with prolonged sitting"
+      ],
+      "personal_factors": [
+        "recently increased running mileage 30%",
+        "motivated to return to racing",
+        "history of similar symptoms 2 years ago (self-resolved)"
+      ]
+    },
+    "scenario_context": {
+      "goals": [
+        "Complete 10K race with minimal to no pain",
+        "Return to running 4-5 days/week pain-free",
+        "Return to recreational basketball",
+        "Independent home program for long-term management",
+        "Reduce pain with stairs to <2/10",
+        "Single-leg squat with improved control (minimal valgus)",
+        "Hip abduction strength 5/5",
+        "Return to running 2 miles without pain >3/10"
+      ],
+      "environment": "house with stairs to second floor"
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: diffuse anterior knee, around and behind kneecap, sometimes medial retinaculum",
+            "quality: deep ache, pressure behind kneecap, occasional sharp catch",
+            "NRS activity: 6",
+            "aggravators: running >3 miles, downhill running, stairs (especially descent), prolonged sitting >30 min (theater sign), deep squatting, getting up from low chair",
+            "mechanism: Gradual onset over 3 months after increasing weekly mileage from 15 to 25 miles and adding hill training.",
+            "onset: 12 weeks ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "night_pain: false",
+            "unexplained_weight_loss: false",
+            "locking: false",
+            "true_instability: false",
+            "numbness_tingling: false",
+            "significant_swelling: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "work: desk job with prolonged sitting",
+            "home: house with stairs to second floor"
+          ]
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: no prior knee surgery, similar knee pain 2 years ago (self-resolved)",
+            "psh: ",
+            "meds: ibuprofen 400mg as needed (2-3x/week)"
+          ]
+        }
+      },
+      {
+        "id": "systems_review",
+        "label": "Systems review",
+        "patterns": [
+          "system review",
+          "ros",
+          "cardio",
+          "neuro"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "cardiovascular_pulmonary: {\"dyspnea\":false,\"chest_pain\":false,\"orthopnea\":false,\"edema\":false}",
+            "neuromuscular: {\"dizziness\":false,\"falls_history\":false,\"headache_neck\":false,\"paresthesia\":false}",
+            "integumentary: {\"wounds\":false,\"rash\":false,\"color_changes\":false}",
+            "other: []"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "return to running 4-5 days/week pain-free",
+            "complete upcoming 10K race in 8 weeks",
+            "go down stairs without pain",
+            "return to playing basketball"
+          ]
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: trace to mild",
+            "ecchymosis: none",
+            "no warmth",
+            "subtle lateral patellar tracking noted",
+            "mild knee valgus alignment in standing"
+          ]
+        }
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: trace to mild"
+          ]
+        }
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "structures: patellar tendon (proximal, mid, distal), medial and lateral facets, peripatellar retinaculum, pes anserine, medial joint line, lateral joint line, iliotibial band",
+            "tenderness: moderate medial facet and retinaculum, mild lateral facet",
+            "normal temperature",
+            "trace puffiness medial retinaculum",
+            "no pitting edema"
+          ]
+        }
+      },
+      {
+        "test_id": "rom",
+        "label": "Range of Motion",
+        "region": "knee",
+        "patient_output_script": {
+          "numeric": {
+            "knee_flexion_active": 132,
+            "knee_extension_active": 0,
+            "knee_flexion_passive": 138,
+            "knee_extension_passive": 0
+          },
+          "qualitative": [
+            "end-feel flexion: soft with anterior discomfort",
+            "end-feel extension: firm",
+            "knee_flexion: anterior pressure and ache at end range",
+            "prolonged_knee_flexion_seated: reproduces theater sign discomfort"
+          ]
+        }
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "quad: 4+/5 (pain limiting)",
+            "hamstring: 5/5",
+            "hip_abduction: 4-/5",
+            "hip_external_rotation: 4/5",
+            "hip_extension: 4+/5",
+            "gastrocnemius: 5/5",
+            "pain inhibition quad: mild inhibition with resisted knee extension"
+          ]
+        }
+      },
+      {
+        "test_id": "clarke_sign",
+        "label": "Clarke Sign",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "moderate discomfort under patella",
+            "patient unable to hold quad contraction"
+          ],
+          "binary_flags": {
+            "pain_reproduced": true,
+            "positive": true
+          }
+        }
+      },
+      {
+        "test_id": "patellar_grind",
+        "label": "Patellar Grind",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "crepitus with compression",
+            "patient reports familiar pain"
+          ],
+          "binary_flags": {
+            "pain_reproduced": true,
+            "crepitus": true
+          }
+        }
+      },
+      {
+        "test_id": "mcconnell_test",
+        "label": "Mcconnell Test",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "pain reduced 40% with medial glide taping"
+          ],
+          "binary_flags": {
+            "relief_with_taping": true,
+            "positive": true
+          }
+        }
+      },
+      {
+        "test_id": "patellar_apprehension",
+        "label": "Patellar Apprehension",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "no apprehension",
+            "stable"
+          ],
+          "binary_flags": {
+            "positive": false
+          }
+        }
+      },
+      {
+        "test_id": "thessaly_test",
+        "label": "Thessaly Test",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "no clicking",
+            "no joint line pain"
+          ],
+          "binary_flags": {
+            "positive": false
+          }
+        }
+      },
+      {
+        "test_id": "mcmurray",
+        "label": "Mcmurray",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "no click",
+            "no joint line pain"
+          ],
+          "binary_flags": {
+            "positive": false
+          }
+        }
+      },
+      {
+        "test_id": "single_leg_squat",
+        "label": "Single Leg Squat",
+        "region": "knee",
+        "patient_output_script": {
+          "numeric": {
+            "reps": 8,
+            "depth_degrees": 60
+          },
+          "qualitative": [
+            "right: moderate knee valgus, hip adduction, trunk lean",
+            "left: good control, minimal valgus",
+            "pain 4/10 on right at bottom"
+          ],
+          "binary_flags": {
+            "poor_control": true
+          }
+        }
+      },
+      {
+        "test_id": "step_down_test",
+        "label": "Step Down Test",
+        "region": "knee",
+        "patient_output_script": {
+          "numeric": {
+            "reps": 12,
+            "step_height_cm": 20
+          },
+          "qualitative": [
+            "pain 5/10 on right descent",
+            "dynamic valgus right knee",
+            "contralateral pelvic drop"
+          ],
+          "binary_flags": {
+            "pain_reproduced": true
+          }
+        }
+      },
+      {
+        "test_id": "running_gait_analysis",
+        "label": "Running Gait Analysis",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "excessive hip adduction right stance",
+            "increased knee valgus right loading",
+            "crossover gait pattern",
+            "limited ankle dorsiflexion in stance",
+            "symptoms reproduced after 2 minutes of running"
+          ]
+        }
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "objective_guardrails": {
+      "deflection_lines": [
+        "Could you show me exactly what movement you want me to do?",
+        "I'm not sure what that test is - can you explain what you're looking for?",
+        "Is this test supposed to hurt? I want to make sure I understand.",
+        "Should I tell you when I feel the pain, or just keep going?"
+      ],
+      "require_explicit_physical_consent": false
+    },
+    "guardrails": {
+      "min_age": 18,
+      "max_age": 45,
+      "strict": false
+    },
+    "instructions": {
+      "sp_instructions": {
+        "affect": "motivated but slightly frustrated",
+        "pain_behavior": "winces with deep squat or patellar compression, subtle grimace with prolonged flexion",
+        "cueing_rules": [
+          "avoid diagnosing; answer with lived experience as a runner",
+          "express concern about upcoming race timeline",
+          "if student asks about training, mention recent mileage increase and hill addition",
+          "if unclear about a test, ask the student to demonstrate or explain",
+          "show relief when exercises or taping provide symptom reduction"
+        ],
+        "sport_specific_context": {
+          "running_experience": "recreational runner for 5 years, completed 3 prior 10Ks",
+          "typical_training": "usually 15 miles/week, increased to 25 miles recently",
+          "race_goal": "10K race in 8 weeks, hoping to PR (personal record)",
+          "current_limitations": "had to stop last run at 3 miles due to pain, avoiding basketball"
+        }
+      },
+      "llm_prompt_hooks": {
+        "coaching_cues": [
+          "ask about training history and recent changes in volume/intensity",
+          "inquire about running surfaces and hills",
+          "explore sitting tolerance at work (theater sign)",
+          "ask about previous episode and what resolved it",
+          "screen for red flags: swelling, locking, instability",
+          "assess functional goals and race timeline",
+          "observe for dynamic valgus during functional tests",
+          "consider proximal (hip) contributions to symptoms"
+        ],
+        "deflection_lines": [
+          "Could you show me exactly what movement you want me to do?",
+          "I'm not sure what that test is - can you explain what you're looking for?",
+          "Is this test supposed to hurt? I want to make sure I understand.",
+          "Should I tell you when I feel the pain, or just keep going?"
+        ],
+        "patient_questions": [
+          "Do you think I'll be able to do my race in 8 weeks?",
+          "Is this something serious or just from overtraining?",
+          "Should I stop running completely or can I keep doing some?",
+          "Will I need an MRI or X-ray?",
+          "My friend had knee pain and needed surgery - is that where this is heading?"
+        ]
+      },
+      "differential_teaching_points": {
+        "pfps_vs_tendinopathy": "No inferior pole tenderness; pain more diffuse and with compression rather than load",
+        "pfps_vs_meniscus": "Negative joint line tests; no locking; pain with compression not rotation",
+        "proximal_contributions": "Hip weakness and dynamic valgus are key findings distinguishing this from simple overuse"
+      },
+      "authoring_notes": "Intermediate case with emphasis on differential diagnosis and proximal contributions. Students should identify kinematic chain dysfunction and design comprehensive rehab including gait retraining. Running-specific context allows discussion of load management and return-to-sport progression."
+    },
+    "soap": {
+      "subjective": {
+        "chief_complaint": "Right knee pain with running that's getting worse, especially going downhill.",
+        "history_present_illness": {
+          "mechanism": "Gradual onset over 3 months after increasing weekly mileage from 15 to 25 miles and adding hill training.",
+          "first_onset": "12 weeks ago",
+          "course_since_onset": "progressively worsening",
+          "prior_episodes": "Similar episode 2 years ago that self-resolved with rest over 6 weeks.",
+          "prior_treatment_response": [
+            "rest helps temporarily but symptoms return with running",
+            "ice provides short-term relief",
+            "tried patella strap with minimal benefit"
+          ],
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "night_pain": false,
+            "unexplained_weight_loss": false,
+            "locking": false,
+            "true_instability": false,
+            "numbness_tingling": false,
+            "significant_swelling": false
+          }
+        },
+        "pain": {
+          "location": [
+            "diffuse anterior knee",
+            "around and behind kneecap",
+            "sometimes medial retinaculum"
+          ],
+          "quality": [
+            "deep ache",
+            "pressure behind kneecap",
+            "occasional sharp catch"
+          ],
+          "irritability": "moderate",
+          "nrs_rest": 2,
+          "nrs_activity": 6,
+          "nrs_best": 0,
+          "nrs_worst": 7,
+          "aggravators": [
+            "running >3 miles",
+            "downhill running",
+            "stairs (especially descent)",
+            "prolonged sitting >30 min (theater sign)",
+            "deep squatting",
+            "getting up from low chair"
+          ],
+          "easers": [
+            "rest",
+            "ice",
+            "reducing running volume",
+            "walking breaks from desk",
+            "extending knee when seated"
+          ],
+          "24h_pattern": "morning stiffness 10-15 min, tolerable with walking, increases with running, worst in evening after run",
+          "sleep_disturbance": "occasionally wakes if rolls onto right knee"
+        },
+        "past_medical_history": [
+          "no prior knee surgery",
+          "similar knee pain 2 years ago (self-resolved)"
+        ],
+        "surgical_history": [],
+        "medications": [
+          "ibuprofen 400mg as needed (2-3x/week)"
+        ],
+        "allergies": [],
+        "imaging": {
+          "available": false,
+          "modality": "none",
+          "date": "",
+          "body_region": "knee",
+          "summary_patient_facing": "No imaging obtained yet",
+          "clinical_interpretation": "N/A - clinically not indicated at this stage"
+        },
+        "social_history": {
+          "tobacco": "never",
+          "alcohol": "1-2 drinks/week",
+          "sleep_hours": 7,
+          "diet_notes": "balanced, adequate hydration",
+          "work_demands": "desk job with prolonged sitting",
+          "sport_hobbies": [
+            "recreational running (training for 10K)",
+            "basketball 1x/week (currently avoiding)",
+            "hiking on weekends"
+          ]
+        },
+        "sdoh": {
+          "home_environment": "house with stairs to second floor",
+          "transportation": "reliable",
+          "financial_barriers": "none reported",
+          "caregiving_roles": []
+        },
+        "goals": [
+          "return to running 4-5 days/week pain-free",
+          "complete upcoming 10K race in 8 weeks",
+          "go down stairs without pain",
+          "return to playing basketball"
+        ],
+        "systems_review": {
+          "cardiovascular_pulmonary": {
+            "dyspnea": false,
+            "chest_pain": false,
+            "orthopnea": false,
+            "edema": false
+          },
+          "neuromuscular": {
+            "dizziness": false,
+            "falls_history": false,
+            "headache_neck": false,
+            "paresthesia": false
+          },
+          "integumentary": {
+            "wounds": false,
+            "rash": false,
+            "color_changes": false
+          },
+          "other": []
+        },
+        "special_questions_region_specific": [
+          "Any popping, clicking, or catching? - Occasional catching sensation but no true locking",
+          "Any giving way or instability? - No true giving way, feels stable",
+          "Any swelling? - Mild puffiness sometimes after long runs",
+          "Training history? - Increased mileage 30% over 6 weeks, added hills 3 weeks ago"
+        ]
+      },
+      "objective": {
+        "vitals": {
+          "bp_mmHg": {
+            "systolic": 118,
+            "diastolic": 76
+          },
+          "hr_bpm": 58,
+          "rr_bpm": 14,
+          "spo2_percent": 99,
+          "temperature_c": 36.9,
+          "position": "seated"
+        },
+        "observation": {
+          "skin_incisions": [],
+          "effusion": "trace to mild",
+          "ecchymosis": "none",
+          "other_findings": [
+            "no warmth",
+            "subtle lateral patellar tracking noted",
+            "mild knee valgus alignment in standing"
+          ]
+        },
+        "gait": {
+          "qualitative": [
+            "minimal antalgic on right with faster pace",
+            "subtle Trendelenburg on right stance phase",
+            "increased knee valgus right side with running in place"
+          ],
+          "assistive_device": "none",
+          "surface": "clinic floor and treadmill observation"
+        },
+        "palpation": {
+          "structures_assessed": [
+            "patellar tendon (proximal, mid, distal)",
+            "medial and lateral facets",
+            "peripatellar retinaculum",
+            "pes anserine",
+            "medial joint line",
+            "lateral joint line",
+            "iliotibial band"
+          ],
+          "tenderness_grading": "moderate medial facet and retinaculum, mild lateral facet",
+          "temperature_edema_skin": [
+            "normal temperature",
+            "trace puffiness medial retinaculum",
+            "no pitting edema"
+          ]
+        },
+        "rom": {
+          "method": "goniometry",
+          "active": {
+            "knee_flexion": 132,
+            "knee_extension": 0,
+            "hip_flexion": 115,
+            "hip_internal_rotation": 35,
+            "hip_external_rotation": 40,
+            "ankle_dorsiflexion_knee_extended": 5,
+            "ankle_dorsiflexion_knee_flexed": 12
+          },
+          "passive": {
+            "knee_flexion": 138,
+            "knee_extension": 0,
+            "ankle_dorsiflexion_knee_extended": 8
+          },
+          "end_feel": {
+            "knee_flexion": "soft with anterior discomfort",
+            "knee_extension": "firm",
+            "ankle_dorsiflexion": "firm (gastrocnemius)"
+          },
+          "symptom_reproduction": {
+            "knee_flexion": "anterior pressure and ache at end range",
+            "prolonged_knee_flexion_seated": "reproduces theater sign discomfort"
+          }
+        },
+        "mmt_strength": {
+          "method": "manual_0_to_5",
+          "grades": {
+            "quad": "4+/5 (pain limiting)",
+            "hamstring": "5/5",
+            "hip_abduction": "4-/5",
+            "hip_external_rotation": "4/5",
+            "hip_extension": "4+/5",
+            "gastrocnemius": "5/5"
+          },
+          "pain_inhibition": {
+            "quad": "mild inhibition with resisted knee extension",
+            "hip_abduction": false
+          }
+        },
+        "special_tests": [
+          {
+            "test_template_id": "clarke_sign",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "moderate discomfort under patella",
+                "patient unable to hold quad contraction"
+              ],
+              "binary_flags": {
+                "pain_reproduced": true,
+                "positive": true
+              }
+            }
+          },
+          {
+            "test_template_id": "patellar_grind",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "crepitus with compression",
+                "patient reports familiar pain"
+              ],
+              "binary_flags": {
+                "pain_reproduced": true,
+                "crepitus": true
+              }
+            }
+          },
+          {
+            "test_template_id": "mcconnell_test",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "pain reduced 40% with medial glide taping"
+              ],
+              "binary_flags": {
+                "relief_with_taping": true,
+                "positive": true
+              }
+            }
+          },
+          {
+            "test_template_id": "patellar_apprehension",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "no apprehension",
+                "stable"
+              ],
+              "binary_flags": {
+                "positive": false
+              }
+            }
+          },
+          {
+            "test_template_id": "thessaly_test",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "no clicking",
+                "no joint line pain"
+              ],
+              "binary_flags": {
+                "positive": false
+              }
+            }
+          },
+          {
+            "test_template_id": "mcmurray",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "no click",
+                "no joint line pain"
+              ],
+              "binary_flags": {
+                "positive": false
+              }
+            }
+          }
+        ],
+        "functional_tests": [
+          {
+            "test_template_id": "single_leg_squat",
+            "performed": true,
+            "findings": {
+              "numeric": {
+                "reps": 8,
+                "depth_degrees": 60
+              },
+              "qualitative": [
+                "right: moderate knee valgus, hip adduction, trunk lean",
+                "left: good control, minimal valgus",
+                "pain 4/10 on right at bottom"
+              ],
+              "binary_flags": {
+                "poor_control": true
+              }
+            }
+          },
+          {
+            "test_template_id": "step_down_test",
+            "performed": true,
+            "findings": {
+              "numeric": {
+                "reps": 12,
+                "step_height_cm": 20
+              },
+              "qualitative": [
+                "pain 5/10 on right descent",
+                "dynamic valgus right knee",
+                "contralateral pelvic drop"
+              ],
+              "binary_flags": {
+                "pain_reproduced": true
+              }
+            }
+          },
+          {
+            "test_template_id": "running_gait_analysis",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "excessive hip adduction right stance",
+                "increased knee valgus right loading",
+                "crossover gait pattern",
+                "limited ankle dorsiflexion in stance",
+                "symptoms reproduced after 2 minutes of running"
+              ]
+            }
+          }
+        ],
+        "outcome_measures": [
+          {
+            "measure_id": "koos_knee_outcome_survey",
+            "score_raw": 68,
+            "score_interpretation": "moderate limitation in sport/recreation subscale"
+          },
+          {
+            "measure_id": "anterior_knee_pain_scale",
+            "score_raw": 74,
+            "score_interpretation": "moderate symptoms"
+          }
+        ],
+        "contraindications_precautions": [
+          "avoid sudden increases in running volume",
+          "avoid sustained deep knee flexion early in treatment",
+          "monitor for increased effusion suggesting overload"
+        ],
+        "test_session_notes": "Findings consistent with PFPS with proximal contributions (hip weakness, dynamic valgus). Differential includes early chondromalacia but clinical presentation favors PFPS. Limited ankle dorsiflexion may contribute to compensatory mechanics."
+      },
+      "assessment": {
+        "problem_list": [
+          "anterior knee pain limiting running >3 miles",
+          "dynamic knee valgus with functional tasks",
+          "hip abductor weakness",
+          "limited ankle dorsiflexion",
+          "pain with prolonged sitting (theater sign)",
+          "pain with stairs especially descent"
+        ],
+        "working_diagnoses": [
+          "patellofemoral pain syndrome with proximal kinematic contributions"
+        ],
+        "clinical_impression": "28-year-old recreational runner presenting with gradual-onset anterior knee pain consistent with PFPS, exacerbated by increased training volume and hill running. Key positives: diffuse anterior/retropatellar pain, theater sign, pain with squatting/stairs, positive patellar compression tests, dynamic valgus, proximal weakness. Key negatives: no locking, no true instability, negative meniscal tests, stable patella. Proximal impairments (hip weakness, dynamic valgus) likely contributing to increased patellofemoral joint stress. Irritability moderate; prognosis good with appropriate load management and progressive strengthening.",
+        "irritability_severity": "moderate",
+        "staging_subgrouping": "patellofemoral pain with kinematic dysfunction",
+        "prognosis": "good with 8-12 weeks of progressive rehabilitation",
+        "icd10_codes": [
+          "M22.2X1",
+          "M25.561"
+        ],
+        "differential_diagnoses_considered": [
+          "patellar tendinopathy (less likely - no inferior pole tenderness, no pain with resisted extension)",
+          "early chondromalacia patella (cannot rule out without imaging, but clinical presentation favors PFPS)",
+          "meniscal injury (unlikely - negative Thessaly, negative McMurray, no joint line tenderness, no locking)",
+          "plica syndrome (possible contributing factor but not primary driver)",
+          "iliotibial band syndrome (lateral symptoms minimal, no lateral knee pain with running)"
+        ]
+      },
+      "plan": {
+        "frequency_duration": {
+          "visits_per_week": 2,
+          "weeks": 8,
+          "rationale": "2x/week for first 4 weeks for exercise progression and running gait retraining, then 1x/week for weeks 5-8 for continued progression and race preparation"
+        },
+        "referrals_imaging_requests": [],
+        "goals": {
+          "stg_2_4_weeks": [
+            "Reduce pain with stairs to <2/10",
+            "Single-leg squat with improved control (minimal valgus)",
+            "Hip abduction strength 5/5",
+            "Return to running 2 miles without pain >3/10"
+          ],
+          "ltg_6_12_weeks": [
+            "Complete 10K race with minimal to no pain",
+            "Return to running 4-5 days/week pain-free",
+            "Return to recreational basketball",
+            "Independent home program for long-term management"
+          ]
+        },
+        "interventions_planned": [
+          {
+            "intervention_id": "patient_education_load_management",
+            "dose": {
+              "sessions": "ongoing"
+            },
+            "expected_response": {
+              "rationale": "Understanding load tolerance and training error critical for preventing recurrence"
+            },
+            "content": [
+              "Explain PFPS as load intolerance, not structural damage",
+              "Discuss gradual return to running (10% rule)",
+              "Educate on theater sign and sitting breaks",
+              "Running surface and footwear considerations"
+            ]
+          },
+          {
+            "intervention_id": "hip_strengthening_progressive",
+            "dose": {
+              "phase_1": "Isometrics (week 1-2): hip abduction, external rotation, 3x30sec holds, daily",
+              "phase_2": "Isotonics (week 3-4): clamshells, side-lying abduction, 3x15, 5x/week",
+              "phase_3": "Functional (week 5-6): lateral band walks, single-leg stance, 3x20, 5x/week",
+              "phase_4": "Running-specific (week 7-8): single-leg RDL, lateral hops, 3x12, 4x/week"
+            },
+            "progression_criteria": [
+              "Pain <3/10 during and after exercise",
+              "Improved control on single-leg squat",
+              "No increase in symptoms next day"
+            ],
+            "expected_response": {
+              "rationale": "Address proximal weakness to reduce dynamic valgus and patellofemoral stress"
+            }
+          },
+          {
+            "intervention_id": "quad_strengthening_progressive",
+            "dose": {
+              "phase_1": "Quad sets, SLR (week 1-2): 3x15, daily",
+              "phase_2": "Short-arc quads, wall sits 0-45° (week 3-4): 3x15, 5x/week",
+              "phase_3": "Step-ups, eccentric step-downs (week 5-6): 3x12, 4x/week",
+              "phase_4": "Single-leg press, Bulgarian split squat (week 7-8): 3x10, 3x/week"
+            },
+            "progression_criteria": [
+              "No increase in anterior knee pain",
+              "Improving KOOS score"
+            ],
+            "expected_response": {
+              "rationale": "Improve quad strength to better distribute patellofemoral forces"
+            }
+          },
+          {
+            "intervention_id": "patellar_taping_mcconnell",
+            "dose": {
+              "frequency": "as needed for symptom-provoking activities first 2-3 weeks"
+            },
+            "expected_response": {
+              "rationale": "Short-term pain relief to facilitate exercise tolerance and motor retraining"
+            }
+          },
+          {
+            "intervention_id": "running_gait_retraining",
+            "dose": {
+              "sessions": "weeks 3-8, incorporated into PT visits",
+              "practice": "2-3x/week, 10-20 min sessions"
+            },
+            "content": [
+              "Mirror/video feedback for knee alignment",
+              "Cadence increase to 170-180 steps/min to reduce loading",
+              "Verbal cues: 'soft knees', 'hips level', 'quiet landing'",
+              "Progressive treadmill work with real-time feedback"
+            ],
+            "progression_criteria": [
+              "Improved kinematics on visual assessment",
+              "Reduced symptoms with running"
+            ],
+            "expected_response": {
+              "rationale": "Reduce patellofemoral joint stress through improved running mechanics"
+            }
+          },
+          {
+            "intervention_id": "ankle_mobility_gastrocnemius_stretch",
+            "dose": {
+              "sets": 3,
+              "hold": "30sec",
+              "frequency_per_week": 7
+            },
+            "expected_response": {
+              "rationale": "Improve ankle dorsiflexion to reduce compensatory knee valgus"
+            }
+          },
+          {
+            "intervention_id": "graduated_running_program",
+            "dose": {
+              "week_1_2": "2x/week, 1.5 miles easy pace, flat surfaces",
+              "week_3_4": "3x/week, 2-2.5 miles, gradually introduce gentle hills",
+              "week_5_6": "3-4x/week, 3-4 miles, mix terrain",
+              "week_7_8": "4x/week, 4-5 miles, include race-pace intervals, simulate race conditions"
+            },
+            "progression_criteria": [
+              "Pain <3/10 during running",
+              "No increase in symptoms 24hr post-run",
+              "No morning stiffness >10 minutes"
+            ],
+            "expected_response": {
+              "rationale": "Progressive tissue adaptation to running load while monitoring symptoms"
+            }
+          }
+        ],
+        "patient_education": {
+          "topics": [
+            "PFPS pathophysiology (load intolerance, not damage)",
+            "Training error and importance of gradual progression",
+            "Role of proximal hip strength in knee control",
+            "Self-management of theater sign with sitting breaks",
+            "Running gait modifications and cadence",
+            "Footwear and surface considerations",
+            "Flare-up management (relative rest, ice, temporary volume reduction)",
+            "Long-term prevention strategies"
+          ],
+          "teach_back_confirmed": true
+        },
+        "safety_netting": [
+          "If pain increases to >5/10 during running or lasts >24 hours post-run, reduce volume by 50% and contact clinic",
+          "If you develop significant swelling, locking, or true instability, contact clinic immediately",
+          "Monitor KOOS scores every 2 weeks - if plateau or worsening, reassess program",
+          "Post-race: expect some soreness, but if pain >4/10 persists >48 hours, schedule follow-up"
+        ],
+        "return_to_sport_criteria": {
+          "clearance_criteria": [
+            "Pain <2/10 with running at race pace",
+            "Single-leg squat with good control bilaterally",
+            "Hip strength 5/5 bilaterally",
+            "Able to complete practice 10K distance with minimal symptoms",
+            "KOOS score >85",
+            "Patient demonstrates understanding of load management"
+          ],
+          "timeline": "10K race clearance anticipated at 8 weeks if progression smooth"
+        }
+      }
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "2019 CPG: Patellofemoral Pain",
+          "identifier": "CPG-2019-PFPS",
+          "level_of_evidence": "CPG"
+        },
+        {
+          "title": "Willy RW et al. Running-Related Biomechanics and PFP",
+          "identifier": "DOI:10.2519/jospt.2019.8825",
+          "level_of_evidence": "research"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-23"
+    }
+  },
+  "persona": null,
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_anterior_knee_pain_intermediate_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_anterior_knee_pain_intermediate_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_anterior_knee_pain_intermediate_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_anterior_knee_pain_intermediate_v1/soap.objective.json",
+    "soap_assessment": "scenarios/bundles_src/sc_knee_anterior_knee_pain_intermediate_v1/soap.assessment.json",
+    "soap_plan": "scenarios/bundles_src/sc_knee_anterior_knee_pain_intermediate_v1/soap.plan.json"
+  }
+}

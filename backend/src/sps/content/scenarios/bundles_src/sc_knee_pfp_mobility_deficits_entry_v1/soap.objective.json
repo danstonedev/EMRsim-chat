@@ -1,0 +1,62 @@
+{
+  "objective_catalog": [
+    { "test_id": "vitals", "label": "Vitals", "template": "vitals", "findings": { "bp": "110/68", "hr": 72, "rr": 14, "spo2": 99 } },
+    {
+      "test_id": "inspection",
+      "label": "Inspection",
+      "template": "inspection",
+      "findings": { "effusion": "none", "alignment": "mild dynamic valgus noted", "gait": "normal" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "rom",
+      "label": "ROM",
+      "template": "rom",
+      "findings": { "knee_ext_right_deg": 0, "knee_flex_right_deg": 132, "knee_ext_left_deg": 0, "knee_flex_left_deg": 135, "pain_end_range": "anterior knee pain with flexion >120°" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "ankle_df",
+      "label": "Ankle Dorsiflexion (Lunge Test)",
+      "template": "rom",
+      "findings": { "right_cm": 7, "left_cm": 8, "norm": ">10cm", "limitation": "bilateral limitation" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "thomas_test",
+      "label": "Thomas Test (Hip Flexor)",
+      "template": "flexibility",
+      "findings": { "right": "positive (tight hip flexors)", "left": "positive" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "obers_test",
+      "label": "Ober's Test (ITB)",
+      "template": "flexibility",
+      "findings": { "right": "positive (tight ITB)", "left": "mild positive" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "patellar_tilt",
+      "label": "Patellar Tilt/Mobility",
+      "template": "mobility",
+      "findings": { "lateral_tilt": "increased right", "medial_glide": "restricted right" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "strength",
+      "label": "Strength",
+      "template": "strength",
+      "findings": { "hip_abduction_right": "4-/5", "hip_ER_right": "4/5", "quad_right": "4+/5" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "functional",
+      "label": "Functional",
+      "template": "functional_task",
+      "findings": { "single_leg_squat": "dynamic valgus right", "step_down_pain": 5, "squat_depth_limited": "yes" },
+      "difficulty": "easy"
+    }
+  ],
+  "contraindications_precautions": ["Address mobility deficits before aggressive strengthening.", "Avoid painful end-range loading initially."]
+}

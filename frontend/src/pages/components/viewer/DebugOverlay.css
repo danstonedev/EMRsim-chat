@@ -1,0 +1,24 @@
+.debug-overlay {
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.2;
+  max-width: 320px;
+  pointer-events: none;
+}
+
+.debug-overlay__section {
+  margin-top: 4px;
+}
+
+.debug-overlay__list {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.debug-overlay__selected {
+  opacity: 0.85;
+  margin-top: 2px;
+}

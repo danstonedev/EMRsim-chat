@@ -1,0 +1,51 @@
+[
+  {
+    "test_template_id": "tmpl_30s_chair_stand",
+    "label": "30-Second Chair Stand",
+    "region": "hip|knee",
+    "instructions_brief": "Arms crossed, 43–45 cm chair, count stands in 30 s.",
+    "output_spec": {
+      "numeric": {
+        "reps": {
+          "units": "count"
+        }
+      },
+      "qualitative": []
+    },
+    "protocol_source_id": "src_protocol_30s_cs",
+    "norm_reference_id": "norms_30s_cs"
+  },
+  {
+    "test_template_id": "tmpl_tug",
+    "label": "Timed Up and Go (3 m)",
+    "region": "region_agnostic",
+    "instructions_brief": "Stand, walk 3 m, turn, return, sit; time total.",
+    "output_spec": {
+      "numeric": {
+        "seconds": {
+          "units": "s"
+        }
+      }
+    },
+    "protocol_source_id": "src_protocol_tug",
+    "norm_reference_id": "norms_tug"
+  },
+  {
+    "test_template_id": "tmpl_10m_walk",
+    "label": "10-Meter Walk (6 m timed)",
+    "region": "region_agnostic",
+    "instructions_brief": "Time middle 6 m of a 10 m path; compute m/s.",
+    "output_spec": {
+      "numeric": {
+        "time_seconds_6m": {
+          "units": "s"
+        },
+        "speed_m_per_s": {
+          "units": "m/s"
+        }
+      }
+    },
+    "protocol_source_id": "src_protocol_10m",
+    "norm_reference_id": "norms_10m"
+  }
+]

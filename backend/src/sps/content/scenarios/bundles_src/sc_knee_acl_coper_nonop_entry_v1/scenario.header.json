@@ -1,0 +1,85 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_knee_acl_coper_nonop_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry: ACL Sprain—Nonoperative Coper Profile",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "sports_medicine_outpatient",
+    "tags": ["entry_level_dpt", "acl_coper", "ligament", "nonoperative"],
+    "profession": "physical_therapy",
+    "roles": [
+      { "id": "patient", "instruction": null }
+    ],
+    "created_at": "2025-10-24T00:00:00Z",
+    "updated_at": "2025-10-24T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "ash-hana-park",
+    "suggested_personas": ["ash-hana-park", "coral-julián-rivera", "echo-devon-brooks"],
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Identify clinical features of ACL sprain coper profile and determine appropriateness for nonoperative management.",
+        "bloom_level": "analyze",
+        "capte_refs": ["safety_screening", "evidence_based_practice", "documentation"],
+        "npte_map": { "system": "musculoskeletal", "domain": "examination", "nonsystem": "safety" },
+        "assessment_focus": ["triage", "differential_diagnosis"],
+        "evidence_req": "CPG|systematic_review"
+      },
+      {
+        "id": "LO2",
+        "text": "Design a progressive neuromuscular control and strengthening program for ACL coper rehabilitation.",
+        "bloom_level": "apply",
+        "capte_refs": ["plan_of_care", "communication_education", "documentation"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional" },
+        "assessment_focus": ["plan_of_care"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": [
+      "What criteria distinguish a coper from a non-coper ACL profile?",
+      "When would you recommend surgical consultation despite initial coper presentation?"
+    ]
+  },
+  "presenting_problem": {
+    "primary_dx": "Right knee ACL sprain, nonoperative coper profile",
+    "onset": "acute",
+    "duration_weeks": 4,
+    "dominant_symptoms": ["anterior knee instability with pivoting", "intermittent swelling", "decreased confidence in knee"],
+    "pain_nrs_rest": 1,
+    "pain_nrs_activity": 3,
+    "aggravators": ["cutting", "pivoting", "deceleration"],
+    "easers": ["functional brace", "controlled activities"],
+    "pattern_24h": "Minimal morning symptoms; instability episodes with sports activities",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "ACL sprain (right), coper profile pursuing nonoperative rehab",
+    "body_functions_structures": ["positive Lachman test", "mild effusion", "quadriceps weakness", "proprioceptive deficits"],
+    "activities": ["limited cutting and pivoting sports", "reduced single-leg hop performance"],
+    "participation": ["modified soccer participation", "avoiding high-risk pivoting"],
+    "environmental_factors": ["functional knee brace available", "access to sports performance facility"],
+    "personal_factors": ["25-year-old recreational athlete", "motivated for nonoperative approach", "no prior knee injuries"]
+  },
+  "provenance": {
+    "sources": [
+      { "title": "Knee Ligament Sprain CPG (ACL nonoperative coper management)", "identifier": "CPG-Knee-Ligament-2017", "level_of_evidence": "CPG" }
+    ],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-24"
+  }
+}

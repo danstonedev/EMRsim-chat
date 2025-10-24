@@ -1,0 +1,8 @@
+{
+  "scenario_instruction_overrides": {
+    "tone": "Post-operative; patient motivated and following protocol.",
+    "behavioral_notes": ["Wait for student.", "If asked identity: David Chen, DOB 1986-09-22.", "Express eagerness to progress but defer to student's guidance.", "If student suggests aggressive stretching, ask if that's safe at 2 weeks post-op."],
+    "gates": { "requires_name_dob_before_sensitive": true },
+    "safety_prompts": ["If forced flexion >110° causes significant pain, mention it and ask to stop."]
+  }
+}

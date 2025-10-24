@@ -1,0 +1,78 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_knee_post_meniscectomy_stable_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry: Post-Partial Meniscectomy—Early Stable Rehab",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": ["entry_level_dpt", "post_operative", "meniscectomy", "knee"],
+    "profession": "physical_therapy",
+    "roles": [{ "id": "patient", "instruction": null }],
+    "created_at": "2025-10-24T00:00:00Z",
+    "updated_at": "2025-10-24T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "nova-caleb-nguyen",
+    "suggested_personas": ["nova-caleb-nguyen", "echo-devon-brooks", "ballad-ishaan-kapoor"],
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Identify appropriate early-phase rehabilitation parameters post-arthroscopic partial meniscectomy.",
+        "bloom_level": "apply",
+        "capte_refs": ["safety_screening", "plan_of_care"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "safety" },
+        "assessment_focus": ["plan_of_care"],
+        "evidence_req": "CPG"
+      },
+      {
+        "id": "LO2",
+        "text": "Progress ROM, strength, and functional activities based on post-op timeline and symptoms.",
+        "bloom_level": "apply",
+        "capte_refs": ["plan_of_care"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional" },
+        "assessment_focus": ["clinical_reasoning"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": ["What are typical weight-bearing and ROM progressions post-meniscectomy?", "When would you escalate care due to post-op complications?"]
+  },
+  "presenting_problem": {
+    "primary_dx": "Post-arthroscopic partial meniscectomy (right knee), 2 weeks post-op",
+    "onset": "surgical",
+    "duration_weeks": 2,
+    "dominant_symptoms": ["mild surgical site pain", "stiffness", "quad weakness"],
+    "pain_nrs_rest": 1,
+    "pain_nrs_activity": 3,
+    "aggravators": ["prolonged sitting", "stairs"],
+    "easers": ["ice", "gentle movement"],
+    "pattern_24h": "Minimal pain, stiff after sitting",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "Post-partial meniscectomy (stable course)",
+    "body_functions_structures": ["mild effusion", "quad inhibition", "ROM limited to 110° flexion"],
+    "activities": ["stairs limited", "return to desk work initiated"],
+    "participation": ["on track for return to recreational cycling"],
+    "environmental_factors": ["desk job", "stairs at home"],
+    "personal_factors": ["38-year-old motivated to resume cycling"]
+  },
+  "provenance": {
+    "sources": [{ "title": "Meniscus and Articular Cartilage Lesions CPG", "identifier": "CPG-Meniscus-2018", "level_of_evidence": "CPG" }],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-24"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "frequency_duration": {
+    "visits_per_week": 2,
+    "weeks": 4
+  },
+  "referrals_imaging_requests": [
+    "orthopedics_consult",
+    "MRI_knee_right"
+  ],
+  "goals": {
+    "stg_2_4_weeks": [
+      "restore full passive knee extension within 2 weeks",
+      "reduce effusion to trace",
+      "SLR without extensor lag"
+    ],
+    "ltg_6_12_weeks": [
+      "quad strength ≥90% of uninvolved prior to surgery",
+      "normal gait without instability"
+    ]
+  },
+  "interventions_planned": [
+    {
+      "intervention_id": "education_pacing",
+      "dose": {
+        "time_min": 10
+      },
+      "progression_criteria": [
+        "demonstrates edema control plan"
+      ],
+      "regression_criteria": [],
+      "home_program_elements": [
+        "RICE_protocol",
+        "brace_usage"
+      ],
+      "expected_response": {
+        "immediate_session": [
+          "understands precautions"
+        ],
+        "2_6_weeks": [
+          "effusion_down"
+        ]
+      },
+      "evidence_bindings": []
+    },
+    {
+      "intervention_id": "motor_control",
+      "dose": {
+        "time_min": 15
+      },
+      "progression_criteria": [
+        "SLR_no_lag"
+      ],
+      "regression_criteria": [
+        "return_of_effusion"
+      ],
+      "home_program_elements": [
+        "quad_sets",
+        "heel_slides",
+        "patellar_mobs_grade_I_II"
+      ],
+      "expected_response": {
+        "2_6_weeks": [
+          "extension_restored",
+          "quad_activation_up"
+        ]
+      },
+      "evidence_bindings": []
+    }
+  ],
+  "patient_education": {
+    "topics": [
+      "brace_and_crutch_use",
+      "effusion_control",
+      "surgery_timeline_expectations"
+    ],
+    "teach_back_confirmed": true,
+    "printed_digital_resources": []
+  },
+  "safety_netting": [
+    "report increased locking or severe night pain",
+    "seek urgent care for calf swelling/chest pain"
+  ]
+}

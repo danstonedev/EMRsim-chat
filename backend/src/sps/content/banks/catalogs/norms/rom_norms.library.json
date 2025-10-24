@@ -1,0 +1,221 @@
+{
+  "hip": {
+    "flexion_deg": {
+      "mean": 120,
+      "range": [
+        100,
+        130
+      ],
+      "position": "supine",
+      "device": "goniometer"
+    },
+    "extension_deg": {
+      "mean": 10,
+      "range": [
+        0,
+        20
+      ],
+      "position": "prone",
+      "device": "goniometer"
+    },
+    "abduction_deg": {
+      "mean": 40,
+      "range": [
+        30,
+        50
+      ],
+      "position": "supine",
+      "device": "goniometer"
+    },
+    "adduction_deg": {
+      "mean": 20,
+      "range": [
+        10,
+        30
+      ],
+      "position": "supine",
+      "device": "goniometer"
+    },
+    "ir_90flex_deg": {
+      "mean": 30,
+      "range": [
+        10,
+        45
+      ],
+      "position": "sitting_90flex",
+      "device": "goniometer"
+    },
+    "er_90flex_deg": {
+      "mean": 40,
+      "range": [
+        25,
+        60
+      ],
+      "position": "sitting_90flex",
+      "device": "goniometer"
+    }
+  },
+  "knee": {
+    "flexion_deg": {
+      "mean": 135,
+      "range": [
+        120,
+        150
+      ],
+      "position": "supine",
+      "device": "goniometer"
+    },
+    "extension_deg": {
+      "mean": 0,
+      "range": [
+        -5,
+        5
+      ],
+      "position": "supine",
+      "device": "goniometer"
+    }
+  },
+  "ankle_foot": {
+    "df_knee_flex_deg": {
+      "mean": 20,
+      "range": [
+        10,
+        25
+      ],
+      "position": "sitting_knee_flexed",
+      "device": "goniometer"
+    },
+    "pf_deg": {
+      "mean": 50,
+      "range": [
+        40,
+        60
+      ],
+      "position": "supine",
+      "device": "goniometer"
+    },
+    "inv_deg": {
+      "mean": 35,
+      "range": [
+        25,
+        45
+      ],
+      "position": "sitting",
+      "device": "goniometer"
+    },
+    "ev_deg": {
+      "mean": 15,
+      "range": [
+        10,
+        25
+      ],
+      "position": "sitting",
+      "device": "goniometer"
+    }
+  },
+  "shoulder": {
+    "flexion_deg": {
+      "mean": 170,
+      "range": [
+        150,
+        180
+      ],
+      "position": "supine",
+      "device": "goniometer"
+    },
+    "abduction_deg": {
+      "mean": 170,
+      "range": [
+        150,
+        180
+      ],
+      "position": "supine",
+      "device": "goniometer"
+    },
+    "er_90abd_deg": {
+      "mean": 90,
+      "range": [
+        70,
+        110
+      ],
+      "position": "supine_90_abd",
+      "device": "goniometer"
+    },
+    "ir_90abd_deg": {
+      "mean": 70,
+      "range": [
+        50,
+        90
+      ],
+      "position": "supine_90_abd",
+      "device": "goniometer"
+    }
+  },
+  "cervical_spine": {
+    "flexion_deg": {
+      "mean": 50,
+      "range": [
+        40,
+        60
+      ],
+      "position": "sitting",
+      "device": "goniometer|inclinometer"
+    },
+    "extension_deg": {
+      "mean": 60,
+      "range": [
+        50,
+        70
+      ],
+      "position": "sitting",
+      "device": "goniometer|inclinometer"
+    },
+    "rotation_deg": {
+      "mean": 80,
+      "range": [
+        70,
+        90
+      ],
+      "position": "sitting",
+      "device": "goniometer|inclinometer"
+    },
+    "lateral_flex_deg": {
+      "mean": 45,
+      "range": [
+        35,
+        50
+      ],
+      "position": "sitting",
+      "device": "goniometer|inclinometer"
+    }
+  },
+  "lumbar_spine": {
+    "flexion_deg": {
+      "mean": 60,
+      "range": [
+        40,
+        80
+      ],
+      "position": "standing",
+      "device": "inclinometer"
+    },
+    "extension_deg": {
+      "mean": 25,
+      "range": [
+        20,
+        35
+      ],
+      "position": "standing",
+      "device": "inclinometer"
+    },
+    "lateral_flex_deg": {
+      "mean": 25,
+      "range": [
+        20,
+        30
+      ],
+      "position": "standing",
+      "device": "inclinometer"
+    }
+  }
+}

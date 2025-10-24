@@ -1,0 +1,85 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_knee_mcl_grade1_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry: Medial Collateral Ligament Sprain—Grade I",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "sports_medicine_outpatient",
+    "tags": ["entry_level_dpt", "mcl_sprain", "ligament", "acute_knee"],
+    "profession": "physical_therapy",
+    "roles": [
+      { "id": "patient", "instruction": null }
+    ],
+    "created_at": "2025-10-23T00:00:00Z",
+    "updated_at": "2025-10-23T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "ash-hana-park",
+    "suggested_personas": ["ash-hana-park", "coral-julián-rivera", "sage-jonah-mensah"],
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Identify clinical features of Grade I MCL sprain and rule out concomitant injuries requiring referral.",
+        "bloom_level": "analyze",
+        "capte_refs": ["safety_screening", "evidence_based_practice", "documentation"],
+        "npte_map": { "system": "musculoskeletal", "domain": "examination", "nonsystem": "safety" },
+        "assessment_focus": ["triage", "differential_diagnosis"],
+        "evidence_req": "CPG|systematic_review"
+      },
+      {
+        "id": "LO2",
+        "text": "Create a phased rehab plan (acute → subacute) emphasizing protection, ROM, and progressive loading.",
+        "bloom_level": "apply",
+        "capte_refs": ["plan_of_care", "communication_education", "documentation"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional" },
+        "assessment_focus": ["plan_of_care"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": [
+      "When is imaging indicated for acute valgus knee injuries?",
+      "Which activities are safe to begin in week 1 vs week 2?"
+    ]
+  },
+  "presenting_problem": {
+    "primary_dx": "Right knee MCL sprain, Grade I",
+    "onset": "acute",
+    "duration_weeks": 1,
+    "dominant_symptoms": ["medial knee pain with valgus stress", "tenderness along MCL", "mild swelling/stiffness after activity"],
+    "pain_nrs_rest": 1,
+    "pain_nrs_activity": 5,
+    "aggravators": ["cutting/lateral movements", "valgus stress (side-step)", "descending stairs fast"],
+    "easers": ["rest", "compression sleeve", "ice"],
+    "pattern_24h": "Soreness after practice; eases overnight; mild morning stiffness <15 min",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "MCL sprain Grade I (right)",
+    "body_functions_structures": ["medial joint line tenderness", "pain with valgus stress at 30° without laxity", "mild effusion"],
+    "activities": ["reduced tolerance to side-steps and stairs descent", "limited cutting maneuvers"],
+    "participation": ["limited practice participation (soccer winger)"],
+    "environmental_factors": ["practice field access", "elastic knee sleeve available"],
+    "personal_factors": ["19-year-old collegiate club athlete", "high motivation to return in 2–3 weeks"]
+  },
+  "provenance": {
+    "sources": [
+      { "title": "Knee Ligament Sprain CPG (non-operative MCL management)", "identifier": "CPG-Knee-Ligament-2017+", "level_of_evidence": "CPG" }
+    ],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-23"
+  }
+}

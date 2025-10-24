@@ -1,0 +1,115 @@
+{
+  "objective_catalog": [
+    {
+      "test_id": "vitals",
+      "label": "Vitals",
+      "template": "vitals",
+      "findings": { "bp": "112/70", "hr": 64, "rr": 12, "spo2": 99 }
+    },
+    {
+      "test_id": "double_squat",
+      "label": "Double-Leg Squat",
+      "template": "functional_task",
+      "findings": {
+        "pain_onset_deg": 65,
+        "pain_rating": 3,
+        "movement_quality": "medial knee drift; trunk flexion strategy",
+        "failure_criteria": "valgus > 1/2 foot width or pain ≥3/10"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "step_down_right",
+      "label": "Step-Down 20 cm – Right",
+      "template": "functional_task",
+      "findings": {
+        "reps": 8,
+        "pain_concordant": true,
+        "valgus_deviation": "≈1 foot width",
+        "pelvic_drop_deg": 6,
+        "failure_criteria": "pelvic drop >5° or valgus >1/2 foot width or pain ≥3/10"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "single_leg_squat_right",
+      "label": "Single-Leg Squat – Right",
+      "template": "functional_task",
+      "findings": { "reps": 4, "pain_concordant": true, "quality": "hip adduction/IR noted" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "patellofemoral_provocation",
+      "label": "PFJ Provocation (compression in flexion)",
+      "template": "joint_provocation",
+      "findings": { "result": "symptom reproduction", "tenderness": "peri-patellar superolateral" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "patellar_mobility",
+      "label": "Patellar Mobility/Tilt",
+      "template": "patella_mobility",
+      "findings": { "lateral_tilt_pref": true, "medial_glide": "mildly limited" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "length_testing",
+      "label": "Muscle Length",
+      "template": "length_testing",
+      "findings": {
+        "ely_knee_flexion_deg_right": 110,
+        "ely_left": 125,
+        "ober_right": "positive",
+        "ankle_df_knee_ext_deg_right": 5,
+        "ankle_df_knee_ext_deg_left": 10
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "strength_hhd",
+      "label": "Strength (HHD/MMT)",
+      "template": "strength_testing",
+      "findings": {
+        "hip_abd_right_N": 180,
+        "hip_abd_left_N": 210,
+        "asymmetry_pct": 14,
+        "quad_right_MMT": "4/5 pain-limited",
+        "quad_left_MMT": "5/5",
+        "calf_single_leg_raises_right": 18,
+        "calf_left": 24
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "rom",
+      "label": "ROM (goniometer)",
+      "template": "rom",
+      "findings": {
+        "knee_ext_right_deg": 0,
+        "knee_flex_right_deg": 135,
+        "knee_ext_left_deg": 0,
+        "knee_flex_left_deg": 140,
+        "pain_end_range": "anterior pressure with deep flexion"
+      },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "screen_knee",
+      "label": "Ligament/Meniscus Screen",
+      "template": "screening",
+      "findings": { "lachman": "negative", "varus_valgus": "negative", "mcmurray": "negative", "effusion": "none" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "foot_function",
+      "label": "Foot Assessment",
+      "template": "foot_function",
+      "findings": { "navicular_drop_mm_right": 7, "navicular_drop_mm_left": 4, "midfoot_mobility": "increased right" },
+      "difficulty": "easy"
+    }
+  ],
+  "contraindications_precautions": [
+    "Avoid high-impact hop testing on Day 1 if pain >2/10 persists >24 hours.",
+    "Confirm no latex sensitivity before taping (patient denies)."
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "vitals": {
+    "bp_mmHg": {
+      "systolic": 0,
+      "diastolic": 0
+    },
+    "hr_bpm": 0,
+    "rr_bpm": 0,
+    "spo2_percent": 0,
+    "temperature_c": 0,
+    "position": "seated|supine|standing",
+    "oxygen_delivery": {
+      "mode": "room_air|nc|mask|other",
+      "fio2_or_flow": "",
+      "target_spo2": ""
+    },
+    "orthostatics": {
+      "performed": false,
+      "supine_bp_hr": {
+        "systolic": 0,
+        "diastolic": 0,
+        "hr_bpm": 0
+      },
+      "standing_1min_bp_hr": {
+        "systolic": 0,
+        "diastolic": 0,
+        "hr_bpm": 0
+      },
+      "standing_3min_bp_hr": {
+        "systolic": 0,
+        "diastolic": 0,
+        "hr_bpm": 0
+      },
+      "symptoms": []
+    },
+    "vitals_trend": []
+  },
+  "observation": {
+    "skin_incisions": [],
+    "effusion": "",
+    "ecchymosis": "",
+    "other_findings": []
+  },
+  "posture": {
+    "global": [],
+    "region_specific": []
+  },
+  "gait": {
+    "qualitative": [],
+    "spatiotemporal_numeric": {
+      "speed_m_per_s": null,
+      "cadence_steps_per_min": null,
+      "step_length_cm_R": null,
+      "step_length_cm_L": null
+    },
+    "assistive_device": "none|cane|crutch|walker|other",
+    "surface": "clinic|hallway|uneven|treadmill",
+    "footwear": "sneakers|boots|barefoot|other"
+  },
+  "palpation": {
+    "structures_assessed": [],
+    "tenderness_grading": "none|mild|moderate|severe",
+    "temperature_edema_skin": []
+  },
+  "rom": {
+    "method": "goniometry|inclinometry|visual_estimate|digital_imu",
+    "active": {},
+    "passive": {},
+    "end_feel": {},
+    "symptom_reproduction": {},
+    "norm_reference_ids": []
+  },
+  "mmt_strength": {
+    "method": "manual_0_to_5|handheld_dynamometry",
+    "grades": {},
+    "pain_inhibition": {}
+  },
+  "joint_mobility": {
+    "scale": "0_to_6",
+    "segments": {}
+  },
+  "special_tests": [
+    {
+      "test_template_id": "tmpl_region_specific_test",
+      "performed": false,
+      "findings": {
+        "numeric": {},
+        "qualitative": [],
+        "binary_flags": {}
+      }
+    }
+  ],
+  "neuro_screen": {
+    "dermatomes": {},
+    "myotomes": {},
+    "reflexes": {},
+    "neural_tension": [
+      {
+        "test_template_id": "tmpl_slump|tmpl_slr|tmpl_ulnt",
+        "performed": false,
+        "findings": {
+          "angle_deg": null,
+          "symptom_reproduction": ""
+        }
+      }
+    ],
+    "cranial_nerve_screen": {
+      "performed": false,
+      "abnormal_findings": []
+    },
+    "coordination_balance": {
+      "romberg": "",
+      "tandem": "",
+      "single_leg_stance_sec_R": null,
+      "single_leg_stance_sec_L": null
+    },
+    "dual_task_variants": {
+      "tug_cog_seconds": null
+    }
+  },
+  "functional_tests": [
+    {
+      "test_template_id": "tmpl_functional_measure",
+      "performed": false,
+      "findings": {
+        "numeric": {},
+        "qualitative": [],
+        "binary_flags": {}
+      },
+      "protocol_source_id": "",
+      "norm_reference_id": ""
+    }
+  ],
+  "outcome_measures": [
+    {
+      "measure_id": "om_lefs|om_uefi|om_ndi|om_oswestry|om_hoi|om_koos|om_hoos",
+      "score_raw": null,
+      "score_interpretation": "",
+      "minimal_clinically_important_difference": null,
+      "protocol_source_id": "",
+      "norm_reference_id": ""
+    }
+  ],
+  "contraindications_precautions": [],
+  "test_session_notes": ""
+}

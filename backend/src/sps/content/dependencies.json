@@ -1,0 +1,304 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2025-10-24T18:21:35.967Z",
+  "generator": "sps-manifest-generator",
+  "scenarios": {
+    "sc_hip_tha_anterior_pod0_v1": {
+      "persona": {
+        "id": "alloy-greta-olson",
+        "content_version": "1.0.0",
+        "checksum": "sha256:4493a216466f00f9d73166348378e73497105d9e6c98c8fdee408ecf99bf7060",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [
+        {
+          "module_id": "acute_care_total_joint",
+          "version": "v1",
+          "content_version": "1.0.0",
+          "checksum": "sha256:9f4b3fb75778431d16d391a421b81628bbd07831712c970263ed4a3c24d69a34",
+          "updated_at": "2025-10-07T00:00:00Z"
+        }
+      ],
+      "catalogs": {},
+      "special_questions": [
+        {
+          "prompt": "anterior_approach_precautions_review",
+          "checksum": "sha256:a3bb30cdf284ea5e497c3c18bc9512c88b27e922f37a20d723dbb3470a53ab3a"
+        }
+      ],
+      "media_assets": []
+    },
+    "sc_knee_acl_coper_nonop_entry_v1": {
+      "persona": {
+        "id": "ash-hana-park",
+        "content_version": "1.0.0",
+        "checksum": "sha256:fdd047bf69ae19c372b2a35219485e3a18ceaf0d0fca4bac1aa31041ce559d3c",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_acl_preop_direct_access_v1": {
+      "persona": {
+        "id": "ash-riley-summers",
+        "content_version": "1.0.0",
+        "checksum": "sha256:1217502a818750406a3e82bc9fc6627009cdee8a001d3f254847568ab562aebb",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [
+        {
+          "module_id": "sports_pt_generic",
+          "version": "v1",
+          "content_version": "1.0.0",
+          "checksum": "sha256:d3686d842fdaf163ab0ab9c8a077802028a4144910ce1ceff2ca17b2b17ed41c",
+          "updated_at": "2025-10-07T00:00:00Z"
+        }
+      ],
+      "catalogs": {
+        "subjective": [
+          {
+            "id": "imaging_xray",
+            "checksum": "sha256:c22cc617f1fc248fb685d83c4e81fe17c6736e53eee28a0bc821d4b73448b730",
+            "source": "scenario.header.json",
+            "path": "scenarios/bundles_src/sc_knee_acl_preop_direct_access_v1/scenario.header.json#subjective_catalog[0]"
+          }
+        ]
+      },
+      "special_questions": [
+        {
+          "prompt": "locking? (no true locking)",
+          "checksum": "sha256:30f8d6770d2cbda13856c31e577746f6ca660e4fb1c83567bc51a8b8851bf37a"
+        },
+        {
+          "prompt": "catching? (occasional)",
+          "checksum": "sha256:4f0401a6cf1c68b749614206c029fd47bd58d493c0ee78813725da814a8b468d"
+        }
+      ],
+      "media_assets": [
+        {
+          "id": "knee_xray_bilateral",
+          "type": "image",
+          "checksum": "sha256:d8cdd47788ec72eabd591b334803ff5ef5622e0d28382740b2ba96e3376f2ca8",
+          "url": "/media/scenarios/acl/knee-x-ray.jpg"
+        },
+        {
+          "id": "gait_demonstration",
+          "type": "youtube",
+          "checksum": "sha256:7bc30807b0e46cff27c018fddb3fa644dc641fecfcef6fe865c56935846cff2c",
+          "url": "https://www.youtube.com/watch?v=olZYoe3gr2Q"
+        }
+      ]
+    },
+    "sc_knee_anterior_knee_pain_entry_v1": {
+      "persona": {
+        "id": "shimmer-lila-singh",
+        "content_version": "1.0.0",
+        "checksum": "sha256:82f110e3b9db0c71326b34b2ca051e068091f1ea7b487f61da1125370f436c41",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [
+        {
+          "prompt": "popping or catching?",
+          "checksum": "sha256:5f3cd317a39d14c83ad573ec27cc02767eeeaa7ca6e60ae9d99329565c64a9b5"
+        },
+        {
+          "prompt": "giving way?",
+          "checksum": "sha256:37ead7b7b61cd4da2fc57d58c370d50a8f7ba78f9110a75411a4443bd73083ca"
+        }
+      ],
+      "media_assets": []
+    },
+    "sc_knee_anterior_knee_pain_intermediate_v1": {
+      "persona": null,
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [
+        {
+          "prompt": "Any popping, clicking, or catching? - Occasional catching sensation but no true locking",
+          "checksum": "sha256:e6c0d18cc036c266f2d28093feb65fe5e468c1d502c2c0d5d5e29186736f892b"
+        },
+        {
+          "prompt": "Any giving way or instability? - No true giving way, feels stable",
+          "checksum": "sha256:7ed59e092d9f1009d882e24c3740fdcdd395660e32d63215cc27560efe68bba3"
+        },
+        {
+          "prompt": "Any swelling? - Mild puffiness sometimes after long runs",
+          "checksum": "sha256:7c88db1434483e9eec0530bb76c9faff0c7eff0f6d611063d1166c9f3c250dfb"
+        },
+        {
+          "prompt": "Training history? - Increased mileage 30% over 6 weeks, added hills 3 weeks ago",
+          "checksum": "sha256:6b5c298ae8ace19578746d26bdf58fc6eb63ec7bb070dd1cfe419fb269bc3e76"
+        }
+      ],
+      "media_assets": []
+    },
+    "sc_knee_anterior_knee_pain_tendinosis_v1": {
+      "persona": null,
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_deg_meniscus_nonlocking_entry_v1": {
+      "persona": {
+        "id": "echo-owen-carter",
+        "content_version": "1.0.0",
+        "checksum": "sha256:f82529d224da783a6f1e2ca6900c57bb5f140132978ffd18c537e473bb62f77a",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_hamstring_bf_grade1_entry_v1": {
+      "persona": {
+        "id": "sage-jonah-mensah",
+        "content_version": "1.0.0",
+        "checksum": "sha256:47f441ccab3981acf3434779bbfc7b14c16213a4a0dd2458afc3852f26ff4bc9",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_lcl_grade1_entry_v1": {
+      "persona": {
+        "id": "sage-jonah-mensah",
+        "content_version": "1.0.0",
+        "checksum": "sha256:47f441ccab3981acf3434779bbfc7b14c16213a4a0dd2458afc3852f26ff4bc9",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_mcl_grade1_entry_v1": {
+      "persona": {
+        "id": "ash-hana-park",
+        "content_version": "1.0.0",
+        "checksum": "sha256:fdd047bf69ae19c372b2a35219485e3a18ceaf0d0fca4bac1aa31041ce559d3c",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_pcl_grade1_entry_v1": {
+      "persona": {
+        "id": "echo-devon-brooks",
+        "content_version": "1.0.0",
+        "checksum": "sha256:c24af504c895c76e913361d54d14bf9560382a2d0f971bcccff9f55e74bf06ac",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_pfp_entry_v1": {
+      "persona": {
+        "id": "ash-hana-park",
+        "content_version": "1.0.0",
+        "checksum": "sha256:fdd047bf69ae19c372b2a35219485e3a18ceaf0d0fca4bac1aa31041ce559d3c",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_pfp_mobility_deficits_entry_v1": {
+      "persona": {
+        "id": "sage-marisol-vega",
+        "content_version": "1.0.0",
+        "checksum": "sha256:dca6afa62c984f56e7375670d537a875ca01946b5207d2569d8a5e861656e5b8",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_pfp_overuse_volume_entry_v1": {
+      "persona": {
+        "id": "echo-devon-brooks",
+        "content_version": "1.0.0",
+        "checksum": "sha256:c24af504c895c76e913361d54d14bf9560382a2d0f971bcccff9f55e74bf06ac",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_post_meniscectomy_stable_entry_v1": {
+      "persona": {
+        "id": "nova-caleb-nguyen",
+        "content_version": "1.0.0",
+        "checksum": "sha256:d24e01e58f7f7d676210e30d64ec012a81017e53cadd9b029015f9493e98f339",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_knee_tcoa_entry_v1": {
+      "persona": {
+        "id": "ballad-moira-mckenzie",
+        "content_version": "1.0.0",
+        "checksum": "sha256:3d2d5fa235b7574bdad7fb929ad314ebe538c01d816c9d6790cc8c3c023feff3",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [],
+      "catalogs": {},
+      "special_questions": [],
+      "media_assets": []
+    },
+    "sc_lumbar_clbp_ext_pref_flare_v1": {
+      "persona": {
+        "id": "echo-devon-brooks",
+        "content_version": "1.0.0",
+        "checksum": "sha256:c24af504c895c76e913361d54d14bf9560382a2d0f971bcccff9f55e74bf06ac",
+        "updated_at": "2025-10-24T18:21:35.967Z"
+      },
+      "modules": [
+        {
+          "module_id": "primary_care_low_back_pain",
+          "version": "v1",
+          "content_version": "1.0.0",
+          "checksum": "sha256:554df798f07cb74975f3e9f3522871b9c364dcc52e103735431fa5331098cf11",
+          "updated_at": "2025-10-07T00:00:00Z"
+        }
+      ],
+      "catalogs": {},
+      "special_questions": [
+        {
+          "prompt": "leg_symptoms_below_knee? (no)",
+          "checksum": "sha256:42fa5b527b7e2c3329eb0a0f1fd99a0e681920bf0622172beb7c43aefe8edcd1"
+        },
+        {
+          "prompt": "centralization_with_extension? (yes)",
+          "checksum": "sha256:280d5bd058f71c73037df57f67365181e31f9519e9fc104cebd9814eed61c571"
+        }
+      ],
+      "media_assets": []
+    }
+  },
+  "statistics": {
+    "total_scenarios": 17,
+    "scenarios_with_persona": 15,
+    "total_modules": 3,
+    "total_catalog_entries": 1,
+    "total_special_questions": 11,
+    "total_media_assets": 2
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "problem_list": [
+    "effusion",
+    "loss_of_extension",
+    "quad_inhibition",
+    "instability_giving_way"
+  ],
+  "working_diagnoses": [
+    "suspected ACL rupture"
+  ],
+  "clinical_impression": "Mechanism (pivot/pop), hemarthrosis, and positive Lachman suggest ACL rupture. No red flags. Initiate prehab and refer to orthopedics for imaging/surgical consult.",
+  "irritability_severity": "high",
+  "staging_subgrouping": "acute_ligament_injury",
+  "prognosis": "good",
+  "icd10_codes": [
+    "S83.511A"
+  ],
+  "differential_diagnoses_considered": [
+    "meniscal_tear",
+    "MCL_sprain"
+  ],
+  "rationale_evidence_links": []
+}

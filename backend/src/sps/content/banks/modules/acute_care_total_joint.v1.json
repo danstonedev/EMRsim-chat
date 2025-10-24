@@ -1,0 +1,65 @@
+{
+  "module_id": "acute_care_total_joint_generic",
+  "module_version": "v1",
+  "content_version": "1.0.0",
+  "updated_at": "2025-10-07T00:00:00Z",
+  "post_op_day": 0,
+  "procedure": "THA",
+  "approach": "anterior",
+  "wb_status": "WBAT",
+  "joint_precautions": [
+    "avoid_combined_hip_extension_with_external_rotation"
+  ],
+  "lines_tubes_drains": [
+    "IV",
+    "Foley",
+    "hemovac"
+  ],
+  "mobility_orders": [
+    "OOB_with_assist",
+    "ambulate_in_hall"
+  ],
+  "pain_management": {
+    "PCA": false,
+    "regional_block": true,
+    "last_dose_time": ""
+  },
+  "dvt_pe_prophylaxis": {
+    "agent": "LMWH",
+    "dose": "per protocol",
+    "last_admin_time": ""
+  },
+  "incision_status": {
+    "dressing_type": "occlusive",
+    "drainage": "minimal",
+    "redness": "none",
+    "temp": "warm"
+  },
+  "hemodynamic_limits": {
+    "hr_min": 40,
+    "hr_max": 120,
+    "sbp_min": 90,
+    "sbp_max": 180,
+    "spo2_min": 92
+  },
+  "milestones": [
+    "bed_mobility",
+    "transfers",
+    "150_300ft_ambulation",
+    "stairs_trial",
+    "HEP_checkoff"
+  ],
+  "discharge_planning": {
+    "destination": "home",
+    "dme": [
+      "RW"
+    ],
+    "caregiver_training": [
+      "transfers",
+      "stairs"
+    ],
+    "home_barriers": [
+      "two_steps_no_rail"
+    ]
+  }
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "measure_id": "om_lefs",
+    "label": "Lower Extremity Functional Scale",
+    "score_range": [
+      0,
+      80
+    ],
+    "directionality": "higher_better",
+    "MCID": 9,
+    "protocol_source_id": "src_lefs",
+    "norm_reference_id": "norms_lefs"
+  },
+  {
+    "measure_id": "om_uefi",
+    "label": "Upper Extremity Functional Index",
+    "score_range": [
+      0,
+      80
+    ],
+    "directionality": "higher_better",
+    "MCID": 8,
+    "protocol_source_id": "src_uefi",
+    "norm_reference_id": "norms_uefi"
+  },
+  {
+    "measure_id": "om_ndi",
+    "label": "Neck Disability Index",
+    "score_range": [
+      0,
+      50
+    ],
+    "directionality": "lower_better",
+    "MCID": 5,
+    "protocol_source_id": "src_ndi",
+    "norm_reference_id": "norms_ndi"
+  },
+  {
+    "measure_id": "om_oswestry",
+    "label": "Oswestry Disability Index",
+    "score_range": [
+      0,
+      100
+    ],
+    "directionality": "lower_better",
+    "MCID": 10,
+    "protocol_source_id": "src_odi",
+    "norm_reference_id": "norms_odi"
+  },
+  {
+    "measure_id": "om_hoos",
+    "label": "HOOS",
+    "score_range": [
+      0,
+      100
+    ],
+    "directionality": "higher_better",
+    "MCID": null,
+    "protocol_source_id": "src_hoos",
+    "norm_reference_id": "norms_hoos"
+  },
+  {
+    "measure_id": "om_koos",
+    "label": "KOOS",
+    "score_range": [
+      0,
+      100
+    ],
+    "directionality": "higher_better",
+    "MCID": null,
+    "protocol_source_id": "src_koos",
+    "norm_reference_id": "norms_koos"
+  }
+]

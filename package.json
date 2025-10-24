@@ -1,55 +1,56 @@
 {
-  "name": "chatbot-webapp",
-  "version": "0.1.0",
+  "name": "emrsim-chat-monorepo",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
-    "dev:turbo": "next dev --turbo -p 3001",
-    "dev:inspect": "NODE_OPTIONS='--inspect' next dev -p 3001",
-    "dev:check": "node scripts/dev-health-check.js",
-    "dev:fix": "node scripts/dev-troubleshoot.js --fix-auto",
-    "dev:troubleshoot": "node scripts/dev-troubleshoot.js",
-    "dev:monitor": "node scripts/dev-monitor.js",
-    "dev:setup-hooks": "git config core.hooksPath .githooks",
-    "build": "next build",
-    "build:analyze": "cross-env ANALYZE=true next build",
-    "build:stats": "cross-env ANALYZE=true NODE_ENV=production next build",
-    "start": "next start -p 3001",
-    "start:prod": "NODE_ENV=production next start -p 3001",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
-    "test:dev-server": "vitest run tests/dev-server.test.ts",
-    "clean": "rm -rf .next out",
-    "type-check": "tsc --noEmit",
-    "perf:analyze": "npm run build:analyze && echo 'Bundle analysis complete! Check the opened browser window.'",
-    "perf:audit": "npm run build && echo 'Performance audit ready for Lighthouse analysis.'",
-    "perf:status": "node scripts/optimization-status.js",
-    "perf:track": "echo 'Open http://localhost:3001 and check console for performance tracking. Press Ctrl+Shift+P for live report.'"
+    "postinstall": "playwright install chromium",
+    "docs:fix:md022": "node ./scripts/fix-md022.mjs",
+    "docs:fix:md024": "node ./scripts/fix-md024-rename.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report",
+    "sps:generate-manifests": "tsx ./scripts/generateManifest.ts",
+    "sps:compile": "tsx ./src/sps/tools/compile-content.ts",
+    "sps:compile:tmp": "tsx ./src/sps/tools/compile-content.ts --tmp",
+    "sps:validate-compiled": "tsx ./src/sps/tools/validate-compiled.ts",
+    "sps:bump-version": "tsx ./src/sps/tools/bump-version.ts",
+    "start": "vite",
+    "start:backend": "cd backend && node src/server.js",
+    "dev": "concurrently \"npm run start\" \"npm run start:backend\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "analyze": "node scripts/analyze-bundle.js",
+    "build:analyze": "npm run analyze",
+    "setup-env": "node scripts/setup-env.js",
+    "deps:check": "node scripts/manage-deps.js check",
+    "deps:install-all": "node scripts/manage-deps.js install-all",
+    "build:all": "cd backend && npm run build && cd ../frontend && npm run build",
+    "start:prod": "powershell -ExecutionPolicy Bypass -File scripts/start-production.ps1",
+    "secrets:scan": "node scripts/scan-secrets.mjs",
+    "report:personas:languages": "node scripts/persona-language-report.mjs",
+    "content:audit": "cd backend && npm run sps:audit",
+    "content:gate": "cd backend && npm run sps:gate",
+    "content:audit:todos": "cd backend && npm run sps:audit:todos"
   },
-  "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mui/material": "^7.3.2",
-    "autoprefixer": "^10.4.21",
-    "critters": "^0.0.23",
-    "next": "15.5.3",
-    "openai": "^4.71.1",
-    "react": "19.0.0",
-    "react-dom": "19.0.0"
+  "lint-staged": {
+    "backend/src/**/*.{ts,js}": [
+      "cd backend && eslint --fix",
+      "cd backend && prettier --write"
+    ],
+    "frontend/src/**/*.{ts,tsx}": [
+      "cd frontend && eslint --fix",
+      "cd frontend && prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^15.5.3",
-    "@types/node": "^22",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "cross-env": "^10.0.0",
-    "eslint": "^9",
-    "eslint-config-next": "15.5.3",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5",
-    "vitest": "^2.0.5"
+    "@playwright/test": "^1.55.1",
+    "lint-staged": "^16.2.3"
   }
 }

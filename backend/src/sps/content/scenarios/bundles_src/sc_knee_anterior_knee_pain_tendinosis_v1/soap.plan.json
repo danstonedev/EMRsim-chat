@@ -1,0 +1,17 @@
+{
+  "frequency_duration": { "visits_per_week": 1, "weeks": 4 },
+  "interventions_planned": [
+    {
+      "intervention_id": "isometric_quad_holds",
+      "dose": { "sets": 5, "reps": 45, "frequency_per_week": 5 },
+      "expected_response": { "rationale": "short-term analgesia, load introduction" }
+    },
+    {
+      "intervention_id": "progressive_tendon_loading",
+      "dose": { "sets": 3, "reps": 8, "frequency_per_week": 3 },
+      "expected_response": { "rationale": "gradual tolerance to tendon load" }
+    }
+  ],
+  "patient_education": { "topics": ["load management", "graduated return to sport"] },
+  "safety_netting": ["reduce volume if pain spikes >2/10 and persists 24h"]
+}

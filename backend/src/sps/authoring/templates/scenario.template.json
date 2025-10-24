@@ -1,0 +1,85 @@
+{
+  "scenario_id": "sc_example_v1",
+  "title": "Concise scenario title",
+  "region": "knee",
+  "setting": "sports_rehab_clinic",
+  "difficulty": "moderate",
+  "tags": ["tagA", "tagB"],
+  "presenting_problem": {
+    "primary_dx": "Primary working diagnosis",
+    "onset": "acute",
+    "onset_detail": "Optional detail",
+    "duration_weeks": 3,
+    "dominant_symptoms": ["symptom 1", "symptom 2"],
+    "pain_nrs_rest": 1,
+    "pain_nrs_activity": 6,
+    "aggravators": ["aggravator 1"],
+    "easers": ["easer 1"],
+    "pattern_24h": "Optional pattern",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "Pathophysiology + functional impact",
+    "body_functions_structures": ["finding 1", "finding 2"],
+    "activities": ["activity limitation 1"],
+    "participation": ["participation restriction 1"],
+    "environmental_factors": ["factor 1"],
+    "personal_factors": ["factor 1"]
+  },
+  "scenario_context": {
+    "goals": ["patient goal 1"],
+    "role_impacts": ["role impact 1"],
+    "environment": "where rehab/life occurs",
+    "instructor_notes": "teaching tips"
+  },
+  "symptom_fluctuation": {
+    "with_time": "how symptoms change over time",
+    "with_activity": "how symptoms change with activity",
+    "during_session_examples": ["example utterance"]
+  },
+  "screening_challenge_ids": ["R1", "Y6"],
+  "special_question_ids": ["SQ_K_2"],
+  "subjective_catalog": [
+    {
+      "id": "pain_location",
+      "label": "Pain Location",
+      "patterns": ["where is the pain", "pain located", "point to the pain"],
+      "patient_response_script": {
+        "qualitative": ["Mostly at the front of the knee, a finger’s width under the kneecap."],
+        "binary_flags": { "right_side": true }
+      }
+    },
+    {
+      "id": "pain_nrs_activity",
+      "label": "Pain Severity with Activity",
+      "patterns": ["how bad is it when", "rate your pain with", "pain during"],
+      "patient_response_script": {
+        "numeric": { "pain_nrs_activity": 6 },
+        "qualitative": ["About a six out of ten when going down stairs fast."]
+      }
+    }
+  ],
+  "objective_guardrails": {
+    "never_volunteer_data": true,
+    "require_explicit_physical_consent": true,
+    "fatigue_prompt_threshold": 7,
+    "deflection_lines": ["Please specify the exact test you want."]
+  },
+  "guardrails": { "min_age": 16 },
+  "objective_catalog": [
+    {
+      "test_id": "lachman_test",
+      "label": "Lachman Test",
+      "region": "knee",
+      "preconditions": ["consent obtained"],
+      "contraindications": [],
+      "instructions_brief": "Describe the test succinctly.",
+      "patient_output_script": {
+        "numeric": { "example_metric": 0 },
+        "binary_flags": { "soft_end_feel": true },
+        "qualitative": ["Brief patient description"]
+      },
+      "guardrails": { "data_only": true, "refuse_if_contraindicated": true }
+    }
+  ]
+}

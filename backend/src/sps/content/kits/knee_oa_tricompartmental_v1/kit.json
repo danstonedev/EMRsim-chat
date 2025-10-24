@@ -1,0 +1,23 @@
+{
+  "case_id": "knee_oa_tricompartmental_v1",
+  "version": 1,
+  "provenance": {
+    "sources": [
+      "OARSI/AAOS Knee Osteoarthritis Clinical Guidelines"
+    ],
+    "reviewers": ["clinician_placeholder"],
+    "last_reviewed": "2025-10-23"
+  },
+  "chunks": [
+    {"id":"oa_overview","text":"Knee osteoarthritis with tricompartmental involvement presents with activity-related pain, stiffness after inactivity, and functional limits with stairs and prolonged walking.","tags":["presenting_problem"],"roles":["patient","clinician"],"phases":["subjective"],"weight":0.95},
+    {"id":"oa_stiffness_timing","text":"Morning stiffness typically <30 minutes and after-sitting stiffness improve with gentle movement.","tags":["pattern"],"roles":["patient"],"phases":["subjective"],"weight":0.8},
+    {"id":"oa_signs","text":"Common signs include crepitus, reduced knee extension and flexion ROM, tenderness at joint lines, and strength deficits (quadriceps, hip abductors).","tags":["objective"],"phases":["objective"],"weight":0.8},
+    {"id":"oa_gait","text":"Gait may show decreased knee extension during mid-stance and shortened step length; mild varus alignment is common.","tags":["objective","gait"],"phases":["objective"],"weight":0.75},
+    {"id":"oa_imaging","text":"Radiographs may show joint space narrowing and osteophytes; imaging is supportive but clinical presentation guides management.","tags":["imaging"],"phases":["objective","treatment_plan"],"weight":0.7},
+    {"id":"oa_education","text":"Education: emphasize self-management, pacing, joint protection, and weight management as appropriate.","tags":["education","management"],"roles":["patient","clinician"],"phases":["treatment_plan"],"weight":0.85},
+    {"id":"oa_exercise_core","text":"Core interventions: flexibility (heel slides, quad/calf stretch), strength (sit-to-stand, step-ups, mini-squats, TKE), and aerobic activity (walk/bike).","tags":["exercise","management"],"roles":["clinician"],"phases":["treatment_plan"],"weight":0.85},
+    {"id":"oa_pain_monitor","text":"Use a pain-monitoring rule: maintain pain ≤3/10 during activity and ≤24-hour recovery when progressing.","tags":["guardrail"],"phases":["treatment_plan"],"weight":0.8},
+    {"id":"oa_stairs_strategy","text":"Stair strategy and assistive device (cane/handrail) can improve safety and reduce pain during ascent/descent.","tags":["management"],"phases":["treatment_plan"],"weight":0.7},
+    {"id":"oa_faculty_truth","text":"Ground truth (faculty): OA pattern consistent with age, gradual onset, radiographic findings; differentials less likely include inflammatory arthropathy and mechanical locking. For grading only; not for students.","tags":["ground_truth","spoiler"],"phases":["meta"],"weight":0.99,"audiences":["faculty"]}
+  ]
+}

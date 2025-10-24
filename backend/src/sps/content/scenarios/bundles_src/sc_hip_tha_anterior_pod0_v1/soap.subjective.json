@@ -1,0 +1,112 @@
+{
+  "chief_complaint": "Right hip post-op pain and stiffness; wants to get to the chair and bathroom today.",
+  "history_present_illness": {
+    "mechanism": "Elective THA for end-stage OA",
+    "first_onset": "2025-10-01T16:57:26Z",
+    "course_since_onset": "fluctuating",
+    "prior_episodes": "Progressive hip OA pain >3 years",
+    "prior_treatment_response": [
+      "PT with limited relief",
+      "NSAIDs",
+      "intra-articular injection"
+    ],
+    "red_flag_denials_affirmations": {
+      "fever_chills": false,
+      "night_pain_unrelieved": false,
+      "unexplained_weight_loss": false,
+      "recent_infection": false,
+      "cancer_history": false,
+      "neurologic_bowel_bladder_changes": false
+    }
+  },
+  "pain": {
+    "location": [
+      "anterior hip incision"
+    ],
+    "quality": [
+      "aching",
+      "tight"
+    ],
+    "irritability": "moderate",
+    "nrs_rest": 3,
+    "nrs_activity": 6,
+    "nrs_best": 2,
+    "nrs_worst": 7,
+    "aggravators": [
+      "sit_to_stand",
+      "end_range"
+    ],
+    "easers": [
+      "ice",
+      "repositioning"
+    ],
+    "24h_pattern": "worse 2–6h post-op; improves with analgesics",
+    "sleep_disturbance": "difficulty_staying"
+  },
+  "past_medical_history": [
+    "HTN well-controlled"
+  ],
+  "surgical_history": [
+    "Right THA today"
+  ],
+  "medications": [
+    "acetaminophen",
+    "opioid PRN",
+    "LMWH"
+  ],
+  "allergies": [
+    "NKDA"
+  ],
+  "imaging": {
+    "available": true,
+    "modality": "xray",
+    "date": "2025-10-01T16:57:26Z",
+    "body_region": "hip",
+    "summary_patient_facing": "New hip is in place.",
+    "clinical_interpretation": "Prosthesis aligned; no complication noted."
+  },
+  "social_history": {
+    "tobacco": "never",
+    "alcohol": "social",
+    "sleep_hours": 6,
+    "diet_notes": "regular",
+    "work_demands": "retired",
+    "sport_hobbies": [
+      "gardening"
+    ]
+  },
+  "sdoh": {
+    "home_environment": "single-story with two entry steps",
+    "transportation": "reliable",
+    "financial_barriers": "none",
+    "caregiving_roles": []
+  },
+  "goals": [
+    "stand and transfer safely",
+    "walk in hall with walker",
+    "learn precautions"
+  ],
+  "systems_review": {
+    "cardiovascular_pulmonary": {
+      "dyspnea": false,
+      "chest_pain": false,
+      "orthopnea": false,
+      "edema": false
+    },
+    "neuromuscular": {
+      "dizziness": true,
+      "falls_history": false,
+      "headache_neck": false,
+      "paresthesia": false
+    },
+    "integumentary": {
+      "wounds": true,
+      "rash": false,
+      "color_changes": false
+    },
+    "other": []
+  },
+  "special_questions_region_specific": [
+    "anterior_approach_precautions_review"
+  ]
+}

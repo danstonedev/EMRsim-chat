@@ -1,0 +1,106 @@
+{
+  "npte_bins_required": {
+    "system": [
+      "musculoskeletal",
+      "neuromuscular",
+      "cardiopulmonary",
+      "integumentary",
+      "other_systems"
+    ],
+    "domain": [
+      "examination",
+      "foundations",
+      "interventions"
+    ],
+    "nonsystem": [
+      "safety",
+      "professional",
+      "equipment_devices",
+      "modalities",
+      "research"
+    ]
+  },
+  "capte_required_elements": [
+    "safety_screening",
+    "evidence_based_practice",
+    "communication_education",
+    "documentation",
+    "plan_of_care",
+    "JEDI_belonging_anti_racism"
+  ],
+  "evidence_binding": {
+    "required_for_publish": true,
+    "minimum_levels": [
+      "CPG",
+      "systematic_review"
+    ],
+    "disallowed_primary_emphasis": [
+      "unsupported_modalities"
+    ]
+  },
+  "validation": {
+    "units": {
+      "angles": "deg",
+      "time": "s|min",
+      "distance": "m|cm",
+      "speed": "m/s",
+      "strength": "0_to_5|N|Nm",
+      "bp": "mmHg",
+      "hr": "bpm",
+      "rr": "bpm",
+      "spo2": "percent",
+      "temp": "c"
+    },
+    "numeric_ranges": {
+      "deg": {
+        "min": -10,
+        "max": 180
+      },
+      "s": {
+        "min": 0,
+        "max": 600
+      },
+      "m_per_s": {
+        "min": 0,
+        "max": 3
+      },
+      "mmHg_sys": {
+        "min": 60,
+        "max": 220
+      },
+      "mmHg_dia": {
+        "min": 30,
+        "max": 140
+      },
+      "bpm_hr": {
+        "min": 30,
+        "max": 220
+      },
+      "spo2_percent": {
+        "min": 70,
+        "max": 100
+      },
+      "temp_c": {
+        "min": 34.0,
+        "max": 41.5
+      }
+    },
+    "required_sections": [
+      "scenario/scenario.header.template.json",
+      "persona/persona.template.json",
+      "instructions/instructions.template.json",
+      "soap/soap.subjective.template.json",
+      "soap/soap.objective.template.json",
+      "soap/soap.assessment.template.json",
+      "soap/soap.plan.template.json",
+      "rubrics/rubric_core.template.json"
+    ]
+  },
+  "publish_checklist": [
+    "All LOs mapped to CAPTE and NPTE bins",
+    "High-level evidence cited",
+    "Objective tests reference protocol + norms",
+    "Safety red-flag triggers defined or N/A",
+    "Rubric reference attached"
+  ]
+}

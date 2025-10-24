@@ -1,0 +1,25 @@
+{
+  "problem_list": [
+    "post-op pain",
+    "gait impairment",
+    "decreased hip ROM",
+    "quad/gluteal inhibition",
+    "balance impairment",
+    "dizziness with first stand"
+  ],
+  "working_diagnoses": [
+    "s/p R THA (anterior approach) POD0"
+  ],
+  "clinical_impression": "Medically stable POD0 with transient orthostatic symptoms; safe to initiate mobilization with RW and CGA; education on anterior precautions required.",
+  "irritability_severity": "moderate",
+  "staging_subgrouping": "acute_postoperative",
+  "prognosis": "good",
+  "icd10_codes": [
+    "Z96.641"
+  ],
+  "differential_diagnoses_considered": [
+    "orthostatic hypotension",
+    "post-op anemia (screen if symptomatic)"
+  ],
+  "rationale_evidence_links": []
+}

@@ -1,0 +1,84 @@
+{
+  "history": {
+    "chief_complaint": "I felt a tweak on the inside of my right knee when I planted and got bumped—now sideways moves sting.",
+    "mechanism": "Valgus force during a soccer drill; knee slightly flexed.",
+    "prior_episodes": "No prior knee sprains.",
+    "functional_impact": "Side-steps and quick cuts hurt; stairs are okay if I go slow.",
+    "goals": "Get cleared for non-contact practice soon.",
+    "identity": { "name": "Tiana Brooks", "dob": "2006-08-19" }
+  },
+  "subjective_catalog": [
+    {
+      "id": "meds_allergies",
+      "label": "Medications & Allergies",
+      "patterns": ["meds", "ibuprofen", "allergies"],
+      "patient_response_script": { "qualitative": ["Took ibuprofen twice. No drug or tape allergies."] }
+    },
+    {
+      "id": "swelling_brace",
+      "label": "Swelling/Support",
+      "patterns": ["swelling", "brace", "sleeve", "wrap"],
+      "patient_response_script": {
+        "qualitative": ["It puffed up a little the first day; I’ve been using a sleeve. [MEDIA:knee_sleeve_photo]"]
+      }
+    },
+    {
+      "id": "red_flags",
+      "label": "Red Flags",
+      "patterns": ["locking", "giving way", "numb", "tingle", "pop"],
+      "patient_response_script": {
+        "qualitative": ["I didn't hear a loud pop. No locking or giving way. No numbness or tingling."]
+      }
+    },
+    {
+      "id": "pain_location",
+      "label": "Pain Location",
+      "patterns": ["where", "point to pain", "body chart"],
+      "patient_response_script": { "qualitative": ["Right along the inside of the knee. [MEDIA:mcl_bodychart]"] }
+    }
+  ],
+  "patient_reported_outcomes": { "NPRS_worst": 5, "NPRS_usual": 2, "LEFS": 62 },
+  "media_library": [
+    { "id": "knee_sleeve_photo", "type": "image", "url": "/media/scenarios/mcl/elastic-sleeve.png", "caption": "Elastic knee sleeve used post-injury" },
+    { "id": "mcl_bodychart", "type": "image", "url": "/media/scenarios/mcl/mcl-medial-bodychart.png", "caption": "Medial knee pain region—right" }
+  ],
+  "history_present_illness": {
+    "mechanism": "valgus injury during soccer drill",
+    "first_onset": "2 days ago",
+    "course_since_onset": "improving with sleeve and relative rest",
+    "prior_episodes": "denies prior knee sprains",
+    "red_flag_denials_affirmations": {
+      "fever": false,
+      "locking": false,
+      "true_instability": false,
+      "numbness": false,
+      "loud_pop": false
+    }
+  },
+  "pain": {
+    "location": ["medial knee"],
+    "quality": ["tender", "sting with lateral moves"],
+    "irritability": "low-moderate",
+    "nrs_rest": 0,
+    "nrs_activity": 5,
+    "aggravators": ["side-steps", "quick cuts"],
+    "easers": ["elastic sleeve", "relative rest"],
+    "24h_pattern": "better in the morning, sore after practice drills"
+  },
+  "social_history": {
+    "sport_hobbies": ["soccer"],
+    "school_level": "high school"
+  },
+  "goals": [
+    "clearance for non-contact practice",
+    "return to full drills without pain"
+  ],
+  "past_medical_history": [],
+  "surgical_history": [],
+  "medications": [
+    { "name": "ibuprofen", "dose": "taken twice since injury" }
+  ],
+  "allergies": [
+    { "substance": "drug", "details": "no known drug or tape allergies" }
+  ]
+}

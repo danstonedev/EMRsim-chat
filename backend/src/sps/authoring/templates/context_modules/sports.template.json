@@ -1,0 +1,40 @@
+{
+  "module_id": "sports_pt_generic",
+  "sport": "",
+  "position_event": "",
+  "season_phase": "pre|in|post",
+  "competition_level": "youth|hs|college|pro|recreational",
+  "workload_metrics": {
+    "acute_load": null,
+    "chronic_load": null,
+    "minutes": null,
+    "throws": null,
+    "jumps": null
+  },
+  "criterion_batteries": {
+    "knee_acl": [
+      "hop_single",
+      "hop_triple",
+      "hop_crossover",
+      "hop_6m_timed",
+      "y_balance",
+      "isokinetic_hhd",
+      "LESS"
+    ],
+    "shoulder_overhead": [
+      "scap_control",
+      "er_ir_ratio",
+      "endurance_tests",
+      "CKCUEST",
+      "throwing_program_stage"
+    ],
+    "tendon": [
+      "isometric",
+      "heavy_slow_resistance"
+    ]
+  },
+  "readiness_indicators": {
+    "ACL_RSI": null
+  },
+  "clearance_checklist": []
+}

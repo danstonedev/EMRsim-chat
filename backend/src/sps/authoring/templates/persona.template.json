@@ -1,0 +1,62 @@
+{
+  "patient_id": "sp_persona_example_v1",
+  "demographics": {
+    "name": "First Last",
+    "preferred_name": "",
+    "pronouns": "",
+    "age": 30,
+    "sex": "female",
+    "occupation": "student",
+    "sport_activity": "",
+    "education_health_literacy": "moderate",
+    "primary_language": "English",
+    "dob": "1995-06-15"
+  },
+  "social_context": {
+    "family_roles": [],
+    "support_system": [],
+    "financial_stressors": [],
+    "transportation": "",
+    "cultural_values": []
+  },
+  "function_context": {
+    "adl_limitations": [],
+    "sport_limitations": [],
+    "work_demands": "",
+    "sleep_quality": "fair",
+    "goals": []
+  },
+  "beliefs_affect": {
+    "fears": [],
+    "beliefs": [],
+    "mood": "friendly",
+    "coping_style": ""
+  },
+  "medical_baseline": {
+    "comorbidities": [],
+    "medications": []
+  },
+  "dialogue_style": {
+    "verbosity": "balanced",
+    "tone": "friendly",
+    "quirks": [],
+    "privacy_hesitations": [],
+    "misunderstanding_patterns": []
+  },
+  "hidden_agenda": {
+    "concerns": [],
+    "reveal_triggers": []
+  },
+  "closure_style": {
+    "preferred_questions": [],
+    "cost_concerns": false,
+    "role_focus": []
+  },
+  "dob_challenges": [
+    {
+      "style": "clarification",
+      "example_response": "Do you need the full date? It’s 1995-06-15.",
+      "learning_objectives": []
+    }
+  ]
+}

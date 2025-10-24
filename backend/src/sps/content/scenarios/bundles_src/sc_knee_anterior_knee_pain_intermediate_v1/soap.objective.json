@@ -1,0 +1,196 @@
+{
+  "vitals": {
+    "bp_mmHg": {"systolic": 118, "diastolic": 76},
+    "hr_bpm": 58,
+    "rr_bpm": 14,
+    "spo2_percent": 99,
+    "temperature_c": 36.9,
+    "position": "seated"
+  },
+  "observation": {
+    "skin_incisions": [],
+    "effusion": "trace to mild",
+    "ecchymosis": "none",
+    "other_findings": [
+      "no warmth",
+      "subtle lateral patellar tracking noted",
+      "mild knee valgus alignment in standing"
+    ]
+  },
+  "gait": {
+    "qualitative": [
+      "minimal antalgic on right with faster pace",
+      "subtle Trendelenburg on right stance phase",
+      "increased knee valgus right side with running in place"
+    ],
+    "assistive_device": "none",
+    "surface": "clinic floor and treadmill observation"
+  },
+  "palpation": {
+    "structures_assessed": [
+      "patellar tendon (proximal, mid, distal)",
+      "medial and lateral facets",
+      "peripatellar retinaculum",
+      "pes anserine",
+      "medial joint line",
+      "lateral joint line",
+      "iliotibial band"
+    ],
+    "tenderness_grading": "moderate medial facet and retinaculum, mild lateral facet",
+    "temperature_edema_skin": [
+      "normal temperature",
+      "trace puffiness medial retinaculum",
+      "no pitting edema"
+    ]
+  },
+  "rom": {
+    "method": "goniometry",
+    "active": {
+      "knee_flexion": 132,
+      "knee_extension": 0,
+      "hip_flexion": 115,
+      "hip_internal_rotation": 35,
+      "hip_external_rotation": 40,
+      "ankle_dorsiflexion_knee_extended": 5,
+      "ankle_dorsiflexion_knee_flexed": 12
+    },
+    "passive": {
+      "knee_flexion": 138,
+      "knee_extension": 0,
+      "ankle_dorsiflexion_knee_extended": 8
+    },
+    "end_feel": {
+      "knee_flexion": "soft with anterior discomfort",
+      "knee_extension": "firm",
+      "ankle_dorsiflexion": "firm (gastrocnemius)"
+    },
+    "symptom_reproduction": {
+      "knee_flexion": "anterior pressure and ache at end range",
+      "prolonged_knee_flexion_seated": "reproduces theater sign discomfort"
+    }
+  },
+  "mmt_strength": {
+    "method": "manual_0_to_5",
+    "grades": {
+      "quad": "4+/5 (pain limiting)",
+      "hamstring": "5/5",
+      "hip_abduction": "4-/5",
+      "hip_external_rotation": "4/5",
+      "hip_extension": "4+/5",
+      "gastrocnemius": "5/5"
+    },
+    "pain_inhibition": {
+      "quad": "mild inhibition with resisted knee extension",
+      "hip_abduction": false
+    }
+  },
+  "special_tests": [
+    {
+      "test_template_id": "clarke_sign",
+      "performed": true,
+      "findings": {
+        "qualitative": ["moderate discomfort under patella", "patient unable to hold quad contraction"],
+        "binary_flags": {"pain_reproduced": true, "positive": true}
+      }
+    },
+    {
+      "test_template_id": "patellar_grind",
+      "performed": true,
+      "findings": {
+        "qualitative": ["crepitus with compression", "patient reports familiar pain"],
+        "binary_flags": {"pain_reproduced": true, "crepitus": true}
+      }
+    },
+    {
+      "test_template_id": "mcconnell_test",
+      "performed": true,
+      "findings": {
+        "qualitative": ["pain reduced 40% with medial glide taping"],
+        "binary_flags": {"relief_with_taping": true, "positive": true}
+      }
+    },
+    {
+      "test_template_id": "patellar_apprehension",
+      "performed": true,
+      "findings": {
+        "qualitative": ["no apprehension", "stable"],
+        "binary_flags": {"positive": false}
+      }
+    },
+    {
+      "test_template_id": "thessaly_test",
+      "performed": true,
+      "findings": {
+        "qualitative": ["no clicking", "no joint line pain"],
+        "binary_flags": {"positive": false}
+      }
+    },
+    {
+      "test_template_id": "mcmurray",
+      "performed": true,
+      "findings": {
+        "qualitative": ["no click", "no joint line pain"],
+        "binary_flags": {"positive": false}
+      }
+    }
+  ],
+  "functional_tests": [
+    {
+      "test_template_id": "single_leg_squat",
+      "performed": true,
+      "findings": {
+        "numeric": {"reps": 8, "depth_degrees": 60},
+        "qualitative": [
+          "right: moderate knee valgus, hip adduction, trunk lean",
+          "left: good control, minimal valgus",
+          "pain 4/10 on right at bottom"
+        ],
+        "binary_flags": {"poor_control": true}
+      }
+    },
+    {
+      "test_template_id": "step_down_test",
+      "performed": true,
+      "findings": {
+        "numeric": {"reps": 12, "step_height_cm": 20},
+        "qualitative": [
+          "pain 5/10 on right descent",
+          "dynamic valgus right knee",
+          "contralateral pelvic drop"
+        ],
+        "binary_flags": {"pain_reproduced": true}
+      }
+    },
+    {
+      "test_template_id": "running_gait_analysis",
+      "performed": true,
+      "findings": {
+        "qualitative": [
+          "excessive hip adduction right stance",
+          "increased knee valgus right loading",
+          "crossover gait pattern",
+          "limited ankle dorsiflexion in stance",
+          "symptoms reproduced after 2 minutes of running"
+        ]
+      }
+    }
+  ],
+  "outcome_measures": [
+    {
+      "measure_id": "koos_knee_outcome_survey",
+      "score_raw": 68,
+      "score_interpretation": "moderate limitation in sport/recreation subscale"
+    },
+    {
+      "measure_id": "anterior_knee_pain_scale",
+      "score_raw": 74,
+      "score_interpretation": "moderate symptoms"
+    }
+  ],
+  "contraindications_precautions": [
+    "avoid sudden increases in running volume",
+    "avoid sustained deep knee flexion early in treatment",
+    "monitor for increased effusion suggesting overload"
+  ],
+  "test_session_notes": "Findings consistent with PFPS with proximal contributions (hip weakness, dynamic valgus). Differential includes early chondromalacia but clinical presentation favors PFPS. Limited ankle dorsiflexion may contribute to compensatory mechanics."
+}

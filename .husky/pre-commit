@@ -1,0 +1,46 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "[husky] Running pre-commit checks..."
+
+# 1. Run lint-staged (format and lint staged files)
+echo "[husky] Running lint-staged..."
+npx lint-staged
+
+# 2. Run type checking on backend
+BACKEND_CHANGED=$(git diff --cached --name-only | grep -E '^backend/src/.*\.(ts|js)$')
+if [ -n "$BACKEND_CHANGED" ]; then
+  echo "[husky] Backend TypeScript files changed — running type check..."
+  (cd backend && npx tsc --noEmit)
+  if [ $? -ne 0 ]; then
+    echo "❌ Backend type check failed. Fix errors before committing."
+    exit 1
+  fi
+fi
+
+# 3. Run type checking on frontend
+FRONTEND_CHANGED=$(git diff --cached --name-only | grep -E '^frontend/src/.*\.(ts|tsx)$')
+if [ -n "$FRONTEND_CHANGED" ]; then
+  echo "[husky] Frontend TypeScript files changed — running type check..."
+  (cd frontend && npx tsc --noEmit)
+  if [ $? -ne 0 ]; then
+    echo "❌ Frontend type check failed. Fix errors before committing."
+    exit 1
+  fi
+fi
+
+# 4. Run SPS validator if SPS data or related backend files changed
+CHANGED_FILES=$(git diff --cached --name-only)
+echo "$CHANGED_FILES" | grep -E '^(backend/src/sps/data/|backend/src/sps/(core|runtime|tools)/|backend/package.json|backend/package-lock.json)' >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+  echo "[husky] SPS changes detected — running validator"
+  (cd backend && npm run -s sps:validate)
+  if [ $? -ne 0 ]; then
+    echo "❌ SPS validation failed. Fix errors before committing."
+    exit 1
+  fi
+else
+  echo "[husky] No SPS-related changes — skipping validator"
+fi
+
+echo "✅ All pre-commit checks passed!"

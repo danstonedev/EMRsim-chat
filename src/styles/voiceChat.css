@@ -1,0 +1,285 @@
+/* Add debugging outlines to visualize elements */
+.debug-mode .transcript-container * {
+  outline: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+/* Voice Chat Component Styles */
+.voice-chat-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Connection Status Styles */
+.connection-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.connection-status.connected {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.connection-status.connecting {
+  background-color: #fff3cd;
+  color: #856404;
+  animation: pulse 1.5s infinite;
+}
+
+.connection-status.disconnected,
+.connection-status.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Audio Status Styles */
+.audio-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background-color: #e9ecef;
+  border-radius: 4px;
+}
+
+.volume-indicator {
+  width: 24px;
+  height: 50px;
+  background-color: #adb5bd;
+  border-radius: 2px;
+  transform-origin: bottom;
+  transition: transform 0.1s ease-out;
+}
+
+.volume-indicator.active {
+  background-color: #28a745;
+}
+
+.volume-indicator.inactive {
+  background-color: #6c757d;
+}
+
+.resume-audio-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.resume-audio-button:hover {
+  background-color: #5a6268;
+}
+
+.audio-status-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.speech-indicator {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.speech-indicator.speaking {
+  color: #28a745;
+  animation: blink 1s infinite;
+}
+
+.speech-indicator.silent {
+  color: #6c757d;
+}
+
+/* Error Message Styles */
+.error-message {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  color: #721c24;
+  animation: fadeIn 0.3s;
+}
+
+.dismiss-button {
+  background: transparent;
+  color: #721c24;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dismiss-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Transcript Container Styles */
+.transcript-container {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background-color: white;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  min-height: 200px; /* Ensure container has height */
+  position: relative; /* For proper z-index context */
+  overflow: auto; /* Instead of hidden to prevent cutoff */
+  z-index: 5; /* Ensure proper stacking context */
+}
+
+/* Debugging Styles - Temporary */
+.transcript-container * {
+  /* Temporary fix to highlight all elements inside the transcript container */
+  outline: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+/* Chat Bubble Styles - Fixed visibility issues */
+.chat-bubble {
+  position: relative;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  border-radius: 1rem;
+  max-width: 80%;
+  word-wrap: break-word;
+  animation: fadeIn 0.3s;
+  opacity: 1 !important; /* Force visibility */
+  visibility: visible !important; /* Force visibility */
+  display: block !important; /* Ensure display */
+  z-index: 5; /* Ensure it's above other elements */
+}
+
+.chat-bubble.interim {
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  margin-left: 0;
+}
+
+.chat-bubble.final {
+  background-color: #d1ecf1;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+  margin-left: auto;
+}
+
+.chat-text {
+  margin-bottom: 0.25rem;
+}
+
+.chat-timestamp {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  text-align: right;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Debug controls */
+.debug-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+}
+
+.transcript-debugger {
+  margin-bottom: 1rem;
+}
+
+.transcript-debugger.empty {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.debug-toggle button,
+.debug-section button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.debug-toggle button:hover,
+.debug-section button:hover {
+  background-color: #5a6268;
+}
+
+.visibility-check {
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.transcript-debug-info {
+  font-size: 10px;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes blink {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Accessibility Focus Styles */
+button:focus,
+[role="button"]:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .voice-chat-container {
+    padding: 0.75rem;
+  }
+  
+  .chat-bubble {
+    max-width: 90%;
+  }
+}

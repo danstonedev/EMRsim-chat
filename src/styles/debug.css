@@ -1,0 +1,68 @@
+/* Debug mode styles */
+.debug-mode * {
+  outline: 1px dotted rgba(255, 0, 0, 0.1);
+}
+
+.debug-mode .transcript-container {
+  outline: 2px solid rgba(0, 0, 255, 0.3);
+}
+
+.debug-mode .chat-bubble {
+  outline: 2px solid rgba(0, 255, 0, 0.3);
+}
+
+/* Debug button styles */
+.debug-button {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 10000;
+  padding: 8px 12px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.debug-button:hover {
+  background-color: #5a6268;
+}
+
+.debug-button.active {
+  background-color: #dc3545;
+}
+
+/* Debug panel styles */
+.debug-panel {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #f8f9fa;
+}
+
+.debug-panel h3 {
+  margin-top: 0;
+  font-size: 1rem;
+  color: #495057;
+}
+
+.debug-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Debug indicators */
+.debug-indicator {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  background: #dc3545;
+  color: white;
+  border-radius: 4px;
+  margin-left: 8px;
+}

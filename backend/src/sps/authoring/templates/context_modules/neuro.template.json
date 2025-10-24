@@ -1,0 +1,57 @@
+{
+  "module_id": "chronic_neuro_generic",
+  "dx_type": "stroke|MS|PD|SCI|other",
+  "time_since_onset_weeks": null,
+  "lesion_level_or_side": "",
+  "severity_scale": "mRS|EDSS|HoehnYahr|AIS",
+  "tone_movement": {
+    "modified_ashworth": {},
+    "clonus": "",
+    "synergy_patterns": [],
+    "selective_motor_control_notes": ""
+  },
+  "sensation": {
+    "light_touch": "",
+    "proprioception": "",
+    "vibration": ""
+  },
+  "visual_perceptual": {
+    "visual_fields": "",
+    "neglect": ""
+  },
+  "cognition": {
+    "MoCA": null
+  },
+  "communication": {
+    "aphasia": "",
+    "dysarthria": ""
+  },
+  "swallow_risk": false,
+  "autonomic": {
+    "autonomic_dysreflexia_risk": false,
+    "triggers": [],
+    "response_protocol": ""
+  },
+  "orthostatic_intolerance": {
+    "present": false,
+    "details": ""
+  },
+  "equipment_orthoses": {
+    "AFO": "",
+    "wheelchair_specs": "",
+    "pressure_mapping": ""
+  },
+  "pressure_injury_risk": {
+    "braden": null
+  },
+  "functional_outcomes": [
+    "Berg",
+    "miniBESTest",
+    "10MWT",
+    "6MWT",
+    "FGA",
+    "ABC"
+  ],
+  "caregiver_training": [],
+  "home_modifications": []
+}

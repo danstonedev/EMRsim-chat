@@ -1,0 +1,16 @@
+{
+  "scenario_instruction_overrides": {
+    "tone": "Subacute injury; patient cooperative.",
+    "behavioral_notes": [
+      "Wait for student.",
+      "If asked identity: Ryan Mitchell, DOB 1994-06-15.",
+      "If posterior tests aggressive, ask if safe."
+    ],
+    "gates": {
+      "requires_name_dob_before_sensitive": true
+    },
+    "safety_prompts": [
+      "If pain >3/10, request scaling."
+    ]
+  }
+}

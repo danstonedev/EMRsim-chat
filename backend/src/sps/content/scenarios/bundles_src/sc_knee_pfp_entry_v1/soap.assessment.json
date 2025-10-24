@@ -1,0 +1,14 @@
+{
+  "primary_diagnosis": "Patellofemoral pain (right) — movement coordination deficits",
+  "differential_diagnoses": [
+    "Patellar tendinopathy (less likely: focal inferior pole tenderness absent; compression more provocative)",
+    "Plica/fat pad irritation (pattern inconsistent)",
+    "Meniscal irritation (unlikely: negative joint-line/mechanical tests)"
+  ],
+  "clinical_reasoning": [
+    "Retropatellar/peripatellar ache reproduced by loaded flexion and stair descent.",
+    "Dynamic knee valgus and pelvic drop on step-down; hip abd weakness (14% asymmetry).",
+    "Lateral retinacular tightness; mild overpronation; ligament/meniscal screens negative."
+  ],
+  "prognosis": "Good with exercise-led, graded loading; expected improvement over 6–8 weeks with adherence."
+}

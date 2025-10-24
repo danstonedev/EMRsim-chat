@@ -1,0 +1,48 @@
+{
+  "objective_catalog": [
+    { "test_id": "vitals", "label": "Vitals", "template": "vitals", "findings": { "bp": "118/72", "hr": 64, "rr": 14, "spo2": 99 } },
+    {
+      "test_id": "inspection",
+      "label": "Inspection",
+      "template": "inspection",
+      "findings": { "ecchymosis": "minimal", "swelling": "none", "gait": "normal pace, avoids high speed" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "rom",
+      "label": "ROM (Hip & Knee)",
+      "template": "rom",
+      "findings": { "hip_flex_right_deg": 110, "hip_flex_left_deg": 120, "knee_flex_right_deg": 135, "pain_end_range": "posterior thigh stretch pain with hip flexion/knee extension" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "palpation",
+      "label": "Palpation",
+      "template": "palpation",
+      "findings": { "biceps_femoris_tenderness": "positive mid-distal", "palpable_defect": "no" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "resisted_knee_flexion",
+      "label": "Resisted Knee Flexion (~30°)",
+      "template": "strength",
+      "findings": { "pain": "positive", "strength": "4/5 (limited by pain)", "comparison": "left 5/5" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "slump_test",
+      "label": "Slump Test (Neural Tension)",
+      "template": "neural",
+      "findings": { "posterior_thigh_symptoms": "reproduced", "sciatic_nerve_tension": "positive" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "functional",
+      "label": "Functional",
+      "template": "functional_task",
+      "findings": { "jog_tolerance": "okay", "sprint_tolerance": "limited by pain", "single_leg_bridge_pain": 4 },
+      "difficulty": "easy"
+    }
+  ],
+  "contraindications_precautions": ["Avoid high-speed sprinting until eccentric strength restores.", "Progress loading gradually; emphasize eccentric work.", "Monitor for re-injury signs during return to sport."]
+}

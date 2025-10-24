@@ -1,0 +1,670 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_lcl_grade1_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:a4a0abb8c6acd7f27bf11a694bcfe4b17c7aefde5170322e9f58dca8e4df9fc6",
+  "dependencies_checksum": "sha256:c7dea0c3598fc9edd260412b1223062d77122a1d37bc99c0f6ee566ce96fb204",
+  "source_bundle": "scenarios/bundles_src/sc_knee_lcl_grade1_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_lcl_grade1_entry_v1",
+    "student_case_id": "C-559JF",
+    "title": "Entry: Lateral Collateral Ligament Sprain—Grade I",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "sports_medicine_outpatient",
+    "tags": [
+      "entry_level_dpt",
+      "lcl_sprain",
+      "ligament",
+      "acute_knee"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry: Lateral Collateral Ligament Sprain—Grade I",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "sports_medicine_outpatient",
+      "tags": [
+        "entry_level_dpt",
+        "lcl_sprain",
+        "ligament",
+        "acute_knee"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-24T00:00:00Z",
+      "updated_at": "2025-10-24T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Identify clinical features of Grade I LCL sprain and rule out concomitant injuries requiring referral.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "safety_screening",
+            "evidence_based_practice",
+            "documentation"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "triage",
+            "differential_diagnosis"
+          ],
+          "evidence_req": "CPG|systematic_review"
+        },
+        {
+          "id": "LO2",
+          "text": "Create a phased rehab plan (acute → subacute) emphasizing protection, ROM, and progressive loading.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care",
+            "communication_education",
+            "documentation"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "plan_of_care"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "When is imaging indicated for acute varus knee injuries?",
+        "How does LCL rehab differ from MCL in terms of healing time and precautions?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Left knee LCL sprain, Grade I",
+      "onset": "acute",
+      "duration_weeks": 1,
+      "dominant_symptoms": [
+        "lateral knee pain with varus stress",
+        "tenderness along LCL",
+        "mild stiffness after activity"
+      ],
+      "pain_nrs_rest": 1,
+      "pain_nrs_activity": 5,
+      "aggravators": [
+        "lateral movements",
+        "varus stress",
+        "running on cambered surfaces"
+      ],
+      "easers": [
+        "rest",
+        "compression wrap",
+        "ice"
+      ],
+      "pattern_24h": "Soreness after practice; eases overnight; mild morning stiffness <15 min",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "LCL sprain Grade I (left)",
+      "body_functions_structures": [
+        "lateral joint line tenderness",
+        "pain with varus stress at 30° without laxity",
+        "mild effusion"
+      ],
+      "activities": [
+        "reduced tolerance to cutting and lateral movements",
+        "limited running on uneven surfaces"
+      ],
+      "participation": [
+        "limited practice participation (basketball guard)"
+      ],
+      "environmental_factors": [
+        "court access",
+        "elastic knee wrap available"
+      ],
+      "personal_factors": [
+        "22-year-old collegiate athlete",
+        "high motivation to return in 2–3 weeks"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: lateral knee",
+            "quality: tender, sting with varus stress",
+            "NRS activity: 5",
+            "aggravators: cutting, pivoting, varus stress",
+            "mechanism: varus injury during basketball landing",
+            "onset: 3 days ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "locking: false",
+            "true_instability: false",
+            "numbness: false",
+            "loud_pop: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: ",
+            "psh: ",
+            "meds: [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "return to full practice",
+            "no pain with cutting movements"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "vitals",
+        "label": "Vitals",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "rom",
+        "label": "ROM (goniometer)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_30",
+        "label": "Varus Stress at 30° Flexion",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_0",
+        "label": "Varus Stress at 0°",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "other_ligament_tests",
+        "label": "Other Ligament/Meniscus Screen",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional",
+        "label": "Functional",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "instructions": {
+      "scenario_instruction_overrides": {
+        "tone": "Acute sports injury; patient is cooperative and motivated.",
+        "behavioral_notes": [
+          "Wait for student to start.",
+          "If asked for identity: Name Marcus Chen, DOB 2002-11-05.",
+          "If tests are aggressive early, ask whether that is safe for a fresh sprain."
+        ],
+        "gates": {
+          "requires_name_dob_before_sensitive": true
+        },
+        "safety_prompts": [
+          "If pain exceeds 3/10 during tests or lingers >24 hours, request scaling or rest."
+        ]
+      }
+    },
+    "soap": {
+      "subjective": {
+        "history": {
+          "chief_complaint": "I twisted my left knee landing awkwardly—now the outside hurts when I cut.",
+          "mechanism": "Varus force during basketball layup; knee slightly flexed on landing.",
+          "prior_episodes": "No prior knee sprains.",
+          "functional_impact": "Cutting and pivoting hurt; straight-line jogging is tolerable.",
+          "goals": "Get back to full practice without pain.",
+          "identity": {
+            "name": "Marcus Chen",
+            "dob": "2002-11-05"
+          }
+        },
+        "subjective_catalog": [
+          {
+            "id": "meds_allergies",
+            "label": "Medications & Allergies",
+            "patterns": [
+              "meds",
+              "ibuprofen",
+              "allergies"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Took ibuprofen a few times. No allergies."
+              ]
+            }
+          },
+          {
+            "id": "swelling_brace",
+            "label": "Swelling/Support",
+            "patterns": [
+              "swelling",
+              "brace",
+              "sleeve",
+              "wrap"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "A little swelling on the outside the first day; I've been wrapping it."
+              ]
+            }
+          },
+          {
+            "id": "red_flags",
+            "label": "Red Flags",
+            "patterns": [
+              "locking",
+              "giving way",
+              "numb",
+              "tingle",
+              "pop"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "No loud pop. No locking or giving way. No numbness or tingling."
+              ]
+            }
+          },
+          {
+            "id": "pain_location",
+            "label": "Pain Location",
+            "patterns": [
+              "where",
+              "point to pain",
+              "body chart"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Right on the outside of my left knee."
+              ]
+            }
+          }
+        ],
+        "patient_reported_outcomes": {
+          "NPRS_worst": 5,
+          "NPRS_usual": 2,
+          "LEFS": 60
+        },
+        "media_library": [],
+        "history_present_illness": {
+          "mechanism": "varus injury during basketball landing",
+          "first_onset": "3 days ago",
+          "course_since_onset": "improving with wrap and relative rest",
+          "prior_episodes": "denies prior knee sprains",
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "locking": false,
+            "true_instability": false,
+            "numbness": false,
+            "loud_pop": false
+          }
+        },
+        "pain": {
+          "location": [
+            "lateral knee"
+          ],
+          "quality": [
+            "tender",
+            "sting with varus stress"
+          ],
+          "irritability": "low-moderate",
+          "nrs_rest": 0,
+          "nrs_activity": 5,
+          "aggravators": [
+            "cutting",
+            "pivoting",
+            "varus stress"
+          ],
+          "easers": [
+            "compression wrap",
+            "relative rest"
+          ],
+          "24h_pattern": "better in the morning, sore after practice"
+        },
+        "social_history": {
+          "sport_hobbies": [
+            "basketball"
+          ],
+          "school_level": "college"
+        },
+        "goals": [
+          "return to full practice",
+          "no pain with cutting movements"
+        ],
+        "past_medical_history": [],
+        "surgical_history": [],
+        "medications": [
+          {
+            "name": "ibuprofen",
+            "dose": "taken as needed since injury"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "no known allergies"
+          }
+        ]
+      },
+      "objective": {
+        "objective_catalog": [
+          {
+            "test_id": "vitals",
+            "label": "Vitals",
+            "template": "vitals",
+            "findings": {
+              "bp": "120/72",
+              "hr": 68,
+              "rr": 14,
+              "spo2": 99
+            }
+          },
+          {
+            "test_id": "inspection",
+            "label": "Inspection",
+            "template": "inspection",
+            "findings": {
+              "effusion": "trace lateral",
+              "ecchymosis": "none",
+              "gait": "slight antalgia with pivoting"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "rom",
+            "label": "ROM (goniometer)",
+            "template": "rom",
+            "findings": {
+              "knee_ext_left_deg": 0,
+              "knee_flex_left_deg": 128,
+              "knee_ext_right_deg": 0,
+              "knee_flex_right_deg": 135,
+              "pain_end_range": "mild lateral discomfort with deep flexion"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "varus_stress_30",
+            "label": "Varus Stress at 30° Flexion",
+            "template": "ligament_test",
+            "findings": {
+              "pain_lateral": "yes",
+              "laxity": "none vs contralateral",
+              "end_feel": "firm"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "varus_stress_0",
+            "label": "Varus Stress at 0°",
+            "template": "ligament_test",
+            "findings": {
+              "pain_lateral": "mild",
+              "laxity": "none",
+              "end_feel": "firm"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "other_ligament_tests",
+            "label": "Other Ligament/Meniscus Screen",
+            "template": "screening",
+            "findings": {
+              "lachman": "negative",
+              "valgus": "negative",
+              "posterior_drawer": "negative",
+              "mcmurray": "negative"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "palpation",
+            "label": "Palpation",
+            "template": "palpation",
+            "findings": {
+              "lcl_tenderness": "positive along mid LCL",
+              "joint_line_tenderness": "none"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "functional",
+            "label": "Functional",
+            "template": "functional_task",
+            "findings": {
+              "step_down_20cm_pain": 1,
+              "lateral_shuffle_pain": 4,
+              "failure_criteria": "pain ≥3/10 or varus collapse observed"
+            },
+            "difficulty": "easy"
+          }
+        ],
+        "contraindications_precautions": [
+          "Avoid cutting/pivoting and varus loads in week 1–2.",
+          "Compression wrap may be used for comfort; no aggressive valgus/varus mobilizations."
+        ]
+      },
+      "assessment": {},
+      "plan": {}
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "Knee Ligament Sprain CPG (non-operative LCL management)",
+          "identifier": "CPG-Knee-Ligament-2017",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-24"
+    },
+    "linked_persona_id": "sage-jonah-mensah",
+    "persona_snapshot": {
+      "id": "sage-jonah-mensah",
+      "display_name": "Jonah Mensah",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "sage-jonah-mensah",
+    "content_version": "1.0.0",
+    "checksum": "sha256:47f441ccab3981acf3434779bbfc7b14c16213a4a0dd2458afc3852f26ff4bc9",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "sage-jonah-mensah",
+      "display_name": "Jonah Mensah",
+      "demographics": {
+        "name": "Jonah Mensah",
+        "preferred_name": "Jonah",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "sage",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Jonah Mensah, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Jonah Mensah. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_lcl_grade1_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_lcl_grade1_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_lcl_grade1_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_lcl_grade1_entry_v1/soap.objective.json",
+    "soap_assessment": null,
+    "soap_plan": null
+  }
+}

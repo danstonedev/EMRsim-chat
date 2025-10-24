@@ -1,0 +1,17 @@
+{
+  "sp_instructions": {
+    "affect": "calm",
+    "pain_behavior": "minimal",
+    "cueing_rules": [
+      "answer_only_what_is_asked"
+    ]
+  },
+  "llm_prompt_hooks": {
+    "coaching_cues": [
+      "Establish directional preference via repeated movements.",
+      "Link outcome (ODI) to goals.",
+      "Avoid unnecessary imaging; provide flare plan."
+    ]
+  },
+  "authoring_notes": "Emphasize centralization with extension; address deconditioning and sitting tolerance."
+}

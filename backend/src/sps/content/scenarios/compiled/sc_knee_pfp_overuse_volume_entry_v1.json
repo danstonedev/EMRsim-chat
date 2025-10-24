@@ -1,0 +1,649 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_pfp_overuse_volume_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:9d2983f13a14d8b7a3a95b2855318730bac97aea219d9c08b5176cf4762312bc",
+  "dependencies_checksum": "sha256:85ebeabfb35b09aa7167788787986159ed75c2cfa29447bf5aaec43b52f0c58b",
+  "source_bundle": "scenarios/bundles_src/sc_knee_pfp_overuse_volume_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_pfp_overuse_volume_entry_v1",
+    "student_case_id": "C-N2TD7",
+    "title": "Entry: Patellofemoral Pain—Overuse/Volume Error",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": [
+      "entry_level_dpt",
+      "pfp",
+      "overuse",
+      "training_error"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry: Patellofemoral Pain—Overuse/Volume Error",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "outpatient_pt",
+      "tags": [
+        "entry_level_dpt",
+        "pfp",
+        "overuse",
+        "training_error"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-24T00:00:00Z",
+      "updated_at": "2025-10-24T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Recognize training error/volume increase as a primary driver of PFP and counsel on load management.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "evidence_based_practice",
+            "communication_education"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "patient_education"
+          ],
+          "evidence_req": "CPG"
+        },
+        {
+          "id": "LO2",
+          "text": "Design a graded return-to-activity plan with appropriate volume progression per PFP CPG.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "plan_of_care"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "How do you counsel patients on appropriate training volume progression?",
+        "What role does load management play in PFP recovery?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Patellofemoral pain due to rapid training volume increase",
+      "onset": "gradual",
+      "duration_weeks": 6,
+      "dominant_symptoms": [
+        "anterior knee pain with running",
+        "pain after runs",
+        "difficulty with stairs post-run"
+      ],
+      "pain_nrs_rest": 1,
+      "pain_nrs_activity": 7,
+      "aggravators": [
+        "running",
+        "stairs after running",
+        "long runs"
+      ],
+      "easers": [
+        "rest days",
+        "reduced mileage"
+      ],
+      "pattern_24h": "Minimal morning pain, builds during/after runs",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "PFP due to training volume error",
+      "body_functions_structures": [
+        "anterior knee pain",
+        "mild quad weakness",
+        "no structural deficits"
+      ],
+      "activities": [
+        "running tolerance reduced",
+        "stairs post-run painful"
+      ],
+      "participation": [
+        "unable to maintain training schedule for upcoming race"
+      ],
+      "environmental_factors": [
+        "training for first half-marathon"
+      ],
+      "personal_factors": [
+        "28-year-old recreational runner",
+        "increased mileage 50% in 3 weeks"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: anterior knee bilateral",
+            "quality: ache during run, throb after",
+            "NRS activity: 7",
+            "aggravators: running >4 miles, stairs post-run, hills",
+            "mechanism: training volume increase (67% in 3 weeks)",
+            "onset: 6 weeks ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "locking: false",
+            "instability: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: ",
+            "psh: ",
+            "meds: [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "complete half-marathon",
+            "train pain-free",
+            "understand proper progression"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "vitals",
+        "label": "Vitals",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "rom",
+        "label": "ROM",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "strength",
+        "label": "Strength",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "patellar_mobility",
+        "label": "Patellar Mobility",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "special_tests",
+        "label": "Special Tests",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional",
+        "label": "Functional",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "palpation_joint_line",
+        "label": "Joint Line Palpation",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "instructions": {
+      "scenario_instruction_overrides": {
+        "tone": "Motivated runner frustrated by training disruption; wants clear guidance.",
+        "behavioral_notes": [
+          "Wait for student.",
+          "If asked identity: Alex Rivera, DOB 1996-07-30.",
+          "Express eagerness to return to training quickly.",
+          "If student doesn't address training volume, ask 'Can I keep training?'"
+        ],
+        "gates": {
+          "requires_name_dob_before_sensitive": true
+        },
+        "safety_prompts": [
+          "If student recommends maintaining high mileage, express concern about worsening pain."
+        ]
+      }
+    },
+    "soap": {
+      "subjective": {
+        "history": {
+          "chief_complaint": "My knees started hurting after I ramped up my running mileage for a half-marathon.",
+          "mechanism": "Gradual onset with increased training volume.",
+          "prior_episodes": "No prior knee pain.",
+          "functional_impact": "Can't maintain my training schedule; stairs hurt after long runs.",
+          "goals": "Complete my half-marathon training pain-free.",
+          "identity": {
+            "name": "Alex Rivera",
+            "dob": "1996-07-30"
+          }
+        },
+        "subjective_catalog": [
+          {
+            "id": "training_history",
+            "label": "Training History",
+            "patterns": [
+              "training",
+              "running",
+              "mileage",
+              "volume"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "I was running about 15 miles/week, then jumped to 25 miles in like 3 weeks. That's when it started."
+              ]
+            }
+          },
+          {
+            "id": "meds_allergies",
+            "label": "Medications & Allergies",
+            "patterns": [
+              "meds",
+              "allergies"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Taking ibuprofen after runs. No allergies."
+              ]
+            }
+          },
+          {
+            "id": "pain_pattern",
+            "label": "Pain Pattern",
+            "patterns": [
+              "when",
+              "pain",
+              "timing"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Starts around mile 4-5. Worse the day after long runs. Stairs kill me after running."
+              ]
+            }
+          },
+          {
+            "id": "red_flags",
+            "label": "Red Flags",
+            "patterns": [
+              "locking",
+              "swelling",
+              "giving way"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "No locking or giving way. A bit puffy after long runs."
+              ]
+            }
+          }
+        ],
+        "patient_reported_outcomes": {
+          "NPRS_worst": 7,
+          "NPRS_usual": 2,
+          "LEFS": 58,
+          "AKPS": 64
+        },
+        "media_library": [],
+        "history_present_illness": {
+          "mechanism": "training volume increase (67% in 3 weeks)",
+          "first_onset": "6 weeks ago",
+          "course_since_onset": "persistent with training, improves with rest",
+          "prior_episodes": "no prior knee pain",
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "locking": false,
+            "instability": false
+          }
+        },
+        "pain": {
+          "location": [
+            "anterior knee bilateral"
+          ],
+          "quality": [
+            "ache during run",
+            "throb after"
+          ],
+          "irritability": "moderate-high",
+          "nrs_rest": 1,
+          "nrs_activity": 7,
+          "aggravators": [
+            "running >4 miles",
+            "stairs post-run",
+            "hills"
+          ],
+          "easers": [
+            "rest days",
+            "reduced mileage"
+          ],
+          "24h_pattern": "minimal morning, builds during/after runs"
+        },
+        "social_history": {
+          "occupation": "accountant",
+          "sport_hobbies": [
+            "running",
+            "first half-marathon training"
+          ]
+        },
+        "goals": [
+          "complete half-marathon",
+          "train pain-free",
+          "understand proper progression"
+        ],
+        "past_medical_history": [],
+        "surgical_history": [],
+        "medications": [
+          {
+            "name": "ibuprofen",
+            "dose": "after runs"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "none"
+          }
+        ]
+      },
+      "objective": {
+        "objective_catalog": [
+          {
+            "test_id": "vitals",
+            "label": "Vitals",
+            "template": "vitals",
+            "findings": {
+              "bp": "116/70",
+              "hr": 68,
+              "rr": 14,
+              "spo2": 99
+            }
+          },
+          {
+            "test_id": "inspection",
+            "label": "Inspection",
+            "template": "inspection",
+            "findings": {
+              "effusion": "trace bilateral",
+              "alignment": "normal",
+              "gait": "normal"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "rom",
+            "label": "ROM",
+            "template": "rom",
+            "findings": {
+              "knee_ext_right_deg": 0,
+              "knee_flex_right_deg": 135,
+              "knee_ext_left_deg": 0,
+              "knee_flex_left_deg": 135,
+              "pain_end_range": "anterior knee ache with flexion >120°"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "strength",
+            "label": "Strength",
+            "template": "strength",
+            "findings": {
+              "quad_bilateral": "4+/5",
+              "hip_abduction_right": "4/5",
+              "hip_ER_right": "4/5"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "patellar_mobility",
+            "label": "Patellar Mobility",
+            "template": "mobility",
+            "findings": {
+              "medial_lateral": "within normal",
+              "superior_inferior": "within normal"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "special_tests",
+            "label": "Special Tests",
+            "template": "screening",
+            "findings": {
+              "clarkes_test": "negative",
+              "patellar_grind": "trace positive with pain"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "functional",
+            "label": "Functional",
+            "template": "functional_task",
+            "findings": {
+              "single_leg_squat": "good control bilateral",
+              "step_down_pain": 2,
+              "run_walk_tolerance": "pain starts mile 4-5"
+            },
+            "difficulty": "easy"
+          }
+        ],
+        "contraindications_precautions": [
+          "Reduce training volume initially; follow 10% rule for progression.",
+          "Monitor for symptom provocation during graded return."
+        ]
+      },
+      "assessment": {},
+      "plan": {}
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "2019 JOSPT Patellofemoral Pain CPG",
+          "identifier": "CPG-PFP-2019",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-24"
+    },
+    "linked_persona_id": "echo-devon-brooks",
+    "persona_snapshot": {
+      "id": "echo-devon-brooks",
+      "display_name": "Devon Brooks",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "echo-devon-brooks",
+    "content_version": "1.0.0",
+    "checksum": "sha256:c24af504c895c76e913361d54d14bf9560382a2d0f971bcccff9f55e74bf06ac",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "echo-devon-brooks",
+      "display_name": "Devon Brooks",
+      "demographics": {
+        "name": "Devon Brooks",
+        "preferred_name": "Devon",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "echo",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Devon Brooks, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Devon Brooks. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_pfp_overuse_volume_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_pfp_overuse_volume_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_pfp_overuse_volume_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_pfp_overuse_volume_entry_v1/soap.objective.json",
+    "soap_assessment": null,
+    "soap_plan": null
+  }
+}

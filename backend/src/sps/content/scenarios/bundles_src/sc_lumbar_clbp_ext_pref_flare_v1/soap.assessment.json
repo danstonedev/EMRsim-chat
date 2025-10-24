@@ -1,0 +1,23 @@
+{
+  "problem_list": [
+    "pain_with_flexion",
+    "reduced_extension_ROM",
+    "hip_extensor_abductor_weakness",
+    "decreased_sitting_tolerance"
+  ],
+  "working_diagnoses": [
+    "chronic nonspecific LBP—extension preference"
+  ],
+  "clinical_impression": "Findings support directional preference for extension with centralization; no neuro deficits; imaging not indicated.",
+  "irritability_severity": "moderate",
+  "staging_subgrouping": "movement_coordination_and_directional_preference",
+  "prognosis": "good",
+  "icd10_codes": [
+    "M54.50"
+  ],
+  "differential_diagnoses_considered": [
+    "facet_arthropathy",
+    "discogenic_pain_without_radiculopathy"
+  ],
+  "rationale_evidence_links": []
+}

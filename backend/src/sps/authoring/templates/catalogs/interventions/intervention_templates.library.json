@@ -1,0 +1,66 @@
+[
+  {
+    "intervention_id": "ex_strengthening",
+    "label": "Strengthening Exercise",
+    "starting_dose": {
+      "sets": 2,
+      "reps": 8,
+      "rpe": 6
+    },
+    "progression": [
+      "increase_reps_to_12",
+      "add_3rd_set",
+      "raise_load_5_10_percent"
+    ],
+    "regression": [
+      "reduce_load_10_percent",
+      "cut_to_1_set",
+      "increase_rest"
+    ],
+    "expected_response": {
+      "immediate_session": [
+        "no_lingering_increase_>24h"
+      ],
+      "2_6_weeks": [
+        "strength_gain",
+        "functional_improvement"
+      ]
+    },
+    "adverse_signals": [
+      "pain_spike_>2_points_>48h",
+      "joint_swelling"
+    ],
+    "evidence_bindings": [
+      {
+        "source_id": "",
+        "recommendation_strength": "strong"
+      }
+    ]
+  },
+  {
+    "intervention_id": "education_pacing",
+    "label": "Education—Activity Pacing & Self-Management",
+    "starting_dose": {
+      "time_min": 10
+    },
+    "progression": [
+      "add_goal_setting",
+      "teach_flare_plan"
+    ],
+    "expected_response": {
+      "immediate_session": [
+        "improved_understanding"
+      ],
+      "2_6_weeks": [
+        "better_activity_tolerance"
+      ]
+    },
+    "adverse_signals": [],
+    "evidence_bindings": [
+      {
+        "source_id": "",
+        "recommendation_strength": "strong"
+      }
+    ]
+  }
+]

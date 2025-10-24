@@ -1,0 +1,660 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_post_meniscectomy_stable_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:d03139b1c6d157a97939315fcf57f31e582cae4989cbbfa9f263864a4fb848ed",
+  "dependencies_checksum": "sha256:9589691b07c218aa569e202da82b393186dd3218e4796ef41c7d25c92b88f749",
+  "source_bundle": "scenarios/bundles_src/sc_knee_post_meniscectomy_stable_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_post_meniscectomy_stable_entry_v1",
+    "student_case_id": "C-1FTW1",
+    "title": "Entry: Post-Partial Meniscectomy—Early Stable Rehab",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": [
+      "entry_level_dpt",
+      "post_operative",
+      "meniscectomy",
+      "knee"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry: Post-Partial Meniscectomy—Early Stable Rehab",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "outpatient_pt",
+      "tags": [
+        "entry_level_dpt",
+        "post_operative",
+        "meniscectomy",
+        "knee"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-24T00:00:00Z",
+      "updated_at": "2025-10-24T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Identify appropriate early-phase rehabilitation parameters post-arthroscopic partial meniscectomy.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "safety_screening",
+            "plan_of_care"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "plan_of_care"
+          ],
+          "evidence_req": "CPG"
+        },
+        {
+          "id": "LO2",
+          "text": "Progress ROM, strength, and functional activities based on post-op timeline and symptoms.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "clinical_reasoning"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "What are typical weight-bearing and ROM progressions post-meniscectomy?",
+        "When would you escalate care due to post-op complications?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Post-arthroscopic partial meniscectomy (right knee), 2 weeks post-op",
+      "onset": "surgical",
+      "duration_weeks": 2,
+      "dominant_symptoms": [
+        "mild surgical site pain",
+        "stiffness",
+        "quad weakness"
+      ],
+      "pain_nrs_rest": 1,
+      "pain_nrs_activity": 3,
+      "aggravators": [
+        "prolonged sitting",
+        "stairs"
+      ],
+      "easers": [
+        "ice",
+        "gentle movement"
+      ],
+      "pattern_24h": "Minimal pain, stiff after sitting",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "Post-partial meniscectomy (stable course)",
+      "body_functions_structures": [
+        "mild effusion",
+        "quad inhibition",
+        "ROM limited to 110° flexion"
+      ],
+      "activities": [
+        "stairs limited",
+        "return to desk work initiated"
+      ],
+      "participation": [
+        "on track for return to recreational cycling"
+      ],
+      "environmental_factors": [
+        "desk job",
+        "stairs at home"
+      ],
+      "personal_factors": [
+        "38-year-old motivated to resume cycling"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: anterior knee, incision sites",
+            "quality: mild ache, surgical site tenderness",
+            "NRS activity: 3",
+            "aggravators: stairs, prolonged sitting",
+            "mechanism: arthroscopic partial meniscectomy 2 weeks prior",
+            "onset: post-operative"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "infection_signs: false",
+            "DVT_signs: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: ",
+            "psh: [object Object]",
+            "meds: [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "full ROM",
+            "return to cycling",
+            "no pain with stairs"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "vitals",
+        "label": "Vitals",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "rom",
+        "label": "ROM",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "strength",
+        "label": "Strength",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "quad_index",
+        "label": "Quad Index (Circumference)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "patellar_mobility",
+        "label": "Patellar Mobility",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional",
+        "label": "Functional",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "instructions": {
+      "scenario_instruction_overrides": {
+        "tone": "Post-operative; patient motivated and following protocol.",
+        "behavioral_notes": [
+          "Wait for student.",
+          "If asked identity: David Chen, DOB 1986-09-22.",
+          "Express eagerness to progress but defer to student's guidance.",
+          "If student suggests aggressive stretching, ask if that's safe at 2 weeks post-op."
+        ],
+        "gates": {
+          "requires_name_dob_before_sensitive": true
+        },
+        "safety_prompts": [
+          "If forced flexion >110° causes significant pain, mention it and ask to stop."
+        ]
+      }
+    },
+    "soap": {
+      "subjective": {
+        "history": {
+          "chief_complaint": "I had arthroscopic surgery two weeks ago to clean up my meniscus—my PT wants me moving more.",
+          "mechanism": "Surgical intervention for medial meniscus tear.",
+          "prior_episodes": "Pre-op knee pain for several months.",
+          "functional_impact": "Stairs are challenging; desk work is okay but knee gets stiff.",
+          "goals": "Get full motion back and return to cycling.",
+          "identity": {
+            "name": "David Chen",
+            "dob": "1986-09-22"
+          }
+        },
+        "subjective_catalog": [
+          {
+            "id": "surgery_details",
+            "label": "Surgery Details",
+            "patterns": [
+              "surgery",
+              "procedure",
+              "what was done"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Arthroscopic partial meniscectomy on the medial side. Surgeon said it went well, stable."
+              ]
+            }
+          },
+          {
+            "id": "meds_allergies",
+            "label": "Medications & Allergies",
+            "patterns": [
+              "meds",
+              "pain meds",
+              "allergies"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Was on hydrocodone first few days; now just acetaminophen. No allergies."
+              ]
+            }
+          },
+          {
+            "id": "swelling_complications",
+            "label": "Swelling/Complications",
+            "patterns": [
+              "swelling",
+              "infection",
+              "redness"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "A little swelling but improving. No redness or warmth. Incisions look good."
+              ]
+            }
+          },
+          {
+            "id": "pain_level",
+            "label": "Pain Level",
+            "patterns": [
+              "pain",
+              "how much pain"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Minimal pain, maybe 1-2 at rest, 3 with stairs. Much better than before surgery."
+              ]
+            }
+          }
+        ],
+        "patient_reported_outcomes": {
+          "NPRS_worst": 3,
+          "NPRS_usual": 1,
+          "LEFS": 48
+        },
+        "media_library": [],
+        "history_present_illness": {
+          "mechanism": "arthroscopic partial meniscectomy 2 weeks prior",
+          "first_onset": "post-operative",
+          "course_since_onset": "steady improvement",
+          "prior_episodes": "pre-op meniscus symptoms",
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "infection_signs": false,
+            "DVT_signs": false
+          }
+        },
+        "pain": {
+          "location": [
+            "anterior knee",
+            "incision sites"
+          ],
+          "quality": [
+            "mild ache",
+            "surgical site tenderness"
+          ],
+          "irritability": "low",
+          "nrs_rest": 1,
+          "nrs_activity": 3,
+          "aggravators": [
+            "stairs",
+            "prolonged sitting"
+          ],
+          "easers": [
+            "ice",
+            "gentle movement"
+          ],
+          "24h_pattern": "minimal pain, stiff after sitting"
+        },
+        "social_history": {
+          "occupation": "software engineer",
+          "sport_hobbies": [
+            "cycling",
+            "hiking"
+          ]
+        },
+        "goals": [
+          "full ROM",
+          "return to cycling",
+          "no pain with stairs"
+        ],
+        "past_medical_history": [],
+        "surgical_history": [
+          {
+            "procedure": "arthroscopic partial meniscectomy",
+            "date": "2 weeks ago",
+            "surgeon": "Dr. Anderson"
+          }
+        ],
+        "medications": [
+          {
+            "name": "acetaminophen",
+            "dose": "500mg as needed"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "none"
+          }
+        ]
+      },
+      "objective": {
+        "objective_catalog": [
+          {
+            "test_id": "vitals",
+            "label": "Vitals",
+            "template": "vitals",
+            "findings": {
+              "bp": "118/74",
+              "hr": 68,
+              "rr": 14,
+              "spo2": 99
+            }
+          },
+          {
+            "test_id": "inspection",
+            "label": "Inspection",
+            "template": "inspection",
+            "findings": {
+              "incisions": "well-healed, no drainage",
+              "effusion": "mild",
+              "ecchymosis": "resolved",
+              "gait": "minimal antalgia"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "rom",
+            "label": "ROM",
+            "template": "rom",
+            "findings": {
+              "knee_ext_right_deg": 0,
+              "knee_flex_right_deg": 110,
+              "knee_ext_left_deg": 0,
+              "knee_flex_left_deg": 135,
+              "pain_end_range": "mild discomfort end-range flexion"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "effusion_assessment",
+            "label": "Effusion Assessment",
+            "template": "inspection",
+            "findings": {
+              "sweep_test": "trace positive",
+              "ballottement": "negative"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "strength",
+            "label": "Strength",
+            "template": "strength",
+            "findings": {
+              "quad_right": "3+/5 (inhibited)",
+              "quad_left": "5/5",
+              "hamstring_right": "4/5",
+              "hamstring_left": "5/5"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "quad_index",
+            "label": "Quad Index (Circumference)",
+            "template": "measurement",
+            "findings": {
+              "15cm_above_patella_right": "42cm",
+              "15cm_above_patella_left": "44cm",
+              "deficit": "2cm"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "patellar_mobility",
+            "label": "Patellar Mobility",
+            "template": "mobility",
+            "findings": {
+              "superior_glide": "mildly restricted",
+              "medial_lateral": "within normal"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "functional",
+            "label": "Functional",
+            "template": "functional_task",
+            "findings": {
+              "step_down_pain": 2,
+              "squat_depth_degrees": 90,
+              "gait_normalized": "nearly normal"
+            },
+            "difficulty": "easy"
+          }
+        ],
+        "contraindications_precautions": [
+          "Monitor for infection signs.",
+          "Avoid aggressive flexion stretching until week 3-4.",
+          "Progress strengthening per post-op protocol."
+        ]
+      },
+      "assessment": {},
+      "plan": {}
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "Meniscus and Articular Cartilage Lesions CPG",
+          "identifier": "CPG-Meniscus-2018",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-24"
+    },
+    "linked_persona_id": "nova-caleb-nguyen",
+    "persona_snapshot": {
+      "id": "nova-caleb-nguyen",
+      "display_name": "Caleb Nguyen",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "nova-caleb-nguyen",
+    "content_version": "1.0.0",
+    "checksum": "sha256:d24e01e58f7f7d676210e30d64ec012a81017e53cadd9b029015f9493e98f339",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "nova-caleb-nguyen",
+      "display_name": "Caleb Nguyen",
+      "demographics": {
+        "name": "Caleb Nguyen",
+        "preferred_name": "Caleb",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "nova",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Caleb Nguyen, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Caleb Nguyen. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_post_meniscectomy_stable_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_post_meniscectomy_stable_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_post_meniscectomy_stable_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_post_meniscectomy_stable_entry_v1/soap.objective.json",
+    "soap_assessment": null,
+    "soap_plan": null
+  }
+}

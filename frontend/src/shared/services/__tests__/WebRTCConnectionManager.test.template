@@ -1,0 +1,630 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { ConversationEventEmitter } from '../ConversationEventEmitter';
+import type { ConversationEvent, VoiceDebugEvent } from '../../ConversationController';
+
+describe('ConversationEventEmitter', () => {
+  let emitter: ConversationEventEmitter;
+
+  beforeEach(() => {
+    emitter = new ConversationEventEmitter();
+  });
+
+  describe('constructor', () => {
+    it('should initialize with debug disabled by default', () => {
+      expect(emitter.isDebugEnabled()).toBe(false);
+    });
+
+    it('should allow setting debug enabled on construction', () => {
+      const debugEmitter = new ConversationEventEmitter(true);
+      expect(debugEmitter.isDebugEnabled()).toBe(true);
+    });
+
+    it('should start with zero listeners', () => {
+      expect(emitter.getListenerCount()).toBe(0);
+      expect(emitter.getDebugListenerCount()).toBe(0);
+    });
+  });
+
+  describe('emit', () => {
+    it('should emit events to registered listeners', () => {
+      const listener = vi.fn();
+      emitter.addListener(listener);
+
+      const event: ConversationEvent = { type: 'status', status: 'connected', error: null };
+      emitter.emit(event);
+
+      expect(listener).toHaveBeenCalledWith(event);
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    it('should emit to multiple listeners', () => {
+      const listener1 = vi.fn();
+      const listener2 = vi.fn();
+      emitter.addListener(listener1);
+      emitter.addListener(listener2);
+
+      const event: ConversationEvent = { type: 'session', sessionId: 'abc-123' };
+      emitter.emit(event);
+
+      expect(listener1).toHaveBeenCalledWith(event);
+      expect(listener2).toHaveBeenCalledWith(event);
+    });
+
+    it('should not crash if listener throws error', () => {
+      const errorListener = vi.fn(() => {
+        throw new Error('listener error');
+      });
+      const goodListener = vi.fn();
+
+      emitter.addListener(errorListener);
+      emitter.addListener(goodListener);
+
+      const event: ConversationEvent = { type: 'status', status: 'connected', error: null };
+
+      expect(() => emitter.emit(event)).not.toThrow();
+      expect(errorListener).toHaveBeenCalled();
+      expect(goodListener).toHaveBeenCalled();
+    });
+
+    it('should not emit to unsubscribed listeners', () => {
+      const listener = vi.fn();
+      const unsubscribe = emitter.addListener(listener);
+
+      unsubscribe();
+
+      const event: ConversationEvent = { type: 'status', status: 'connected', error: null };
+      emitter.emit(event);
+
+      expect(listener).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('emitDebug', () => {
+    it('should add debug events to backlog even when disabled', () => {
+      const debugEvent: VoiceDebugEvent = {
+        t: new Date().toISOString(),
+        kind: 'info',
+        src: 'app',
+        msg: 'test message',
+      };
+
+      emitter.emitDebug(debugEvent);
+
+      const backlog = emitter.getDebugBacklog();
+      expect(backlog).toHaveLength(1);
+      expect(backlog[0]).toEqual(debugEvent);
+    });
+
+    it('should not emit to listeners when debug is disabled', () => {
+      const listener = vi.fn();
+      emitter.addDebugListener(listener);
+
+      const debugEvent: VoiceDebugEvent = {
+        t: new Date().toISOString(),
+        kind: 'info',
+        src: 'app',
+        msg: 'test',
+      };
+
+      emitter.emitDebug(debugEvent);
+
+      // Event is in backlog but listener wasn't called
+      expect(emitter.getDebugBacklog()).toHaveLength(1);
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should emit to listeners when debug is enabled', () => {
+      emitter.setDebugEnabled(true);
+      const listener = vi.fn();
+      emitter.addDebugListener(listener);
+
+      const debugEvent: VoiceDebugEvent = {
+        t: new Date().toISOString(),
+        kind: 'info',
+        src: 'app',
+        msg: 'test',
+      };
+
+      emitter.emitDebug(debugEvent);
+
+      expect(listener).toHaveBeenCalledWith(debugEvent);
+    });
+
+    it('should trim backlog when exceeds max size', () => {
+      // Fill backlog beyond max (500)
+      for (let i = 0; i < 550; i++) {
+        emitter.emitDebug({
+          t: new Date().toISOString(),
+          kind: 'info',
+          src: 'app',
+          msg: `event-${i}`,
+        });
+      }
+
+      const backlog = emitter.getDebugBacklog();
+      expect(backlog.length).toBe(500);
+      // Should have trimmed first 50 events, so first event should be event-50
+      expect(backlog[0]?.msg).toBe('event-50');
+    });
+
+    it('should adjust delivered pointer when trimming backlog', () => {
+      emitter.setDebugEnabled(true);
+      const listener = vi.fn();
+      emitter.addDebugListener(listener);
+
+      // Add 550 events
+      for (let i = 0; i < 550; i++) {
+        emitter.emitDebug({
+          t: new Date().toISOString(),
+          kind: 'info',
+          src: 'app',
+          msg: `event-${i}`,
+        });
+      }
+
+      // All events should have been delivered (550 events + 1 "debug enabled" event)
+      expect(listener).toHaveBeenCalledTimes(551);
+      // Backlog should be trimmed to 500
+      expect(emitter.getDebugBacklog().length).toBe(500);
+    });
+
+    it('should handle listener errors gracefully', () => {
+      emitter.setDebugEnabled(true);
+      const errorListener = vi.fn(() => {
+        throw new Error('debug listener error');
+      });
+      const goodListener = vi.fn();
+
+      emitter.addDebugListener(errorListener);
+      emitter.addDebugListener(goodListener);
+
+      const debugEvent: VoiceDebugEvent = {
+        t: new Date().toISOString(),
+        kind: 'info',
+        src: 'app',
+        msg: 'test',
+      };
+
+      expect(() => emitter.emitDebug(debugEvent)).not.toThrow();
+      expect(errorListener).toHaveBeenCalled();
+      expect(goodListener).toHaveBeenCalled();
+    });
+  });
+
+  describe('addListener', () => {
+    it('should increment listener count', () => {
+      expect(emitter.getListenerCount()).toBe(0);
+      emitter.addListener(vi.fn());
+      expect(emitter.getListenerCount()).toBe(1);
+      emitter.addListener(vi.fn());
+      expect(emitter.getListenerCount()).toBe(2);
+    });
+
+    it('should return unsubscribe function', () => {
+      const listener = vi.fn();
+      const unsubscribe = emitter.addListener(listener);
+
+      expect(typeof unsubscribe).toBe('function');
+      expect(emitter.getListenerCount()).toBe(1);
+
+      unsubscribe();
+      expect(emitter.getListenerCount()).toBe(0);
+    });
+
+    it('should immediately deliver current state to new listener', () => {
+      const listener = vi.fn();
+      const currentState = {
+        status: 'connected',
+        error: null,
+        sessionId: 'test-session',
+        userPartial: 'Hello',
+        assistantPartial: 'Hi there',
+        micLevel: 0.5,
+      };
+
+      emitter.addListener(listener, currentState);
+
+      expect(listener).toHaveBeenCalledTimes(5);
+      expect(listener).toHaveBeenNthCalledWith(1, {
+        type: 'status',
+        status: 'connected',
+        error: null,
+      });
+      expect(listener).toHaveBeenNthCalledWith(2, {
+        type: 'session',
+        sessionId: 'test-session',
+      });
+      expect(listener).toHaveBeenNthCalledWith(3, {
+        type: 'partial',
+        role: 'user',
+        text: 'Hello',
+      });
+      expect(listener).toHaveBeenNthCalledWith(4, {
+        type: 'partial',
+        role: 'assistant',
+        text: 'Hi there',
+      });
+      expect(listener).toHaveBeenNthCalledWith(5, {
+        type: 'mic-level',
+        level: 0.5,
+      });
+    });
+
+    it('should not crash if currentState delivery fails', () => {
+      const errorListener = vi.fn(() => {
+        throw new Error('state delivery error');
+      });
+
+      const currentState = {
+        status: 'connected',
+        error: null,
+        sessionId: 'test-session',
+      };
+
+      expect(() => emitter.addListener(errorListener, currentState)).not.toThrow();
+      expect(emitter.getListenerCount()).toBe(1);
+    });
+  });
+
+  describe('addDebugListener', () => {
+    it('should increment debug listener count', () => {
+      expect(emitter.getDebugListenerCount()).toBe(0);
+      emitter.addDebugListener(vi.fn());
+      expect(emitter.getDebugListenerCount()).toBe(1);
+    });
+
+    it('should return unsubscribe function', () => {
+      const listener = vi.fn();
+      const unsubscribe = emitter.addDebugListener(listener);
+
+      expect(typeof unsubscribe).toBe('function');
+      expect(emitter.getDebugListenerCount()).toBe(1);
+
+      unsubscribe();
+      expect(emitter.getDebugListenerCount()).toBe(0);
+    });
+
+    it('should backfill entire backlog when debug is enabled', () => {
+      // Add some events to backlog
+      const event1: VoiceDebugEvent = {
+        t: '2025-01-01T00:00:00Z',
+        kind: 'info',
+        src: 'app',
+        msg: 'event1',
+      };
+      const event2: VoiceDebugEvent = {
+        t: '2025-01-01T00:00:01Z',
+        kind: 'info',
+        src: 'app',
+        msg: 'event2',
+      };
+
+      emitter.emitDebug(event1);
+      emitter.emitDebug(event2);
+
+      // Enable debug and add listener
+      emitter.setDebugEnabled(true);
+      const listener = vi.fn();
+      emitter.addDebugListener(listener);
+
+      // Should receive both backlog events + "debug enabled" event
+      expect(listener).toHaveBeenCalledTimes(3);
+      expect(listener).toHaveBeenNthCalledWith(1, event1);
+      expect(listener).toHaveBeenNthCalledWith(2, event2);
+      expect(listener).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({
+          msg: 'debug enabled',
+        })
+      );
+    });
+
+    it('should not backfill when debug is disabled', () => {
+      // Add events to backlog
+      emitter.emitDebug({
+        t: new Date().toISOString(),
+        kind: 'info',
+        src: 'app',
+        msg: 'event',
+      });
+
+      const listener = vi.fn();
+      emitter.addDebugListener(listener);
+
+      // Should not receive backlog events
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should handle backlog delivery errors gracefully', () => {
+      emitter.emitDebug({
+        t: new Date().toISOString(),
+        kind: 'info',
+        src: 'app',
+        msg: 'event',
+      });
+
+      emitter.setDebugEnabled(true);
+
+      const errorListener = vi.fn(() => {
+        throw new Error('backlog delivery error');
+      });
+
+      expect(() => emitter.addDebugListener(errorListener)).not.toThrow();
+      expect(emitter.getDebugListenerCount()).toBe(1);
+    });
+  });
+
+  describe('removeListener', () => {
+    it('should remove listener', () => {
+      const listener = vi.fn();
+      emitter.addListener(listener);
+      expect(emitter.getListenerCount()).toBe(1);
+
+      emitter.removeListener(listener);
+      expect(emitter.getListenerCount()).toBe(0);
+    });
+
+    it('should not crash if removing non-existent listener', () => {
+      const listener = vi.fn();
+      expect(() => emitter.removeListener(listener)).not.toThrow();
+    });
+  });
+
+  describe('removeDebugListener', () => {
+    it('should remove debug listener', () => {
+      const listener = vi.fn();
+      emitter.addDebugListener(listener);
+      expect(emitter.getDebugListenerCount()).toBe(1);
+
+      emitter.removeDebugListener(listener);
+      expect(emitter.getDebugListenerCount()).toBe(0);
+    });
+  });
+
+  describe('setDebugEnabled', () => {
+    it('should enable debug mode', () => {
+      expect(emitter.isDebugEnabled()).toBe(false);
+      emitter.setDebugEnabled(true);
+      expect(emitter.isDebugEnabled()).toBe(true);
+    });
+
+    it('should disable debug mode', () => {
+      emitter.setDebugEnabled(true);
+      expect(emitter.isDebugEnabled()).toBe(true);
+
+      emitter.setDebugEnabled(false);
+      expect(emitter.isDebugEnabled()).toBe(false);
+    });
+
+    it('should do nothing if already in requested state', () => {
+      const listener = vi.fn();
+      emitter.addDebugListener(listener);
+
+      emitter.setDebugEnabled(false); // Already false
+      expect(listener).not.toHaveBeenCalled();
+
+      emitter.setDebugEnabled(true);
+      listener.mockClear();
+
+      emitter.setDebugEnabled(true); // Already true
+      // Should not emit "debug enabled" event again
+    });
+
+    it('should flush pending backlog when enabling', () => {
+      // Add events while disabled
+      const event1: VoiceDebugEvent = {
+        t: '2025-01-01T00:00:00Z',
+        kind: 'info',
+        src: 'app',
+        msg: 'event1',
+      };
+      const event2: VoiceDebugEvent = {
+        t: '2025-01-01T00:00:01Z',
+        kind: 'info',
+        src: 'app',
+        msg: 'event2',
+      };
+
+      emitter.emitDebug(event1);
+      emitter.emitDebug(event2);
+
+      const listener = vi.fn();
+      emitter.addDebugListener(listener);
+
+      // Enable debug - should flush backlog
+      emitter.setDebugEnabled(true);
+
+      // Should receive both backlog events + "debug enabled" event
+      expect(listener).toHaveBeenCalledTimes(3);
+      expect(listener).toHaveBeenNthCalledWith(1, event1);
+      expect(listener).toHaveBeenNthCalledWith(2, event2);
+      expect(listener).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({
+          kind: 'info',
+          msg: 'debug enabled',
+        })
+      );
+    });
+
+    it('should emit "debug enabled" event when enabling', () => {
+      emitter.setDebugEnabled(true);
+      const listener = vi.fn();
+      emitter.addDebugListener(listener);
+
+      emitter.setDebugEnabled(false);
+      emitter.setDebugEnabled(true);
+
+      // Should have received "debug enabled" event
+      const debugEnabledCall = listener.mock.calls.find(call => call[0]?.msg === 'debug enabled');
+      expect(debugEnabledCall).toBeDefined();
+    });
+
+    it('should not flush backlog if no listeners', () => {
+      emitter.emitDebug({
+        t: new Date().toISOString(),
+        kind: 'info',
+        src: 'app',
+        msg: 'event',
+      });
+
+      // Enable without listeners - should not crash
+      expect(() => emitter.setDebugEnabled(true)).not.toThrow();
+    });
+  });
+
+  describe('clearAllListeners', () => {
+    it('should remove all listeners and debug listeners', () => {
+      emitter.addListener(vi.fn());
+      emitter.addListener(vi.fn());
+      emitter.addDebugListener(vi.fn());
+
+      expect(emitter.getListenerCount()).toBe(2);
+      expect(emitter.getDebugListenerCount()).toBe(1);
+
+      emitter.clearAllListeners();
+
+      expect(emitter.getListenerCount()).toBe(0);
+      expect(emitter.getDebugListenerCount()).toBe(0);
+    });
+  });
+
+  describe('clearDebugBacklog', () => {
+    it('should clear debug backlog and reset delivered pointer', () => {
+      emitter.emitDebug({
+        t: new Date().toISOString(),
+        kind: 'info',
+        src: 'app',
+        msg: 'event1',
+      });
+      emitter.emitDebug({
+        t: new Date().toISOString(),
+        kind: 'info',
+        src: 'app',
+        msg: 'event2',
+      });
+
+      expect(emitter.getDebugBacklog().length).toBe(2);
+
+      emitter.clearDebugBacklog();
+
+      expect(emitter.getDebugBacklog().length).toBe(0);
+    });
+  });
+
+  describe('getDebugBacklog', () => {
+    it('should return readonly array', () => {
+      const backlog = emitter.getDebugBacklog();
+      expect(Array.isArray(backlog)).toBe(true);
+
+      // Verify it's marked as readonly by TypeScript (compile-time check)
+      // At runtime we can't prevent modification, but the type prevents it
+      expect(() => {
+        // @ts-expect-error - Should be readonly
+        backlog.push({
+          t: new Date().toISOString(),
+          kind: 'info',
+          src: 'app',
+          msg: 'test',
+        });
+      }).not.toThrow(); // Actually will work at runtime, but TS should complain
+    });
+  });
+
+  describe('integration scenarios', () => {
+    it('should handle full lifecycle: add listener → emit → unsubscribe', () => {
+      const listener = vi.fn();
+      const unsubscribe = emitter.addListener(listener);
+
+      // Emit some events
+      emitter.emit({ type: 'status', status: 'connected', error: null });
+      emitter.emit({ type: 'session', sessionId: 'abc' });
+
+      expect(listener).toHaveBeenCalledTimes(2);
+
+      // Unsubscribe
+      unsubscribe();
+
+      // Emit more events - should not receive
+      emitter.emit({ type: 'status', status: 'error', error: 'disconnected' });
+
+      expect(listener).toHaveBeenCalledTimes(2); // Still 2
+    });
+
+    it('should handle debug enable/disable cycle with events', () => {
+      const listener = vi.fn();
+      emitter.addDebugListener(listener);
+
+      // Emit while disabled - goes to backlog only
+      emitter.emitDebug({
+        t: '2025-01-01T00:00:00Z',
+        kind: 'info',
+        src: 'app',
+        msg: 'event1',
+      });
+      expect(listener).not.toHaveBeenCalled();
+
+      // Enable - flushes backlog
+      emitter.setDebugEnabled(true);
+      expect(listener).toHaveBeenCalledTimes(2); // backlog + "debug enabled"
+
+      listener.mockClear();
+
+      // Emit while enabled - immediate delivery
+      emitter.emitDebug({
+        t: '2025-01-01T00:00:01Z',
+        kind: 'info',
+        src: 'app',
+        msg: 'event2',
+      });
+      expect(listener).toHaveBeenCalledTimes(1);
+
+      listener.mockClear();
+
+      // Disable - stops delivery but still records to backlog
+      emitter.setDebugEnabled(false);
+      emitter.emitDebug({
+        t: '2025-01-01T00:00:02Z',
+        kind: 'info',
+        src: 'app',
+        msg: 'event3',
+      });
+      expect(listener).not.toHaveBeenCalled();
+      expect(emitter.getDebugBacklog().length).toBe(4); // event1 + debug enabled + event2 + event3
+    });
+
+    it('should handle multiple listeners with different lifecycles', () => {
+      const listener1 = vi.fn();
+      const listener2 = vi.fn();
+      const listener3 = vi.fn();
+
+      // Add listener1
+      emitter.addListener(listener1);
+
+      // Emit event 1
+      emitter.emit({ type: 'session', sessionId: 'abc' });
+      expect(listener1).toHaveBeenCalledTimes(1);
+      expect(listener2).not.toHaveBeenCalled();
+      expect(listener3).not.toHaveBeenCalled();
+
+      // Add listener2
+      const unsub2 = emitter.addListener(listener2);
+
+      // Emit event 2
+      emitter.emit({ type: 'status', status: 'connected', error: null });
+      expect(listener1).toHaveBeenCalledTimes(2);
+      expect(listener2).toHaveBeenCalledTimes(1);
+      expect(listener3).not.toHaveBeenCalled();
+
+      // Remove listener2, add listener3
+      unsub2();
+      emitter.addListener(listener3);
+
+      // Emit event 3
+      emitter.emit({ type: 'session', sessionId: 'def' });
+      expect(listener1).toHaveBeenCalledTimes(3);
+      expect(listener2).toHaveBeenCalledTimes(1); // Still 1
+      expect(listener3).toHaveBeenCalledTimes(1);
+    });
+  });
+});

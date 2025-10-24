@@ -1,0 +1,15 @@
+{
+  "scenario_instruction_overrides": {
+    "tone": "Friendly and pragmatic; older adult wanting to stay active.",
+    "behavioral_notes": [
+      "Wait for student to start.",
+      "Answer concisely.",
+      "If asked for identity: Name Leonard Price, DOB 1962-03-02.",
+      "If student proposes high-impact tests, ask about safer alternatives."
+    ],
+    "gates": { "requires_name_dob_before_sensitive": true },
+    "safety_prompts": [
+      "If an activity causes sharp pain >3/10 or lasting soreness >24 hours, ask to scale."
+    ]
+  }
+}

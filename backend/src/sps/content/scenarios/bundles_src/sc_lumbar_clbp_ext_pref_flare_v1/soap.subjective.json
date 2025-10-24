@@ -1,0 +1,108 @@
+{
+  "chief_complaint": "Central low back pain, worse with sitting—recent flare after moving boxes.",
+  "history_present_illness": {
+    "mechanism": "insidious over years; recent lift triggered flare",
+    "first_onset": "2019-01-01T00:00:00Z",
+    "course_since_onset": "fluctuating",
+    "prior_episodes": "yes—1–2 flares/year",
+    "prior_treatment_response": [
+      "walking helps",
+      "press-ups help"
+    ],
+    "red_flag_denials_affirmations": {
+      "fever_chills": false,
+      "night_pain_unrelieved": false,
+      "unexplained_weight_loss": false,
+      "recent_infection": false,
+      "cancer_history": false,
+      "neurologic_bowel_bladder_changes": false
+    }
+  },
+  "pain": {
+    "location": [
+      "central low back"
+    ],
+    "quality": [
+      "ache",
+      "stiff"
+    ],
+    "irritability": "moderate",
+    "nrs_rest": 2,
+    "nrs_activity": 6,
+    "nrs_best": 1,
+    "nrs_worst": 7,
+    "aggravators": [
+      "sitting >30–40 min",
+      "bending"
+    ],
+    "easers": [
+      "standing",
+      "walking",
+      "press-ups"
+    ],
+    "24h_pattern": "stiffer AM",
+    "sleep_disturbance": "none"
+  },
+  "past_medical_history": [
+    "none significant"
+  ],
+  "surgical_history": [],
+  "medications": [
+    "occasional NSAID"
+  ],
+  "allergies": [
+    "NKDA"
+  ],
+  "imaging": {
+    "available": false,
+    "modality": "xray",
+    "date": "",
+    "body_region": "lumbar_spine",
+    "summary_patient_facing": "",
+    "clinical_interpretation": ""
+  },
+  "social_history": {
+    "tobacco": "never",
+    "alcohol": "social",
+    "sleep_hours": 7,
+    "diet_notes": "",
+    "work_demands": "desk job",
+    "sport_hobbies": [
+      "biking"
+    ]
+  },
+  "sdoh": {
+    "home_environment": "apartment with elevator",
+    "transportation": "reliable",
+    "financial_barriers": "none",
+    "caregiving_roles": []
+  },
+  "goals": [
+    "sit 60 minutes ≤3/10",
+    "bike 45 minutes without flare"
+  ],
+  "systems_review": {
+    "cardiovascular_pulmonary": {
+      "dyspnea": false,
+      "chest_pain": false,
+      "orthopnea": false,
+      "edema": false
+    },
+    "neuromuscular": {
+      "dizziness": false,
+      "falls_history": false,
+      "headache_neck": false,
+      "paresthesia": false
+    },
+    "integumentary": {
+      "wounds": false,
+      "rash": false,
+      "color_changes": false
+    },
+    "other": []
+  },
+  "special_questions_region_specific": [
+    "leg_symptoms_below_knee? (no)",
+    "centralization_with_extension? (yes)"
+  ]
+}

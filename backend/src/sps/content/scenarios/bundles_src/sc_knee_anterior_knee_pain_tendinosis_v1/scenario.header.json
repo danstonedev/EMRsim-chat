@@ -1,0 +1,58 @@
+{
+  "schema_version": "3.1.0",
+  "scenario_id": "sc_knee_anterior_knee_pain_tendinosis_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Anterior Knee Pain: Patellar Tendinosis (Jumper's Knee)",
+    "region": "knee",
+    "difficulty": "moderate",
+    "setting": "outpatient_pt",
+    "tags": [
+      "anterior_knee_pain",
+      "patellar_tendinosis",
+      "tendinopathy",
+      "sport_jumping"
+    ],
+    "profession": "physical_therapy",
+    "roles": [
+      {
+        "id": "patient",
+        "instruction": null
+      }
+    ],
+    "created_at": "2025-10-23T00:00:00Z",
+    "updated_at": "2025-10-23T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "",
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "presenting_problem": {
+    "primary_dx": "Patellar tendinopathy (tendinosis)",
+    "onset": "gradual",
+    "duration_weeks": 8,
+    "dominant_symptoms": ["anterior knee pain at the inferior patellar pole", "pain with jumping and deceleration"],
+    "pain_nrs_rest": 0,
+    "pain_nrs_activity": 6,
+    "aggravators": ["jumping/landing", "running hills", "deep knee flexion under load"],
+    "easers": ["relative rest", "isometric loading"],
+    "pattern_24h": "stiff at start-up, warms up with activity, worse after high-load sessions",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "Midportion/proximal patellar tendon pain limiting jumping and running tolerance",
+    "body_functions_structures": ["point tenderness at proximal patellar tendon", "thickening possible"],
+    "activities": ["pain with jump take-off/landing", "pain with decline squat"],
+    "participation": ["reduced sport participation"],
+    "environmental_factors": ["in-season sport schedule"],
+    "personal_factors": ["increased plyometric volume"]
+  },
+  "guardrails": { "min_age": 15, "max_age": 40, "strict": true }
+}

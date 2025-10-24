@@ -1,0 +1,29 @@
+{
+  "module_id": "sports_pt_generic",
+  "sport": "soccer",
+  "position_event": "winger",
+  "season_phase": "in",
+  "competition_level": "college",
+  "workload_metrics": {
+    "acute_load": null,
+    "chronic_load": null,
+    "minutes": null,
+    "throws": null,
+    "jumps": null
+  },
+  "criterion_batteries": {
+    "knee_acl": [
+      "hop_single",
+      "hop_triple",
+      "hop_crossover",
+      "hop_6m_timed",
+      "y_balance",
+      "isokinetic_hhd",
+      "LESS"
+    ]
+  },
+  "readiness_indicators": {
+    "ACL_RSI": null
+  },
+  "clearance_checklist": []
+}

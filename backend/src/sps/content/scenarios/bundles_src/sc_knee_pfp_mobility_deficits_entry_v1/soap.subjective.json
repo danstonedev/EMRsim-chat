@@ -1,0 +1,64 @@
+{
+  "history": {
+    "chief_complaint": "My knees hurt when I go down stairs, and they feel really tight on the sides.",
+    "mechanism": "Gradual onset; no specific injury.",
+    "prior_episodes": "On and off for several months.",
+    "functional_impact": "Stairs hurt; can't squat deeply; sitting in lectures makes it worse.",
+    "goals": "Get back to dance classes without pain.",
+    "identity": { "name": "Sophie Martin", "dob": "2004-12-08" }
+  },
+  "subjective_catalog": [
+    {
+      "id": "meds_allergies",
+      "label": "Medications & Allergies",
+      "patterns": ["meds", "allergies"],
+      "patient_response_script": { "qualitative": ["Taking ibuprofen occasionally. No allergies."] }
+    },
+    {
+      "id": "tightness",
+      "label": "Tightness/Stiffness",
+      "patterns": ["tight", "stiff", "stretch"],
+      "patient_response_script": { "qualitative": ["My knees and hips feel really tight. I try to stretch but not sure if I'm doing it right."] }
+    },
+    {
+      "id": "red_flags",
+      "label": "Red Flags",
+      "patterns": ["locking", "giving way", "swelling"],
+      "patient_response_script": { "qualitative": ["No locking or giving way. No major swelling."] }
+    },
+    {
+      "id": "pain_location",
+      "label": "Pain Location",
+      "patterns": ["where", "point to pain"],
+      "patient_response_script": { "qualitative": ["Front of both knees, but the right is worse. Feels tight on the outside too."] }
+    }
+  ],
+  "patient_reported_outcomes": { "NPRS_worst": 6, "NPRS_usual": 3, "LEFS": 56, "AKPS": 68 },
+  "media_library": [],
+  "history_present_illness": {
+    "mechanism": "gradual onset, no acute injury",
+    "first_onset": "10 weeks ago",
+    "course_since_onset": "fluctuating, worse with activity and sitting",
+    "prior_episodes": "intermittent symptoms for months",
+    "red_flag_denials_affirmations": { "fever": false, "locking": false, "instability": false }
+  },
+  "pain": {
+    "location": ["anterior knee bilateral, right > left"],
+    "quality": ["ache", "tight"],
+    "irritability": "moderate",
+    "nrs_rest": 1,
+    "nrs_activity": 6,
+    "aggravators": ["stairs descent", "deep squat", "prolonged sitting"],
+    "easers": ["foam rolling", "stretching"],
+    "24h_pattern": "stiff morning, worse with cumulative load"
+  },
+  "social_history": {
+    "occupation": "college student",
+    "sport_hobbies": ["dance", "yoga"]
+  },
+  "goals": ["return to dance", "no pain with stairs", "improve flexibility"],
+  "past_medical_history": [],
+  "surgical_history": [],
+  "medications": [{ "name": "ibuprofen", "dose": "as needed" }],
+  "allergies": [{ "substance": "drug", "details": "none" }]
+}

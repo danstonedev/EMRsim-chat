@@ -1,0 +1,11 @@
+@layer features.chat {
+  .section-title {
+    font-weight: 600;
+    margin-block-end: var(--space-sm);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+

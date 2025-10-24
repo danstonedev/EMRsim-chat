@@ -1,0 +1,162 @@
+{
+  "vitals": {
+    "bp_mmHg": {
+      "systolic": 142,
+      "diastolic": 78
+    },
+    "hr_bpm": 84,
+    "rr_bpm": 16,
+    "spo2_percent": 95,
+    "temperature_c": 37.1,
+    "position": "seated",
+    "oxygen_delivery": {
+      "mode": "room_air",
+      "fio2_or_flow": "",
+      "target_spo2": "≥92%"
+    },
+    "orthostatics": {
+      "performed": true,
+      "supine_bp_hr": {
+        "systolic": 138,
+        "diastolic": 76,
+        "hr_bpm": 78
+      },
+      "standing_1min_bp_hr": {
+        "systolic": 130,
+        "diastolic": 74,
+        "hr_bpm": 92
+      },
+      "standing_3min_bp_hr": {
+        "systolic": 128,
+        "diastolic": 72,
+        "hr_bpm": 95
+      },
+      "symptoms": [
+        "brief lightheadedness on first stand"
+      ]
+    },
+    "vitals_trend": []
+  },
+  "observation": {
+    "skin_incisions": [
+      "occlusive dressing clean/dry"
+    ],
+    "effusion": "mild",
+    "ecchymosis": "mild",
+    "other_findings": []
+  },
+  "posture": {
+    "global": [
+      "slight forward trunk lean when standing"
+    ],
+    "region_specific": [
+      "hip flexed posture initially"
+    ]
+  },
+  "gait": {
+    "qualitative": [
+      "step-to pattern with RW",
+      "reduced right stance time"
+    ],
+    "spatiotemporal_numeric": {
+      "speed_m_per_s": 0.4,
+      "cadence_steps_per_min": 70,
+      "step_length_cm_R": 30,
+      "step_length_cm_L": 40
+    },
+    "assistive_device": "walker",
+    "surface": "hallway",
+    "footwear": "socks"
+  },
+  "palpation": {
+    "structures_assessed": [
+      "peri-incisional region"
+    ],
+    "tenderness_grading": "moderate",
+    "temperature_edema_skin": [
+      "warmth mild"
+    ]
+  },
+  "rom": {
+    "method": "goniometry",
+    "active": {
+      "hip_flexion_deg_R": 60
+    },
+    "passive": {
+      "hip_flexion_deg_R": 75
+    },
+    "end_feel": {
+      "hip_flexion_R": "capsular"
+    },
+    "symptom_reproduction": {
+      "hip_flexion_R": "incisional_ache"
+    },
+    "norm_reference_ids": [
+      "norms_hip"
+    ]
+  },
+  "mmt_strength": {
+    "method": "manual_0_to_5",
+    "grades": {
+      "quad_R": "3-",
+      "glute_med_R": "3-"
+    },
+    "pain_inhibition": {
+      "present": true
+    }
+  },
+  "joint_mobility": {
+    "scale": "0_to_6",
+    "segments": {}
+  },
+  "special_tests": [],
+  "neuro_screen": {
+    "dermatomes": {},
+    "myotomes": {},
+    "reflexes": {},
+    "neural_tension": [],
+    "cranial_nerve_screen": {
+      "performed": false,
+      "abnormal_findings": []
+    },
+    "coordination_balance": {
+      "romberg": "NT",
+      "tandem": "NT",
+      "single_leg_stance_sec_R": null,
+      "single_leg_stance_sec_L": null
+    },
+    "dual_task_variants": {
+      "tug_cog_seconds": null
+    }
+  },
+  "functional_tests": [
+    {
+      "test_template_id": "tmpl_tug",
+      "performed": true,
+      "findings": {
+        "numeric": {
+          "seconds": 18.5
+        },
+        "qualitative": [
+          "uses RW, contact guard"
+        ]
+      },
+      "protocol_source_id": "src_protocol_tug",
+      "norm_reference_id": "norms_tug"
+    }
+  ],
+  "outcome_measures": [
+    {
+      "measure_id": "om_hoos",
+      "score_raw": null,
+      "score_interpretation": "baseline not obtained day 0",
+      "minimal_clinically_important_difference": null,
+      "protocol_source_id": "src_hoos",
+      "norm_reference_id": "norms_hoos"
+    }
+  ],
+  "contraindications_precautions": [
+    "avoid_combined_hip_extension_with_external_rotation"
+  ],
+  "test_session_notes": "Sat EOB 3 min, BP stable; ambulated 60 ft with RW CGA."
+}

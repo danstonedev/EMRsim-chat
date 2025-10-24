@@ -1,0 +1,802 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_anterior_knee_pain_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:6bf1f97ff621f8ae74a3e5dfff83cf1058a84b88611e31aba997cb78590ea43c",
+  "dependencies_checksum": "sha256:4418031c9510fa88a3000920a5488727a99ad89e3bebe2064b03b8fbadf012cf",
+  "source_bundle": "scenarios/bundles_src/sc_knee_anterior_knee_pain_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_anterior_knee_pain_entry_v1",
+    "student_case_id": "C-8CGDC",
+    "title": "Entry-Level: Anterior Knee Pain with Stairs",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": [
+      "entry_level_dpt",
+      "anterior_knee_pain",
+      "patellofemoral"
+    ],
+    "schema_version": "3.1.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry-Level: Anterior Knee Pain with Stairs",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "outpatient_pt",
+      "tags": [
+        "entry_level_dpt",
+        "anterior_knee_pain",
+        "patellofemoral"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-16T00:00:00Z",
+      "updated_at": "2025-10-16T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Apply region-specific tests and functional measures to characterize anterior knee pain.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "7D1",
+            "7D2"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "clinical_reasoning",
+            "safety"
+          ],
+          "evidence_req": "CPG"
+        },
+        {
+          "id": "LO2",
+          "text": "Educate patient on activity modification and basic home exercise to reduce patellofemoral stress.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "7D3"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "patient_education"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "Which findings supported a patellofemoral source vs. tendinopathy?",
+        "What safety considerations apply today?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Anterior knee pain (patellofemoral pain syndrome)",
+      "onset": "gradual",
+      "duration_weeks": 6,
+      "dominant_symptoms": [
+        "anterior knee ache",
+        "pain with stairs",
+        "pain after prolonged sitting"
+      ],
+      "pain_nrs_rest": 1,
+      "pain_nrs_activity": 5,
+      "aggravators": [
+        "descending stairs",
+        "prolonged sitting",
+        "deep squatting"
+      ],
+      "easers": [
+        "rest",
+        "ice"
+      ],
+      "pattern_24h": "stiff morning that eases, aches later after activity",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "PFPS limiting stair and squat tolerance",
+      "body_functions_structures": [
+        "patellar tendon tenderness",
+        "peripatellar pain"
+      ],
+      "activities": [
+        "descending stairs limited",
+        "squatting limited"
+      ],
+      "participation": [
+        "reduced recreational activity"
+      ],
+      "environmental_factors": [
+        "office work with prolonged sitting"
+      ],
+      "personal_factors": [
+        "increased recent training volume"
+      ]
+    },
+    "scenario_context": {
+      "goals": [
+        "Return to 5K run without next-day pain",
+        "Descend a flight of stairs without knee pain",
+        "Sit 60 minutes without pain >2/10"
+      ],
+      "environment": "apartment with 2 flights of stairs"
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: anterior knee, around the kneecap",
+            "quality: ache, pressure",
+            "NRS activity: 5",
+            "aggravators: descending stairs, prolonged sitting>45min, deep squat",
+            "mechanism: Gradual onset over ~6 weeks after increasing jogging mileage and starting a new desk job.",
+            "onset: 6 weeks ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "night_pain: false",
+            "unexplained_weight_loss: false",
+            "locking: false",
+            "true_instability: false",
+            "numbness_tingling: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "work: desk job",
+            "home: apartment with 2 flights of stairs"
+          ]
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: no prior knee surgery",
+            "psh: ",
+            "meds: occasional ibuprofen"
+          ]
+        }
+      },
+      {
+        "id": "systems_review",
+        "label": "Systems review",
+        "patterns": [
+          "system review",
+          "ros",
+          "cardio",
+          "neuro"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "cardiovascular_pulmonary: {\"dyspnea\":false,\"chest_pain\":false,\"orthopnea\":false,\"edema\":false}",
+            "neuromuscular: {\"dizziness\":false,\"falls_history\":false,\"headache_neck\":false,\"paresthesia\":false}",
+            "integumentary: {\"wounds\":false,\"rash\":false,\"color_changes\":false}",
+            "other: []"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "go down stairs without pain",
+            "return to 5K without aching afterward"
+          ]
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: none to trace",
+            "ecchymosis: none",
+            "no warmth",
+            "patellar alignment normal"
+          ]
+        }
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "effusion: none to trace"
+          ]
+        }
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "structures: patellar tendon, peripatellar tissues",
+            "tenderness: mild",
+            "normal temperature",
+            "no pitting edema"
+          ]
+        }
+      },
+      {
+        "test_id": "rom",
+        "label": "Range of Motion",
+        "region": "knee",
+        "patient_output_script": {
+          "numeric": {
+            "knee_flexion_active": 135,
+            "knee_extension_active": 0,
+            "knee_flexion_passive": 140,
+            "knee_extension_passive": 0
+          },
+          "qualitative": [
+            "end-feel flexion: soft",
+            "end-feel extension: firm",
+            "knee_flexion: anterior pressure"
+          ]
+        }
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "quad: 5",
+            "hamstring: 5",
+            "hip_abduction: 4"
+          ]
+        }
+      },
+      {
+        "test_id": "clarke_sign",
+        "label": "Clarke Sign",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "discomfort under patella"
+          ],
+          "binary_flags": {
+            "pain_reproduced": true
+          }
+        }
+      },
+      {
+        "test_id": "mcconnell_test",
+        "label": "Mcconnell Test",
+        "region": "knee",
+        "patient_output_script": {
+          "qualitative": [
+            "pain reduced with medial glide"
+          ],
+          "binary_flags": {
+            "relief_with_taping": true
+          }
+        }
+      },
+      {
+        "test_id": "step_down_test",
+        "label": "Step Down Test",
+        "region": "knee",
+        "patient_output_script": {
+          "numeric": {
+            "reps": 10
+          },
+          "qualitative": [
+            "pain at end range descent"
+          ]
+        }
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "objective_guardrails": {
+      "deflection_lines": [
+        "Could you tell me exactly what movement or test you want me to try?"
+      ],
+      "require_explicit_physical_consent": false
+    },
+    "instructions": {
+      "sp_instructions": {
+        "affect": "calm",
+        "pain_behavior": "mild guarding on patellar palpation",
+        "cueing_rules": [
+          "avoid diagnosing; answer with lived experience",
+          "if unclear, ask the student to be specific"
+        ]
+      },
+      "llm_prompt_hooks": {
+        "coaching_cues": [
+          "ask about sitting tolerance and stairs",
+          "screen for swelling, locking, or giving way"
+        ],
+        "deflection_lines": [
+          "Could you tell me exactly what movement or test you want me to try?"
+        ]
+      },
+      "authoring_notes": "Entry-level case. Keep language plain and avoid complex rehab programming."
+    },
+    "soap": {
+      "subjective": {
+        "chief_complaint": "Front of right knee hurts going down stairs and after sitting a long time.",
+        "history_present_illness": {
+          "mechanism": "Gradual onset over ~6 weeks after increasing jogging mileage and starting a new desk job.",
+          "first_onset": "6 weeks ago",
+          "course_since_onset": "fluctuating",
+          "prior_episodes": "Similar ache a year ago that resolved with rest.",
+          "prior_treatment_response": [
+            "rest and ice help"
+          ],
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "night_pain": false,
+            "unexplained_weight_loss": false,
+            "locking": false,
+            "true_instability": false,
+            "numbness_tingling": false
+          }
+        },
+        "pain": {
+          "location": [
+            "anterior knee",
+            "around the kneecap"
+          ],
+          "quality": [
+            "ache",
+            "pressure"
+          ],
+          "irritability": "low",
+          "nrs_rest": 1,
+          "nrs_activity": 5,
+          "nrs_best": 0,
+          "nrs_worst": 6,
+          "aggravators": [
+            "descending stairs",
+            "prolonged sitting>45min",
+            "deep squat"
+          ],
+          "easers": [
+            "rest",
+            "ice",
+            "gentle walking"
+          ],
+          "24h_pattern": "stiff morning resolves quickly; aches after activity",
+          "sleep_disturbance": "none"
+        },
+        "past_medical_history": [
+          "no prior knee surgery"
+        ],
+        "surgical_history": [],
+        "medications": [
+          "occasional ibuprofen"
+        ],
+        "allergies": [],
+        "imaging": {
+          "available": false,
+          "modality": "xray",
+          "date": "",
+          "body_region": "knee",
+          "summary_patient_facing": "None taken",
+          "clinical_interpretation": "N/A"
+        },
+        "social_history": {
+          "tobacco": "never",
+          "alcohol": "social",
+          "sleep_hours": 7,
+          "diet_notes": "balanced",
+          "work_demands": "desk job",
+          "sport_hobbies": [
+            "jogging",
+            "recreational hiking"
+          ]
+        },
+        "sdoh": {
+          "home_environment": "apartment with 2 flights of stairs",
+          "transportation": "reliable",
+          "financial_barriers": "none",
+          "caregiving_roles": []
+        },
+        "goals": [
+          "go down stairs without pain",
+          "return to 5K without aching afterward"
+        ],
+        "systems_review": {
+          "cardiovascular_pulmonary": {
+            "dyspnea": false,
+            "chest_pain": false,
+            "orthopnea": false,
+            "edema": false
+          },
+          "neuromuscular": {
+            "dizziness": false,
+            "falls_history": false,
+            "headache_neck": false,
+            "paresthesia": false
+          },
+          "integumentary": {
+            "wounds": false,
+            "rash": false,
+            "color_changes": false
+          },
+          "other": []
+        },
+        "special_questions_region_specific": [
+          "popping or catching?",
+          "giving way?"
+        ]
+      },
+      "objective": {
+        "vitals": {
+          "bp_mmHg": {
+            "systolic": 114,
+            "diastolic": 72
+          },
+          "hr_bpm": 64,
+          "rr_bpm": 12,
+          "spo2_percent": 99,
+          "temperature_c": 36.8,
+          "position": "seated"
+        },
+        "observation": {
+          "skin_incisions": [],
+          "effusion": "none to trace",
+          "ecchymosis": "none",
+          "other_findings": [
+            "no warmth",
+            "patellar alignment normal"
+          ]
+        },
+        "gait": {
+          "qualitative": [
+            "non-antalgic"
+          ],
+          "assistive_device": "none",
+          "surface": "clinic"
+        },
+        "palpation": {
+          "structures_assessed": [
+            "patellar tendon",
+            "peripatellar tissues"
+          ],
+          "tenderness_grading": "mild",
+          "temperature_edema_skin": [
+            "normal temperature",
+            "no pitting edema"
+          ]
+        },
+        "rom": {
+          "method": "goniometry",
+          "active": {
+            "knee_flexion": 135,
+            "knee_extension": 0
+          },
+          "passive": {
+            "knee_flexion": 140,
+            "knee_extension": 0
+          },
+          "end_feel": {
+            "knee_flexion": "soft",
+            "knee_extension": "firm"
+          },
+          "symptom_reproduction": {
+            "knee_flexion": "anterior pressure"
+          }
+        },
+        "mmt_strength": {
+          "method": "manual_0_to_5",
+          "grades": {
+            "quad": 5,
+            "hamstring": 5,
+            "hip_abduction": 4
+          },
+          "pain_inhibition": {
+            "quad": false
+          }
+        },
+        "special_tests": [
+          {
+            "test_template_id": "clarke_sign",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "discomfort under patella"
+              ],
+              "binary_flags": {
+                "pain_reproduced": true
+              }
+            }
+          },
+          {
+            "test_template_id": "mcconnell_test",
+            "performed": true,
+            "findings": {
+              "qualitative": [
+                "pain reduced with medial glide"
+              ],
+              "binary_flags": {
+                "relief_with_taping": true
+              }
+            }
+          }
+        ],
+        "functional_tests": [
+          {
+            "test_template_id": "step_down_test",
+            "performed": true,
+            "findings": {
+              "numeric": {
+                "reps": 10
+              },
+              "qualitative": [
+                "pain at end range descent"
+              ]
+            }
+          }
+        ],
+        "outcome_measures": [
+          {
+            "measure_id": "kosc_knee_outcome_survey",
+            "score_raw": 78,
+            "score_interpretation": "mild limitation"
+          }
+        ],
+        "contraindications_precautions": [
+          "avoid deep loaded knee flexion early"
+        ],
+        "test_session_notes": "Findings consistent with PFPS."
+      },
+      "assessment": {
+        "problem_list": [
+          "anterior knee pain with stairs",
+          "peripatellar tenderness",
+          "pain with prolonged sitting"
+        ],
+        "working_diagnoses": [
+          "patellofemoral pain syndrome"
+        ],
+        "clinical_impression": "Presentation aligns with PFPS; irritability low; impairments minimal strength loss; symptoms reproduced with patellofemoral load.",
+        "irritability_severity": "low",
+        "staging_subgrouping": "patellofemoral pain",
+        "prognosis": "good",
+        "icd10_codes": [
+          "M22.2X1"
+        ],
+        "differential_diagnoses_considered": [
+          "patellar tendinopathy",
+          "plica irritation",
+          "meniscal irritation (unlikely)"
+        ]
+      },
+      "plan": {
+        "frequency_duration": {
+          "visits_per_week": 1,
+          "weeks": 4
+        },
+        "referrals_imaging_requests": [],
+        "goals": {
+          "stg_2_4_weeks": [
+            "Descend a flight of stairs without knee pain",
+            "Sit 60 minutes without pain >2/10"
+          ],
+          "ltg_6_12_weeks": [
+            "Return to 5K run without next-day pain"
+          ]
+        },
+        "interventions_planned": [
+          {
+            "intervention_id": "quad_set_SLR",
+            "dose": {
+              "sets": 2,
+              "reps": 10,
+              "frequency_per_week": 5
+            },
+            "progression_criteria": [
+              "no increase in pain >2/10"
+            ],
+            "expected_response": {
+              "rationale": "Improve quad activation and reduce PF joint stress"
+            }
+          },
+          {
+            "intervention_id": "hip_abduction_isometrics",
+            "dose": {
+              "sets": 2,
+              "reps": 10,
+              "frequency_per_week": 5
+            },
+            "progression_criteria": [
+              "tolerates without increased symptoms"
+            ],
+            "expected_response": {
+              "rationale": "Improve patellar tracking through hip control"
+            }
+          }
+        ],
+        "patient_education": {
+          "topics": [
+            "activity modification",
+            "sitting breaks",
+            "relative rest"
+          ],
+          "teach_back_confirmed": false
+        },
+        "safety_netting": [
+          "If pain worsens significantly or you notice swelling, reduce volume and contact the clinic."
+        ]
+      }
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "2019 CPG: Patellofemoral Pain",
+          "identifier": "CPG-2019-PFPS",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-16"
+    },
+    "linked_persona_id": "shimmer-lila-singh",
+    "persona_snapshot": {
+      "id": "shimmer-lila-singh",
+      "display_name": "Lila Singh",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "shimmer-lila-singh",
+    "content_version": "1.0.0",
+    "checksum": "sha256:82f110e3b9db0c71326b34b2ca051e068091f1ea7b487f61da1125370f436c41",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "shimmer-lila-singh",
+      "display_name": "Lila Singh",
+      "demographics": {
+        "name": "Lila Singh",
+        "preferred_name": "Lila",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "shimmer",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Lila Singh, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Lila Singh. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_anterior_knee_pain_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_anterior_knee_pain_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_anterior_knee_pain_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_anterior_knee_pain_entry_v1/soap.objective.json",
+    "soap_assessment": "scenarios/bundles_src/sc_knee_anterior_knee_pain_entry_v1/soap.assessment.json",
+    "soap_plan": "scenarios/bundles_src/sc_knee_anterior_knee_pain_entry_v1/soap.plan.json"
+  }
+}

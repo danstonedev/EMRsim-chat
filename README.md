@@ -1,174 +1,79 @@
-# Chatbot Web App
+# EMRsim-chat
 
-A modern, responsive web-based chatbot application built with Next.js, React, and TypeScript.
+[![CI - Type Check](https://github.com/danstonedev/EMRsim-chat/actions/workflows/ci-type-check.yml/badge.svg)](https://github.com/danstonedev/EMRsim-chat/actions/workflows/ci-type-check.yml)
 
-## Features
+EMRsim-chat is a modern, full-stack chat application.
 
-- 🤖 Interactive chat interface with real-time messaging
-- 🎨 Modern UI with Tailwind CSS styling
-- 🌙 Dark mode support
-- 📱 Responsive design for desktop and mobile
-- ⚡ Built with Next.js 15 and React 19
-- 🔧 TypeScript for type safety
-- 🎯 Easy to extend and customize
+Core stack:
 
-## Getting Started
+- Frontend: React + TypeScript (Vite) in `frontend/` with Tailwind and MUI icons
+- Backend: Node.js + Express + Socket.IO in `backend/`
+- Media/3D: three.js + react-three-fiber
+- Data: PostgreSQL (dev-compatible with SQLite), Redis for caching (optional)
+- CI: GitHub Actions type checks on PRs and pushes to `main`
+- Deployment: Vercel for frontend and backend (see docs)
 
-### Prerequisites
+## Repository layout
 
-- Node.js 18+
-- npm or yarn
-
-### Installation
-
-1. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-2. Run the development server:
-
-   ```bash
-   npm run dev
-   ```
-
-3. Open [http://localhost:3001](http://localhost:3001) in your browser to see the result.
-
-### Environment Variables
-
-To enable real AI responses, create a `.env.local` file and set your OpenAI API key:
-
-```powershell
-copy .env.example .env.local
-# Edit .env.local and set OPENAI_API_KEY
+```text
+EMRsim-chat/
+├── frontend/          # React + Vite app (Next.js-like UX, dark mode, responsive chat UI)
+├── backend/           # Node.js API + Socket.IO server
+├── scripts/           # Utilities (SPS tools, scanning, smoke tests)
+├── e2e/               # Playwright tests
+├── .github/workflows/ # CI workflow(s)
+└── docs & guides      # See DOCS_INDEX.md for an overview
 ```
 
-Required:
+## Getting started
 
-- `OPENAI_API_KEY`: Your OpenAI API key. Get one from <https://platform.openai.com/>.
+1) Install dependencies (from repo root)
+   - Use VS Code task “Deps: Install All” or run: the provided scripts install per-package deps
 
-The server-side API route at `src/app/api/chat/route.ts` uses this key to call OpenAI.
+2) Set up environment variables
+   - See `ENVIRONMENT.md` for a quick start
+   - Templates: `frontend/.env.example` and `backend/.env.example`
 
-### Available Scripts
+3) Run the dev environment
+   - Use the default VS Code task “Full-Stack: Dev Environment”
+   - Or start manually from each package (`npm run dev` in `frontend/` and `backend/`)
 
-- `npm run dev` - Start the development server
-- `npm run build` - Build the application for production
-- `npm run start` - Start the production server
-- `npm run lint` - Run ESLint
+4) Type checks and tests
+   - Type checks: “Full-Stack: Type Check All” task
+   - Frontend tests: “Frontend: Test” task
+   - Backend tests/validators: “Backend: Test & Validate” task
 
-## Project Structure
+Open the app at <http://localhost:3001> (frontend default) when the dev server is running.
 
-```bash
-├── src/
-│   ├── app/
-│   │   ├── globals.css      # Global styles
-│   │   ├── layout.tsx       # Root layout component
-│   │   └── page.tsx         # Home page
-│   └── components/
-│       └── ChatInterface.tsx # Main chat component
-├── .github/
-│   └── copilot-instructions.md # Copilot workspace instructions
-├── package.json
-├── tailwind.config.ts       # Tailwind CSS configuration
-├── tsconfig.json           # TypeScript configuration
-└── next.config.js          # Next.js configuration
-```
+## Frontend notes
 
-## Chat Controls and Theming
-
-The app includes a controls panel at the top with:
-
-- System Prompt: a multi-line input that lets you steer the chatbot's behavior. It's saved to `localStorage` and restored on reload.
-- Theme Toggle: switches between light and dark themes by toggling a `data-theme` attribute on `html`. The choice is also saved to `localStorage`.
-
-Tip: Use the suggestion chips under the chat to quickly pre-fill common prompts.
-
-## Customization
-
-### Adding AI Integration
-
-This project is wired to OpenAI Chat Completions via `/api/chat`. Steps already implemented:
-
-1. `src/app/api/chat/route.ts` posts messages to OpenAI using `OPENAI_API_KEY`
-2. `src/components/ChatInterface.tsx` calls `/api/chat` and renders the reply
-3. Add your key to `.env.local` to enable it
-
-### Styling
-
-The app uses Tailwind CSS for styling. You can customize:
-
-- Colors in `tailwind.config.ts`
-- Global styles in `src/app/globals.css`
-- Component-specific styles in the respective files
+- Main chat UI lives in `frontend/src/components/ChatInterface.tsx` with message history, timestamps, and dark mode.
+- Emoji icons have been replaced by MUI icons for a more polished look.
+- The “Encounter complete” modal stays until you choose an explicit action.
+- The “Evaluate” option has been removed; restarting a case does not reopen the builder.
 
 ## Deployment
 
-### Deploy on Vercel
+We deploy with Vercel. Start here:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com):
+- `VERCEL_DEPLOYMENT_STATUS.md`
+- `DEPLOYMENT_QUICK_START.md`
+- `DEPLOYMENT_GUIDE.md`
 
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Deploy automatically
+CI runs type checks on PRs and pushes to `main`. Production deploys are manual via Vercel.
 
-### Deploy on Other Platforms
+## Documentation
 
-Build the application:
-
-```bash
-npm run build
-```
-
-Then follow the deployment instructions for your preferred platform.
-
-## Troubleshooting
-
-- Port already in use: the dev server is configured to run on `3001`. If it's busy, stop the other process or run `npm run dev -- -p 3002`.
-- Autoprefixer not found: ensure dependencies are installed with `npm install`. The project uses PostCSS with Tailwind CSS and `autoprefixer`.
-- Global CSS location: Next.js App Router requires global CSS to be imported from `src/app/layout.tsx` (already set up in this repo).
-
-## Browser compatibility notes
-
-- Text resizing: We set `-webkit-text-size-adjust` and `text-size-adjust` on `html` to avoid unexpected zoom on mobile.
-- Disable selection: Use the `.no-select` utility which includes `-webkit-user-select` for Safari and `user-select` for others.
-- Hidden scrollbars: Chips scroller hides scrollbars using `::-webkit-scrollbar` (WebKit) and `scrollbar-width` (Firefox), with `-ms-overflow-style` for legacy Edge/IE.
-- Dev overlay hints: Some hints (e.g., on `.dev-tools-indicator-item`) come from Next.js dev UI and can be safely ignored.
-- MIME types: If you serve media or fonts later, prefer `audio/mpeg` for MP3 and `font/otf` for OTF fonts.
-
-## Streaming chat
-
-The route `src/app/api/chat/route.ts` streams assistant tokens via Server-Sent Events (SSE). The client `src/components/ChatInterface.tsx` reads `response.body` and appends partial text. You can observe multiple chunks in the browser Network tab under the EventStream preview.
-
-Run locally on Windows PowerShell:
-
-```powershell
-$Env:OPENAI_API_KEY="<your key>"
-npm run dev
-```
-
-## Scenario allowlist and prompt hardening
-
-- Server-side allowlist: `src/lib/prompts/allowlist.ts` exports `ALLOWED_SCENARIOS`.
-- Safety wrapper prompt: `src/lib/prompts/safety.ts` is always prepended.
-- Final composition: `[SAFETY, Persona(case), ...history (system downgraded), user]`.
-- Client attempts to pass `systemPrompt` are ignored. A client may pass `x-pt-scenario` header or `scenario` in JSON, but it is only honored when it matches the allowlist and when faculty configuration enables client scenarios.
-
-To add a new case:
-
-1) Define it in `src/lib/prompts/ptCases.ts`.
-2) Add its ID to `ALLOWED_SCENARIOS` in `src/lib/prompts/allowlist.ts`.
-3) Optionally set it as default via `DEFAULT_PT_SCENARIO` env or in the faculty settings page (`/faculty`).
-
+- See `DOCS_INDEX.md` for a map of the documentation
+- Onboarding env details: `ENVIRONMENT.md`
+- Production readiness: `PRODUCTION_READINESS.md`, `PRODUCTION_DEPLOYMENT_CHECKLIST.md`
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+1. Create a feature branch
+2. Make your changes and run type checks/tests
+3. Open a PR to `main`
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+MIT — see [LICENSE](LICENSE)

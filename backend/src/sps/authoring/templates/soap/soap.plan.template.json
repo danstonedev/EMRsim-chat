@@ -1,0 +1,61 @@
+{
+  "frequency_duration": {
+    "visits_per_week": 0,
+    "weeks": 0
+  },
+  "referrals_imaging_requests": [],
+  "goals": {
+    "stg_2_4_weeks": [],
+    "ltg_6_12_weeks": []
+  },
+  "interventions_planned": [
+    {
+      "intervention_id": "ex_strengthening|ex_nmr|aerobic|manual_joint|manual_soft_tissue|education_pacing|motor_control|balance|gait_training|device_training|modalities_adjunct",
+      "dose": {
+        "sets": null,
+        "reps": null,
+        "hold_sec": null,
+        "load_kg_or_rpe": null,
+        "time_min": null,
+        "frequency_per_week": null
+      },
+      "progression_criteria": [],
+      "regression_criteria": [],
+      "home_program_elements": [],
+      "expected_response": {
+        "immediate_session": [
+          "pain_same_or_down_≤2_points",
+          "no_lingering_increase_>24h"
+        ],
+        "next_24_48h": [
+          "mild_soreness_expected",
+          "symptoms_return_to_baseline"
+        ],
+        "2_6_weeks": [
+          "functional_test_improve",
+          "patient_reported_outcome_improve"
+        ],
+        "flags_if_unexpected": [
+          "pain_spike_>2_points_for_>48h",
+          "new_neuro_deficit"
+        ]
+      },
+      "evidence_bindings": [
+        {
+          "source_id": "",
+          "recommendation_strength": "strong|moderate|conditional"
+        }
+      ]
+    }
+  ],
+  "patient_education": {
+    "topics": [],
+    "teach_back_confirmed": false,
+    "printed_digital_resources": []
+  },
+  "safety_netting": [
+    "if_symptoms_worsen_overnight",
+    "if_new_red_flags",
+    "contact_provider_instructions"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_knee_pcl_grade1_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry: Posterior Cruciate Ligament Sprain—Grade I",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "sports_medicine_outpatient",
+    "tags": ["entry_level_dpt", "pcl_sprain", "ligament", "acute_knee"],
+    "profession": "physical_therapy",
+    "roles": [{ "id": "patient", "instruction": null }],
+    "created_at": "2025-10-24T00:00:00Z",
+    "updated_at": "2025-10-24T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "echo-devon-brooks",
+    "suggested_personas": ["echo-devon-brooks", "alloy-jordan-patel", "ash-luis-ortega"],
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Identify clinical features of Grade I PCL sprain and differentiate from ACL or multiligament injury.",
+        "bloom_level": "analyze",
+        "capte_refs": ["safety_screening", "evidence_based_practice"],
+        "npte_map": { "system": "musculoskeletal", "domain": "examination", "nonsystem": "safety" },
+        "assessment_focus": ["differential_diagnosis"],
+        "evidence_req": "CPG"
+      },
+      {
+        "id": "LO2",
+        "text": "Design a phased rehab emphasizing quad strengthening and posterior stability.",
+        "bloom_level": "apply",
+        "capte_refs": ["plan_of_care"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional" },
+        "assessment_focus": ["plan_of_care"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": ["How does PCL rehab differ from ACL?", "When is imaging indicated for dashboard injuries?"]
+  },
+  "presenting_problem": {
+    "primary_dx": "Right knee PCL sprain, Grade I",
+    "onset": "acute",
+    "duration_weeks": 2,
+    "dominant_symptoms": ["posterior knee pain", "stiffness", "mild instability descending stairs"],
+    "pain_nrs_rest": 2,
+    "pain_nrs_activity": 4,
+    "aggravators": ["descending stairs", "kneeling", "posterior pressure"],
+    "easers": ["rest", "ice", "quad sets"],
+    "pattern_24h": "Stiff in morning, eases with movement",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "PCL sprain Grade I (right)",
+    "body_functions_structures": ["posterior knee tenderness", "mild posterior sag", "quad weakness"],
+    "activities": ["stairs descent limited", "kneeling painful"],
+    "participation": ["limited rec basketball"],
+    "environmental_factors": ["stairs at work"],
+    "personal_factors": ["30-year-old recreational athlete"]
+  },
+  "provenance": {
+    "sources": [{ "title": "Knee Ligament Sprain CPG (PCL management)", "identifier": "CPG-Knee-Ligament-2017", "level_of_evidence": "CPG" }],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-24"
+  }
+}

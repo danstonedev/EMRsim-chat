@@ -1,0 +1,5 @@
+[
+  { "startMs": 0, "endMs": 600, "text": "hi there", "speaker": { "tag": "A" } },
+  { "startMs": 650, "endMs": 1200, "text": "hello", "speaker": { "tag": "A" } },
+  { "startMs": 1400, "endMs": 2100, "text": "how are you?", "speaker": { "tag": "B" } }
+]

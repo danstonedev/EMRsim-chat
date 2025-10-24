@@ -1,0 +1,88 @@
+{
+  "history": {
+    "chief_complaint": "I felt my knee give out during soccer—it's better now but I don't fully trust it on quick turns.",
+    "mechanism": "Noncontact pivot with deceleration during soccer match 4 weeks ago.",
+    "prior_episodes": "No prior knee injuries.",
+    "functional_impact": "Can jog straight but nervous about cutting; occasional giving-way sensation.",
+    "goals": "Return to recreational soccer without surgery if possible.",
+    "identity": { "name": "Emma Rodriguez", "dob": "1999-03-12" }
+  },
+  "subjective_catalog": [
+    {
+      "id": "meds_allergies",
+      "label": "Medications & Allergies",
+      "patterns": ["meds", "ibuprofen", "allergies"],
+      "patient_response_script": { "qualitative": ["Took ibuprofen initially. No allergies."] }
+    },
+    {
+      "id": "swelling_instability",
+      "label": "Swelling/Instability",
+      "patterns": ["swelling", "giving way", "instability", "brace"],
+      "patient_response_script": {
+        "qualitative": ["It swelled up after the injury. Had a couple episodes where it felt unstable. Using a brace now."]
+      }
+    },
+    {
+      "id": "red_flags",
+      "label": "Red Flags",
+      "patterns": ["locking", "numb", "tingle", "pop"],
+      "patient_response_script": {
+        "qualitative": ["Heard/felt a pop initially. No locking. No numbness or tingling."]
+      }
+    },
+    {
+      "id": "pain_location",
+      "label": "Pain Location",
+      "patterns": ["where", "point to pain"],
+      "patient_response_script": { "qualitative": ["General front of the knee, not super specific."] }
+    },
+    {
+      "id": "surgery_consideration",
+      "label": "Surgery Consideration",
+      "patterns": ["surgery", "operation", "repair"],
+      "patient_response_script": { "qualitative": ["Saw an orthopedist—they said I might do okay without surgery if I'm careful. Want to try PT first."] }
+    }
+  ],
+  "patient_reported_outcomes": { "NPRS_worst": 3, "NPRS_usual": 1, "LEFS": 54, "IKDC": 62 },
+  "media_library": [],
+  "history_present_illness": {
+    "mechanism": "noncontact pivot/deceleration injury",
+    "first_onset": "4 weeks ago",
+    "course_since_onset": "initial swelling resolved, intermittent instability episodes",
+    "prior_episodes": "denies prior knee injuries",
+    "red_flag_denials_affirmations": {
+      "fever": false,
+      "locking": false,
+      "true_instability": "occasional episodes with cutting",
+      "numbness": false,
+      "audible_pop": true
+    }
+  },
+  "pain": {
+    "location": ["anterior knee"],
+    "quality": ["ache", "instability sensation"],
+    "irritability": "low",
+    "nrs_rest": 0,
+    "nrs_activity": 3,
+    "aggravators": ["cutting", "pivoting", "deceleration"],
+    "easers": ["functional brace", "avoiding pivoting"],
+    "24h_pattern": "minimal pain, more concern about instability"
+  },
+  "social_history": {
+    "sport_hobbies": ["soccer", "running"],
+    "occupation": "marketing coordinator"
+  },
+  "goals": [
+    "return to recreational soccer",
+    "improve confidence in knee stability",
+    "avoid surgery if possible"
+  ],
+  "past_medical_history": [],
+  "surgical_history": [],
+  "medications": [
+    { "name": "ibuprofen", "dose": "taken initially, no longer using" }
+  ],
+  "allergies": [
+    { "substance": "drug", "details": "no known allergies" }
+  ]
+}

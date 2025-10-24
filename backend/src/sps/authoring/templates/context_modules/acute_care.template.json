@@ -1,0 +1,63 @@
+{
+  "module_id": "acute_care_total_joint_generic",
+  "post_op_day": 0,
+  "procedure": "THA|TKA|other",
+  "approach": "posterior|anterior|medial_parapatellar|other",
+  "wb_status": "WBAT|PWB|TTWB|NWB",
+  "joint_precautions": [],
+  "lines_tubes_drains": [
+    "IV",
+    "A-line",
+    "Foley",
+    "hemovac",
+    "wound_vac",
+    "nerve_block_catheter",
+    "epidural"
+  ],
+  "mobility_orders": [
+    "OOB_with_assist",
+    "ambulate_in_hall"
+  ],
+  "pain_management": {
+    "PCA": false,
+    "regional_block": false,
+    "last_dose_time": ""
+  },
+  "dvt_pe_prophylaxis": {
+    "agent": "",
+    "dose": "",
+    "last_admin_time": ""
+  },
+  "incision_status": {
+    "dressing_type": "",
+    "drainage": "",
+    "redness": "",
+    "temp": ""
+  },
+  "hemodynamic_limits": {
+    "hr_min": 40,
+    "hr_max": 130,
+    "sbp_min": 90,
+    "sbp_max": 180,
+    "spo2_min": 90
+  },
+  "milestones": [
+    "bed_mobility",
+    "transfers",
+    "150_300ft_ambulation",
+    "stairs_trial",
+    "HEP_checkoff"
+  ],
+  "discharge_planning": {
+    "destination": "home|SNF|rehab",
+    "dme": [
+      "RW",
+      "cane"
+    ],
+    "caregiver_training": [],
+    "home_barriers": [
+      "stairs",
+      "rails_needed"
+    ]
+  }
+}

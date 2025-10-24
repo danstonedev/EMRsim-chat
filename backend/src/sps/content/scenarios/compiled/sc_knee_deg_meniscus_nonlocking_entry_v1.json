@@ -1,0 +1,668 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_deg_meniscus_nonlocking_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:4eba3e78855bcdbd948b7a7b50f0d063daa8e9c8680d86183edc8042b2b13a64",
+  "dependencies_checksum": "sha256:5f4f496fbd041ba9bbde48731d2be3ce041fd64634dbb56997bd3973745f50c5",
+  "source_bundle": "scenarios/bundles_src/sc_knee_deg_meniscus_nonlocking_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_deg_meniscus_nonlocking_entry_v1",
+    "student_case_id": "C-1697F",
+    "title": "Entry: Degenerative Medial Meniscus Tear (Non-locking)",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": [
+      "entry_level_dpt",
+      "meniscus",
+      "degenerative",
+      "knee"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry: Degenerative Medial Meniscus Tear (Non-locking)",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "outpatient_pt",
+      "tags": [
+        "entry_level_dpt",
+        "meniscus",
+        "degenerative",
+        "knee"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-24T00:00:00Z",
+      "updated_at": "2025-10-24T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Differentiate degenerative meniscus pathology from acute tear or early OA using history and examination.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "safety_screening",
+            "evidence_based_practice"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "differential_diagnosis"
+          ],
+          "evidence_req": "CPG"
+        },
+        {
+          "id": "LO2",
+          "text": "Design an exercise-based treatment plan consistent with meniscus/articular cartilage CPG recommendations.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "plan_of_care"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "When is imaging or surgical referral indicated for meniscus pathology?",
+        "How does exercise therapy compare to arthroscopic partial meniscectomy for degenerative tears?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Degenerative medial meniscus pathology (non-locking)",
+      "onset": "gradual",
+      "duration_weeks": 12,
+      "dominant_symptoms": [
+        "medial joint line pain",
+        "intermittent swelling",
+        "pain with squatting"
+      ],
+      "pain_nrs_rest": 2,
+      "pain_nrs_activity": 5,
+      "aggravators": [
+        "squatting",
+        "stairs",
+        "prolonged walking"
+      ],
+      "easers": [
+        "rest",
+        "anti-inflammatories"
+      ],
+      "pattern_24h": "Stiff in morning <20 min, worse after activity",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "Degenerative medial meniscus pathology",
+      "body_functions_structures": [
+        "joint line tenderness",
+        "mild effusion",
+        "limited squat depth"
+      ],
+      "activities": [
+        "reduced walking tolerance",
+        "limited squatting"
+      ],
+      "participation": [
+        "reduced yard work",
+        "difficulty with recreational hiking"
+      ],
+      "environmental_factors": [
+        "physical job demands"
+      ],
+      "personal_factors": [
+        "52-year-old warehouse worker",
+        "wants to avoid surgery"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: medial joint line",
+            "quality: ache, sharp with squat",
+            "NRS activity: 5",
+            "aggravators: squatting, stairs, prolonged walking",
+            "mechanism: gradual onset, no acute injury",
+            "onset: 12 weeks ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "true_locking: false",
+            "instability: false",
+            "numbness: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: [object Object]",
+            "psh: ",
+            "meds: [object Object], [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "return to full work duties",
+            "avoid surgery",
+            "resume hiking"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "vitals",
+        "label": "Vitals",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "rom",
+        "label": "ROM",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "thessaly",
+        "label": "Thessaly Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray",
+        "label": "McMurray Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "joint_line_tenderness",
+        "label": "Joint Line Palpation",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "ligament_screen",
+        "label": "Ligament Screen",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional",
+        "label": "Functional",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "instructions": {
+      "scenario_instruction_overrides": {
+        "tone": "Chronic work-related pain; patient pragmatic and wants to avoid surgery.",
+        "behavioral_notes": [
+          "Wait for student.",
+          "If asked identity: Robert Wagner, DOB 1972-04-18.",
+          "Express concern about surgery and time off work.",
+          "If student recommends surgery immediately, ask about PT options first."
+        ],
+        "gates": {
+          "requires_name_dob_before_sensitive": true
+        },
+        "safety_prompts": [
+          "If deep squat tests are too aggressive early, mention increased pain afterward."
+        ]
+      }
+    },
+    "soap": {
+      "subjective": {
+        "history": {
+          "chief_complaint": "My knee hurts on the inside, especially when I squat down at work.",
+          "mechanism": "Gradual onset, no specific injury recalled.",
+          "prior_episodes": "Had similar symptoms 6 months ago that improved.",
+          "functional_impact": "Hard to squat, kneel, or walk long distances without pain.",
+          "goals": "Get back to work without pain; avoid surgery if possible.",
+          "identity": {
+            "name": "Robert Wagner",
+            "dob": "1972-04-18"
+          }
+        },
+        "subjective_catalog": [
+          {
+            "id": "meds_allergies",
+            "label": "Medications & Allergies",
+            "patterns": [
+              "meds",
+              "ibuprofen",
+              "allergies"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Taking ibuprofen daily. No allergies."
+              ]
+            }
+          },
+          {
+            "id": "swelling_locking",
+            "label": "Swelling/Locking",
+            "patterns": [
+              "swelling",
+              "locking",
+              "catching"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Swells up sometimes after work. No true locking, but feels like it catches occasionally."
+              ]
+            }
+          },
+          {
+            "id": "red_flags",
+            "label": "Red Flags",
+            "patterns": [
+              "giving way",
+              "numb",
+              "tingle"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "No giving way. No numbness or tingling."
+              ]
+            }
+          },
+          {
+            "id": "pain_location",
+            "label": "Pain Location",
+            "patterns": [
+              "where",
+              "point to pain"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Right on the inside of my knee, along the joint line."
+              ]
+            }
+          }
+        ],
+        "patient_reported_outcomes": {
+          "NPRS_worst": 5,
+          "NPRS_usual": 3,
+          "LEFS": 52
+        },
+        "media_library": [],
+        "history_present_illness": {
+          "mechanism": "gradual onset, no acute injury",
+          "first_onset": "12 weeks ago",
+          "course_since_onset": "fluctuating, worse with activity",
+          "prior_episodes": "similar symptoms 6 months prior",
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "true_locking": false,
+            "instability": false,
+            "numbness": false
+          }
+        },
+        "pain": {
+          "location": [
+            "medial joint line"
+          ],
+          "quality": [
+            "ache",
+            "sharp with squat"
+          ],
+          "irritability": "moderate",
+          "nrs_rest": 2,
+          "nrs_activity": 5,
+          "aggravators": [
+            "squatting",
+            "stairs",
+            "prolonged walking"
+          ],
+          "easers": [
+            "rest",
+            "ibuprofen"
+          ],
+          "24h_pattern": "morning stiffness <20 min, worse late day"
+        },
+        "social_history": {
+          "occupation": "warehouse worker",
+          "sport_hobbies": [
+            "hiking"
+          ]
+        },
+        "goals": [
+          "return to full work duties",
+          "avoid surgery",
+          "resume hiking"
+        ],
+        "past_medical_history": [
+          {
+            "condition": "hypertension",
+            "status": "controlled"
+          }
+        ],
+        "surgical_history": [],
+        "medications": [
+          {
+            "name": "ibuprofen",
+            "dose": "400mg daily"
+          },
+          {
+            "name": "lisinopril",
+            "dose": "10mg daily"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "none"
+          }
+        ]
+      },
+      "objective": {
+        "objective_catalog": [
+          {
+            "test_id": "vitals",
+            "label": "Vitals",
+            "template": "vitals",
+            "findings": {
+              "bp": "134/82",
+              "hr": 72,
+              "rr": 14,
+              "spo2": 98
+            }
+          },
+          {
+            "test_id": "inspection",
+            "label": "Inspection",
+            "template": "inspection",
+            "findings": {
+              "effusion": "mild",
+              "ecchymosis": "none",
+              "gait": "slight antalgia with squatting motion"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "rom",
+            "label": "ROM",
+            "template": "rom",
+            "findings": {
+              "knee_ext_right_deg": 0,
+              "knee_flex_right_deg": 125,
+              "knee_ext_left_deg": 0,
+              "knee_flex_left_deg": 135,
+              "pain_end_range": "medial joint line pain with flexion >120°"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "thessaly",
+            "label": "Thessaly Test",
+            "template": "meniscus_test",
+            "findings": {
+              "medial_joint_line_pain": "positive",
+              "locking": "no"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "mcmurray",
+            "label": "McMurray Test",
+            "template": "meniscus_test",
+            "findings": {
+              "medial_click": "positive",
+              "pain": "yes"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "joint_line_tenderness",
+            "label": "Joint Line Palpation",
+            "template": "palpation",
+            "findings": {
+              "medial_joint_line_tenderness": "positive",
+              "lateral": "negative"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "ligament_screen",
+            "label": "Ligament Screen",
+            "template": "screening",
+            "findings": {
+              "lachman": "negative",
+              "valgus": "negative",
+              "varus": "negative"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "functional",
+            "label": "Functional",
+            "template": "functional_task",
+            "findings": {
+              "squat_depth_limited": "yes",
+              "squat_pain": 4,
+              "step_down_pain": 3
+            },
+            "difficulty": "easy"
+          }
+        ],
+        "contraindications_precautions": [
+          "Avoid deep squatting initially; progress loading based on symptoms.",
+          "Monitor for true locking or increasing effusion requiring referral."
+        ]
+      },
+      "assessment": {},
+      "plan": {}
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "Meniscus and Articular Cartilage Lesions CPG",
+          "identifier": "CPG-Meniscus-2018",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-24"
+    },
+    "linked_persona_id": "echo-owen-carter",
+    "persona_snapshot": {
+      "id": "echo-owen-carter",
+      "display_name": "Owen Carter",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "echo-owen-carter",
+    "content_version": "1.0.0",
+    "checksum": "sha256:f82529d224da783a6f1e2ca6900c57bb5f140132978ffd18c537e473bb62f77a",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "echo-owen-carter",
+      "display_name": "Owen Carter",
+      "demographics": {
+        "name": "Owen Carter",
+        "preferred_name": "Owen",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "echo",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Owen Carter, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Owen Carter. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_deg_meniscus_nonlocking_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_deg_meniscus_nonlocking_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_deg_meniscus_nonlocking_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_deg_meniscus_nonlocking_entry_v1/soap.objective.json",
+    "soap_assessment": null,
+    "soap_plan": null
+  }
+}

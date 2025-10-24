@@ -1,0 +1,98 @@
+[
+	{
+		"id": "R1",
+		"flag": "red",
+		"cue_intent": "Night pain clarification",
+		"reveal_triggers": ["night pain", "nocturnal wake"],
+		"learning_objectives": ["Differentiate inflammatory night pain from positional discomfort"],
+		"example_phrases": ["You mentioned night pain. Can you clarify if it consistently wakes you and if it eases with position changes?"]
+	},
+	{
+		"id": "R2",
+		"flag": "red",
+		"cue_intent": "Unplanned weight loss detail",
+		"reveal_triggers": ["unexplained weight loss", "lost weight"],
+		"learning_objectives": ["Quantify unintended weight change and timeframe"],
+		"example_phrases": ["How much weight have you lost unintentionally and over what time frame?"]
+	},
+	{
+		"id": "R3",
+		"flag": "red",
+		"cue_intent": "Cancer history specifics",
+		"reveal_triggers": ["history of cancer", "cancer diagnosis"],
+		"learning_objectives": ["Characterize prior malignancy risk relevance"],
+		"example_phrases": ["Could you tell me more about the cancer history—type, treatment, and year?"]
+	},
+	{
+		"id": "R4",
+		"flag": "red",
+		"cue_intent": "Infection/systemic inquiry",
+		"reveal_triggers": ["fever", "chills", "systemic"],
+		"learning_objectives": ["Screen for systemic infection indicators"],
+		"example_phrases": ["Have you had any recent fevers, chills, or signs of infection?"]
+	},
+	{
+		"id": "R5",
+		"flag": "red",
+		"cue_intent": "Cauda equina screen",
+		"reveal_triggers": ["saddle numbness", "incontinence", "bowel", "bladder"],
+		"learning_objectives": ["Identify red flag neuro symptoms"],
+		"example_phrases": ["Any changes with bowel or bladder control, or numbness in the saddle area?"]
+	},
+	{
+		"id": "R6",
+		"flag": "red",
+		"cue_intent": "Motor deficit concern",
+		"reveal_triggers": ["drop foot", "foot slapping"],
+		"learning_objectives": ["Detect potential progressive motor deficit"],
+		"example_phrases": ["Have you noticed difficulty lifting your foot or tripping more often?"]
+	},
+	{
+		"id": "Y1",
+		"flag": "yellow",
+		"cue_intent": "Fear avoidance belief",
+		"reveal_triggers": ["fear of movement", "afraid to move", "kinesiophobia"],
+		"learning_objectives": ["Explore maladaptive fear beliefs"],
+		"example_phrases": ["What concerns you most about moving the area right now?"]
+	},
+	{
+		"id": "Y2",
+		"flag": "yellow",
+		"cue_intent": "Catastrophizing exploration",
+		"reveal_triggers": ["worst case", "never get better", "catastroph"],
+		"learning_objectives": ["Identify catastrophic cognitions"],
+		"example_phrases": ["What do you think is the worst that could happen if this continues?"]
+	},
+	{
+		"id": "Y3",
+		"flag": "yellow",
+		"cue_intent": "Stress & mood influence",
+		"reveal_triggers": ["stress", "overwhelmed", "anxious"],
+		"learning_objectives": ["Assess psychosocial stressors"],
+		"example_phrases": ["Has stress or mood been affecting your recovery?"]
+	},
+	{
+		"id": "Y4",
+		"flag": "yellow",
+		"cue_intent": "Sleep disturbance impact",
+		"reveal_triggers": ["sleep trouble", "poor sleep", "insomnia"],
+		"learning_objectives": ["Connect sleep quality to healing"],
+		"example_phrases": ["How has your sleep been since this started?"]
+	},
+	{
+		"id": "Y5",
+		"flag": "yellow",
+		"cue_intent": "Load management inquiry",
+		"reveal_triggers": ["training load", "increased mileage", "overtraining", "too much"],
+		"learning_objectives": ["Clarify recent load spike"],
+		"example_phrases": ["How quickly did you increase your recent training or activity load?"]
+	},
+	{
+		"id": "Y6",
+		"flag": "yellow",
+		"cue_intent": "Goal identification",
+		"reveal_triggers": ["goal", "return to sport", "return to play", "performance"],
+		"learning_objectives": ["Elicit patient-centered goals"],
+		"example_phrases": ["What's the most important activity or performance goal you want to get back to?"]
+	}
+]

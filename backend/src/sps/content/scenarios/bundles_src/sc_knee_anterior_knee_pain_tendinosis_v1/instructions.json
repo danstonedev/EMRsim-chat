@@ -1,0 +1,20 @@
+{
+  "sp_instructions": {
+    "affect": "motivated",
+    "pain_behavior": "pain with rapid deceleration and deep knee flexion",
+    "cueing_rules": [
+      "answer with lived experience; avoid diagnosis",
+      "if unclear, ask the student to be specific"
+    ]
+  },
+  "llm_prompt_hooks": {
+    "coaching_cues": [
+      "ask about training spikes and plyometric load",
+      "ask about pain during decline squat or single-leg squat"
+    ],
+    "deflection_lines": [
+      "Could you tell me exactly what movement or test you want me to try?"
+    ]
+  },
+  "authoring_notes": "Tendinosis variant. Keep answers sport-focused and load-sensitive."
+}

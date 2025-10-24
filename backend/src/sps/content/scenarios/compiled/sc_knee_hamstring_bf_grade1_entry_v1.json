@@ -1,0 +1,645 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_hamstring_bf_grade1_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:b13c4da1bf714bd00e8bae92e80ec30a9bc8102ca41951a4dccc404394d3ba74",
+  "dependencies_checksum": "sha256:c7dea0c3598fc9edd260412b1223062d77122a1d37bc99c0f6ee566ce96fb204",
+  "source_bundle": "scenarios/bundles_src/sc_knee_hamstring_bf_grade1_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_hamstring_bf_grade1_entry_v1",
+    "student_case_id": "C-ABEY9",
+    "title": "Entry: Hamstring Strain—Biceps Femoris Grade I (Sprinting)",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "sports_medicine_outpatient",
+    "tags": [
+      "entry_level_dpt",
+      "hamstring",
+      "strain",
+      "sprinting"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry: Hamstring Strain—Biceps Femoris Grade I (Sprinting)",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "sports_medicine_outpatient",
+      "tags": [
+        "entry_level_dpt",
+        "hamstring",
+        "strain",
+        "sprinting"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-24T00:00:00Z",
+      "updated_at": "2025-10-24T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Identify Grade I hamstring strain characteristics and rule out more severe injury or avulsion.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "safety_screening",
+            "evidence_based_practice"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "differential_diagnosis"
+          ],
+          "evidence_req": "CPG"
+        },
+        {
+          "id": "LO2",
+          "text": "Design a progressive hamstring rehab program emphasizing eccentric loading per CPG.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "plan_of_care"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "What criteria suggest a Grade I vs Grade II or III hamstring strain?",
+        "Why is eccentric loading emphasized in hamstring rehab?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Acute Grade I biceps femoris strain (sprinting mechanism)",
+      "onset": "acute",
+      "duration_weeks": 1,
+      "dominant_symptoms": [
+        "posterior thigh pain with sprinting",
+        "tender to palpation",
+        "pain with resisted knee flexion"
+      ],
+      "pain_nrs_rest": 2,
+      "pain_nrs_activity": 6,
+      "aggravators": [
+        "sprinting",
+        "acceleration",
+        "eccentric loading"
+      ],
+      "easers": [
+        "rest",
+        "ice"
+      ],
+      "pattern_24h": "Stiff morning, improves with gentle movement",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "Grade I biceps femoris strain",
+      "body_functions_structures": [
+        "posterior thigh tenderness",
+        "pain with resisted flexion",
+        "no palpable defect"
+      ],
+      "activities": [
+        "sprinting limited",
+        "reduced training intensity"
+      ],
+      "participation": [
+        "modified track practice"
+      ],
+      "environmental_factors": [
+        "sprint training demands"
+      ],
+      "personal_factors": [
+        "23-year-old sprinter",
+        "first hamstring injury"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: posterior thigh, mid-distal BF",
+            "quality: sharp with sprint, tender to touch",
+            "NRS activity: 6",
+            "aggravators: sprinting, acceleration, eccentric loading",
+            "mechanism: maximal sprint acceleration",
+            "onset: 1 week ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "avulsion_suspected: false",
+            "complete_tear: false",
+            "numbness: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: ",
+            "psh: ",
+            "meds: [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "return to full sprint training",
+            "prevent re-injury"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "vitals",
+        "label": "Vitals",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "rom",
+        "label": "ROM (Hip & Knee)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "resisted_knee_flexion",
+        "label": "Resisted Knee Flexion (~30°)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "slump_test",
+        "label": "Slump Test (Neural Tension)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional",
+        "label": "Functional",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "instructions": {
+      "scenario_instruction_overrides": {
+        "tone": "Acute sports injury; patient eager to return quickly but respectful of guidance.",
+        "behavioral_notes": [
+          "Wait for student.",
+          "If asked identity: Jordan Hayes, DOB 2001-05-14.",
+          "Express eagerness to return to sprinting.",
+          "If student suggests immediate return to full speed, express concern about re-injury."
+        ],
+        "gates": {
+          "requires_name_dob_before_sensitive": true
+        },
+        "safety_prompts": [
+          "If aggressive stretching or testing causes sharp pain, ask to stop."
+        ]
+      }
+    },
+    "soap": {
+      "subjective": {
+        "history": {
+          "chief_complaint": "I pulled my hamstring during a sprint—it grabbed me right away.",
+          "mechanism": "Acute during maximal sprint acceleration.",
+          "prior_episodes": "No prior hamstring injuries.",
+          "functional_impact": "Can jog lightly but can't sprint; hurts to push off hard.",
+          "goals": "Get back to full speed training for track season.",
+          "identity": {
+            "name": "Jordan Hayes",
+            "dob": "2001-05-14"
+          }
+        },
+        "subjective_catalog": [
+          {
+            "id": "injury_mechanism",
+            "label": "Injury Mechanism",
+            "patterns": [
+              "how",
+              "happened",
+              "mechanism"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Was doing sprint repeats. About 40 meters in, felt a sharp grab in the back of my thigh."
+              ]
+            }
+          },
+          {
+            "id": "meds_allergies",
+            "label": "Medications & Allergies",
+            "patterns": [
+              "meds",
+              "allergies"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Took ibuprofen. No allergies."
+              ]
+            }
+          },
+          {
+            "id": "bruising_swelling",
+            "label": "Bruising/Swelling",
+            "patterns": [
+              "bruise",
+              "swelling",
+              "discoloration"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "A little tender but no big bruise or swelling."
+              ]
+            }
+          },
+          {
+            "id": "red_flags",
+            "label": "Red Flags",
+            "patterns": [
+              "defect",
+              "gap",
+              "pop",
+              "numb"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "No big pop sound. No gap I can feel. No numbness."
+              ]
+            }
+          }
+        ],
+        "patient_reported_outcomes": {
+          "NPRS_worst": 6,
+          "NPRS_usual": 2,
+          "LEFS": 60
+        },
+        "media_library": [],
+        "history_present_illness": {
+          "mechanism": "maximal sprint acceleration",
+          "first_onset": "1 week ago",
+          "course_since_onset": "improving with rest",
+          "prior_episodes": "no prior hamstring injuries",
+          "red_flag_denials_affirmations": {
+            "avulsion_suspected": false,
+            "complete_tear": false,
+            "numbness": false
+          }
+        },
+        "pain": {
+          "location": [
+            "posterior thigh, mid-distal BF"
+          ],
+          "quality": [
+            "sharp with sprint",
+            "tender to touch"
+          ],
+          "irritability": "moderate",
+          "nrs_rest": 2,
+          "nrs_activity": 6,
+          "aggravators": [
+            "sprinting",
+            "acceleration",
+            "eccentric loading"
+          ],
+          "easers": [
+            "rest",
+            "ice"
+          ],
+          "24h_pattern": "stiff morning, improves with movement"
+        },
+        "social_history": {
+          "sport_hobbies": [
+            "track sprinting"
+          ],
+          "school_level": "college"
+        },
+        "goals": [
+          "return to full sprint training",
+          "prevent re-injury"
+        ],
+        "past_medical_history": [],
+        "surgical_history": [],
+        "medications": [
+          {
+            "name": "ibuprofen",
+            "dose": "as needed"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "none"
+          }
+        ]
+      },
+      "objective": {
+        "objective_catalog": [
+          {
+            "test_id": "vitals",
+            "label": "Vitals",
+            "template": "vitals",
+            "findings": {
+              "bp": "118/72",
+              "hr": 64,
+              "rr": 14,
+              "spo2": 99
+            }
+          },
+          {
+            "test_id": "inspection",
+            "label": "Inspection",
+            "template": "inspection",
+            "findings": {
+              "ecchymosis": "minimal",
+              "swelling": "none",
+              "gait": "normal pace, avoids high speed"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "rom",
+            "label": "ROM (Hip & Knee)",
+            "template": "rom",
+            "findings": {
+              "hip_flex_right_deg": 110,
+              "hip_flex_left_deg": 120,
+              "knee_flex_right_deg": 135,
+              "pain_end_range": "posterior thigh stretch pain with hip flexion/knee extension"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "palpation",
+            "label": "Palpation",
+            "template": "palpation",
+            "findings": {
+              "biceps_femoris_tenderness": "positive mid-distal",
+              "palpable_defect": "no"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "resisted_knee_flexion",
+            "label": "Resisted Knee Flexion (~30°)",
+            "template": "strength",
+            "findings": {
+              "pain": "positive",
+              "strength": "4/5 (limited by pain)",
+              "comparison": "left 5/5"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "slump_test",
+            "label": "Slump Test (Neural Tension)",
+            "template": "neural",
+            "findings": {
+              "posterior_thigh_symptoms": "reproduced",
+              "sciatic_nerve_tension": "positive"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "functional",
+            "label": "Functional",
+            "template": "functional_task",
+            "findings": {
+              "jog_tolerance": "okay",
+              "sprint_tolerance": "limited by pain",
+              "single_leg_bridge_pain": 4
+            },
+            "difficulty": "easy"
+          }
+        ],
+        "contraindications_precautions": [
+          "Avoid high-speed sprinting until eccentric strength restores.",
+          "Progress loading gradually; emphasize eccentric work.",
+          "Monitor for re-injury signs during return to sport."
+        ]
+      },
+      "assessment": {},
+      "plan": {}
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "Hamstring Strain Injury Rehabilitation CPG",
+          "identifier": "CPG-Hamstring-2022",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-24"
+    },
+    "linked_persona_id": "sage-jonah-mensah",
+    "persona_snapshot": {
+      "id": "sage-jonah-mensah",
+      "display_name": "Jonah Mensah",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "sage-jonah-mensah",
+    "content_version": "1.0.0",
+    "checksum": "sha256:47f441ccab3981acf3434779bbfc7b14c16213a4a0dd2458afc3852f26ff4bc9",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "sage-jonah-mensah",
+      "display_name": "Jonah Mensah",
+      "demographics": {
+        "name": "Jonah Mensah",
+        "preferred_name": "Jonah",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "sage",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Jonah Mensah, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Jonah Mensah. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_hamstring_bf_grade1_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_hamstring_bf_grade1_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_hamstring_bf_grade1_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_hamstring_bf_grade1_entry_v1/soap.objective.json",
+    "soap_assessment": null,
+    "soap_plan": null
+  }
+}

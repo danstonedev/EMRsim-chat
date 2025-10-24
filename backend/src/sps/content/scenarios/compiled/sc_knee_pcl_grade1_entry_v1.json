@@ -1,0 +1,637 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_pcl_grade1_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:0bb231ed27a934da331699572d5f3e897d94a33558a5200e3e6b7bf7b260d776",
+  "dependencies_checksum": "sha256:85ebeabfb35b09aa7167788787986159ed75c2cfa29447bf5aaec43b52f0c58b",
+  "source_bundle": "scenarios/bundles_src/sc_knee_pcl_grade1_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_pcl_grade1_entry_v1",
+    "student_case_id": "C-2GT1I",
+    "title": "Entry: Posterior Cruciate Ligament Sprain—Grade I",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "sports_medicine_outpatient",
+    "tags": [
+      "entry_level_dpt",
+      "pcl_sprain",
+      "ligament",
+      "acute_knee"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry: Posterior Cruciate Ligament Sprain—Grade I",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "sports_medicine_outpatient",
+      "tags": [
+        "entry_level_dpt",
+        "pcl_sprain",
+        "ligament",
+        "acute_knee"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-24T00:00:00Z",
+      "updated_at": "2025-10-24T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Identify clinical features of Grade I PCL sprain and differentiate from ACL or multiligament injury.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "safety_screening",
+            "evidence_based_practice"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "differential_diagnosis"
+          ],
+          "evidence_req": "CPG"
+        },
+        {
+          "id": "LO2",
+          "text": "Design a phased rehab emphasizing quad strengthening and posterior stability.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "plan_of_care"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "How does PCL rehab differ from ACL?",
+        "When is imaging indicated for dashboard injuries?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Right knee PCL sprain, Grade I",
+      "onset": "acute",
+      "duration_weeks": 2,
+      "dominant_symptoms": [
+        "posterior knee pain",
+        "stiffness",
+        "mild instability descending stairs"
+      ],
+      "pain_nrs_rest": 2,
+      "pain_nrs_activity": 4,
+      "aggravators": [
+        "descending stairs",
+        "kneeling",
+        "posterior pressure"
+      ],
+      "easers": [
+        "rest",
+        "ice",
+        "quad sets"
+      ],
+      "pattern_24h": "Stiff in morning, eases with movement",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "PCL sprain Grade I (right)",
+      "body_functions_structures": [
+        "posterior knee tenderness",
+        "mild posterior sag",
+        "quad weakness"
+      ],
+      "activities": [
+        "stairs descent limited",
+        "kneeling painful"
+      ],
+      "participation": [
+        "limited rec basketball"
+      ],
+      "environmental_factors": [
+        "stairs at work"
+      ],
+      "personal_factors": [
+        "30-year-old recreational athlete"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: posterior knee",
+            "quality: ache",
+            "NRS activity: 4",
+            "aggravators: stairs descent, kneeling",
+            "mechanism: dashboard injury",
+            "onset: 2 weeks ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "locking: false",
+            "numbness: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: ",
+            "psh: ",
+            "meds: [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "return to basketball",
+            "no pain descending stairs"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "vitals",
+        "label": "Vitals",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "rom",
+        "label": "ROM",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "posterior_drawer",
+        "label": "Posterior Drawer",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "posterior_sag",
+        "label": "Posterior Sag (Godfrey)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "other_tests",
+        "label": "Other Ligament Screen",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "palpation",
+        "label": "Palpation",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional",
+        "label": "Functional",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mmt_strength",
+        "label": "Strength (MMT)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "instructions": {
+      "scenario_instruction_overrides": {
+        "tone": "Subacute injury; patient cooperative.",
+        "behavioral_notes": [
+          "Wait for student.",
+          "If asked identity: Ryan Mitchell, DOB 1994-06-15.",
+          "If posterior tests aggressive, ask if safe."
+        ],
+        "gates": {
+          "requires_name_dob_before_sensitive": true
+        },
+        "safety_prompts": [
+          "If pain >3/10, request scaling."
+        ]
+      }
+    },
+    "soap": {
+      "subjective": {
+        "history": {
+          "chief_complaint": "I hit my shin on the dashboard—now my knee feels unstable going downstairs.",
+          "mechanism": "Dashboard injury; posterior force to proximal tibia.",
+          "prior_episodes": "No prior knee injuries.",
+          "functional_impact": "Stairs descent hurts; kneeling uncomfortable.",
+          "goals": "Get back to basketball pain-free.",
+          "identity": {
+            "name": "Ryan Mitchell",
+            "dob": "1994-06-15"
+          }
+        },
+        "subjective_catalog": [
+          {
+            "id": "meds_allergies",
+            "label": "Medications & Allergies",
+            "patterns": [
+              "meds",
+              "allergies"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Took ibuprofen. No allergies."
+              ]
+            }
+          },
+          {
+            "id": "swelling",
+            "label": "Swelling",
+            "patterns": [
+              "swelling"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "A bit puffy behind the knee initially."
+              ]
+            }
+          },
+          {
+            "id": "red_flags",
+            "label": "Red Flags",
+            "patterns": [
+              "locking",
+              "giving way"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "No locking. Feels unstable sometimes on stairs."
+              ]
+            }
+          }
+        ],
+        "patient_reported_outcomes": {
+          "NPRS_worst": 4,
+          "NPRS_usual": 2,
+          "LEFS": 58
+        },
+        "media_library": [],
+        "history_present_illness": {
+          "mechanism": "dashboard injury",
+          "first_onset": "2 weeks ago",
+          "course_since_onset": "improving slowly",
+          "prior_episodes": "none",
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "locking": false,
+            "numbness": false
+          }
+        },
+        "pain": {
+          "location": [
+            "posterior knee"
+          ],
+          "quality": [
+            "ache"
+          ],
+          "irritability": "low-moderate",
+          "nrs_rest": 1,
+          "nrs_activity": 4,
+          "aggravators": [
+            "stairs descent",
+            "kneeling"
+          ],
+          "easers": [
+            "rest"
+          ],
+          "24h_pattern": "stiff morning"
+        },
+        "social_history": {
+          "sport_hobbies": [
+            "basketball"
+          ],
+          "occupation": "engineer"
+        },
+        "goals": [
+          "return to basketball",
+          "no pain descending stairs"
+        ],
+        "past_medical_history": [],
+        "surgical_history": [],
+        "medications": [
+          {
+            "name": "ibuprofen",
+            "dose": "as needed"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "none"
+          }
+        ]
+      },
+      "objective": {
+        "objective_catalog": [
+          {
+            "test_id": "vitals",
+            "label": "Vitals",
+            "template": "vitals",
+            "findings": {
+              "bp": "122/74",
+              "hr": 66,
+              "rr": 14,
+              "spo2": 99
+            }
+          },
+          {
+            "test_id": "inspection",
+            "label": "Inspection",
+            "template": "inspection",
+            "findings": {
+              "effusion": "mild posterior",
+              "ecchymosis": "resolved",
+              "gait": "normal"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "rom",
+            "label": "ROM",
+            "template": "rom",
+            "findings": {
+              "knee_ext_right_deg": 0,
+              "knee_flex_right_deg": 130,
+              "knee_ext_left_deg": 0,
+              "knee_flex_left_deg": 135,
+              "pain_end_range": "mild posterior discomfort flexion"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "posterior_drawer",
+            "label": "Posterior Drawer",
+            "template": "ligament_test",
+            "findings": {
+              "posterior_translation": "increased vs contralateral (Grade I)",
+              "end_feel": "soft"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "posterior_sag",
+            "label": "Posterior Sag (Godfrey)",
+            "template": "ligament_test",
+            "findings": {
+              "sag": "mild positive",
+              "comparison": "vs contralateral"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "other_tests",
+            "label": "Other Ligament Screen",
+            "template": "screening",
+            "findings": {
+              "lachman": "negative",
+              "valgus": "negative",
+              "varus": "negative"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "palpation",
+            "label": "Palpation",
+            "template": "palpation",
+            "findings": {
+              "posterior_knee_tenderness": "positive",
+              "joint_line": "none"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "functional",
+            "label": "Functional",
+            "template": "functional_task",
+            "findings": {
+              "step_down_pain": 3,
+              "squat_pain": 2
+            },
+            "difficulty": "easy"
+          }
+        ],
+        "contraindications_precautions": [
+          "Avoid posterior tibial forces; emphasize quad strengthening."
+        ]
+      },
+      "assessment": {},
+      "plan": {}
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "Knee Ligament Sprain CPG (PCL management)",
+          "identifier": "CPG-Knee-Ligament-2017",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-24"
+    },
+    "linked_persona_id": "echo-devon-brooks",
+    "persona_snapshot": {
+      "id": "echo-devon-brooks",
+      "display_name": "Devon Brooks",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "echo-devon-brooks",
+    "content_version": "1.0.0",
+    "checksum": "sha256:c24af504c895c76e913361d54d14bf9560382a2d0f971bcccff9f55e74bf06ac",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "echo-devon-brooks",
+      "display_name": "Devon Brooks",
+      "demographics": {
+        "name": "Devon Brooks",
+        "preferred_name": "Devon",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "echo",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Devon Brooks, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Devon Brooks. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_pcl_grade1_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_pcl_grade1_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_pcl_grade1_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_pcl_grade1_entry_v1/soap.objective.json",
+    "soap_assessment": null,
+    "soap_plan": null
+  }
+}

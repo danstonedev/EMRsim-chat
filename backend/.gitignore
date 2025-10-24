@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.turbo/
+.cache/
+
+# Test & reports
+coverage/
+test-results/
+playwright-report/
+jest-html-reporters-*/ 
+*.lcov
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# Env files (real values never committed)
+.env
+.env.local
+.env.*.local
+
+# Package managers
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Optional: VS Code settings (keep if you share workspace)
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+.vercel

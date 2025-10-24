@@ -1,0 +1,681 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "sps-compiler",
+  "compiled_at": "2025-10-24T06:38:25.567Z",
+  "scenario_id": "sc_knee_pfp_mobility_deficits_entry_v1",
+  "content_version": "1.0.0",
+  "manifest_checksum": "sha256:05df400cfde59234824e3efdc04a4371fe7240b24a138732deac48293fea2e9b",
+  "dependencies_checksum": "sha256:c35d31cb30065f4013e17fe0be4acc1b1a291e44bcca4ab1a60fa912ef3f25e7",
+  "source_bundle": "scenarios/bundles_src/sc_knee_pfp_mobility_deficits_entry_v1",
+  "scenario": {
+    "scenario_id": "sc_knee_pfp_mobility_deficits_entry_v1",
+    "student_case_id": "C-1KQRS",
+    "title": "Entry: Patellofemoral Pain—Mobility Deficits",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": [
+      "entry_level_dpt",
+      "pfp",
+      "mobility",
+      "anterior_knee_pain"
+    ],
+    "schema_version": "3.0.0",
+    "version": 1,
+    "status": "draft",
+    "meta": {
+      "title": "Entry: Patellofemoral Pain—Mobility Deficits",
+      "region": "knee",
+      "difficulty": "easy",
+      "setting": "outpatient_pt",
+      "tags": [
+        "entry_level_dpt",
+        "pfp",
+        "mobility",
+        "anterior_knee_pain"
+      ],
+      "profession": "physical_therapy",
+      "roles": [
+        {
+          "id": "patient",
+          "instruction": null
+        }
+      ],
+      "created_at": "2025-10-24T00:00:00Z",
+      "updated_at": "2025-10-24T00:00:00Z"
+    },
+    "pedagogy": {
+      "learning_objectives": [
+        {
+          "id": "LO1",
+          "text": "Identify mobility impairments (ankle DF, hip flexor/ITB tightness) contributing to PFP.",
+          "bloom_level": "analyze",
+          "capte_refs": [
+            "evidence_based_practice"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "examination",
+            "nonsystem": "safety"
+          },
+          "assessment_focus": [
+            "clinical_reasoning"
+          ],
+          "evidence_req": "CPG"
+        },
+        {
+          "id": "LO2",
+          "text": "Design a treatment plan combining mobility interventions with strengthening per PFP CPG.",
+          "bloom_level": "apply",
+          "capte_refs": [
+            "plan_of_care"
+          ],
+          "npte_map": {
+            "system": "musculoskeletal",
+            "domain": "interventions",
+            "nonsystem": "professional"
+          },
+          "assessment_focus": [
+            "plan_of_care"
+          ],
+          "evidence_req": "CPG"
+        }
+      ],
+      "performance_rubric_ref": "pt_outpatient_core_v1",
+      "feedback_bank_keys": [],
+      "debrief_prompts": [
+        "How do ankle DF restrictions and lateral structures contribute to PFP?",
+        "What evidence supports mobility work vs strengthening alone for PFP?"
+      ]
+    },
+    "presenting_problem": {
+      "primary_dx": "Patellofemoral pain with mobility deficits (limited ankle DF, tight lateral structures)",
+      "onset": "gradual",
+      "duration_weeks": 10,
+      "dominant_symptoms": [
+        "anterior knee pain with stairs",
+        "pain after sitting",
+        "tight lateral knee"
+      ],
+      "pain_nrs_rest": 1,
+      "pain_nrs_activity": 6,
+      "aggravators": [
+        "descending stairs",
+        "deep squat",
+        "prolonged sitting"
+      ],
+      "easers": [
+        "stretching",
+        "foam rolling"
+      ],
+      "pattern_24h": "Stiff morning, worse with cumulative load",
+      "red_flags_ruled_out": true
+    },
+    "icf": {
+      "health_condition": "PFP with mobility impairments",
+      "body_functions_structures": [
+        "limited ankle DF",
+        "tight ITB/lateral retinaculum",
+        "hip flexor tightness"
+      ],
+      "activities": [
+        "stairs limited",
+        "squat depth reduced"
+      ],
+      "participation": [
+        "reduced running",
+        "avoiding gym leg exercises"
+      ],
+      "environmental_factors": [
+        "student lifestyle with prolonged sitting"
+      ],
+      "personal_factors": [
+        "20-year-old college student",
+        "previously active in dance"
+      ]
+    },
+    "subjective_catalog": [
+      {
+        "id": "pain_hpi",
+        "label": "Pain/HPI",
+        "patterns": [
+          "pain",
+          "history",
+          "onset"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "location: anterior knee bilateral, right > left",
+            "quality: ache, tight",
+            "NRS activity: 6",
+            "aggravators: stairs descent, deep squat, prolonged sitting",
+            "mechanism: gradual onset, no acute injury",
+            "onset: 10 weeks ago"
+          ]
+        }
+      },
+      {
+        "id": "red_flags",
+        "label": "Red flags",
+        "patterns": [
+          "red flag",
+          "night pain",
+          "weight loss",
+          "fever"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "fever: false",
+            "locking: false",
+            "instability: false"
+          ]
+        }
+      },
+      {
+        "id": "function_sdoh",
+        "label": "Function & SDOH",
+        "patterns": [
+          "work",
+          "sleep",
+          "transport",
+          "home"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      },
+      {
+        "id": "pmh_psh_meds_allergies",
+        "label": "PMH/PSH/Medications/Allergies",
+        "patterns": [
+          "pmh",
+          "psh",
+          "meds",
+          "allergies"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "pmh: ",
+            "psh: ",
+            "meds: [object Object]",
+            "allergies: [object Object]"
+          ]
+        }
+      },
+      {
+        "id": "goals",
+        "label": "Goals",
+        "patterns": [
+          "goal"
+        ],
+        "patient_response_script": {
+          "qualitative": [
+            "return to dance",
+            "no pain with stairs",
+            "improve flexibility"
+          ]
+        }
+      },
+      {
+        "id": "systems_review_stub",
+        "label": "Systems review",
+        "patterns": [
+          "ros",
+          "system review"
+        ],
+        "patient_response_script": {
+          "qualitative": []
+        }
+      }
+    ],
+    "objective_catalog": [
+      {
+        "test_id": "vitals",
+        "label": "Vitals",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "inspection",
+        "label": "Inspection",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "rom",
+        "label": "ROM",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "ankle_df",
+        "label": "Ankle Dorsiflexion (Lunge Test)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "thomas_test",
+        "label": "Thomas Test (Hip Flexor)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "obers_test",
+        "label": "Ober's Test (ITB)",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "patellar_tilt",
+        "label": "Patellar Tilt/Mobility",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "strength",
+        "label": "Strength",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional",
+        "label": "Functional",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "palpation_joint_line",
+        "label": "Joint Line Palpation",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "effusion_assessment",
+        "label": "Effusion Assessment",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_squat",
+        "label": "Functional: Squat",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "functional_step_down",
+        "label": "Functional: Step-down",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "lachman_test",
+        "label": "Lachman Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "anterior_drawer_test",
+        "label": "Anterior Drawer Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "valgus_stress_test",
+        "label": "Valgus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "varus_stress_test",
+        "label": "Varus Stress Test",
+        "region": "knee",
+        "patient_output_script": {}
+      },
+      {
+        "test_id": "mcmurray_test",
+        "label": "McMurray's Test",
+        "region": "knee",
+        "patient_output_script": {}
+      }
+    ],
+    "instructions": {
+      "scenario_instruction_overrides": {
+        "tone": "Young, motivated patient seeking guidance on stretching and exercises.",
+        "behavioral_notes": [
+          "Wait for student.",
+          "If asked identity: Sophie Martin, DOB 2004-12-08.",
+          "Express frustration with tightness.",
+          "Ask for specific stretching guidance."
+        ],
+        "gates": {
+          "requires_name_dob_before_sensitive": true
+        },
+        "safety_prompts": [
+          "If aggressive stretching causes sharp pain, mention it."
+        ]
+      }
+    },
+    "soap": {
+      "subjective": {
+        "history": {
+          "chief_complaint": "My knees hurt when I go down stairs, and they feel really tight on the sides.",
+          "mechanism": "Gradual onset; no specific injury.",
+          "prior_episodes": "On and off for several months.",
+          "functional_impact": "Stairs hurt; can't squat deeply; sitting in lectures makes it worse.",
+          "goals": "Get back to dance classes without pain.",
+          "identity": {
+            "name": "Sophie Martin",
+            "dob": "2004-12-08"
+          }
+        },
+        "subjective_catalog": [
+          {
+            "id": "meds_allergies",
+            "label": "Medications & Allergies",
+            "patterns": [
+              "meds",
+              "allergies"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Taking ibuprofen occasionally. No allergies."
+              ]
+            }
+          },
+          {
+            "id": "tightness",
+            "label": "Tightness/Stiffness",
+            "patterns": [
+              "tight",
+              "stiff",
+              "stretch"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "My knees and hips feel really tight. I try to stretch but not sure if I'm doing it right."
+              ]
+            }
+          },
+          {
+            "id": "red_flags",
+            "label": "Red Flags",
+            "patterns": [
+              "locking",
+              "giving way",
+              "swelling"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "No locking or giving way. No major swelling."
+              ]
+            }
+          },
+          {
+            "id": "pain_location",
+            "label": "Pain Location",
+            "patterns": [
+              "where",
+              "point to pain"
+            ],
+            "patient_response_script": {
+              "qualitative": [
+                "Front of both knees, but the right is worse. Feels tight on the outside too."
+              ]
+            }
+          }
+        ],
+        "patient_reported_outcomes": {
+          "NPRS_worst": 6,
+          "NPRS_usual": 3,
+          "LEFS": 56,
+          "AKPS": 68
+        },
+        "media_library": [],
+        "history_present_illness": {
+          "mechanism": "gradual onset, no acute injury",
+          "first_onset": "10 weeks ago",
+          "course_since_onset": "fluctuating, worse with activity and sitting",
+          "prior_episodes": "intermittent symptoms for months",
+          "red_flag_denials_affirmations": {
+            "fever": false,
+            "locking": false,
+            "instability": false
+          }
+        },
+        "pain": {
+          "location": [
+            "anterior knee bilateral, right > left"
+          ],
+          "quality": [
+            "ache",
+            "tight"
+          ],
+          "irritability": "moderate",
+          "nrs_rest": 1,
+          "nrs_activity": 6,
+          "aggravators": [
+            "stairs descent",
+            "deep squat",
+            "prolonged sitting"
+          ],
+          "easers": [
+            "foam rolling",
+            "stretching"
+          ],
+          "24h_pattern": "stiff morning, worse with cumulative load"
+        },
+        "social_history": {
+          "occupation": "college student",
+          "sport_hobbies": [
+            "dance",
+            "yoga"
+          ]
+        },
+        "goals": [
+          "return to dance",
+          "no pain with stairs",
+          "improve flexibility"
+        ],
+        "past_medical_history": [],
+        "surgical_history": [],
+        "medications": [
+          {
+            "name": "ibuprofen",
+            "dose": "as needed"
+          }
+        ],
+        "allergies": [
+          {
+            "substance": "drug",
+            "details": "none"
+          }
+        ]
+      },
+      "objective": {
+        "objective_catalog": [
+          {
+            "test_id": "vitals",
+            "label": "Vitals",
+            "template": "vitals",
+            "findings": {
+              "bp": "110/68",
+              "hr": 72,
+              "rr": 14,
+              "spo2": 99
+            }
+          },
+          {
+            "test_id": "inspection",
+            "label": "Inspection",
+            "template": "inspection",
+            "findings": {
+              "effusion": "none",
+              "alignment": "mild dynamic valgus noted",
+              "gait": "normal"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "rom",
+            "label": "ROM",
+            "template": "rom",
+            "findings": {
+              "knee_ext_right_deg": 0,
+              "knee_flex_right_deg": 132,
+              "knee_ext_left_deg": 0,
+              "knee_flex_left_deg": 135,
+              "pain_end_range": "anterior knee pain with flexion >120°"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "ankle_df",
+            "label": "Ankle Dorsiflexion (Lunge Test)",
+            "template": "rom",
+            "findings": {
+              "right_cm": 7,
+              "left_cm": 8,
+              "norm": ">10cm",
+              "limitation": "bilateral limitation"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "thomas_test",
+            "label": "Thomas Test (Hip Flexor)",
+            "template": "flexibility",
+            "findings": {
+              "right": "positive (tight hip flexors)",
+              "left": "positive"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "obers_test",
+            "label": "Ober's Test (ITB)",
+            "template": "flexibility",
+            "findings": {
+              "right": "positive (tight ITB)",
+              "left": "mild positive"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "patellar_tilt",
+            "label": "Patellar Tilt/Mobility",
+            "template": "mobility",
+            "findings": {
+              "lateral_tilt": "increased right",
+              "medial_glide": "restricted right"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "strength",
+            "label": "Strength",
+            "template": "strength",
+            "findings": {
+              "hip_abduction_right": "4-/5",
+              "hip_ER_right": "4/5",
+              "quad_right": "4+/5"
+            },
+            "difficulty": "easy"
+          },
+          {
+            "test_id": "functional",
+            "label": "Functional",
+            "template": "functional_task",
+            "findings": {
+              "single_leg_squat": "dynamic valgus right",
+              "step_down_pain": 5,
+              "squat_depth_limited": "yes"
+            },
+            "difficulty": "easy"
+          }
+        ],
+        "contraindications_precautions": [
+          "Address mobility deficits before aggressive strengthening.",
+          "Avoid painful end-range loading initially."
+        ]
+      },
+      "assessment": {},
+      "plan": {}
+    },
+    "provenance": {
+      "sources": [
+        {
+          "title": "2019 JOSPT Patellofemoral Pain CPG",
+          "identifier": "CPG-PFP-2019",
+          "level_of_evidence": "CPG"
+        }
+      ],
+      "reviewers": [
+        "faculty_reviewer"
+      ],
+      "last_reviewed": "2025-10-24"
+    },
+    "linked_persona_id": "sage-marisol-vega",
+    "persona_snapshot": {
+      "id": "sage-marisol-vega",
+      "display_name": "Marisol Vega",
+      "age": 30,
+      "sex": "unspecified",
+      "headline": null
+    }
+  },
+  "persona": {
+    "id": "sage-marisol-vega",
+    "content_version": "1.0.0",
+    "checksum": "sha256:dca6afa62c984f56e7375670d537a875ca01946b5207d2569d8a5e861656e5b8",
+    "updated_at": "2025-10-24T06:38:25.568Z",
+    "file": null,
+    "data": {
+      "patient_id": "sage-marisol-vega",
+      "display_name": "Marisol Vega",
+      "demographics": {
+        "name": "Marisol Vega",
+        "preferred_name": "Marisol",
+        "age": 30,
+        "sex": "unspecified",
+        "occupation": "Not specified",
+        "education_health_literacy": "moderate",
+        "dob": "1995-01-01"
+      },
+      "beliefs_affect": {
+        "affect": "friendly",
+        "mood": "friendly"
+      },
+      "communication": {
+        "tone": "friendly",
+        "verbosity": "balanced",
+        "directness": "moderate",
+        "language_complexity": "moderate"
+      },
+      "dialogue_style": {
+        "verbosity": "balanced",
+        "tone": "friendly",
+        "voice_id": "sage",
+        "speaking_rate": null
+      },
+      "dob_challenges": [
+        {
+          "style": "straightforward",
+          "example_response": "Marisol Vega, 1995-01-01."
+        },
+        {
+          "style": "clarification",
+          "example_response": "Marisol Vega. Date of birth 1995-01-01."
+        }
+      ]
+    }
+  },
+  "modules": [],
+  "source_files": {
+    "header": "scenarios/bundles_src/sc_knee_pfp_mobility_deficits_entry_v1/scenario.header.json",
+    "instructions": "scenarios/bundles_src/sc_knee_pfp_mobility_deficits_entry_v1/instructions.json",
+    "soap_subjective": "scenarios/bundles_src/sc_knee_pfp_mobility_deficits_entry_v1/soap.subjective.json",
+    "soap_objective": "scenarios/bundles_src/sc_knee_pfp_mobility_deficits_entry_v1/soap.objective.json",
+    "soap_assessment": null,
+    "soap_plan": null
+  }
+}

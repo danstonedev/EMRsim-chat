@@ -1,0 +1,55 @@
+{
+  "objective_catalog": [
+    { "test_id": "vitals", "label": "Vitals", "template": "vitals", "findings": { "bp": "118/74", "hr": 68, "rr": 14, "spo2": 99 } },
+    {
+      "test_id": "inspection",
+      "label": "Inspection",
+      "template": "inspection",
+      "findings": { "incisions": "well-healed, no drainage", "effusion": "mild", "ecchymosis": "resolved", "gait": "minimal antalgia" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "rom",
+      "label": "ROM",
+      "template": "rom",
+      "findings": { "knee_ext_right_deg": 0, "knee_flex_right_deg": 110, "knee_ext_left_deg": 0, "knee_flex_left_deg": 135, "pain_end_range": "mild discomfort end-range flexion" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "effusion_assessment",
+      "label": "Effusion Assessment",
+      "template": "inspection",
+      "findings": { "sweep_test": "trace positive", "ballottement": "negative" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "strength",
+      "label": "Strength",
+      "template": "strength",
+      "findings": { "quad_right": "3+/5 (inhibited)", "quad_left": "5/5", "hamstring_right": "4/5", "hamstring_left": "5/5" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "quad_index",
+      "label": "Quad Index (Circumference)",
+      "template": "measurement",
+      "findings": { "15cm_above_patella_right": "42cm", "15cm_above_patella_left": "44cm", "deficit": "2cm" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "patellar_mobility",
+      "label": "Patellar Mobility",
+      "template": "mobility",
+      "findings": { "superior_glide": "mildly restricted", "medial_lateral": "within normal" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "functional",
+      "label": "Functional",
+      "template": "functional_task",
+      "findings": { "step_down_pain": 2, "squat_depth_degrees": 90, "gait_normalized": "nearly normal" },
+      "difficulty": "easy"
+    }
+  ],
+  "contraindications_precautions": ["Monitor for infection signs.", "Avoid aggressive flexion stretching until week 3-4.", "Progress strengthening per post-op protocol."]
+}

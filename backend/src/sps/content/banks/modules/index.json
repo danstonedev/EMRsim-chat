@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2025-10-06T17:00:00Z",
+  "modules": {
+    "acute_care_total_joint": {
+      "versions": {
+        "v1": {
+          "file": "acute_care_total_joint.v1.json",
+          "checksum": "sha256:3EB3D82553526DE8E0A07D34265FCB65C2BB7E9D2C7DB7FBDEABFECFAD435D68",
+          "content_version": "1.0.0",
+          "updated_at": "2025-10-07T00:00:00Z",
+          "description": "Post-operative acute care context for total joint replacement (THA/TKA)",
+          "clinical_domains": [
+            "acute_care",
+            "post_surgical",
+            "discharge_planning"
+          ],
+          "created_at": "2025-10-06T00:00:00Z",
+          "status": "stable"
+        }
+      },
+      "latest": "v1"
+    },
+    "primary_care_low_back_pain": {
+      "versions": {
+        "v1": {
+          "file": "primary_care_low_back_pain.v1.json",
+          "checksum": "sha256:561FDA0DC994FAFB9DBF94BFE8115C15DBF181D4181E1E10586A3671D6261AA1",
+          "content_version": "1.0.0",
+          "updated_at": "2025-10-07T00:00:00Z",
+          "description": "Primary care low back pain assessment context with psychosocial screening and imaging guidelines",
+          "clinical_domains": [
+            "primary_care",
+            "pain_science",
+            "imaging_guidelines"
+          ],
+          "created_at": "2025-10-06T00:00:00Z",
+          "status": "stable"
+        }
+      },
+      "latest": "v1"
+    },
+    "sports_pt_generic": {
+      "versions": {
+        "v1": {
+          "file": "sports_pt_generic.v1.json",
+          "checksum": "sha256:1A2B0A8A50137DFD870CCD27E9FFF2E47D56383FC5CDD50985DC0C0E7303ECAF",
+          "content_version": "1.0.0",
+          "updated_at": "2025-10-07T00:00:00Z",
+          "description": "Sports rehabilitation and return-to-sport context with criterion-based testing batteries",
+          "clinical_domains": [
+            "sports_pt",
+            "return_to_play",
+            "load_management"
+          ],
+          "created_at": "2025-10-06T00:00:00Z",
+          "status": "stable"
+        }
+      },
+      "latest": "v1"
+    }
+  }
+}

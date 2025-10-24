@@ -1,0 +1,22 @@
+[
+  {
+    "id": "SQ_SH_1",
+    "region": "shoulder",
+    "student_prompt_patterns": ["numb", "tingl", "pins"],
+    "patient_cue_intent": "Rule out distal paresthesia suggesting nerve involvement",
+    "reveal_triggers": [],
+    "example_phrases": ["No numbness or pins and needles down the arm."],
+    "instructor_imaging_note": "Peripheral nerve screen unremarkable.",
+    "refs": []
+  },
+  {
+    "id": "SQ_SH_2",
+    "region": "shoulder",
+    "student_prompt_patterns": ["night", "sleep"],
+    "patient_cue_intent": "Characterize night pain severity/pattern",
+    "reveal_triggers": [],
+    "example_phrases": ["It can wake me if I roll onto that shoulder."],
+    "instructor_imaging_note": "Night pain positional, not inflammatory red flag pattern.",
+    "refs": []
+  }
+]

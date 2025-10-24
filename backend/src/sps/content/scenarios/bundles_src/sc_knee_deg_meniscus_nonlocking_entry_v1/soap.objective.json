@@ -1,0 +1,55 @@
+{
+  "objective_catalog": [
+    { "test_id": "vitals", "label": "Vitals", "template": "vitals", "findings": { "bp": "134/82", "hr": 72, "rr": 14, "spo2": 98 } },
+    {
+      "test_id": "inspection",
+      "label": "Inspection",
+      "template": "inspection",
+      "findings": { "effusion": "mild", "ecchymosis": "none", "gait": "slight antalgia with squatting motion" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "rom",
+      "label": "ROM",
+      "template": "rom",
+      "findings": { "knee_ext_right_deg": 0, "knee_flex_right_deg": 125, "knee_ext_left_deg": 0, "knee_flex_left_deg": 135, "pain_end_range": "medial joint line pain with flexion >120°" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "thessaly",
+      "label": "Thessaly Test",
+      "template": "meniscus_test",
+      "findings": { "medial_joint_line_pain": "positive", "locking": "no" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "mcmurray",
+      "label": "McMurray Test",
+      "template": "meniscus_test",
+      "findings": { "medial_click": "positive", "pain": "yes" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "joint_line_tenderness",
+      "label": "Joint Line Palpation",
+      "template": "palpation",
+      "findings": { "medial_joint_line_tenderness": "positive", "lateral": "negative" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "ligament_screen",
+      "label": "Ligament Screen",
+      "template": "screening",
+      "findings": { "lachman": "negative", "valgus": "negative", "varus": "negative" },
+      "difficulty": "easy"
+    },
+    {
+      "test_id": "functional",
+      "label": "Functional",
+      "template": "functional_task",
+      "findings": { "squat_depth_limited": "yes", "squat_pain": 4, "step_down_pain": 3 },
+      "difficulty": "easy"
+    }
+  ],
+  "contraindications_precautions": ["Avoid deep squatting initially; progress loading based on symptoms.", "Monitor for true locking or increasing effusion requiring referral."]
+}

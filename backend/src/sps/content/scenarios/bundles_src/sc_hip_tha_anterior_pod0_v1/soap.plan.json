@@ -1,0 +1,83 @@
+{
+  "frequency_duration": {
+    "visits_per_week": 2,
+    "weeks": 1
+  },
+  "referrals_imaging_requests": [],
+  "goals": {
+    "stg_2_4_weeks": [
+      "Ambulate 150–300 ft with RW and CGA by POD1",
+      "Perform 4 steps with rail with CGA by POD1"
+    ],
+    "ltg_6_12_weeks": [
+      "Independent HEP adherence at discharge"
+    ]
+  },
+  "interventions_planned": [
+    {
+      "intervention_id": "gait_training",
+      "dose": {
+        "time_min": 15,
+        "frequency_per_week": 2
+      },
+      "progression_criteria": [
+        "tolerates 150 ft without symptomatic dizziness"
+      ],
+      "regression_criteria": [
+        "SBP drop >20 mmHg with symptoms"
+      ],
+      "home_program_elements": [
+        "ankle_pumps",
+        "quad_sets",
+        "glute_sets",
+        "heel_slides"
+      ],
+      "expected_response": {
+        "immediate_session": [
+          "safe transfer to chair"
+        ],
+        "next_24_48h": [
+          "distance up to 150–300 ft"
+        ],
+        "2_6_weeks": [
+          "community amb goals as OP"
+        ]
+      },
+      "evidence_bindings": []
+    },
+    {
+      "intervention_id": "education_pacing",
+      "dose": {
+        "time_min": 10
+      },
+      "progression_criteria": [
+        "teach_back_precautions"
+      ],
+      "regression_criteria": [],
+      "home_program_elements": [
+        "precautions_handout"
+      ],
+      "expected_response": {
+        "immediate_session": [
+          "verbalize precautions"
+        ]
+      },
+      "evidence_bindings": []
+    }
+  ],
+  "patient_education": {
+    "topics": [
+      "hip_precautions",
+      "DVT_signs",
+      "ice_schedule",
+      "walker_safety"
+    ],
+    "teach_back_confirmed": true,
+    "printed_digital_resources": []
+  },
+  "safety_netting": [
+    "call nurse if dizziness persists",
+    "report calf pain/swelling",
+    "911 if chest pain or SOB"
+  ]
+}

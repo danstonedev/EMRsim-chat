@@ -1,0 +1,25 @@
+{
+  "about": "Template for objective_catalog standardization. Each item is an ObjectiveFinding with test_id, label, region, optional preconditions/contraindications/instructions_brief, and patient_output_script (numeric/qualitative/binary_flags).",
+  "example": [
+    {
+      "test_id": "obj_hip_arom_flexion",
+      "label": "AROM: Hip flexion",
+      "region": "hip",
+      "instructions_brief": "Active hip flexion; measure angle.",
+      "patient_output_script": {
+        "numeric": { "angle_deg": 110 },
+        "qualitative": ["End-range discomfort"],
+        "binary_flags": { "pain": false }
+      }
+    },
+    {
+      "test_id": "obj_hip_ref_patellar",
+      "label": "Neuro: Patellar reflex (L3-4)",
+      "region": "hip",
+      "instructions_brief": "Tap patellar tendon; 0-4+.",
+      "patient_output_script": {
+        "numeric": { "reflex_grade": 2 }
+      }
+    }
+  ]
+}

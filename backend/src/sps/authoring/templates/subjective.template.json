@@ -1,0 +1,27 @@
+[
+  {
+    "id": "onset_timeline",
+    "label": "Onset and Timeline",
+    "patterns": ["when did it start", "how long", "onset"],
+    "patient_response_script": {
+      "qualitative": ["Started about three weeks ago after a longer-than-usual run."]
+    },
+    "notes": "Keep concise; avoid diagnosis language."
+  },
+  {
+    "id": "aggravators",
+    "label": "Aggravating Factors",
+    "patterns": ["what makes it worse", "aggravates", "worse with"],
+    "patient_response_script": {
+      "qualitative": ["Going downstairs and quick pivots make it sharper."]
+    }
+  },
+  {
+    "id": "easers",
+    "label": "Easing Factors",
+    "patterns": ["what helps", "eases", "better with"],
+    "patient_response_script": {
+      "qualitative": ["Short rest and slower pace usually settle it."]
+    }
+  }
+]

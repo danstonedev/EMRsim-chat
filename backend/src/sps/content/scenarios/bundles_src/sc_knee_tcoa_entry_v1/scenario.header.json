@@ -1,0 +1,85 @@
+{
+  "schema_version": "3.0.0",
+  "scenario_id": "sc_knee_tcoa_entry_v1",
+  "content_version": "1.0.0",
+  "version": 1,
+  "status": "draft",
+  "meta": {
+    "title": "Entry: Tricompartmental Knee OA—Mobility and Function Limits",
+    "region": "knee",
+    "difficulty": "easy",
+    "setting": "outpatient_pt",
+    "tags": ["entry_level_dpt", "knee_oa", "tricompartmental", "mobility_impairments"],
+    "profession": "physical_therapy",
+    "roles": [
+      { "id": "patient", "instruction": null }
+    ],
+    "created_at": "2025-10-23T00:00:00Z",
+    "updated_at": "2025-10-23T00:00:00Z"
+  },
+  "linkage": {
+    "persona_id": "ballad-moira-mckenzie",
+    "suggested_personas": ["ballad-moira-mckenzie", "echo-owen-carter", "verse-hank-peterson"],
+    "instructions_file": "./instructions.json",
+    "soap_subjective_file": "./soap.subjective.json",
+    "soap_objective_file": "./soap.objective.json",
+    "soap_assessment_file": "./soap.assessment.json",
+    "soap_plan_file": "./soap.plan.json",
+    "active_context_modules": []
+  },
+  "pedagogy": {
+    "learning_objectives": [
+      {
+        "id": "LO1",
+        "text": "Identify clinical features of knee osteoarthritis and differentiate from inflammatory arthropathy or internal derangement.",
+        "bloom_level": "analyze",
+        "capte_refs": ["safety_screening", "evidence_based_practice", "documentation"],
+        "npte_map": { "system": "musculoskeletal", "domain": "examination", "nonsystem": "safety" },
+        "assessment_focus": ["clinical_reasoning", "differential_diagnosis"],
+        "evidence_req": "CPG|systematic_review"
+      },
+      {
+        "id": "LO2",
+        "text": "Design an entry-level exercise and education plan emphasizing mobility, strength, and self-management per OA guidelines.",
+        "bloom_level": "apply",
+        "capte_refs": ["plan_of_care", "communication_education", "documentation"],
+        "npte_map": { "system": "musculoskeletal", "domain": "interventions", "nonsystem": "professional" },
+        "assessment_focus": ["plan_of_care"],
+        "evidence_req": "CPG"
+      }
+    ],
+    "performance_rubric_ref": "pt_outpatient_core_v1",
+    "feedback_bank_keys": [],
+    "debrief_prompts": [
+      "How do you screen for inflammatory red flags in OA presentations?",
+      "What low-cost options improve adherence for patients with limited resources?"
+    ]
+  },
+  "presenting_problem": {
+    "primary_dx": "Knee osteoarthritis, tricompartmental (right > left)",
+    "onset": "gradual",
+    "duration_weeks": 156,
+    "dominant_symptoms": ["stiffness after sitting", "pain with stairs and prolonged walking", "morning stiffness <30 minutes"],
+    "pain_nrs_rest": 2,
+    "pain_nrs_activity": 6,
+    "aggravators": ["prolonged walking >20–30 minutes", "descending stairs", "deep squat", "cold/damp weather"],
+    "easers": ["brief rest", "heat", "cane on bad days"],
+    "pattern_24h": "Stiff in the morning and after sitting; eases with gentle movement; worsens late day with activity",
+    "red_flags_ruled_out": true
+  },
+  "icf": {
+    "health_condition": "knee OA (tricompartmental)",
+    "body_functions_structures": ["reduced knee extension ROM", "crepitus", "varus alignment", "quadriceps weakness"],
+    "activities": ["reduced walking tolerance", "difficulty with stairs", "limited squatting"],
+    "participation": ["reduced community ambulation", "less participation in gardening and church activities"],
+    "environmental_factors": ["uses cane intermittently", "lives in 2nd-floor apartment with stairs"],
+    "personal_factors": ["age >60", "overweight (BMI 29)", "motivated to avoid surgery"]
+  },
+  "provenance": {
+    "sources": [
+      { "title": "Knee Osteoarthritis Management Guidelines (e.g., OARSI/AAOS)", "identifier": "CPG-Knee-OA", "level_of_evidence": "CPG" }
+    ],
+    "reviewers": ["faculty_reviewer"],
+    "last_reviewed": "2025-10-23"
+  }
+}

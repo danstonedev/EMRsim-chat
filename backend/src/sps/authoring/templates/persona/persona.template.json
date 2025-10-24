@@ -1,0 +1,16 @@
+{
+  "persona_id": "prsn_generic_v1",
+  "name": "",
+  "age": 0,
+  "sex": "female|male|other",
+  "preferred_pronouns": "",
+  "occupation": "",
+  "activity_level": "sedentary|light|moderate|vigorous",
+  "cultural_linguistic_notes": [],
+  "goals_patient_voice": [],
+  "communication_style": "concise|verbose|anxious|guarded|frustrated|stoic",
+  "health_literacy": "low|moderate|high",
+  "support_system": [
+    "family|friend|caregiver|none"
+  ]
+}
