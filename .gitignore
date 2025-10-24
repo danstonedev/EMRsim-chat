@@ -30,6 +30,18 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Scripts and tool run artifacts (do not commit run outputs)
+scripts/*-results.json
+scripts/*-report.json
+scripts/*smoke-test-output*.json
+scripts/*gen-report*.json
+scripts/voice-flow-test-results.json
+scripts/transcription-message-flow-results.json
+scripts/knee-entry-gen-report.json
+
+# Stray compiled JS in TS source (prevent accidental add)
+backend/src/index.js
+
 # Env files (real values never committed)
 .env
 .env.local
