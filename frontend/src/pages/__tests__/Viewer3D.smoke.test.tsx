@@ -25,8 +25,8 @@ import Viewer3D from '../Viewer3D'
 describe('Viewer3D page (smoke)', () => {
   it('renders header, canvas, and scene placeholder', () => {
     render(<Viewer3D />)
-    // Header from ViewerControls
-    expect(screen.getByText('3D Anatomy Viewer')).toBeTruthy()
+    // Header control (close button) from ViewerControls
+    expect(screen.getByLabelText('Close viewer')).toBeTruthy()
     // Canvas mock wrapper
     expect(screen.getByTestId('canvas-mock')).toBeTruthy()
     // Scene placeholder

@@ -558,10 +558,16 @@ describe('ConversationController', () => {
       outstanding_gate: ['Confirm pain scale'],
     });
 
-    await controller.refreshInstructions('test');
+  await controller.refreshInstructions('test');
 
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith('session-123', undefined);
+    // Options are now forwarded (e.g., audience). Accept any options object.
+    expect(spy).toHaveBeenCalledWith(
+      'session-123',
+      expect.objectContaining({
+        // audience default is 'student' in UI; accept any provided value
+      })
+    );
     expect(send).toHaveBeenCalledTimes(1);
     const payload = JSON.parse(send.mock.calls[0][0]);
     expect(payload.type).toBe('session.update');

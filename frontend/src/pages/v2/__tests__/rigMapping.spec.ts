@@ -9,8 +9,8 @@ describe('remapTracksByName', () => {
     const b = new THREE.Object3D(); b.name = 'Spine'
     scene.add(a); scene.add(b)
     const clip = new THREE.AnimationClip('test', 1, [
-      new THREE.NumberKeyframeTrack('Hips.position[x]', [0], [0]),
-      new THREE.NumberKeyframeTrack('Spine.position[x]', [0], [0]),
+      new THREE.KeyframeTrack('Hips.position[x]', [0], [0]),
+      new THREE.KeyframeTrack('Spine.position[x]', [0], [0]),
     ])
     const remapped = remapTracksByName(scene, clip)
     // One track should be remapped to mixamorig:Hips, Spine stays

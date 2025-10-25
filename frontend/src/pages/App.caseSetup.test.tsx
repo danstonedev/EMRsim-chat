@@ -77,9 +77,11 @@ describe('App case setup layout', () => {
 
     expect(screen.queryByRole('dialog', { name: /case setup/i })).toBeNull()
 
-    const personaSearch = within(caseSetupRegion).getByLabelText(/persona search/i)
-    const scenarioSearch = within(caseSetupRegion).getByLabelText(/scenario search/i)
-    expect((personaSearch as HTMLInputElement).value).toBe('')
+  // Persona search input is only rendered after a scenario is selected.
+  // In the default setup state, it should not be present yet.
+  const personaSearch = within(caseSetupRegion).queryByLabelText(/persona search/i)
+  expect(personaSearch).toBeNull()
+  const scenarioSearch = within(caseSetupRegion).getByLabelText(/scenario search/i)
     expect((scenarioSearch as HTMLInputElement).value).toBe('')
 
     const startVoiceChat = within(caseSetupRegion).getByRole('button', { name: /start voice chat/i }) as HTMLButtonElement

@@ -132,8 +132,9 @@ vi.mock('@react-three/fiber', () => {
     return mk(input as string)
   }
   const useFrame = () => { /* no-op */ }
+  const useThree = () => ({ invalidate: vi.fn() })
   // Export a minimal subset used by the component/tests
-  return { useLoader, useFrame }
+  return { useLoader, useFrame, useThree }
 })
 
 // Stub useModelClips to avoid relying on useThree()/Canvas in tests
