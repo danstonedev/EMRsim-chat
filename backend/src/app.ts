@@ -25,6 +25,10 @@ export function createApp(): Application {
     app.set('trust proxy', 1);
   }
 
+  // Build metadata (helps verify which commit/branch is deployed)
+  const BUILD_TIME = new Date().toISOString();
+  const GIT_SHA = process.env.VERCEL_GIT_COMMIT_SHA || process.env.GIT_COMMIT || '';
+  const GIT_BRANCH = process.env.VERCEL_GIT_COMMIT_REF || process.env.GIT_BRANCH || '';
   const allowedOrigins = resolveAllowedOrigins();
   const ALLOWED_ORIGINS = new Set(allowedOrigins);
   app.use(
@@ -137,6 +141,16 @@ export function createApp(): Application {
     const base = getMetrics();
     const transcripts = getTranscriptMetrics();
     res.json({ ...base, transcripts });
+  });
+
+  // Version and build info endpoint
+  app.get('/api/version', (_req: Request, res: Response) => {
+    res.json({
+      buildTime: BUILD_TIME,
+      gitSha: GIT_SHA,
+      gitBranch: GIT_BRANCH,
+      env: process.env.VERCEL_ENV || process.env.NODE_ENV || '',
+    });
   });
 
   app.use('/api/health', healthRouter);

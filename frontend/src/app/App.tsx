@@ -10,7 +10,13 @@
  * - Layout structure
  */
 import AppRouter from './AppRouter'
+import BuildBadge from '../shared/BuildBadge'
 
 export default function App() {
-  return <AppRouter />
+  return (
+    <>
+      <AppRouter />
+      <BuildBadge />
+    </>
+  )
 }

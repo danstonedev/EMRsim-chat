@@ -10,7 +10,7 @@
   "scripts": {
     "predev": "node scripts/scan-animations.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/scan-animations.mjs",
+    "prebuild": "node scripts/write-build-info.mjs && node scripts/scan-animations.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
