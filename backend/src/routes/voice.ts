@@ -71,7 +71,7 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
     input_language: inputLanguage,
     model: modelOverride,
     transcription_model: transcriptionModelOverride,
-    reply_language: _replyLanguage, // Prefixed with _ to indicate intentionally unused (forced to 'en' below)
+    reply_language: replyLanguage,
     role_id: bodyRoleId,
     // Optional SPS context for stateless fallback (serverless)
     persona_id: bodyPersonaId,
@@ -211,9 +211,15 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
 
     // Project API keys don't need Organization ID
 
-    // TEMPORARY: Force English until multi-language support is fully implemented
-    // TODO: Re-enable dynamic language selection after ironing out other features
-    const effectiveReplyLanguage = 'en';
+    // Normalize language preferences: prefer explicit reply_language; fall back to input_language; else English
+    const normalizeLang = (v: any): string | undefined => {
+      if (!v || typeof v !== 'string') return undefined;
+      const raw = v.trim().toLowerCase();
+      if (!raw || raw === 'auto' || raw === 'default') return undefined;
+      return raw.includes('-') ? raw.split('-')[0] : raw; // use base code
+    };
+    const effectiveInputLanguage = normalizeLang(inputLanguage);
+    const effectiveReplyLanguage = normalizeLang(replyLanguage) || effectiveInputLanguage || 'en';
 
     const r = await fetch('https://api.openai.com/v1/realtime/sessions', {
       method: 'POST',
@@ -223,11 +229,12 @@ router.post('/token', voiceTokenLimiter, async (req: Request, res: Response) => 
         voice,
         instructions: withReplyLanguage(instructions, effectiveReplyLanguage) || undefined,
         modalities: ['text', 'audio'],
-        // TEMPORARY: Force English transcription until multi-language support is ready
-        input_audio_transcription: {
-          model: transcriptionModel,
-          language: 'en', // Force English for now (was: inputLanguage && inputLanguage !== 'auto' ? inputLanguage : null)
-        },
+        // Input transcription: include language only if explicit; otherwise let the model auto-detect
+        input_audio_transcription: ((): any => {
+          const base: any = { model: transcriptionModel };
+          if (effectiveInputLanguage) base.language = effectiveInputLanguage;
+          return base;
+        })(),
         // Turn detection tuning; defaults can be overridden by env:
         //   REALTIME_VAD_THRESHOLD (0.0-1.0), REALTIME_VAD_PREFIX_MS, REALTIME_VAD_SILENCE_MS
         turn_detection: {

@@ -7,12 +7,14 @@ import { requestLogger } from './utils/logger.ts';
 import { resolveAllowedOrigins } from './utils/origin.ts';
 import { swaggerSpec } from './config/swagger.ts';
 import { performanceMiddleware, getMetrics, getPrometheusMetrics } from './middleware/performance.ts';
+import { getTranscriptMetrics } from './services/transcript_broadcast.ts';
 import { correlationMiddleware } from './middleware/correlation.ts';
 import { requestContextMiddleware } from './utils/requestContext.ts';
 import { router as healthRouter } from './routes/health.ts';
 import { router as sessionsRouter } from './routes/sessions.ts';
 import { router as voiceRouter } from './routes/voice.ts';
 import { router as spsRouter, exportRouter as spsExportRouter } from './routes/sps.ts';
+import { router as agentsRouter } from './routes/agents.ts';
 import { transcriptRouter } from './routes/transcript.ts';
 
 export function createApp(): Application {
@@ -100,11 +102,41 @@ export function createApp(): Application {
   // Performance Metrics Endpoints
   app.get('/metrics', (_req: Request, res: Response) => {
     res.set('Content-Type', 'text/plain');
-    res.send(getPrometheusMetrics());
+    const base = getPrometheusMetrics();
+    const t = getTranscriptMetrics();
+    const lines: string[] = [base.trimEnd()];
+    // Append transcript metrics as a separate section
+    lines.push('# HELP transcript_broadcasted_total Total number of transcript broadcasts by role');
+    lines.push('# TYPE transcript_broadcasted_total counter');
+    lines.push(`transcript_broadcasted_total{role="user"} ${t.broadcasted.user}`);
+    lines.push(`transcript_broadcasted_total{role="assistant"} ${t.broadcasted.assistant}`);
+
+    lines.push('# HELP transcript_dedupe_drops_total Total number of deduplicated (dropped) transcripts by role');
+    lines.push('# TYPE transcript_dedupe_drops_total counter');
+    lines.push(`transcript_dedupe_drops_total{role="user"} ${t.dedupeDrops.user}`);
+    lines.push(`transcript_dedupe_drops_total{role="assistant"} ${t.dedupeDrops.assistant}`);
+
+    lines.push('# HELP transcript_dedupe_cache_entries Current dedupe cache size');
+    lines.push('# TYPE transcript_dedupe_cache_entries gauge');
+    lines.push(`transcript_dedupe_cache_entries ${t.cacheSize}`);
+
+    lines.push('# HELP transcript_dedupe_ttl_seconds Configured TTL for transcript dedupe');
+    lines.push('# TYPE transcript_dedupe_ttl_seconds gauge');
+    lines.push(`transcript_dedupe_ttl_seconds ${t.ttlSeconds}`);
+
+    lines.push('# HELP transcript_dedupe_mode_info Dedupe mode as info metric (1=active)');
+    lines.push('# TYPE transcript_dedupe_mode_info gauge');
+    lines.push(`transcript_dedupe_mode_info{mode="off"} ${t.mode === 'off' ? 1 : 0}`);
+    lines.push(`transcript_dedupe_mode_info{mode="memory"} ${t.mode === 'memory' ? 1 : 0}`);
+    lines.push(`transcript_dedupe_mode_info{mode="redis"} ${t.mode === 'redis' ? 1 : 0}`);
+
+    res.send(lines.join('\n') + '\n');
   });
 
   app.get('/api/metrics', (_req: Request, res: Response) => {
-    res.json(getMetrics());
+    const base = getMetrics();
+    const transcripts = getTranscriptMetrics();
+    res.json({ ...base, transcripts });
   });
 
   app.use('/api/health', healthRouter);
@@ -114,6 +146,7 @@ export function createApp(): Application {
   app.use('/api/voice', voiceRouter);
   app.use('/api/sps', spsRouter);
   app.use('/api/sps', spsExportRouter);
+  app.use('/api', agentsRouter);
   app.use('/api', transcriptRouter);
   return app;
 }

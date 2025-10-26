@@ -42,9 +42,9 @@ describe('ConversationController', () => {
   it('finalizes user transcript when fallback timer expires without an explicit completion', async () => {
     vi.useFakeTimers();
 
-    const controller = new ConversationController({ 
-      sttFallbackMs: 25, 
-      sttExtendedMs: 25, 
+    const controller = new ConversationController({
+      sttFallbackMs: 25,
+      sttExtendedMs: 25,
       debugEnabled: false,
       socketFactory: createMockSocketFactory(),
     });
@@ -537,11 +537,11 @@ describe('ConversationController', () => {
     const controller = new ConversationController({ debugEnabled: false });
     const send = vi.fn();
     (controller as any).sessionId = 'session-123';
-    
+
     // Mock stateManager methods
     vi.spyOn((controller as any).stateManager, 'isSessionReady').mockReturnValue(true);
     vi.spyOn((controller as any).stateManager, 'isAwaitingSessionAck').mockReturnValue(false);
-    
+
     // Mock webrtcManager methods
     const mockChannel = { readyState: 'open', send };
     vi.spyOn((controller as any).webrtcManager, 'getActiveChannel').mockReturnValue(mockChannel);
@@ -592,11 +592,11 @@ describe('ConversationController', () => {
     const controller = new ConversationController({ debugEnabled: false });
     const send = vi.fn();
     (controller as any).sessionId = 'session-321';
-    
+
     // Mock stateManager methods
     vi.spyOn((controller as any).stateManager, 'isSessionReady').mockReturnValue(true);
     vi.spyOn((controller as any).stateManager, 'isAwaitingSessionAck').mockReturnValue(false);
-    
+
     // Mock webrtcManager methods
     const mockChannel = { readyState: 'open', send };
     vi.spyOn((controller as any).webrtcManager, 'getActiveChannel').mockReturnValue(mockChannel);
@@ -645,7 +645,7 @@ describe('ConversationController', () => {
     const controller = new ConversationController({ debugEnabled: false });
     const send = vi.fn();
     (controller as any).sessionId = 'session-init-1';
-    
+
     // Mock webrtcManager methods
     const mockChannel = { readyState: 'open', send };
     vi.spyOn((controller as any).webrtcManager, 'getActiveChannel').mockReturnValue(mockChannel);

@@ -32,6 +32,16 @@ export interface TranscriptHandlerDependencies {
 
   /** Optional hook to detect active socket connectivity */
   isSocketConnected?: () => boolean
+
+  /** Optional registry hook to record locally emitted (fallback) transcripts for dedupe */
+  registerLocalEmission?: (entry: {
+    role: 'user' | 'assistant'
+    text: string
+    isFinal: boolean
+    timestamp: number
+    startedAtMs?: number | null
+    itemId?: string | null
+  }) => void
 }
 
 /**
@@ -86,7 +96,7 @@ export class TranscriptHandler {
    * @param timings - Timestamp metadata (startedAtMs, emittedAtMs, finalizedAtMs)
    */
   handleUserTranscript(text: string, isFinal: boolean, timings: TranscriptTimings): void {
-    const { transcriptCoordinator, eventEmitter, logDebug, isBackendMode, isSocketConnected } = this.deps
+    const { transcriptCoordinator, eventEmitter, logDebug, isBackendMode, isSocketConnected, registerLocalEmission } = this.deps
 
     // Resolve timestamps - ALWAYS use startedAtMs for user transcripts (when mic detected words)
     const startedAtMs = typeof timings?.startedAtMs === 'number' ? timings.startedAtMs : null
@@ -123,6 +133,17 @@ export class TranscriptHandler {
             timestamp: eventTimestamp,
             timings,
           })
+          // Register local emission for dedupe
+          try {
+            registerLocalEmission?.({
+              role: 'user',
+              text,
+              isFinal: true,
+              timestamp: eventTimestamp,
+              startedAtMs,
+              itemId: null,
+            })
+          } catch {}
           eventEmitter.emitDebug({
             t: new Date().toISOString(),
             kind: 'event',
@@ -219,6 +240,7 @@ export class TranscriptHandler {
       isBackendMode,
       logDebug,
       isSocketConnected,
+      registerLocalEmission,
     } = this.deps
 
     // Resolve timestamps - ALWAYS use startedAtMs for assistant transcripts (when speakers started)
@@ -252,6 +274,17 @@ export class TranscriptHandler {
           return
         }
         logDebug('[TranscriptHandler] Socket disconnected - emitting assistant final locally as fallback')
+        // Register local emission for dedupe
+        try {
+          registerLocalEmission?.({
+            role: 'assistant',
+            text,
+            isFinal: true,
+            timestamp: eventTimestamp,
+            startedAtMs,
+            itemId: null,
+          })
+        } catch {}
       } else {
         transcriptCoordinator.setAssistantPartial(text)
         if (socketConnected) {

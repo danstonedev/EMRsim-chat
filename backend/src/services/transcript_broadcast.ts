@@ -8,6 +8,7 @@
 
 import type { Server as SocketIOServer } from 'socket.io';
 import { getSessionTurns } from '../db.ts';
+import { isRedisAvailable, setNxWithTTL } from './redisClient.ts';
 
 type TranscriptRole = 'user' | 'assistant';
 
@@ -35,6 +36,106 @@ export interface TranscriptHistoryEntry {
 let io: SocketIOServer | null = null;
 const transcriptHistory = new Map<string, TranscriptHistoryEntry[]>();
 const MAX_HISTORY_PER_SESSION = 200;
+
+// === Dedupe settings (configurable via env) ===
+type DedupeMode = 'off' | 'memory' | 'redis';
+const envMode = (process.env.TRANSCRIPT_DEDUPE_MODE || 'memory').toLowerCase();
+let DEDUPE_MODE: DedupeMode = envMode === 'off' ? 'off' : envMode === 'redis' ? 'redis' : 'memory';
+let DEDUPE_TTL_SECONDS = Math.max(1, Number(process.env.TRANSCRIPT_DEDUPE_TTL_SECONDS || 30) || 30);
+
+// In-memory dedupe store: key => lastSeenEpochMs
+const seenMap = new Map<string, number>();
+
+// Lightweight counters for observability
+const counters = {
+  broadcasted: { user: 0, assistant: 0 },
+  dedupeDrops: { user: 0, assistant: 0 },
+};
+
+export function getTranscriptMetrics() {
+  return {
+    mode: DEDUPE_MODE,
+    ttlSeconds: DEDUPE_TTL_SECONDS,
+    broadcasted: { ...counters.broadcasted },
+    dedupeDrops: { ...counters.dedupeDrops },
+    cacheSize: seenMap.size,
+  } as const;
+}
+
+// Small, fast text hash (FNV-1a 32-bit)
+function hashText(input: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i);
+    h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+  }
+  return h.toString(16);
+}
+
+function buildDedupeKey(sessionId: string, role: TranscriptRole, payload: TranscriptPayload): string | null {
+  if (!payload?.isFinal) return null; // only dedupe finals
+  const text = (payload.text || '').trim();
+  if (!text) return null; // nothing to dedupe
+  const item = (payload.itemId || '').trim();
+  if (item) return `${sessionId}|${role}|item|${item}`;
+  const started =
+    Number.isFinite(payload.startedAtMs as number) && payload.startedAtMs != null
+      ? String(payload.startedAtMs)
+      : String(payload.timestamp || Date.now());
+  const sig = `${role}|${started}|${hashText(text.toLowerCase())}|${text.length}`;
+  return `${sessionId}|sig|${sig}`;
+}
+
+async function isDuplicate(sessionId: string, role: TranscriptRole, payload: TranscriptPayload): Promise<boolean> {
+  if (DEDUPE_MODE === 'off') return false;
+  const key = buildDedupeKey(sessionId, role, payload);
+  if (!key) return false;
+  const now = Date.now();
+  const ttlMs = DEDUPE_TTL_SECONDS * 1000;
+
+  // Redis (cross-instance) takes precedence when enabled and available
+  if (DEDUPE_MODE === 'redis' && isRedisAvailable()) {
+    // We cannot check existence without setting in a single op, so rely on SET NX during markSeen
+    // Here we fall back to memory-only existence check as a hint
+    const last = seenMap.get(key);
+    return typeof last === 'number' && now - last <= ttlMs;
+  }
+
+  const last = seenMap.get(key);
+  return typeof last === 'number' && now - last <= ttlMs;
+}
+
+async function markSeen(sessionId: string, role: TranscriptRole, payload: TranscriptPayload): Promise<void> {
+  const key = buildDedupeKey(sessionId, role, payload);
+  if (!key) return;
+  const now = Date.now();
+  seenMap.set(key, now);
+  // Best effort Redis marker for cross-instance dedupe
+  if (DEDUPE_MODE === 'redis' && isRedisAvailable()) {
+    try {
+      await setNxWithTTL(`dedupe:${key}`, String(now), DEDUPE_TTL_SECONDS);
+    } catch {
+      // ignore
+    }
+  }
+}
+
+// Test helpers (no-op in prod)
+export function __resetTranscriptDedupeForTests(): void {
+  seenMap.clear();
+}
+export function __setTranscriptDedupeOptionsForTests(options: { mode?: DedupeMode; ttlSeconds?: number }): void {
+  if (options.mode) DEDUPE_MODE = options.mode;
+  if (typeof options.ttlSeconds === 'number' && options.ttlSeconds > 0) DEDUPE_TTL_SECONDS = options.ttlSeconds;
+}
+
+export async function isDuplicateTranscript(
+  sessionId: string,
+  role: TranscriptRole,
+  payload: TranscriptPayload
+): Promise<boolean> {
+  return isDuplicate(sessionId, role, payload);
+}
 
 export interface TranscriptPayload {
   text: string;
@@ -122,10 +223,10 @@ export function getSocket(): SocketIOServer | null {
  * @param sessionId - Session identifier
  * @param payload - Transcript payload
  */
-export function broadcastUserTranscript(sessionId: string, payload: TranscriptPayload): void {
+export function broadcastUserTranscript(sessionId: string, payload: TranscriptPayload): boolean | void {
   if (!io) {
     console.warn('[transcript-broadcast] not initialized, skipping broadcast');
-    return;
+    return false;
   }
 
   const { text, isFinal, itemId } = payload;
@@ -135,6 +236,25 @@ export function broadcastUserTranscript(sessionId: string, payload: TranscriptPa
     : fallbackTimestamp;
   const emittedAt = Number.isFinite(payload.emittedAtMs ?? undefined) ? Number(payload.emittedAtMs) : fallbackTimestamp;
   const startedAt = Number.isFinite(payload.startedAtMs ?? undefined) ? Number(payload.startedAtMs) : null;
+
+  // Dedupe guard (finals only)
+  if (isFinal && text.trim()) {
+    // Note: isDuplicate is async; we use a sync hint via seenMap and then mark after emitting
+    const now = Date.now();
+    const key = buildDedupeKey(sessionId, 'user', payload);
+    const ttlMs = DEDUPE_TTL_SECONDS * 1000;
+    if (key) {
+      const last = seenMap.get(key);
+      if (typeof last === 'number' && now - last <= ttlMs) {
+        console.log('[transcript-broadcast] ⏭️ dedupe drop (user)', {
+          sessionId: sessionId.slice(-6),
+          itemId: itemId?.slice?.(-8),
+        });
+        counters.dedupeDrops.user++;
+        return false;
+      }
+    }
+  }
 
   console.log('[transcript-broadcast] broadcasting user transcript:', {
     sessionId,
@@ -169,6 +289,14 @@ export function broadcastUserTranscript(sessionId: string, payload: TranscriptPa
     media: payload.media ?? null,
     source: 'backend',
   });
+
+  // Mark seen after successful broadcast
+  if (isFinal && text.trim()) {
+    // fire-and-forget
+    void markSeen(sessionId, 'user', payload);
+  }
+  counters.broadcasted.user++;
+  return true;
 }
 
 /**
@@ -177,10 +305,10 @@ export function broadcastUserTranscript(sessionId: string, payload: TranscriptPa
  * @param sessionId - Session identifier
  * @param payload - Transcript payload
  */
-export function broadcastAssistantTranscript(sessionId: string, payload: TranscriptPayload): void {
+export function broadcastAssistantTranscript(sessionId: string, payload: TranscriptPayload): boolean | void {
   if (!io) {
     console.warn('[transcript-broadcast] not initialized, skipping broadcast');
-    return;
+    return false;
   }
 
   const { text, isFinal, itemId } = payload;
@@ -190,6 +318,23 @@ export function broadcastAssistantTranscript(sessionId: string, payload: Transcr
     : fallbackTimestamp;
   const emittedAt = Number.isFinite(payload.emittedAtMs ?? undefined) ? Number(payload.emittedAtMs) : fallbackTimestamp;
   const startedAt = Number.isFinite(payload.startedAtMs ?? undefined) ? Number(payload.startedAtMs) : null;
+
+  if (isFinal && text.trim()) {
+    const now = Date.now();
+    const key = buildDedupeKey(sessionId, 'assistant', payload);
+    const ttlMs = DEDUPE_TTL_SECONDS * 1000;
+    if (key) {
+      const last = seenMap.get(key);
+      if (typeof last === 'number' && now - last <= ttlMs) {
+        console.log('[transcript-broadcast] ⏭️ dedupe drop (assistant)', {
+          sessionId: sessionId.slice(-6),
+          itemId: itemId?.slice?.(-8),
+        });
+        counters.dedupeDrops.assistant++;
+        return false;
+      }
+    }
+  }
 
   console.log('[transcript-broadcast] broadcasting assistant transcript:', {
     sessionId,
@@ -224,6 +369,12 @@ export function broadcastAssistantTranscript(sessionId: string, payload: Transcr
     itemId,
     media: payload.media ?? null,
   });
+
+  if (isFinal && text.trim()) {
+    void markSeen(sessionId, 'assistant', payload);
+  }
+  counters.broadcasted.assistant++;
+  return true;
 }
 
 /**

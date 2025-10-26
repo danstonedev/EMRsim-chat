@@ -30,18 +30,19 @@ export function relayTranscript(req: Request, res: Response): Response | void {
     source: typeof source === 'string' ? source : undefined,
   } as any;
 
-  // Broadcast to WebSocket clients
+  // Broadcast to WebSocket clients (dedupe-aware; returns true if broadcasted)
+  let broadcasted = false;
   if (role === 'user') {
-    broadcastUserTranscript(sessionId, payload);
+    broadcasted = Boolean(broadcastUserTranscript(sessionId, payload));
   } else if (role === 'assistant') {
-    broadcastAssistantTranscript(sessionId, payload);
+    broadcasted = Boolean(broadcastAssistantTranscript(sessionId, payload));
   } else {
     return res.status(400).json({ error: 'Invalid role specified' });
   }
 
   // PHASE 1.2: Persist final transcripts to database
   // This ensures transcripts are not lost even if clients disconnect before viewing
-  if (isFinal && text.trim()) {
+  if (broadcasted && isFinal && text.trim()) {
     try {
       insertTurn(sessionId, role, text.trim(), {
         channel: 'audio',

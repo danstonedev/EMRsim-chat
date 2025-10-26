@@ -244,6 +244,34 @@ export class ServiceInitializer {
     config: ConversationControllerConfig,
     callbacks: ServiceInitializerCallbacks
   ): ConversationServices {
+    // Recent transcript registry to dedupe backend vs local fallback emissions
+    const recentMap = new Map<string, number>()
+    const LIVE_WINDOW_MS = 2500
+    const CATCHUP_WINDOW_MS = 15000
+    const cleanOld = (now: number) => {
+      for (const [k, t] of recentMap) {
+        if (now - t > Math.max(LIVE_WINDOW_MS, CATCHUP_WINDOW_MS)) recentMap.delete(k)
+      }
+    }
+    const norm = (s: string) => String(s || '').trim().toLowerCase()
+    const keyFor = (role: 'user' | 'assistant', text: string, startedAt?: number | null, itemId?: string | null) => {
+      if (itemId && typeof itemId === 'string') return `${role}|item|${itemId}`
+      const ts = Number.isFinite(startedAt as number) && startedAt != null ? String(startedAt) : 'na'
+      const preview = norm(text).slice(0, 160)
+      const len = String(text?.length || 0)
+      return `${role}|ts|${ts}|${preview}|${len}`
+    }
+    const registerEmitted = (role: 'user' | 'assistant', text: string, startedAt?: number | null, itemId?: string | null) => {
+      const k = keyFor(role, text, startedAt, itemId)
+      recentMap.set(k, Date.now())
+    }
+    const isDuplicate = (role: 'user' | 'assistant', text: string, startedAt?: number | null, itemId?: string | null, windowMs = LIVE_WINDOW_MS) => {
+      const now = Date.now()
+      cleanOld(now)
+      const k = keyFor(role, text, startedAt, itemId)
+      const seenAt = recentMap.get(k)
+      return typeof seenAt === 'number' && now - seenAt <= windowMs
+    }
     // Small sequencing buffer for backend transcript events to smooth rare out-of-order arrivals
     const transcriptBuffer: Array<{
       role: 'user' | 'assistant'
@@ -278,6 +306,8 @@ export class ServiceInitializer {
         const eventTimestamp = (startedAtMs ?? finalizedAtMs ?? emittedAtMs) as number
         const { cleanText, media } =
           t.role === 'assistant' ? transcriptCoordinator.parseMediaMarker(t.text) : { cleanText: t.text, media: undefined }
+        // Register emitted backend event for dedupe
+        registerEmitted(t.role, cleanText, startedAtMs, t.itemId)
         eventEmitter.emit({
           type: 'transcript',
           role: t.role,
@@ -286,6 +316,7 @@ export class ServiceInitializer {
           timestamp: eventTimestamp,
           media: media ?? t.media,
           timings: { startedAtMs, emittedAtMs, finalizedAtMs },
+          source: 'live',
         })
       }
     }
@@ -424,6 +455,16 @@ export class ServiceInitializer {
           console.warn('[ConversationController] backendTranscriptMode is disabled, ignoring transcript')
           return
         }
+        // Drop duplicates that match recently emitted local fallback or recent backend emissions
+        const startedAt = typeof data.startedAtMs === 'number' ? data.startedAtMs : undefined
+        if (data.isFinal && isDuplicate(data.role, data.text, startedAt ?? null, data.itemId)) {
+          callbacks.logDebug('[BackendSocket] ⏭️ Dropping duplicate live transcript', {
+            role: data.role,
+            startedAt,
+            hasItemId: Boolean(data.itemId),
+          })
+          return
+        }
         // Buffer briefly to smooth rare out-of-order arrivals
         transcriptBuffer.push({
           role: data.role,
@@ -433,6 +474,7 @@ export class ServiceInitializer {
           startedAtMs: typeof data.startedAtMs === 'number' ? data.startedAtMs : undefined,
           finalizedAtMs: typeof data.finalizedAtMs === 'number' ? data.finalizedAtMs : undefined,
           emittedAtMs: typeof data.emittedAtMs === 'number' ? data.emittedAtMs : undefined,
+          itemId: data.itemId,
           media: data.media,
         })
         if (!transcriptFlushTimer) {
@@ -469,6 +511,17 @@ export class ServiceInitializer {
             t.role === 'assistant'
               ? transcriptCoordinator.parseMediaMarker(t.text)
               : { cleanText: t.text, media: undefined }
+
+          // Drop duplicates against recent emissions in a wider window for catchup
+          if (t.isFinal && isDuplicate(t.role, cleanText, startedAtMs, t.itemId, CATCHUP_WINDOW_MS)) {
+            callbacks.logDebug('[BackendSocket] ⏭️ Dropping duplicate catchup transcript', {
+              role: t.role,
+              startedAtMs,
+              hasItemId: Boolean(t.itemId),
+            })
+            return
+          }
+          registerEmitted(t.role, cleanText, startedAtMs, t.itemId)
 
           eventEmitter.emit({
             type: 'transcript',
@@ -691,6 +744,11 @@ export class ServiceInitializer {
         } catch {
           return false
         }
+      },
+      registerLocalEmission: (entry) => {
+        try {
+          registerEmitted(entry.role, entry.text, entry.startedAtMs ?? null, entry.itemId)
+        } catch {}
       },
     })
 

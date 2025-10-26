@@ -11,9 +11,11 @@ export type VoiceLanguageSettingsSectionProps = {
   onInputLanguageChange: (value: string) => void
   onReplyLanguageChange: (value: string) => void
   helperText: string
+  languageLock?: boolean
+  onLanguageLockChange?: (value: boolean) => void
 }
 
-const DEFAULT_REPLY_ID = 'en-US'
+const DEFAULT_REPLY_ID = 'default'
 
 export function VoiceLanguageSettingsSection({
   voices,
@@ -25,9 +27,12 @@ export function VoiceLanguageSettingsSection({
   onInputLanguageChange,
   onReplyLanguageChange,
   helperText,
+  languageLock = false,
+  onLanguageLockChange,
 }: VoiceLanguageSettingsSectionProps) {
   const replyOptions = LANG_OPTIONS.filter((option) => option.id !== 'auto')
-  const defaultReplyLabel = replyOptions.find((option) => option.id === DEFAULT_REPLY_ID)?.label ?? 'English (US)'
+  // For the default reply language, we present a helpful label explaining behavior
+  const defaultReplyLabel = 'Match input language (default)'
 
   return (
     <section className="advanced-settings-card">
@@ -65,15 +70,25 @@ export function VoiceLanguageSettingsSection({
         <label className="form-field">
           <span className="form-field__label">Reply language</span>
           <select value={replyLanguage} onChange={(event) => onReplyLanguageChange(event.target.value)}>
-            <option value={DEFAULT_REPLY_ID}>{`${defaultReplyLabel} (default)`}</option>
-            {replyOptions
-              .filter((option) => option.id !== DEFAULT_REPLY_ID)
-              .map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.label}
-                </option>
-              ))}
+            <option value={DEFAULT_REPLY_ID}>{defaultReplyLabel}</option>
+            {replyOptions.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            ))}
           </select>
+        </label>
+
+        <label className="form-field">
+          <span className="form-field__label">Language lock</span>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={!!languageLock}
+              onChange={(e) => onLanguageLockChange?.(e.target.checked)}
+            />
+            <span className="text-sm opacity-80">Force explicit input/reply languages; disable auto-detect</span>
+          </div>
         </label>
       </div>
 

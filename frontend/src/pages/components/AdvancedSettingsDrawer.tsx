@@ -81,6 +81,8 @@ export function AdvancedSettingsDrawer({ open, onClose, onReconnectRequest }: Ad
           onInputLanguageChange={(value) => update({ inputLanguage: value as any })}
           onReplyLanguageChange={(value) => update({ replyLanguage: value })}
           helperText={appliedNote}
+          languageLock={settings.languageLock}
+          onLanguageLockChange={(value) => update({ languageLock: value })}
         />
       </div>
     </AdvancedSettingsLayout>

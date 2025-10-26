@@ -31,15 +31,20 @@ export async function POST(req: NextRequest) {
     // Performance optimization: Use smaller, faster model for quick transcription
     const startTime = Date.now();
 
-    const transcription = await client.audio.transcriptions.create({
+    // Optional language hint via form fields
+    const langRaw = (form.get("language") as string | null) || (form.get("input_language") as string | null) || null;
+    const language = langRaw && langRaw.toLowerCase() !== 'auto' ? langRaw : undefined;
+
+    const transcribeParams: any = {
       model: "whisper-1",
       file: await fileFromBlob(audio),
       // Optimize for speed vs accuracy
       response_format: "text", // Faster than JSON
       temperature: 0.0, // More deterministic, faster processing
-      // Add language hint if known to speed up processing
-      language: "en", // Assume English for faster processing
-    });
+    };
+    if (language) transcribeParams.language = language;
+
+    const transcription = await client.audio.transcriptions.create(transcribeParams);
 
     const processingTime = Date.now() - startTime;
     console.log(`[Transcription] Completed in ${processingTime}ms`);

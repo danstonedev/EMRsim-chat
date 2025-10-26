@@ -10,6 +10,7 @@ export interface TranscriptData {
   text: string
   isFinal: boolean
   timestamp: number
+  itemId?: string
   source?: string
   startedAtMs?: number | null
   finalizedAtMs?: number | null
@@ -28,6 +29,7 @@ export interface CatchupData {
     text: string
     isFinal: boolean
     timestamp: number
+    itemId?: string
     startedAtMs?: number | null
     finalizedAtMs?: number | null
     emittedAtMs?: number | null

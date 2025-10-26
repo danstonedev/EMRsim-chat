@@ -51,15 +51,20 @@ export async function POST(req: NextRequest) {
 
     // 1) Transcribe
     const startTrans = Date.now();
+    // Accept optional language hints; when not provided or set to 'auto', let the model auto-detect
+    const langRaw = (form.get("language") as string | null) || (form.get("input_language") as string | null) || null;
+    const language = langRaw && langRaw.toLowerCase() !== 'auto' ? langRaw : undefined;
+    const transcribeParams: any = {
+      model: "whisper-1",
+      file: await fileFromBlob(audio),
+      response_format: "text",
+      temperature: 0,
+    };
+    if (language) transcribeParams.language = language;
+
     const transcriptionText = await client.audio.transcriptions
-      .create({
-        model: "whisper-1",
-        file: await fileFromBlob(audio),
-        response_format: "text",
-        temperature: 0,
-        language: "en",
-      })
-      .then((t) => (typeof t === "string" ? t.trim() : String(t).trim()));
+  .create(transcribeParams)
+  .then((t: any) => (typeof t === "string" ? t.trim() : String(t).trim()));
     const transcriptionMs = Date.now() - startTrans;
 
     // 2) Chat response (only if we have some text)

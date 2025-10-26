@@ -5,6 +5,7 @@ export type AdvancedSettings = {
   inputLanguage: 'auto' | string
   replyLanguage: 'default' | string
   autostart: boolean
+  languageLock: boolean
 }
 
 type SettingsContextValue = {
@@ -19,9 +20,10 @@ const STORAGE_KEY = 'app.advancedSettings.v1'
 
 const defaultSettings: AdvancedSettings = {
   voice: null,
-  inputLanguage: 'en-US',
-  replyLanguage: 'en-US',
+  inputLanguage: 'auto',
+  replyLanguage: 'default',
   autostart: false,
+  languageLock: false,
 }
 
 function load(): AdvancedSettings {
@@ -29,14 +31,9 @@ function load(): AdvancedSettings {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) return defaultSettings
     const parsed = JSON.parse(raw)
+    // Merge with new defaults but do not force-switch user choices.
+    // Keep whatever user had saved; if keys are missing, use new defaults (auto/default).
     const merged: AdvancedSettings = { ...defaultSettings, ...parsed }
-    // Migrate legacy defaults to English unless explicitly set by user
-    if (!('inputLanguage' in parsed) || parsed.inputLanguage === 'auto') {
-      merged.inputLanguage = 'en-US'
-    }
-    if (!('replyLanguage' in parsed) || parsed.replyLanguage === 'default') {
-      merged.replyLanguage = 'en-US'
-    }
     return merged
   } catch {
     return defaultSettings

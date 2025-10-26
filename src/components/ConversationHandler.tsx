@@ -48,10 +48,44 @@ export class ConversationHandler {
       return;
     }
 
-    this.recognitionRef = new SpeechRecognition();
-    this.recognitionRef.continuous = true;
-    this.recognitionRef.interimResults = true;
-    this.recognitionRef.lang = "en-US";
+  this.recognitionRef = new SpeechRecognition();
+  this.recognitionRef.continuous = true;
+  this.recognitionRef.interimResults = true;
+  // Language selection with optional "language lock":
+  // If Advanced Settings has languageLock=true and an explicit inputLanguage (not 'auto'),
+  // prefer that locale for browser STT. Otherwise, fall back to browser locale.
+  try {
+    const raw = window.localStorage.getItem('app.advancedSettings.v1');
+    const parsed = raw ? JSON.parse(raw) : null;
+    const lock = !!parsed?.languageLock;
+    const inputLang: string | undefined = parsed?.inputLanguage;
+    const lang = (() => {
+      if (lock && inputLang && inputLang !== 'auto') {
+        // Map base lang to a reasonable BCP-47 tag
+        const base = String(inputLang).toLowerCase();
+        const map: Record<string, string> = {
+          en: 'en-US',
+          'en-us': 'en-US',
+          'en-gb': 'en-GB',
+          es: 'es-ES',
+          fr: 'fr-FR',
+          de: 'de-DE',
+          pt: 'pt-PT',
+          it: 'it-IT',
+          zh: 'zh-CN',
+          ja: 'ja-JP',
+          ko: 'ko-KR',
+          ru: 'ru-RU',
+        };
+        return map[base] || map[base.split('-')[0]] || 'en-US';
+      }
+      return (typeof navigator !== 'undefined' && (navigator as any).language) || 'en-US';
+    })();
+    this.recognitionRef.lang = lang;
+  } catch {
+    // Prefer browser locale when available; fall back to en-US
+    this.recognitionRef.lang = (typeof navigator !== 'undefined' && (navigator as any).language) || 'en-US';
+  }
 
     this.recognitionRef.onstart = () => {
       this.updateState({ isListening: true, phase: "listening" });

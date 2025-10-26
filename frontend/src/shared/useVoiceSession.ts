@@ -172,8 +172,8 @@ export function useVoiceSession(options: VoiceSessionOptions): VoiceSessionHandl
       scenarioMedia: options.scenarioMedia ?? [],
       sessionId: options.sessionId ?? null,
       voice: options.voice ?? null,
-      inputLanguage: options.inputLanguage ?? 'en-US',
-      replyLanguage: options.replyLanguage ?? 'en-US',
+      inputLanguage: options.inputLanguage ?? 'auto',
+      replyLanguage: options.replyLanguage ?? 'default',
     };
 
     // Batch all controller configuration updates

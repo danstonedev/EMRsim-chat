@@ -15,11 +15,11 @@ describe('settingsContext', () => {
 
     const { result } = renderHook(() => useAdvancedSettings(), { wrapper })
 
-    // Defaults
-    expect(result.current.settings.voice).toBeNull()
-    expect(result.current.settings.inputLanguage).toBe('en-US')
-    expect(result.current.settings.replyLanguage).toBe('en-US')
-    expect(result.current.settings.autostart).toBe(false)
+  // Defaults
+  expect(result.current.settings.voice).toBeNull()
+  expect(result.current.settings.inputLanguage).toBe('auto')
+  expect(result.current.settings.replyLanguage).toBe('default')
+  expect(result.current.settings.autostart).toBe(false)
 
     // Update
     act(() => {
@@ -35,11 +35,11 @@ describe('settingsContext', () => {
     const raw = window.localStorage.getItem('app.advancedSettings.v1')
     expect(raw).toBeTruthy()
 
-    // Reset
-    act(() => { result.current.reset() })
-    expect(result.current.settings.voice).toBeNull()
-    expect(result.current.settings.inputLanguage).toBe('en-US')
-    expect(result.current.settings.replyLanguage).toBe('en-US')
-    expect(result.current.settings.autostart).toBe(false)
+  // Reset
+  act(() => { result.current.reset() })
+  expect(result.current.settings.voice).toBeNull()
+  expect(result.current.settings.inputLanguage).toBe('auto')
+  expect(result.current.settings.replyLanguage).toBe('default')
+  expect(result.current.settings.autostart).toBe(false)
   })
 })

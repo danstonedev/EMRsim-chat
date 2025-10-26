@@ -131,6 +131,23 @@ function normalizeLang(value: string | null | undefined): string | undefined {
   return SUPPORTED_LANGS.has(maybeAliased) ? maybeAliased : undefined;
 }
 
+// Minimal reader for Advanced Settings from localStorage, used outside React
+function readAdvancedSettings(): { inputLanguage?: string; replyLanguage?: string; languageLock?: boolean } {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = window.localStorage.getItem('app.advancedSettings.v1');
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return {
+      inputLanguage: parsed?.inputLanguage,
+      replyLanguage: parsed?.replyLanguage,
+      languageLock: !!parsed?.languageLock,
+    };
+  } catch {
+    return {};
+  }
+}
+
 export async function runConnectionFlow(context: ConnectionFlowContext, myOp: number): Promise<void> {
   if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
     context.updateStatus('error', 'no_microphone_support');
@@ -326,13 +343,39 @@ export async function runConnectionFlow(context: ConnectionFlowContext, myOp: nu
           await new Promise(resolve => setTimeout(resolve, 500));
         }
 
+        // Determine languages with optional "language lock"
+        (() => {
+          const { languageLock, inputLanguage, replyLanguage } = readAdvancedSettings();
+          if (languageLock) {
+            // When locked, require explicit languages; default to English when unset
+            const forcedInput = normalizeLang(inputLanguage ?? context.inputLanguage) ?? 'en';
+            const forcedReply = normalizeLang(replyLanguage ?? context.replyLanguage) ?? forcedInput;
+            return [forcedInput, forcedReply] as const;
+          }
+          // Unlocked: use existing behavior (explicit -> follow input -> English)
+          const unlockedInput = normalizeLang(context.inputLanguage);
+          const unlockedReply = normalizeLang(context.replyLanguage) ?? unlockedInput ?? 'en';
+          return [unlockedInput, unlockedReply] as const;
+        })();
+        const [finalInputLanguage, finalReplyLanguage] = (() => {
+          const { languageLock, inputLanguage, replyLanguage } = readAdvancedSettings();
+          if (languageLock) {
+            const forcedInput = normalizeLang(inputLanguage ?? context.inputLanguage) ?? 'en';
+            const forcedReply = normalizeLang(replyLanguage ?? context.replyLanguage) ?? forcedInput;
+            return [forcedInput, forcedReply] as const;
+          }
+          const unlockedInput = normalizeLang(context.inputLanguage);
+          const unlockedReply = normalizeLang(context.replyLanguage) ?? unlockedInput ?? 'en';
+          return [unlockedInput, unlockedReply] as const;
+        })();
+
         const [nextToken, nextTransportInit] = await Promise.all([
           api.getVoiceToken(currentSessionId, {
             voice: context.voiceOverride || undefined,
-            input_language: normalizeLang(context.inputLanguage),
+            input_language: finalInputLanguage,
             model: context.model || undefined,
             transcription_model: context.transcriptionModel || undefined,
-            reply_language: normalizeLang(context.replyLanguage) ?? 'en',
+            reply_language: finalReplyLanguage,
           }),
           transportInitPromise,
         ]);
