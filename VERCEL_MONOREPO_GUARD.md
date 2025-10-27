@@ -27,3 +27,9 @@ Recovery steps if misconfigured:
 Safe rollback:
 
 - An annotated safety tag `recovery-2025-10-27` has been created at current `main`.
+
+Additional best practices applied in this repo:
+
+- Removed hardcoded `VITE_API_BASE_URL` from `frontend/vercel.json`. Configure this in the Vercel dashboard for the Frontend project to point at your stable Backend domain.
+- Pruned URL-specific variables from `backend/vercel.json` to avoid coupling to ephemeral deployment URLs; backend CORS already permits `*.vercel.app` and can be extended via dashboard envs if needed.
+- Avoid committing production `.env` files; use `.env.local` for development and Vercel dashboard variables for Production.

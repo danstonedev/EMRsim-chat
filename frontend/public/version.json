@@ -1,8 +1,8 @@
 {
-  "buildTime": "2025-10-27T01:13:31.419Z",
-  "gitSha": "e7d01b2bf5c370fec690f788bcb89c3474420d81",
-  "gitShaShort": "e7d01b2",
-  "gitBranch": "main",
+  "buildTime": "2025-10-27T14:50:14.064Z",
+  "gitSha": "bc08bb724f90ba7fffff13eb3eed79f8dff4b861",
+  "gitShaShort": "bc08bb7",
+  "gitBranch": "recovery/vercel-guard",
   "vercelUrl": "",
   "vercelEnv": ""
 }

@@ -6,7 +6,6 @@
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "env": {
-    "VITE_API_BASE_URL": "https://backend-kncbjrapb-dan-stones-projects-04854ae1.vercel.app",
     "VITE_VOICE_ENABLED": "true",
     "VITE_SPS_ENABLED": "true",
     "VITE_BANNERS_ENABLED": "true",
