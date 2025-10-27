@@ -18,9 +18,6 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production",
-    "FRONTEND_URL": "https://frontend-k9ziz46o2-dan-stones-projects-04854ae1.vercel.app",
-    "BACKEND_CORS_ORIGINS": "https://frontend-k9ziz46o2-dan-stones-projects-04854ae1.vercel.app,https://frontend-qsosuea7h-dan-stones-projects-04854ae1.vercel.app,https://frontend-ruby-one-10.vercel.app",
     "OPENAI_REALTIME_MODEL": "gpt-realtime-mini-2025-10-06"
   }
 }

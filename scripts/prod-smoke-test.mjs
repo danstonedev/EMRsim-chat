@@ -9,8 +9,8 @@ Optional env:
 const BACKENDS = process.env.BACKEND_BASE
   ? [process.env.BACKEND_BASE]
   : [
-      'https://backend-rj4qgdik0-dan-stones-projects-04854ae1.vercel.app',
-      'https://backend-ac9ynk593-dan-stones-projects-04854ae1.vercel.app',
+      // Stable production backend domain (preferred)
+      'https://backend-six-rho-54.vercel.app',
     ];
 
 const personaId = 'echo-beatrice-king';
