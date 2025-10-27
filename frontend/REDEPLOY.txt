@@ -1,0 +1,3 @@
+Redeploy marker for frontend. Safe no-op file to trigger Vercel deploy.
+
+Commit timestamp indicates when redeploy was requested.
