@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "dev:debug": "NODE_OPTIONS='--inspect' tsx watch src/index.ts",
-  "build": "tsup src/index.ts --format esm,cjs --sourcemap && node scripts/copy-sps-content.mjs",
+    "build:types": "tsc -p tsconfig.json --noEmit",
+    "build": "tsup src/index.ts --format esm,cjs --sourcemap && node scripts/copy-sps-content.mjs",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
     "test": "vitest run",
