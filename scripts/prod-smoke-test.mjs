@@ -9,8 +9,8 @@ Optional env:
 const BACKENDS = process.env.BACKEND_BASE
   ? [process.env.BACKEND_BASE]
   : [
-      // Stable production backend domain (preferred)
-      'https://backend-six-rho-54.vercel.app',
+      // Stable production backend alias (preferred)
+      'https://vspx-backend.vercel.app',
     ];
 
 const personaId = 'echo-beatrice-king';
@@ -65,7 +65,7 @@ async function runOnce(base) {
 
   // fetch turns
   out.turns = await jfetch(`${base}/api/sessions/${encodeURIComponent(sessionId)}/turns`);
-  
+
   // fetch transcript (HTML)
   const tr = await jfetch(`${base}/api/sessions/${encodeURIComponent(sessionId)}/transcript`);
   out.transcript = { ok: tr.ok, status: tr.status, length: typeof tr.body === 'string' ? tr.body.length : null };

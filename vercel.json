@@ -1,0 +1,5 @@
+{
+  "version": 2,
+  "name": "monorepo-guard",
+  "ignoreCommand": "echo 'Do not deploy from repository root. Use frontend/ or backend/ projects.' && exit 1"
+}
