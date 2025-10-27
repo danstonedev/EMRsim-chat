@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { generateFileChecksum, generateBundleChecksum, generateObjectChecksum, formatChecksum } from './checksum.ts';
+import { generateFileChecksum, generateBundleChecksum, generateObjectChecksum, formatChecksum } from './checksum.js';
 
 /**
  * Persona entry in the content manifest

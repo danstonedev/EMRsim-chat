@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { migrate, healthCheck, getStorageMode } from '../db.ts';
+import { migrate, healthCheck, getStorageMode } from '../db.js';
 
 export const router = Router();
 

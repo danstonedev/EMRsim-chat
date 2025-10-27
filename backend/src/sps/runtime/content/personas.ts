@@ -1,5 +1,5 @@
-import { normalizePersona } from '../../core/normalization/index.ts';
-import type { DOBChallenge, PatientPersona } from '../../core/types.ts';
+import { normalizePersona } from '../../core/normalization/index.js';
+import type { DOBChallenge, PatientPersona } from '../../core/types.js';
 
 export function buildDobChallenges(name: string, dob: string): DOBChallenge[] {
   const who = name || 'Patient';

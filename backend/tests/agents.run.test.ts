@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import request from 'supertest'
-import { createApp } from '../src/app.ts'
+import { createApp } from '../src/app.js'
 
 let app: ReturnType<typeof createApp>
 

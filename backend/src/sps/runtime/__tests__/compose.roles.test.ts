@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { composeRealtimeInstructions } from '../sps.service.ts';
-import type { ActiveCase, PatientPersona, ClinicalScenario } from '../../core/types.ts';
+import { composeRealtimeInstructions } from '../sps.service.js';
+import type { ActiveCase, PatientPersona, ClinicalScenario } from '../../core/types.js';
 
 function makePersona(overrides: Partial<PatientPersona> = {}): PatientPersona {
   return {

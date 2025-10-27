@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { relayTranscript } from '../controllers/transcriptRelayController.ts';
+import { relayTranscript } from '../controllers/transcriptRelayController.js';
 
 const router = Router();
 

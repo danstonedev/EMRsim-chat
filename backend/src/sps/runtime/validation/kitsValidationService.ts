@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ScenarioKitSchema, type ScenarioKit } from '../../schemas/kit.ts';
+import { ScenarioKitSchema, type ScenarioKit } from '../../schemas/kit.js';
 
 export type KitValidationLevel = 'error' | 'warning';
 

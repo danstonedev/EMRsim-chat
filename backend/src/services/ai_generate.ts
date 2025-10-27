@@ -1,4 +1,4 @@
-import { zClinicalScenario } from '../sps/core/schemas.ts';
+import { zClinicalScenario } from '../sps/core/schemas.js';
 
 // Types for AI generation
 interface BingSearchResult {

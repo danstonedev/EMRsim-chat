@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { normalizeScenario } from '../src/services/ai_generate.ts'
+import { normalizeScenario } from '../src/services/ai_generate.js'
 
 describe('normalizeScenario', () => {
   it('promotes meta fields when top-level values are missing', () => {

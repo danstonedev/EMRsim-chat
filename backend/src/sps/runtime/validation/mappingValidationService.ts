@@ -1,5 +1,5 @@
-import { spsRegistry } from '../../core/registry.ts';
-import { getSuggestedPersonas, mapScenarioToCaseId, loadScenarioKit } from '../kits.ts';
+import { spsRegistry } from '../../core/registry.js';
+import { getSuggestedPersonas, mapScenarioToCaseId, loadScenarioKit } from '../kits.js';
 
 export type MappingValidationLevel = 'error' | 'warning';
 

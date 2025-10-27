@@ -8,14 +8,14 @@ import {
   endSession,
   updateSpsSessionData,
   getSessionTurnsAsync,
-} from '../db.ts';
-import { spsRegistry } from '../sps/core/registry.ts';
+} from '../db.js';
+import { spsRegistry } from '../sps/core/registry.js';
 import crypto from 'node:crypto';
-import { sessions as spsSessions } from '../sps/runtime/store.ts';
+import { sessions as spsSessions } from '../sps/runtime/store.js';
 // Added persona detail endpoint
-import { touchPersistence } from '../sps/runtime/persistence.ts';
-import { logEvent } from '../sps/runtime/telemetry.ts';
-import type { GateFlags } from '../sps/core/types.ts';
+import { touchPersistence } from '../sps/runtime/persistence.js';
+import { logEvent } from '../sps/runtime/telemetry.js';
+import type { GateFlags } from '../sps/core/types.js';
 
 export const router = Router();
 

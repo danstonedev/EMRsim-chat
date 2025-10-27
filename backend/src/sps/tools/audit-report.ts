@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { ScenarioValidationService } from '../runtime/validation/scenarioValidationService.ts';
+import { ScenarioValidationService } from '../runtime/validation/scenarioValidationService.js';
 
 type BucketCounts = Record<string, number>;
 

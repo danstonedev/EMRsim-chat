@@ -1,6 +1,6 @@
-import { GOLD_STANDARD_SPS_INSTRUCTIONS } from '../core/instructions.ts';
-import { loadScenarioKit, retrieveFacts, formatRetrievedFacts, mapScenarioToCaseId } from './kits.ts';
-import { ActiveCase, EncounterPhase, GateFlags } from '../core/types.ts';
+import { GOLD_STANDARD_SPS_INSTRUCTIONS } from '../core/instructions.js';
+import { loadScenarioKit, retrieveFacts, formatRetrievedFacts, mapScenarioToCaseId } from './kits.js';
+import { ActiveCase, EncounterPhase, GateFlags } from '../core/types.js';
 
 export function getGoldInstructions() {
   return GOLD_STANDARD_SPS_INSTRUCTIONS;

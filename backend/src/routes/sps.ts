@@ -1,13 +1,13 @@
 import { Router, Request, Response } from 'express';
-import { spsRegistry } from '../sps/core/registry.ts';
-import { getSuggestedPersonas, loadScenarioKit, mapScenarioToCaseId, retrieveFacts } from '../sps/runtime/kits.ts';
+import { spsRegistry } from '../sps/core/registry.js';
+import { getSuggestedPersonas, loadScenarioKit, mapScenarioToCaseId, retrieveFacts } from '../sps/runtime/kits.js';
 import {
   getGoldInstructions,
   formatPersonaSection as fmtPersona,
   formatScenarioSection as fmtScenario,
-} from '../sps/runtime/sps.service.ts';
-import { getStorageMode } from '../db.ts';
-import { catalogService } from '../services/catalogService.ts';
+} from '../sps/runtime/sps.service.js';
+import { getStorageMode } from '../db.js';
+import { catalogService } from '../services/catalogService.js';
 import type {
   ClinicalScenario,
   PatientPersona,
@@ -25,7 +25,7 @@ import type {
   SubjectiveItem,
   SpecialQuestion,
   ScreeningChallenge,
-} from '../sps/core/types.ts';
+} from '../sps/core/types.js';
 
 export const router = Router();
 

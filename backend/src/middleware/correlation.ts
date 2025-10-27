@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'node:crypto';
-import { logger } from '../utils/logger.ts';
+import { logger } from '../utils/logger.js';
 
 declare module 'express-serve-static-core' {
   interface Request {

@@ -1788,6 +1788,40 @@
 			],
 			"isBackground": false,
 			"group": "build"
+		},
+		{
+			"label": "Smoke: Prod Transcript",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"node scripts/prod-smoke-test.mjs | Set-Content -Encoding UTF8 -Path .\\scripts\\prod-smoke-test-output.json; Get-Content .\\scripts\\prod-smoke-test-output.json"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Backend: Type Check & Build (verify)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"cd backend; npm run build:types ; npm run build"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Smoke: Prod Transcript",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"node scripts/prod-smoke-test.mjs | Set-Content -Encoding UTF8 -Path .\\scripts\\prod-smoke-test-output.json; Get-Content .\\scripts\\prod-smoke-test-output.json"
+			],
+			"isBackground": false
 		}
 	]
 }

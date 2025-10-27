@@ -1,9 +1,9 @@
 // @ts-nocheck
 import { describe, it, expect, beforeAll } from 'vitest'
 import request from 'supertest'
-import { createApp } from '../src/app.ts'
-import { loadSPSContent } from '../src/sps/runtime/session.ts'
-import { spsRegistry } from '../src/sps/core/registry.ts'
+import { createApp } from '../src/app.js'
+import { loadSPSContent } from '../src/sps/runtime/session.js'
+import { spsRegistry } from '../src/sps/core/registry.js'
 
 let app
 let personaId

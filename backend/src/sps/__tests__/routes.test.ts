@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import request from 'supertest';
 import type { Application } from 'express';
-import { createApp } from '../../app.ts';
-import { loadSPSContent } from '../../sps/runtime/session.ts';
+import { createApp } from '../../app.js';
+import { loadSPSContent } from '../../sps/runtime/session.js';
 
 let app: Application;
 

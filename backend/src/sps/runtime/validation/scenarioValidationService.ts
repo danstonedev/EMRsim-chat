@@ -2,14 +2,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { ContentManifest, DependencyManifest } from '../../utils/manifestGenerator.ts';
-import { loadManifest, loadDependencyManifest } from '../../utils/manifestGenerator.ts';
-import { formatChecksum, generateObjectChecksum } from '../../utils/checksum.ts';
+import type { ContentManifest, DependencyManifest } from '../../utils/manifestGenerator.js';
+import { loadManifest, loadDependencyManifest } from '../../utils/manifestGenerator.js';
+import { formatChecksum, generateObjectChecksum } from '../../utils/checksum.js';
 import type {
   CompiledScenarioArtifact,
   CompiledScenarioIndex,
   CompiledScenarioIndexEntry,
-} from '../../tools/compiledTypes.ts';
+} from '../../tools/compiledTypes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

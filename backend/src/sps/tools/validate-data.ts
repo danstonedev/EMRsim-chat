@@ -4,9 +4,9 @@
   - Cross-checks scenario references to challenges/special questions
   - Prints a concise report and exits non-zero on any error
 */
-import { zScreeningChallenge, zSpecialQuestion, zPersona, zClinicalScenario } from '../core/schemas';
-import { convertPersonaBundle, convertScenarioBundle, loadContextModules, resolveModule } from '../runtime/session';
-import type { ModuleReference } from '../runtime/session';
+import { zScreeningChallenge, zSpecialQuestion, zPersona, zClinicalScenario } from '../core/schemas.js';
+import { convertPersonaBundle, convertScenarioBundle, loadContextModules, resolveModule } from '../runtime/session.js';
+import type { ModuleReference } from '../runtime/session.js';
 import fs from 'node:fs';
 import path from 'node:path';
 

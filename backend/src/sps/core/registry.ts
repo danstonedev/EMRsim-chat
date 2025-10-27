@@ -1,5 +1,5 @@
-import { ScreeningChallenge, SpecialQuestion, PatientPersona, ClinicalScenario, ActiveCase } from './types';
-import { zScreeningChallenge, zSpecialQuestion, zPersona, zClinicalScenario } from './schemas';
+import { ScreeningChallenge, SpecialQuestion, PatientPersona, ClinicalScenario, ActiveCase } from './types.js';
+import { zScreeningChallenge, zSpecialQuestion, zPersona, zClinicalScenario } from './schemas.js';
 
 type Dict<T> = Record<string, T>;
 export class SPSRegistry {

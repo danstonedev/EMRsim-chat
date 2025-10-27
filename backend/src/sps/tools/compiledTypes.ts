@@ -1,4 +1,4 @@
-import type { ClinicalScenario, PatientPersona } from '../core/types.ts';
+import type { ClinicalScenario, PatientPersona } from '../core/types.js';
 
 export interface CompiledModuleArtifact {
   module_id: string;

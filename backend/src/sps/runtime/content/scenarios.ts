@@ -1,5 +1,5 @@
-import { toTitleCase } from '../../core/normalization/index.ts';
-import type { ClinicalScenario, ObjectiveFinding, PatientPersona, Region, SubjectiveItem } from '../../core/types.ts';
+import { toTitleCase } from '../../core/normalization/index.js';
+import type { ClinicalScenario, ObjectiveFinding, PatientPersona, Region, SubjectiveItem } from '../../core/types.js';
 
 function buildObjectiveFinding(testId: string, label: string, region: string, findings: any): ObjectiveFinding {
   const numeric = findings && typeof findings.numeric === 'object' ? findings.numeric : undefined;

@@ -6,13 +6,13 @@ import type {
   ContentManifest,
   DependencyManifest,
   ScenarioDependencyManifestEntry,
-} from '../../utils/manifestGenerator.ts';
+} from '../../utils/manifestGenerator.js';
 import {
   getContentChecksum,
   getContentVersion,
   loadManifest,
   loadDependencyManifest,
-} from '../../utils/manifestGenerator.ts';
+} from '../../utils/manifestGenerator.js';
 
 export type ContentKind = 'persona' | 'scenario' | 'module';
 

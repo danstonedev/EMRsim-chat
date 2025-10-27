@@ -8,7 +8,7 @@ import {
   ScenarioValidationService,
   type ValidationIssue,
   type ValidationSummary,
-} from '../runtime/validation/scenarioValidationService.ts';
+} from '../runtime/validation/scenarioValidationService.js';
 
 interface CLIOptions {
   scenarioFilter: Set<string> | null;

@@ -1,15 +1,15 @@
 import 'dotenv/config';
-import { env } from './env.ts'; // Validate environment variables first (fail fast)
+import { env } from './env.js'; // Validate environment variables first (fail fast)
 import { Server } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { createApp } from './app.ts';
-import { migrate } from './db.ts';
-import { restorePersistedSessions, isPersistenceEnabled, flushPersistence } from './sps/runtime/persistence.ts';
-import { sessions } from './sps/runtime/store.ts';
-import { logger, createChildLogger } from './utils/logger.ts';
-import { resolveAllowedOrigins } from './utils/origin.ts';
-import { connectRedis, disconnectRedis, getRedisStatus } from './services/redisClient.ts';
-import type { SPSRegistry } from './sps/core/registry.ts';
+import { createApp } from './app.js';
+import { migrate } from './db.js';
+import { restorePersistedSessions, isPersistenceEnabled, flushPersistence } from './sps/runtime/persistence.js';
+import { sessions } from './sps/runtime/store.js';
+import { logger, createChildLogger } from './utils/logger.js';
+import { resolveAllowedOrigins } from './utils/origin.js';
+import { connectRedis, disconnectRedis, getRedisStatus } from './services/redisClient.js';
+import type { SPSRegistry } from './sps/core/registry.js';
 
 // Global type declaration for duplicate start detection
 declare global {
@@ -191,7 +191,7 @@ server.on('error', (err: unknown) => {
 });
 
 // Setup Socket.IO for real-time transcript broadcasting
-import { initTranscriptBroadcast, getTranscriptHistory } from './services/transcript_broadcast.ts';
+import { initTranscriptBroadcast, getTranscriptHistory } from './services/transcript_broadcast.js';
 
 const socketAllowedOrigins = resolveAllowedOrigins();
 logger.info({ socketAllowedOrigins }, '[socket.io] allowed origins');
@@ -250,7 +250,7 @@ mark('websocket initialized');
 export { io };
 
 // Export createApp for Vercel serverless
-export { createApp } from './app.ts';
+export { createApp } from './app.js';
 
 // Heartbeat (diagnostic) – logs every 15s by default, configurable via HEARTBEAT_INTERVAL_MS
 const HEARTBEAT_INTERVAL_MS = Number(process.env.HEARTBEAT_INTERVAL_MS || 15000);

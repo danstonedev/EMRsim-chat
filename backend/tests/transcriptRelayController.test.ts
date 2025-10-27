@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { relayTranscript } from '../src/controllers/transcriptRelayController.ts'
+import { relayTranscript } from '../src/controllers/transcriptRelayController.js'
 
 vi.mock('../src/services/transcript_broadcast.ts', () => ({
   broadcastUserTranscript: vi.fn(),

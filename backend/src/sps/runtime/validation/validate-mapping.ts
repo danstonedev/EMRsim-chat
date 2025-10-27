@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-import { validateSuggestedPersonaMapping, validateScenarioKitMapping } from './mappingValidationService.ts';
+import { validateSuggestedPersonaMapping, validateScenarioKitMapping } from './mappingValidationService.js';
 
 function main() {
   const summaries = [validateSuggestedPersonaMapping(), validateScenarioKitMapping()];

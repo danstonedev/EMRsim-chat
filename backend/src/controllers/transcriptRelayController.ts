@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { broadcastAssistantTranscript, broadcastUserTranscript } from '../services/transcript_broadcast.ts';
-import { insertTurn } from '../db.ts';
+import { broadcastAssistantTranscript, broadcastUserTranscript } from '../services/transcript_broadcast.js';
+import { insertTurn } from '../db.js';
 
 interface TranscriptRelayBody {
   role?: string;

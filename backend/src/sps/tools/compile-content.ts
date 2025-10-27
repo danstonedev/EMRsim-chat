@@ -16,18 +16,18 @@ import {
   type ContentManifest,
   type DependencyManifest,
   type CatalogAnalysisReport,
-} from '../utils/manifestGenerator.ts';
+} from '../utils/manifestGenerator.js';
 import type {
   CompiledModuleArtifact,
   CompiledPersonaArtifact,
   CompiledScenarioArtifact,
   CompiledScenarioIndex,
   CompiledScenarioIndexEntry,
-} from './compiledTypes.ts';
-import type { PatientPersona } from '../core/types.ts';
-import { formatChecksum, generateObjectChecksum } from '../utils/checksum.ts';
-import { convertPersonaBundle } from '../runtime/content/personas.ts';
-import { convertScenarioBundle } from '../runtime/content/scenarios.ts';
+} from './compiledTypes.js';
+import type { PatientPersona } from '../core/types.js';
+import { formatChecksum, generateObjectChecksum } from '../utils/checksum.js';
+import { convertPersonaBundle } from '../runtime/content/personas.js';
+import { convertScenarioBundle } from '../runtime/content/scenarios.js';
 
 interface CLIOptions {
   scenarioFilter: Set<string> | null;

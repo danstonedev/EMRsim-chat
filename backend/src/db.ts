@@ -8,7 +8,7 @@ import {
   ltrim as redisLTrim,
   lrange as redisLRange,
   setNxWithTTL as redisSetNxWithTTL,
-} from './services/redisClient.ts';
+} from './services/redisClient.js';
 
 // Types for better-sqlite3 (optional dependency)
 interface Database {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { loadScenarioKit, retrieveFacts, formatRetrievedFacts } from '../kits.ts';
+import { loadScenarioKit, retrieveFacts, formatRetrievedFacts } from '../kits.js';
 
 describe('kits retriever', () => {
   it('loads the PFP kit and retrieves facts (student audience)', () => {

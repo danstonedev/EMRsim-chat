@@ -1,5 +1,5 @@
-import type { ActiveCase, GateFlags, EncounterPhase } from '../core/types.ts';
-import type { SPSRegistry } from '../core/registry.ts';
+import type { ActiveCase, GateFlags, EncounterPhase } from '../core/types.js';
+import type { SPSRegistry } from '../core/registry.js';
 
 export interface SPSSession {
   activeCase: ActiveCase;

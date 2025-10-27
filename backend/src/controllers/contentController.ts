@@ -11,11 +11,11 @@ const SPECIAL_QUESTIONS_PATH = path.join(CONTENT_ROOT, 'banks/special_questions'
 const CATALOGS_PATH = path.join(CONTENT_ROOT, 'banks/catalogs');
 
 // Import new normalization utilities
-import { normalizePersona } from '../../sps/core/normalization';
+import { normalizePersona } from '../sps/core/normalization/index.js';
 // Import versioning utilities (Phase 4)
-import { loadContentManifest, resolveContentVersion } from '../../sps/core/versioning';
+import { getScenarioVersion, getPersonaVersion, getDependencyManifest } from '../sps/core/versioning/index.js';
 
-export const getScenarios = async (req: Request, res: Response) => {
+export const getScenarios = async (_req: Request, res: Response) => {
   try {
     // Use compiled scenarios instead of bundle sources
     const scenarioFiles = fs
@@ -25,11 +25,11 @@ export const getScenarios = async (req: Request, res: Response) => {
     const scenarios = scenarioFiles.map(file => {
       const scenarioData = JSON.parse(fs.readFileSync(path.join(SCENARIOS_PATH, file), 'utf8'));
       // Add version information from manifest
-      const versionInfo = resolveContentVersion('scenario', scenarioData.id);
+      const versionInfo = getScenarioVersion(scenarioData.id);
       return {
         ...scenarioData,
-        content_version: versionInfo.content_version,
-        checksum: versionInfo.checksum,
+        content_version: versionInfo?.contentVersion || '1.0.0',
+        checksum: versionInfo?.checksum || '',
       };
     });
 
@@ -40,23 +40,23 @@ export const getScenarios = async (req: Request, res: Response) => {
   }
 };
 
-export const getPersonas = async (req: Request, res: Response) => {
+export const getPersonas = async (_req: Request, res: Response) => {
   try {
     // Load from realtime directory only (shared/base deprecated)
     const realtimeFiles = fs.readdirSync(PERSONAS_REALTIME_PATH).filter(file => file.endsWith('.json'));
     const personas = realtimeFiles.map(file => {
       const personaData = JSON.parse(fs.readFileSync(path.join(PERSONAS_REALTIME_PATH, file), 'utf8'));
       // Use the normalization utility instead of inline conversion
-      return normalizePersona(personaData);
+      return normalizePersona({ raw: personaData });
     });
 
     // Add version information from manifest (manifest is loaded lazily by resolver)
-    const personasWithVersions = personas.map(persona => {
-      const versionInfo = resolveContentVersion('persona', persona.patient_id);
+    const personasWithVersions = personas.filter(p => p !== null).map((persona: any) => {
+      const versionInfo = getPersonaVersion(persona.patient_id);
       return {
         ...persona,
-        content_version: versionInfo.content_version,
-        checksum: versionInfo.checksum,
+        content_version: versionInfo?.contentVersion || '1.0.0',
+        checksum: versionInfo?.checksum || '',
       };
     });
 
@@ -114,11 +114,9 @@ export const getCatalogs = async (_req: Request, res: Response) => {
 // Add a new endpoint to expose content versioning information
 export const getContentVersions = async (_req: Request, res: Response) => {
   try {
-    const manifest = await loadContentManifest();
+    const manifest = getDependencyManifest();
     res.json({
-      version: manifest.version,
-      generated_at: manifest.generated_at,
-      content_versions: manifest.content,
+      scenarios: manifest.scenarios,
     });
   } catch (error) {
     console.error('Error loading content manifest:', error);

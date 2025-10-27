@@ -7,8 +7,8 @@
  */
 
 import type { Server as SocketIOServer } from 'socket.io';
-import { getSessionTurns } from '../db.ts';
-import { isRedisAvailable, setNxWithTTL } from './redisClient.ts';
+import { getSessionTurns } from '../db.js';
+import { isRedisAvailable, setNxWithTTL } from './redisClient.js';
 
 type TranscriptRole = 'user' | 'assistant';
 

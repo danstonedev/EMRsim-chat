@@ -1,14 +1,14 @@
-import type { SPSRegistry } from '../../core/registry.ts';
+import type { SPSRegistry } from '../../core/registry.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Fix relative imports to include file extensions
-import { spsRegistry } from '../../core/registry.ts';
-import type { ClinicalScenario, PatientPersona } from '../../core/types.ts';
-import { convertScenarioBundle } from './scenarios.ts';
-import { safeReadJson } from './fsUtils.ts';
-import { loadContextModules } from './moduleRegistry.ts';
+import { spsRegistry } from '../../core/registry.js';
+import type { ClinicalScenario, PatientPersona } from '../../core/types.js';
+import { convertScenarioBundle } from './scenarios.js';
+import { safeReadJson } from './fsUtils.js';
+import { loadContextModules } from './moduleRegistry.js';
 
 // Handle different environments safely
 const getModulePaths = () => {

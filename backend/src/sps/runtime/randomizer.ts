@@ -1,5 +1,5 @@
-import { spsRegistry } from '../core/registry';
-import { ActiveCase } from '../core/types';
+import { spsRegistry } from '../core/registry.js';
+import { ActiveCase } from '../core/types.js';
 
 export function randomActiveCase(filter?: { region?: string; tagsInclude?: string[] }): ActiveCase {
   const personas = Object.keys(spsRegistry.personas);

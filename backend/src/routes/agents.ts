@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { z } from 'zod'
-import { getRegisteredAgents, runAgent } from '../agents/AgentRunner.ts'
+import { getRegisteredAgents, runAgent } from '../agents/AgentRunner.js'
 // Ensure built-in tools are registered
 import '../agents/tools/caseSummary.ts'
 

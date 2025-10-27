@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { describe, it, expect } from 'vitest'
 import request from 'supertest'
-import { createApp } from '../src/app.ts'
+import { createApp } from '../src/app.js'
 
 describe('correlation middleware', () => {
   const app = createApp()

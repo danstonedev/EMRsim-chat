@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import type pino from 'pino';
-import { logger } from './logger.ts';
+import { logger } from './logger.js';
 import type { Request, Response, NextFunction } from 'express';
 
 export interface RequestContext {

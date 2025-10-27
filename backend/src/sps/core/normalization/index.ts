@@ -7,7 +7,7 @@
  * Extracted from session.ts as part of Phase 4 refactoring.
  */
 
-import type { PatientPersona, ObjectiveFinding, Region } from '../types';
+import type { PatientPersona, ObjectiveFinding, Region } from '../types.js';
 
 // ============================================================================
 // Type Mapping Constants

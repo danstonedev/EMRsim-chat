@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { broadcastUserTranscript, broadcastAssistantTranscript } from '../services/transcript_broadcast.ts';
-import { insertTurn } from '../db.ts';
+import { broadcastUserTranscript, broadcastAssistantTranscript } from '../services/transcript_broadcast.js';
+import { insertTurn } from '../db.js';
 
 /**
  * Relays a transcript from a client to all other clients in the same session.

@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-import { validateAllKits } from './kitsValidationService.ts';
+import { validateAllKits } from './kitsValidationService.js';
 
 function main() {
   const summary = validateAllKits();

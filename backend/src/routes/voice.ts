@@ -1,24 +1,24 @@
 import { Router, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
-import { config } from '../config.ts';
-import { getSessionById } from '../db.ts';
-import { spsRegistry } from '../sps/core/registry.ts';
-import { sessions as spsSessions } from '../sps/runtime/store.ts';
+import { config } from '../config.js';
+import { getSessionById } from '../db.js';
+import { spsRegistry } from '../sps/core/registry.js';
+import { sessions as spsSessions } from '../sps/runtime/store.js';
 import {
   composeRealtimeInstructions,
   normalizeGate,
   computeOutstandingGate,
   resolveRoleProfile,
   getAvailableRoles,
-} from '../sps/runtime/sps.service.ts';
-import { loadScenarioKit, retrieveFacts, mapScenarioToCaseId } from '../sps/runtime/kits.ts';
+} from '../sps/runtime/sps.service.js';
+import { loadScenarioKit, retrieveFacts, mapScenarioToCaseId } from '../sps/runtime/kits.js';
 import {
   broadcastUserTranscript,
   broadcastAssistantTranscript,
   broadcastTranscriptError,
-} from '../services/transcript_broadcast.ts';
-import { relayTranscript } from './transcript_relay.ts';
-import { setWithTTL, get as getRedis } from '../services/redisClient.ts';
+} from '../services/transcript_broadcast.js';
+import { relayTranscript } from './transcript_relay.js';
+import { setWithTTL, get as getRedis } from '../services/redisClient.js';
 
 // In-memory fallback store for realtime RTC tokens (used when Redis unavailable)
 const rtcTokenStore = new Map<string, string>();

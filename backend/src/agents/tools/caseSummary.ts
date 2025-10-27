@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { AgentContext, registerAgent } from '../AgentRunner.ts'
-import { getSessionTurns } from '../../db.ts'
+import { AgentContext, registerAgent } from '../AgentRunner.js'
+import { getSessionTurns } from '../../db.js'
 
 // Params schema
 const Params = z.object({

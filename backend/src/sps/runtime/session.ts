@@ -1,11 +1,11 @@
-import { sessions } from './store.ts';
+import { sessions } from './store.js';
 
-export { sessions } from './store.ts';
-export { loadSPSContent } from './content/loader.ts';
-export { convertPersonaBundle, buildDobChallenges } from './content/personas.ts';
-export { convertScenarioBundle, buildScenarioContext } from './content/scenarios.ts';
-export { loadContextModules, resolveModule, clearModuleRegistryCache } from './content/moduleRegistry.ts';
-export type { ModuleReference, ModuleRegistry } from './content/moduleRegistry.ts';
+export { sessions } from './store.js';
+export { loadSPSContent } from './content/loader.js';
+export { convertPersonaBundle, buildDobChallenges } from './content/personas.js';
+export { convertScenarioBundle, buildScenarioContext } from './content/scenarios.js';
+export { loadContextModules, resolveModule, clearModuleRegistryCache } from './content/moduleRegistry.js';
+export type { ModuleReference, ModuleRegistry } from './content/moduleRegistry.js';
 
 export function getActiveSessionIds(): string[] {
   return [...sessions.keys()];
