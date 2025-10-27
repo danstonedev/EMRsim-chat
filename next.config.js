@@ -1,3 +1,15 @@
+/**
+ * IMPORTANT: Monorepo note
+ *
+ * This repository deploys to Vercel via two separate projects pointing to subfolders:
+ * - frontend/ (Vite app)
+ * - backend/ (@vercel/node server)
+ *
+ * The root-level Next.js config below is legacy and is NOT used by our Vercel deployments.
+ * Do NOT point a Vercel project at the repo root. Instead, set the Vercel Project Root Directory
+ * to frontend/ or backend/ respectively. The GitHub Pages-oriented settings here were kept for
+ * historical reference only and should not be relied on for production.
+ */
 /** @type {import('next').NextConfig} */
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
