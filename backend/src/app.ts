@@ -152,6 +152,15 @@ export function createApp(): Application {
       env: process.env.VERCEL_ENV || process.env.NODE_ENV || '',
     });
   });
+  // Convenience alias for environments where rewrites strip the /api prefix
+  app.get('/version', (_req: Request, res: Response) => {
+    res.json({
+      buildTime: BUILD_TIME,
+      gitSha: GIT_SHA,
+      gitBranch: GIT_BRANCH,
+      env: process.env.VERCEL_ENV || process.env.NODE_ENV || '',
+    });
+  });
 
   app.use('/api/health', healthRouter);
   // Convenience alias for environments or checks expecting root /health
